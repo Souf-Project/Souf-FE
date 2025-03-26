@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 모든 페이지에 적용할 전역 스타일 */
+body {
+  font-family: "Pretendard";
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+@font-face {
+  font-family: "Pretendard";
+  src: url("/src/assets/fonts/PretendardVariable.ttf") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
