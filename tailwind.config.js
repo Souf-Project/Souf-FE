@@ -10,7 +10,7 @@ module.exports = {
         Pretendard: ["Pretendard"],
       },
       screens: {
-        xs: "320px", 
+        xs: "320px",
       },
     },
   },
