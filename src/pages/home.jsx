@@ -34,8 +34,8 @@ export default function Home({  }) {
     <ul>
         <li>
         <button onClick={handleLoginClick}>로그인</button>
-<Input 
-title="이메일"
+
+{/* <Input 
 placeholder="이메일을 입력해주세요"
 onChange={handleInputChange}
 isValidateTrigger={isValidateTrigger}
@@ -43,6 +43,10 @@ isConfirmed={isConfirmed}
 essentialText="이메일을 입력해주세요"/> 
 <ButtonInput
 title={"인증번호 확인"}
+essentialText="이메일을 입력해주세요"/>  */}
+
+<ButtonInput
+title="인증번호 확인"
                 btnText="인증하기"
                 onClick={handleValidation}
                 placeholder="인증 코드를 입력하세요"

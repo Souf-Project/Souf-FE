@@ -6,8 +6,8 @@ module.exports = {
       colors: {
         primary: "#000000",
         yellow: {
-          main: '#FFE58F',
-          point: '#FFC400',
+          main: "#FFE58F",
+          point: "#FFC400",
         },
         red: {
           essential: "#E43F2D",
@@ -18,7 +18,7 @@ module.exports = {
       },
 
       screens: {
-        xs: "320px",
+        xs: "320px", 
       },
     },
   },

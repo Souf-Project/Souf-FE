@@ -18,7 +18,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 body {
   margin: 0;
   display: flex;
@@ -39,5 +38,4 @@ h1 {
     color: #213547;
     background-color: #ffffff;
   }
-}
 

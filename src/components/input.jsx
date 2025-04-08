@@ -72,10 +72,14 @@ export default function Input({
         : 'border-[#898989]';
 
     return (
-        <div className="w-full relative mb-10">
-            <div className='text-black font-regular text-2xl mb-1'>
+
+        <div className="w-full relative mb-8">
+            {title && (
+                <div className="text-black text-2xl font-regular mb-2">
                     {title}
-            </div>
+                </div>
+            )}
+
             <input
                 type={type}
                 className={`w-full py-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} focus:border-yellow-point`}
