@@ -5,7 +5,7 @@ export default function Header() {
     <header className="w-screen flex items-center justify-between px-10 py-4 bg-white shadow-sm">
       <div className="flex items-center gap-x-10">
         <div className="text-4xl font-bold text-black">SouF</div>
-        <ul className="flex items-center gap-x-8 font-bold text-2xl text-black">
+        <ul className="flex items-center gap-x-8 font-bold text-xl text-black">
   <li className='hover:text-yellow-point transition-colors duration-200'>
     <a href="/">순수미술 & 일러스트</a>
   </li>
@@ -26,7 +26,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center gap-x-4">
-        <button className="text-black bg-yellow-main px-5 py-3 font-semibold rounded-lg">대학생 인증</button>
+        <button className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg">대학생 인증</button>
         <div className="flex items-center text-xl font-semibold">
           <button className="bg-white">로그인</button>
           <span className="mx-2 font-thin">|</span>
