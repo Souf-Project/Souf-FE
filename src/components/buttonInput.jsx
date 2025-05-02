@@ -33,7 +33,7 @@ export default function ButtonInput({
                 {btnText && (
                     <button
                         onClick={onClick}
-                        className="h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold bg-yellow-main"
+                        className="h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold bg-yellow-main"
                     >
                         {btnText}
                     </button>

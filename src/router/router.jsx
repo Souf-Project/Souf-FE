@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Header from '../components/header';
 import Home from '../pages/home';
 import Login from '../pages/login';
+import VerifyStudent from '../pages/verifyStudent';
+import Recruit from '../pages/recruit';
 import Footer from '../components/footer';
 
 
@@ -13,6 +15,8 @@ function AppRouter() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/verifyStudent" element={<VerifyStudent />} />
+                <Route path="/recruit" element={<Recruit />} />
             </Routes>
             <Footer/>
         </>

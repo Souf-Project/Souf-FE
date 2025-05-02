@@ -11,6 +11,9 @@ module.exports = {
         },
         red: {
           essential: "#E43F2D",
+        },
+        grey: {
+          border: "#C9C9C9",
         }
       },
       fontFamily: {

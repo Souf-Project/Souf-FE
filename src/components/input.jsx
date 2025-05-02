@@ -78,7 +78,7 @@ export default function Input({
             </div>
             <input
                 type={type}
-                className={`w-full py-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} focus:border-yellow-point`}
+                className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} focus:border-yellow-point`}
                 placeholder={placeholder}
                 value={inputValue}
                 onChange={handleChange}
