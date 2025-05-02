@@ -30,10 +30,6 @@ export default function RecruitBlock({
   };
 
   const handleClick = () => {
-    console.log("블럭 클릭됨, 이동할 경로:", `/recruitDetails/${id}`);
-    console.log("전달할 데이터:", {
-      id, title, category, content, applicants, minPrice, maxPrice, preferMajor, location, deadline
-    });
     
     navigate(`/recruitDetails/${id}`, { 
       state: { 
@@ -53,7 +49,7 @@ export default function RecruitBlock({
 
   return (
     <div 
-      className="bg-white rounded-3xl border border-gray-300 p-6 w-3/4 mx-auto mb-6 cursor-pointer hover:shadow-lg transition-all hover:border-yellow-point"
+      className="bg-white rounded-3xl border border-gray-300 p-6 w-3/4 mx-auto mb-6 cursor-pointer hover:shadow-md transition-all "
       onClick={handleClick}
     >
       <div className="flex gap-2 mb-3">
@@ -78,7 +74,15 @@ export default function RecruitBlock({
       <p className="text-gray-800 mb-6 line-clamp-3">{content}</p>
       <div className="text-sm text-gray-600 border-t pt-4 flex justify-between">
         <span>지원자 {applicants}명</span>
-        <span>{minPrice.toLocaleString()}원 ~ {maxPrice.toLocaleString()}원</span>
+        <span>
+  {minPrice >= 1000000
+    ? `${Math.round(minPrice / 10000)}만원`
+    : `${minPrice.toLocaleString()}원`} ~ 
+  {maxPrice >= 1000000
+    ? `${Math.round(maxPrice / 10000)}만원`
+    : `${maxPrice.toLocaleString()}원`}
+</span>
+
       </div>
     </div>
   );

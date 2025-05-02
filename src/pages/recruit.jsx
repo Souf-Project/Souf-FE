@@ -6,6 +6,11 @@ export default function Recruit() {
   const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [activeTab, setActiveTab] = useState('recruit'); // 'recruit' 또는 'profile'
+  const [filteredRecruits, setFilteredRecruits] = useState([]);
+  
+  // URL에서 카테고리 파라미터 가져오기
+  const searchParams = new URLSearchParams(location.search);
+  const categoryParam = searchParams.get('category');
   
   // 샘플 공고 데이터
   const sampleRecruits = [
@@ -47,15 +52,22 @@ export default function Recruit() {
     }
   ];
 
-  
+  // 카테고리에 따라 공고 필터링
   useEffect(() => {
-    if (location.state?.category) {
-      setSelectedCategory(location.state.category);
+    if (categoryParam) {
+      setSelectedCategory(decodeURIComponent(categoryParam));
+      const filtered = sampleRecruits.filter(recruit => 
+        recruit.category === decodeURIComponent(categoryParam)
+      );
+      setFilteredRecruits(filtered);
+    } else {
+      setSelectedCategory("전체");
+      setFilteredRecruits(sampleRecruits);
     }
-  }, [location.state]);
+  }, [categoryParam]);
 
   return (
-    <div className="p-6">
+    <div className="pt-24 px-6">
       <div className="flex justify-center gap-4 mb-8">
         <button
           className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
@@ -94,21 +106,27 @@ export default function Recruit() {
       </div>
       {activeTab === 'recruit' ? (
         <div className="space-y-6">
-          {sampleRecruits.map(recruit => (
-            <RecruitBlock
-              key={recruit.id}
-              id={recruit.id}
-              title={recruit.title}
-              category={recruit.category}
-              content={recruit.content}
-              applicants={recruit.applicants}
-              minPrice={recruit.minPrice}
-              maxPrice={recruit.maxPrice}
-              preferMajor={recruit.preferMajor}
-              location={recruit.location}
-              deadline={recruit.deadline}
-            />
-          ))}
+          {filteredRecruits.length > 0 ? (
+            filteredRecruits.map(recruit => (
+              <RecruitBlock
+                key={recruit.id}
+                id={recruit.id}
+                title={recruit.title}
+                category={recruit.category}
+                content={recruit.content}
+                applicants={recruit.applicants}
+                minPrice={recruit.minPrice}
+                maxPrice={recruit.maxPrice}
+                preferMajor={recruit.preferMajor}
+                location={recruit.location}
+                deadline={recruit.deadline}
+              />
+            ))
+          ) : (
+            <div className="text-center py-10">
+              <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-sm p-6">
