@@ -17,10 +17,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  text-decoration: none;
-  color: inherit; 
-}
 
 body {
   min-width: 320px;

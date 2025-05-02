@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from '../components/header';
 import Home from '../pages/home';
 import Login from '../pages/login';
@@ -7,9 +7,7 @@ import Recruit from '../pages/recruit';
 import RecruitDetail from '../pages/recruitDetails';
 import Footer from '../components/footer';
 
-
 function AppRouter() {
-  
     return (
         <>
             <Header/>
@@ -17,8 +15,8 @@ function AppRouter() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/verifyStudent" element={<VerifyStudent />} />
-                <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
                 <Route path="/recruit" element={<Recruit />} />
+                <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
             </Routes>
             <Footer/>
         </>

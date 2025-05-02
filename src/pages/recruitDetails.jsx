@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 
 export default function RecruitDetail() {
@@ -6,6 +6,12 @@ export default function RecruitDetail() {
   const { id } = useParams();
   const location = useLocation();
   const recruitData = location.state;
+
+  useEffect(() => {
+    console.log("RecruitDetail 컴포넌트가 로드됨");
+    console.log("ID:", id);
+    console.log("Location state:", location.state);
+  }, [id, location]);
 
   // 날짜 형식 변환
   const formatDate = (dateString) => {
@@ -32,13 +38,14 @@ export default function RecruitDetail() {
   };
 
   if (!recruitData) {
+    console.log("recruitData가 없음");
     return (
       <div className="p-8">
         <button 
           className="flex items-center text-gray-600 mb-8 hover:text-black"
           onClick={handleGoBack}
         >
-          <FaArrowLeft className="mr-2" /> 뒤로가기
+         
         </button>
         <div className="text-center">데이터를 찾을 수 없습니다.</div>
       </div>
@@ -51,7 +58,7 @@ export default function RecruitDetail() {
         className="flex items-center text-gray-600 mb-8 hover:text-black"
         onClick={handleGoBack}
       >
-        <FaArrowLeft className="mr-2" /> 뒤로가기
+       
       </button>
 
       <div className="bg-white rounded-3xl border border-gray p-8 mb-8">

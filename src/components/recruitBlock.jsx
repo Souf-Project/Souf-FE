@@ -30,6 +30,11 @@ export default function RecruitBlock({
   };
 
   const handleClick = () => {
+    console.log("블럭 클릭됨, 이동할 경로:", `/recruitDetails/${id}`);
+    console.log("전달할 데이터:", {
+      id, title, category, content, applicants, minPrice, maxPrice, preferMajor, location, deadline
+    });
+    
     navigate(`/recruitDetails/${id}`, { 
       state: { 
         id,
@@ -48,7 +53,7 @@ export default function RecruitBlock({
 
   return (
     <div 
-      className="bg-white rounded-3xl border border-gray p-6 w-3/4 mx-auto mb-6 cursor-pointer hover:shadow-md transition-shadow"
+      className="bg-white rounded-3xl border border-gray-300 p-6 w-3/4 mx-auto mb-6 cursor-pointer hover:shadow-lg transition-all hover:border-yellow-point"
       onClick={handleClick}
     >
       <div className="flex gap-2 mb-3">
