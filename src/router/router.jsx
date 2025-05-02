@@ -9,17 +9,19 @@ import Footer from '../components/footer';
 
 function AppRouter() {
     return (
-        <>
+        <div className="flex flex-col min-h-screen">
             <Header/>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/verifyStudent" element={<VerifyStudent />} />
-                <Route path="/recruit" element={<Recruit />} />
-                <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
-            </Routes>
+            <main className="flex-grow w-full">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/verifyStudent" element={<VerifyStudent />} />
+                    <Route path="/recruit" element={<Recruit />} />
+                    <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
+                </Routes>
+            </main>
             <Footer/>
-        </>
+        </div>
     );
 }
 

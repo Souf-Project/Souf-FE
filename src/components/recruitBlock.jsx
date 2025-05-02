@@ -4,7 +4,9 @@ import { useNavigate } from 'react-router-dom';
 export default function RecruitBlock({ 
   id,
   title, 
-  category, 
+  categoryMain,
+  categoryMiddle,
+  categorySmall,
   content, 
   applicants, 
   minPrice, 
@@ -35,7 +37,9 @@ export default function RecruitBlock({
       state: { 
         id,
         title, 
-        category, 
+        categoryMain,
+        categoryMiddle,
+        categorySmall,
         content, 
         applicants, 
         minPrice, 
@@ -49,7 +53,7 @@ export default function RecruitBlock({
 
   return (
     <div 
-      className="bg-white rounded-3xl border border-gray-300 p-6 w-3/4 mx-auto mb-6 cursor-pointer hover:shadow-md transition-all "
+      className="bg-white rounded-3xl border border-gray-300 p-6 mx-auto mb-6 cursor-pointer hover:shadow-md transition-all "
       onClick={handleClick}
     >
       <div className="flex gap-2 mb-3">
@@ -70,19 +74,18 @@ export default function RecruitBlock({
         )}
       </div>
       <h2 className="text-3xl font-semibold mb-2">{title}</h2>
-      <div className="text-sm text-gray-600 mb-4">{category}</div>
+      <div className="text-sm text-gray-600 mb-4">{categoryMiddle}</div>
       <p className="text-gray-800 mb-6 line-clamp-3">{content}</p>
       <div className="text-sm text-gray-600 border-t pt-4 flex justify-between">
         <span>지원자 {applicants}명</span>
         <span>
-  {minPrice >= 1000000
-    ? `${Math.round(minPrice / 10000)}만원`
-    : `${minPrice.toLocaleString()}원`} ~ 
-  {maxPrice >= 1000000
-    ? `${Math.round(maxPrice / 10000)}만원`
-    : `${maxPrice.toLocaleString()}원`}
-</span>
-
+          {minPrice >= 1000000
+            ? `${Math.round(minPrice / 10000)}만원`
+            : `${minPrice.toLocaleString()}원`} ~ 
+          {maxPrice >= 1000000
+            ? `${Math.round(maxPrice / 10000)}만원`
+            : `${maxPrice.toLocaleString()}원`}
+        </span>
       </div>
     </div>
   );
