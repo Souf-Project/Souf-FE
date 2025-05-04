@@ -11,8 +11,7 @@ export default function Recruit() {
   // URL에서 카테고리 파라미터 가져오기
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get('category');
-  
-  // 샘플 공고 데이터
+
   const sampleRecruits = [
     {
       id: 1,
@@ -32,8 +31,8 @@ export default function Recruit() {
       id: 2,
       title: "웹사이트 일러스트레이션 작업",
       categoryMain: "순수미술 & 일러스트",
-      categoryMiddle: "디지털 일러스트",
-      categorySmall: "캐릭터 디자인",
+      categoryMiddle: "일러스트·캐릭터 디자인",
+      categorySmall: "2D 캐릭터",
       content: "회사 웹사이트 리뉴얼을 위한 일러스트레이션 작업을 의뢰합니다. 약 5-7개의 일러스트가 필요하며, 각 페이지의 콘셉트에 맞는 작업물이 필요합니다. 밝고 친근한 스타일을 원합니다.",
       applicants: 8,
       minPrice: 500000,
@@ -46,8 +45,8 @@ export default function Recruit() {
       id: 3,
       title: "제품 소개 영상 제작",
       categoryMain: "사진 & 영상 & 영화",
-      categoryMiddle: "영상 제작",
-      categorySmall: "상업 광고",
+      categoryMiddle: "영상",
+      categorySmall: "광고·홍보 영상",
       content: "신제품 출시에 맞춰 30초 분량의 소개 영상이 필요합니다. 제품의 주요 기능과 특징을 효과적으로 보여줄 수 있는 영상을 원합니다. 기획부터 편집까지 전 과정을 맡아주실 수 있는 분을 찾습니다.",
       applicants: 5,
       minPrice: 1000000,
@@ -60,8 +59,8 @@ export default function Recruit() {
       id: 4,
       title: "도자기 작품 의뢰",
       categoryMain: "공예 & 제작",
-      categoryMiddle: "도예",
-      categorySmall: "생활 도자기",
+      categoryMiddle: "조형 예술",
+      categorySmall: "도예·도자기",
       content: "카페에서 사용할 독특한 디자인의 머그컵과 접시 세트를 제작해주실 분을 찾고 있습니다. 카페의 분위기에 어울리는 자연스럽고 따뜻한 느낌의 디자인을 원합니다.",
       applicants: 3,
       minPrice: 800000,
@@ -74,8 +73,8 @@ export default function Recruit() {
       id: 5,
       title: "음악 페스티벌 테마곡 작곡",
       categoryMain: "음악 & 음향",
-      categoryMiddle: "작곡",
-      categorySmall: "이벤트 음악",
+      categoryMiddle: "음향",
+      categorySmall: "기타 음향·음악",
       content: "지역 음악 페스티벌의 테마곡을 작곡해주실 분을 찾습니다. 밝고 활기찬 분위기의 곡으로, 페스티벌의 정체성을 잘 표현할 수 있는 작품을 원합니다.",
       applicants: 7,
       minPrice: 700000,
@@ -139,7 +138,7 @@ export default function Recruit() {
         </button>
       </div>
       {activeTab === 'recruit' ? (
-        <div className="space-y-6 w-3/4 mx-auto">
+        <div className="max-w-4xl mx-auto">
           {filteredRecruits.length > 0 ? (
             filteredRecruits.map(recruit => (
               <RecruitBlock
@@ -165,8 +164,8 @@ export default function Recruit() {
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm p-6">
-        
+        <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+          
         </div>
       )}
     </div>

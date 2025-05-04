@@ -4,7 +4,7 @@ import iconMail from '../assets/images/iconMail.svg';
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#FBFBFB] border-t border-gray-200 mt-auto">
+    <footer className="w-full z-50 bg-[#FBFBFB] border-t border-gray-200 mt-auto">
       <div className="container mx-auto py-6 flex justify-between items-start">
         {/* 스프 소개 텍스트 더 추가 */}
         <div className="text-gray-500 font-medium self-start mt-1">

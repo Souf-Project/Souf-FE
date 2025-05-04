@@ -8,12 +8,6 @@ export default function RecruitDetail() {
   const location = useLocation();
   const recruitData = location.state;
 
-  useEffect(() => {
-    console.log("RecruitDetail 컴포넌트가 로드됨");
-    console.log("ID:", id);
-    console.log("Location state:", location.state);
-  }, [id, location]);
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const year = date.getFullYear();
@@ -41,7 +35,6 @@ export default function RecruitDetail() {
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
         <h1 className="text-3xl font-semibold">{recruitData.title}</h1>
         
-        {/* 카테고리 계층 표시 */}
         <div className="flex items-center text-gray-600 mb-6 mt-2">
           <span>{recruitData.categoryMain}</span>
           <span className="mx-2">&gt;</span>
@@ -51,7 +44,6 @@ export default function RecruitDetail() {
         </div>
 
         <div className="grid grid-cols-2 gap-8 my-6">
-          {/* 왼쪽 열 */}
           <div className="space-y-4">
             <div>
               <span className="text-black mb-1">급여</span>
@@ -70,7 +62,6 @@ export default function RecruitDetail() {
             </div>
           </div>
           
-          {/* 오른쪽 열 */}
           <div className="space-y-4">
             {/* <div>
               <span className="text-black mb-1">카테고리</span>
@@ -90,15 +81,11 @@ export default function RecruitDetail() {
           </div>
         </div>
 
-        {/* 구분선 */}
         <div className="border-t border-gray-200 my-6"></div>
-
-        {/* 상세 내용 */}
         <div>
           <p className="text-gray-800 whitespace-pre-wrap">{recruitData.content}</p>
         </div>
 
-        {/* 지원하기 버튼 */}
       <div className="flex justify-center mt-8">
         <button 
           className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"

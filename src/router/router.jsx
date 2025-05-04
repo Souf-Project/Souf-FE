@@ -5,6 +5,7 @@ import Login from '../pages/login';
 import VerifyStudent from '../pages/verifyStudent';
 import Recruit from '../pages/recruit';
 import RecruitDetail from '../pages/recruitDetails';
+import MyPage from '../pages/mypage';
 import Footer from '../components/footer';
 
 function AppRouter() {
@@ -18,6 +19,7 @@ function AppRouter() {
                     <Route path="/verifyStudent" element={<VerifyStudent />} />
                     <Route path="/recruit" element={<Recruit />} />
                     <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
+                    <Route path="/mypage" element={<MyPage />} />
                 </Routes>
             </main>
             <Footer/>

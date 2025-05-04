@@ -17,7 +17,6 @@ export default function RecruitBlock({
 }) {
   const navigate = useNavigate();
 
-  // 마감일 계산 (D-n 또는 지원마감)
   const calculateDeadline = (deadline) => {
     const today = new Date();
     const deadlineDate = new Date(deadline);
@@ -53,7 +52,7 @@ export default function RecruitBlock({
 
   return (
     <div 
-      className="bg-white rounded-3xl border border-gray-300 p-6 mx-auto mb-6 cursor-pointer hover:shadow-md transition-all "
+      className="bg-white rounded-3xl border border-gray-300 p-6 mb-6 cursor-pointer hover:shadow-md transition-all w-full"
       onClick={handleClick}
     >
       <div className="flex gap-2 mb-3">
