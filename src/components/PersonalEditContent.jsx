@@ -1,10 +1,10 @@
 import React from 'react';
+import EditBox from '../components/editBox';
 
 
 export default function PersonalEditContent() {
   return (
     <div>
-      <h3 className="text-2xl font-bold mb-6">개인정보 수정</h3>
       <div className="grid grid-cols-1 gap-6">
         <div>
           <label className="block text-gray-700 font-medium mb-2">이메일</label>

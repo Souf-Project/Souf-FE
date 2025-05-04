@@ -41,7 +41,7 @@ export default function MyPage() {
       <div className="w-64 fixed z-10 left-0 top-16 bottom-0 bg-white p-6 z-10 overflow-y-auto">
         <h2 className="text-2xl font-bold mb-8 text-center">마이페이지</h2>
         
-        <div className="mb-6">
+        <div className="mb-6 border-b pb-4">
           <h3 className="text-lg font-bold mb-3 text-gray-700">프로필</h3>
           <ul className="ml-2 space-y-2">
             <li>
@@ -65,7 +65,7 @@ export default function MyPage() {
         </div>
         
         {/* 개인정보 섹션 */}
-        <div className="mb-6">
+        <div className="mb-6 border-b pb-4">
           <h3 className="text-lg font-bold mb-3 text-gray-700">개인정보</h3>
           <ul className="ml-2 space-y-2">
             <li>
@@ -108,8 +108,13 @@ export default function MyPage() {
       
       {/* 컨텐츠 영역 (메인 컨텐츠) */}
       <div className="ml-64 flex-1 p-10 w-screen">
-        <div className="bg-white rounded-2xl shadow-md p-8 max-w-4xl mx-auto">
-          {renderContent()}
+        <div className="max-w-4xl mx-auto">
+          {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium  mb-4">프로필 수정</h3>}
+          {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium  mb-4">개인정보 수정</h3>}
+          {activeSubmenu === 'applications' && <h3 className="text-4xl font-medium  mb-4">지원 내역</h3>}
+          <div className="bg-white rounded-2xl shadow-md p-8">
+            {renderContent()}
+          </div>
         </div>
       </div>
     </div>

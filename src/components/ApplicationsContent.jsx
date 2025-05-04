@@ -27,8 +27,6 @@ export default function ApplicationsContent() {
 
   return (
     <div>
-      <h3 className="text-2xl font-bold mb-6">지원 내역</h3>
-      
       {applications.length > 0 ? (
         <div className="border rounded-lg overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
