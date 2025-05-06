@@ -8,6 +8,7 @@ import RecruitDetail from '../pages/recruitDetails';
 import MyPage from '../pages/mypage';
 import Footer from '../components/footer';
 import Join from '../pages/join';
+import PwdFind from '../pages/pwdFind';
 
 function AppRouter() {
     return (
@@ -22,6 +23,7 @@ function AppRouter() {
                     <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
                     <Route path="/mypage" element={<MyPage />} />
                     <Route path="/join" element={<Join/>} />
+                    <Route path='/pwdFind' element={<PwdFind/>}/>
                 </Routes>
             </main>
             <Footer/>
