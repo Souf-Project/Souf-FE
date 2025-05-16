@@ -5,6 +5,7 @@ import Login from '../pages/login';
 import VerifyStudent from '../pages/verifyStudent';
 import Recruit from '../pages/recruit';
 import RecruitDetail from '../pages/recruitDetails';
+import RecruitUpload from '../pages/recruitUpload';
 import MyPage from '../pages/mypage';
 import Footer from '../components/footer';
 import Join from '../pages/join';
@@ -21,6 +22,7 @@ function AppRouter() {
                     <Route path="/verifyStudent" element={<VerifyStudent />} />
                     <Route path="/recruit" element={<Recruit />} />
                     <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
+                    <Route path="/recruit/upload" element={<RecruitUpload />} />
                     <Route path="/mypage" element={<MyPage />} />
                     <Route path="/join" element={<Join/>} />
                     <Route path='/pwdFind' element={<PwdFind/>}/>
