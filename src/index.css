@@ -31,7 +31,9 @@ h1 {
   line-height: 1.1;
 }
 
-
+input {
+  background: #fff;
+}
 
 @media (prefers-color-scheme: light) {
   :root {

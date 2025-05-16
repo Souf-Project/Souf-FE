@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import RecruitBlock from "../components/recruitBlock";
 import StudentProfileList from "./studentProfileList";
 
+
 export default function Recruit() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [activeTab, setActiveTab] = useState("recruit"); // 'recruit' 또는 'profile'
   const [filteredRecruits, setFilteredRecruits] = useState([]);
@@ -132,8 +134,26 @@ export default function Recruit() {
             className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
               activeTab === "profile" ? "w-3/4" : "w-0 group-hover:w-3/4"
             }`}
-          ></span>
-        </button>
+            onClick={() => setActiveTab('profile')}
+          >
+            <span>대학생 프로필</span>
+            <span 
+              className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                activeTab === 'profile' 
+                  ? 'w-3/4' 
+                  : 'w-0 group-hover:w-3/4'
+              }`}
+            ></span>
+          </button>
+        </div>
+        {activeTab === 'recruit' && (
+          <button
+            onClick={() => navigate('/recruit/upload')}
+            className="bg-yellow-point text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+          >
+            공고문 작성하기
+          </button>
+        )}
       </div>
       {activeTab === "recruit" ? (
         <div className="max-w-4xl mx-auto">
