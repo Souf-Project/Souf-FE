@@ -1,9 +1,10 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import RecruitBlock from '../components/recruitBlock';
 
 export default function Recruit() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [activeTab, setActiveTab] = useState('recruit'); // 'recruit' 또는 'profile'
   const [filteredRecruits, setFilteredRecruits] = useState([]);
@@ -101,41 +102,51 @@ export default function Recruit() {
 
   return (
     <div className="pt-24 px-6">
-      <div className="flex justify-center gap-4 mb-8">
-        <button
-          className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-            activeTab === 'recruit'
-              ? 'text-yellow-point'
-              : 'text-gray-700'
-          }`}
-          onClick={() => setActiveTab('recruit')}
-        >
-          <span>기업 공고문</span>
-          <span 
-            className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-              activeTab === 'recruit' 
-                ? 'w-3/4' 
-                : 'w-0 group-hover:w-3/4'
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex gap-4">
+          <button
+            className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+              activeTab === 'recruit'
+                ? 'text-yellow-point'
+                : 'text-gray-700'
             }`}
-          ></span>
-        </button>
-        <button
-          className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-            activeTab === 'profile'
-              ? 'text-yellow-point'
-              : 'text-gray-700'
-          }`}
-          onClick={() => setActiveTab('profile')}
-        >
-          <span>대학생 프로필</span>
-          <span 
-            className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-              activeTab === 'profile' 
-                ? 'w-3/4' 
-                : 'w-0 group-hover:w-3/4'
+            onClick={() => setActiveTab('recruit')}
+          >
+            <span>기업 공고문</span>
+            <span 
+              className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                activeTab === 'recruit' 
+                  ? 'w-3/4' 
+                  : 'w-0 group-hover:w-3/4'
+              }`}
+            ></span>
+          </button>
+          <button
+            className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+              activeTab === 'profile'
+                ? 'text-yellow-point'
+                : 'text-gray-700'
             }`}
-          ></span>
-        </button>
+            onClick={() => setActiveTab('profile')}
+          >
+            <span>대학생 프로필</span>
+            <span 
+              className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                activeTab === 'profile' 
+                  ? 'w-3/4' 
+                  : 'w-0 group-hover:w-3/4'
+              }`}
+            ></span>
+          </button>
+        </div>
+        {activeTab === 'recruit' && (
+          <button
+            onClick={() => navigate('/recruit/upload')}
+            className="bg-yellow-point text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+          >
+            공고문 작성하기
+          </button>
+        )}
       </div>
       {activeTab === 'recruit' ? (
         <div className="max-w-4xl mx-auto">
