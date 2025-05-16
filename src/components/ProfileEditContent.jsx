@@ -1,6 +1,6 @@
 import React from 'react';
 import EditBox from '../components/editBox';
-import EditSelectBox from '../components/editSelectBox';
+import CategorySelectBox from './categorySelectBox';
 
 export default function ProfileEditContent() {
   return (
@@ -19,7 +19,28 @@ export default function ProfileEditContent() {
         </div>
         <EditBox title="자기소개" content="안녕하세요 어쩌구저쩌구" defaultValue="안녕하세요 어쩌구저쩌구" type="text" />
         <EditBox title="개인 웹사이트 URL" content="" defaultValue="안녕하세요 어쩌구저쩌구" type="text" />
-        <EditSelectBox title="관심 분야" content="" defaultValue="안녕하세요 어쩌구저쩌구" type="text" />
+        <label className="block text-black font-semibold text-3xl ml-4">관심분야</label>
+        <div className="grid grid-cols-3 gap-4 mx-4">
+        
+            <CategorySelectBox 
+              title=""
+              content=""
+              defaultValue=""
+              type="text"
+            />
+            <CategorySelectBox 
+              title=""
+              content=""
+              defaultValue=""
+              type="text"
+            />
+            <CategorySelectBox 
+              title=""
+              content=""
+              defaultValue=""
+              type="text"
+            />
+          </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CategorySelectBox from '../components/categorySelectBox';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -49,76 +50,76 @@ export default function RecruitUpload() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // 여기에 API 연동
+
     console.log('Form submitted:', formData);
     navigate('/recruit');
   };
 
   return (
-    <div className="pt-24 px-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8">공고문 작성</h1>
+    <div className="pt-24 px-6 w-1/2 max-w-5xl mx-auto mb-12">
+      <h1 className="text-3xl font-bold w-1/4 mx-auto">공고문 작성</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              공고문 제목
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              기업명
-            </label>
-            <input
-              type="text"
-              name="companyName"
-              value={formData.companyName}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
+            공고문 제목
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
+            기업명
+          </label>
+          <input
+            type="text"
+            name="companyName"
+            value={formData.companyName}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
+            급여
+          </label>
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <input
+                type="number"
+                name="minSalary"
+                value={formData.minSalary}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                required
+              />
+            </div>
+            <span className="text-gray-500">~</span>
+            <div className="flex-1">
+              <input
+                type="number"
+                name="maxSalary"
+                value={formData.maxSalary}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                required
+              />
+            </div>
+            <span className="text-gray-500 whitespace-nowrap">만원</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              최소 급여
-            </label>
-            <input
-              type="number"
-              name="minSalary"
-              value={formData.minSalary}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              최대 급여
-            </label>
-            <input
-              type="number"
-              name="maxSalary"
-              value={formData.maxSalary}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
               근무 형태
             </label>
             <select
@@ -129,12 +130,11 @@ export default function RecruitUpload() {
             >
               <option value="online">온라인</option>
               <option value="offline">오프라인</option>
-              <option value="hybrid">하이브리드</option>
             </select>
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-xl font-semibold text-gray-700">
                 지역
               </label>
               <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export default function RecruitUpload() {
                   onChange={handleChange}
                   className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded"
                 />
-                <label className="text-sm text-gray-600">지역 무관</label>
+                <label className="text-xl text-gray-600">지역 무관</label>
               </div>
             </div>
             <select
@@ -169,7 +169,7 @@ export default function RecruitUpload() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
             모집 기한
           </label>
           <input
@@ -191,7 +191,7 @@ export default function RecruitUpload() {
               onChange={handleChange}
               className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded"
             />
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-xl font-semibold text-gray-700">
               우대사항 유무
             </label>
           </div>
@@ -208,27 +208,21 @@ export default function RecruitUpload() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
             카테고리
           </label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-            required
-          >
-            <option value="">카테고리 선택</option>
-            <option value="디지털 콘텐츠 & 그래픽 디자인">디지털 콘텐츠 & 그래픽 디자인</option>
-            <option value="순수미술 & 일러스트">순수미술 & 일러스트</option>
-            <option value="사진 & 영상 & 영화">사진 & 영상 & 영화</option>
-            <option value="공예 & 제작">공예 & 제작</option>
-            <option value="음악 & 음향">음악 & 음향</option>
-          </select>
+       
+            <CategorySelectBox 
+              title=""
+              content=""
+              defaultValue=""
+              type="text"
+            />
+           
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
             공고문 내용
           </label>
           <textarea
@@ -242,7 +236,7 @@ export default function RecruitUpload() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
             파일 첨부
           </label>
           <input
@@ -254,7 +248,13 @@ export default function RecruitUpload() {
           />
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex gap-4 items-center justify-center">
+        <button
+            type="submit"
+            className="px-6 py-3 bg-yellow-main text-black rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+          >
+            업로드
+          </button>
           <button
             type="button"
             onClick={() => navigate('/recruit')}
@@ -262,12 +262,7 @@ export default function RecruitUpload() {
           >
             취소
           </button>
-          <button
-            type="submit"
-            className="px-6 py-3 bg-yellow-point text-white rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-          >
-            등록하기
-          </button>
+          
         </div>
       </form>
     </div>

@@ -1,11 +1,8 @@
 import React, { useState } from 'react';
-import editIco from '../assets/images/editIco.svg';
-import checkBtnIco from '../assets/images/checkBtnIco.svg';
 
-export default function EditSelectBox({title, content, defaultValues = ["옵션 1", "옵션 2", "옵션 3"], type}) {
-  const [values, setValues] = useState(defaultValues);
+export default function CategorySelectBox({title, content, defaultValue = "", type}) {
+  const [selectedValue, setSelectedValue] = useState(defaultValue);
   const [showModal, setShowModal] = useState(false);
-  const [currentEditIndex, setCurrentEditIndex] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedSubOption, setSelectedSubOption] = useState(null);
   const [selectedSubSubOption, setSelectedSubSubOption] = useState(null);
@@ -152,26 +149,6 @@ export default function EditSelectBox({title, content, defaultValues = ["옵션 
       ]},
   ];
 
-  const handleOptionClick = (index) => {
-    setCurrentEditIndex(index);
-    setSelectedOption(null);
-    setSelectedSubOption(null);
-    setSelectedSubSubOption(null);
-    setShowModal(true);
-  };
-
-  const handleSelect = (option) => {
-    if (currentEditIndex !== null) {
-      const newValues = [...values];
-      newValues[currentEditIndex] = option;
-      setValues(newValues);
-    }
-    setShowModal(false);
-    setSelectedOption(null);
-    setSelectedSubOption(null);
-    setSelectedSubSubOption(null);
-  };
-
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
     setSelectedSubOption(null);
@@ -200,10 +177,8 @@ export default function EditSelectBox({title, content, defaultValues = ["옵션 
 
   const handleSave = () => {
     const valueToSave = getValueToSave();
-    if (valueToSave && currentEditIndex !== null) {
-      const newValues = [...values];
-      newValues[currentEditIndex] = valueToSave;
-      setValues(newValues);
+    if (valueToSave) {
+      setSelectedValue(valueToSave);
     }
     setShowModal(false);
     setSelectedOption(null);
@@ -211,7 +186,7 @@ export default function EditSelectBox({title, content, defaultValues = ["옵션 
     setSelectedSubSubOption(null);
   };
 
-  // 옵션 버튼
+  // 옵션 버튼 스타일
   const getOptionButtonStyle = (option) => {
     if (selectedOption?.id === option.id) {
       return (selectedSubOption || selectedSubSubOption) ? 'bg-yellow-main text-black' : 'bg-yellow-point text-white';
@@ -219,7 +194,6 @@ export default function EditSelectBox({title, content, defaultValues = ["옵션 
     return 'hover:bg-gray-100 border border-grey-border';
   };
 
-  // 서브 옵션 버튼
   const getSubOptionButtonStyle = (subOption) => {
     if (selectedSubOption?.id === subOption.id) {
       return selectedSubSubOption ? 'bg-yellow-main text-black' : 'bg-yellow-point text-white';
@@ -227,7 +201,6 @@ export default function EditSelectBox({title, content, defaultValues = ["옵션 
     return 'hover:bg-gray-100 border border-grey-border';
   };
 
-  // 서브서브 옵션 버튼
   const getSubSubOptionButtonStyle = (subSubOption) => {
     if (selectedSubSubOption?.id === subSubOption.id) {
       return 'bg-yellow-point text-white';
@@ -236,31 +209,21 @@ export default function EditSelectBox({title, content, defaultValues = ["옵션 
   };
 
   return (
-    <div className="m-4 relative">
-      <div className="flex items-center">
-        <div className="text-black font-semibold text-3xl mb-2">{title}</div>
-        <div className="ml-3 text-sm text-gray-500">값을 클릭하면 수정할 수 있습니다!</div>
-      </div>
-      
-      <div className="grid grid-cols-3 gap-4">
-        {values.map((value, index) => (
-          <div 
-            key={index} 
-            className="flex items-center rounded-md bg-white border border-grey-border overflow-hidden cursor-pointer hover:bg-[#F0F0F0]"
-            onClick={() => handleOptionClick(index)}
-          >
-            <div className="flex-1 p-5 pl-7">
-              {value}
-            </div>
-          </div>
-        ))}
+    <div className="relative">
+      <div 
+        className="flex items-center rounded-md bg-white border border-grey-border overflow-hidden cursor-pointer hover:bg-[#F0F0F0]"
+        onClick={() => setShowModal(true)}
+      >
+        <div className="flex-1 p-5 pl-7">
+          {selectedValue || "카테고리 선택"}
+        </div>
       </div>
 
       {/* 선택 모달 */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-lg shadow-xl p-6 w-[50rem]">
-            <h3 className="text-xl font-semibold mb-4">값 선택</h3>
+            <h3 className="text-xl font-semibold mb-4">카테고리 선택</h3>
             <div className="flex space-x-8">
               {/* 첫 번째 열 - 기본 옵션 */}
               <div className="flex flex-col w-1/3">
