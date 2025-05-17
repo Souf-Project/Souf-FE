@@ -29,7 +29,7 @@ export default function RecruitDetail() {
         onClick={handleGoBack}
       >
         <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-2" />
-        <span>돌아가기</span>
+        <span>목록으로 돌아가기</span>
       </button>
 
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">

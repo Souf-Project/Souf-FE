@@ -14,6 +14,8 @@ import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
 import PostEdit from "../pages/postEdit";
 import PostUpload from "../pages/postUpload";
+import RecruitUpload from "../pages/recruitUpload";
+import Chat from "../pages/chat";
 
 function AppRouter() {
   return (
@@ -37,6 +39,8 @@ function AppRouter() {
           />
           <Route path="/postEdit" element={<PostEdit />} />
           <Route path="/postUpload" element={<PostUpload />} />
+          <Route path="/recruit/upload" element={<RecruitUpload />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       </main>
       <Footer />
