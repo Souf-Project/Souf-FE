@@ -166,7 +166,7 @@ export default function Recruit() {
       </div>
 
       {activeTab === "recruit" ? (
-        <div className="max-w-5xl mx-auto">
+        <div className="w-5xl mx-auto">
           {filteredRecruits.length > 0 ? (
             filteredRecruits.map((recruit) => (
               <RecruitBlock

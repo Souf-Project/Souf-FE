@@ -13,6 +13,7 @@ import StudentProfileList from "../pages/studentProfileList";
 import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
 import RecruitUpload from "../pages/recruitUpload";
+import Chat from "../pages/chat";
 
 function AppRouter() {
   return (
@@ -35,6 +36,7 @@ function AppRouter() {
             element={<PostDetail />}
           />
           <Route path="/recruit/upload" element={<RecruitUpload />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       </main>
       <Footer />
