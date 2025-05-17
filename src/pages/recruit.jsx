@@ -141,27 +141,32 @@ export default function Recruit() {
           </button>
         </div>
         <div className="flex items-center gap-4">
-          {activeTab === "recruit" && (
-            <>
-              <SearchBar
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onSubmit={handleSearch}
-                placeholder="검색어를 입력하세요"
-              />
-              <button
-                onClick={() => navigate('/recruit/upload')}
-                className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-              >
-                공고문 작성하기
-              </button>
-            </>
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onSubmit={handleSearch}
+            placeholder="검색어를 입력하세요"
+          />
+          {activeTab === "recruit" ? (
+            <button
+              onClick={() => navigate('/recruit/upload')}
+              className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+            >
+              공고문 작성하기
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate('/profile/upload')}
+              className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+            >
+              피드 작성하기
+            </button>
           )}
         </div>
       </div>
 
       {activeTab === "recruit" ? (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {filteredRecruits.length > 0 ? (
             filteredRecruits.map((recruit) => (
               <RecruitBlock
