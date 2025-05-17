@@ -12,12 +12,14 @@ import PwdFind from "../pages/pwdFind";
 import StudentProfileList from "../pages/studentProfileList";
 import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
+import PostEdit from "../pages/postEdit";
+import PostUpload from "../pages/postUpload";
 
 function AppRouter() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow w-full">
+      <main className="flex-grow w-full mt-16">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -33,6 +35,8 @@ function AppRouter() {
             path="/profileDetail/:id/post/:worksId"
             element={<PostDetail />}
           />
+          <Route path="/postEdit" element={<PostEdit />} />
+          <Route path="/postUpload" element={<PostUpload />} />
         </Routes>
       </main>
       <Footer />
