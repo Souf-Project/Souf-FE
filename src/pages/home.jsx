@@ -66,6 +66,8 @@ export default function Home() {
         }
     ];
 
+    
+
     const handleSearch = (e) => {
         e.preventDefault();
         // 검색 기능 구현
@@ -167,6 +169,29 @@ export default function Home() {
                             </div>
                         ))}
                     </div>
+                </div>
+            </div>
+            {/* 인기 피드 섹션 */}
+            <div className="relative">
+                
+                <div className="relative max-w-6xl mx-auto px-6 py-16">
+                    <h2 className="text-2xl font-bold mb-8">인기있는 피드 구경하러 가기</h2>
+                    {/* <div className="grid grid-cols-3 gap-6">
+                        {userData.map((recruit) => (
+                            <div
+                                key={recruit.id}
+                                className="bg-white p-6 rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer"
+                                onClick={() => navigate(`/recruitDetails/${recruit.id}`)}
+                            >
+                                <h3 className="text-xl font-bold">{recruit.title}</h3>
+                                <p className="text-gray-600 mb-4">{recruit.categoryMain}</p>
+                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                  
+                                
+                                </div>
+                            </div>
+                        ))}
+                    </div> */}
                 </div>
             </div>
         </div>

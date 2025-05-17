@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RecruitBlock from "../components/recruitBlock";
 import StudentProfileList from "./studentProfileList";
+import SearchBar from "../components/SearchBar";
 
 export default function Recruit() {
   const location = useLocation();
@@ -9,6 +10,7 @@ export default function Recruit() {
   const [selectedCategory, setSelectedCategory] = useState("전체");
   const [activeTab, setActiveTab] = useState("recruit");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
@@ -101,6 +103,12 @@ export default function Recruit() {
     }
   }, [categoryParam]);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // 검색 기능 구현
+    console.log('Search query:', searchQuery);
+  };
+
   return (
     <div className="pt-24 px-6">
       <div className="flex justify-between items-center mb-8">
@@ -132,14 +140,24 @@ export default function Recruit() {
             ></span>
           </button>
         </div>
-        {activeTab === "recruit" && (
-          <button
-            onClick={() => navigate('/recruit/upload')}
-            className="bg-yellow-point text-white px-6 py-3 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-          >
-            공고문 작성하기
-          </button>
-        )}
+        <div className="flex items-center gap-4">
+          {activeTab === "recruit" && (
+            <>
+              <SearchBar
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onSubmit={handleSearch}
+                placeholder="검색어를 입력하세요"
+              />
+              <button
+                onClick={() => navigate('/recruit/upload')}
+                className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+              >
+                공고문 작성하기
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {activeTab === "recruit" ? (

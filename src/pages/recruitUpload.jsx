@@ -126,7 +126,7 @@ export default function RecruitUpload() {
               name="workType"
               value={formData.workType}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white"
             >
               <option value="online">온라인</option>
               <option value="offline">오프라인</option>
@@ -143,7 +143,7 @@ export default function RecruitUpload() {
                   name="isLocationIrrelevant"
                   checked={formData.isLocationIrrelevant}
                   onChange={handleChange}
-                  className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded"
+                  className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded "
                 />
                 <label className="text-xl text-gray-600">지역 무관</label>
               </div>
@@ -153,7 +153,7 @@ export default function RecruitUpload() {
               value={formData.location}
               onChange={handleChange}
               disabled={formData.isLocationIrrelevant}
-              className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
+              className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
                 formData.isLocationIrrelevant ? 'bg-gray-100' : ''
               }`}
               required={!formData.isLocationIrrelevant}
@@ -230,7 +230,7 @@ export default function RecruitUpload() {
             value={formData.content}
             onChange={handleChange}
             rows="6"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white"
             required
           />
         </div>
