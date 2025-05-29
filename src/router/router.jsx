@@ -12,6 +12,8 @@ import PwdFind from "../pages/pwdFind";
 import StudentProfileList from "../pages/studentProfileList";
 import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
+import PostEdit from "../pages/postEdit";
+import PostUpload from "../pages/postUpload";
 import RecruitUpload from "../pages/recruitUpload";
 import Chat from "../pages/chat";
 
@@ -19,7 +21,7 @@ function AppRouter() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow w-full">
+      <main className="flex-grow w-full mt-16">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -35,6 +37,8 @@ function AppRouter() {
             path="/profileDetail/:id/post/:worksId"
             element={<PostDetail />}
           />
+          <Route path="/postEdit" element={<PostEdit />} />
+          <Route path="/postUpload" element={<PostUpload />} />
           <Route path="/recruit/upload" element={<RecruitUpload />} />
           <Route path="/chat" element={<Chat />} />
         </Routes>
