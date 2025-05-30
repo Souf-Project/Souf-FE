@@ -134,8 +134,8 @@ export default function Recruit() {
   }
 
   return (
-    <div className="pt-12 px-6">
-      <div className="flex justify-between items-center mb-8">
+    <div className="pt-12 px-6 w-5/6">
+      <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           {activeTab === "recruit" ? (
             <button
