@@ -18,7 +18,7 @@ export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
                     onChange={onChange}
                     onKeyPress={handleKeyPress}
                     placeholder={placeholder}
-                    className="w-full pl-3  py-1 text-lg rounded-[30px] shadow-[0_4px_4px_rgba(0,0,0,0.25)] focus-none"
+                    className="w-full pl-3  py-1 text-lg rounded-[30px] border border-gray-200 shadow-md focus-none"
                 />
                 <button
                     type="submit"

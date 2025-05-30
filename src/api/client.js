@@ -31,7 +31,6 @@ client.interceptors.response.use(
             // 토큰이 만료되었거나 유효하지 않은 경우
             localStorage.removeItem('token');
             localStorage.removeItem('isLogin');
-            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

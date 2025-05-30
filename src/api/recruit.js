@@ -22,7 +22,6 @@ export const getRecruit = async (params = {}) => {
             }
         });
         
-        // 응답 데이터 구조 확인 및 처리
         if (response.data && response.data.result) {
             return response.data.result;
         } else if (response.data && Array.isArray(response.data)) {
