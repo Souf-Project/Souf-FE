@@ -17,7 +17,8 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -55,8 +56,7 @@ h1 {
 
 @font-face {
   font-family: "Pretendard";
-  src: url("/src/assets/fonts/PretendardVariable.woff2") format("woff2"),
-       url("/src/assets/fonts/PretendardVariable.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
+  src: url("src/assets/fonts/PretendardVariable.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
 }
