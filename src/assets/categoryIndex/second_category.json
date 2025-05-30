@@ -1,0 +1,93 @@
+{
+"second_category": [
+	{
+		"second_category_id" : 1,
+		"name" : "일러스트·캐릭터 디자인",
+		"first_category_id" : 1
+	},
+	{
+		"second_category_id" : 2,
+		"name" : "글자 디자인",
+		"first_category_id" : 1
+	},
+	{
+		"second_category_id" : 3,
+		"name" : "순수 미술",
+		"first_category_id" : 1
+	},
+	{
+		"second_category_id" : 4,
+		"name" : "시제품 디자인",
+		"first_category_id" : 2
+	},
+	{
+		"second_category_id" : 5,
+		"name" : "산업·제품 디자인",
+		"first_category_id" : 2
+	},
+	{
+		"second_category_id" : 6,
+		"name" : "패션·텍스타일 디자인",
+		"first_category_id" : 2
+	},
+	{
+		"second_category_id" : 7,
+		"name" : "조형 예술",
+		"first_category_id" : 2
+	},
+	{
+		"second_category_id" : 8,
+		"name" : "음향",
+		"first_category_id" : 3
+	},
+	{
+		"second_category_id" : 9,
+		"name" : "사진",
+		"first_category_id" : 4
+	},
+	{
+		"second_category_id" : 10,
+		"name" : "영상",
+		"first_category_id" : 4
+	},
+	{
+		"second_category_id" : 11,
+		"name" : "영화",
+		"first_category_id" : 4
+	},
+	{
+		"second_category_id" : 12,
+		"name" : "브랜드 디자인",
+		"first_category_id" : 5
+	},
+	{
+		"second_category_id" : 13,
+		"name" : "산업 디자인",
+		"first_category_id" : 5
+	},
+	{
+		"second_category_id" : 14,
+		"name" : "웹·모바일 디자인",
+		"first_category_id" : 5
+	},
+	{
+		"second_category_id" : 15,
+		"name" : "마케팅 디자인",
+		"first_category_id" : 5
+	},
+	{
+		"second_category_id" : 16,
+		"name" : "컴퓨터 그래픽·모션 그래픽",
+		"first_category_id" : 5
+	},
+	{
+		"second_category_id" : 17,
+		"name" : "게임 디자인",
+		"first_category_id" : 5
+	},
+	{
+		"second_category_id" : 18,
+		"name" : "애니메이션",
+		"first_category_id" : 5
+	}
+]}
