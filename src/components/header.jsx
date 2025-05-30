@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ChatIcon from "../assets/images/chatIco.svg";
+
 import { UserStore } from "../store/userStore";
 
 export default function Header() {
@@ -68,9 +69,8 @@ export default function Header() {
     setShowUserMenu(false);
   };
 
-  const handleNavigationCategory = (category) => {
-    const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${encoded}`);
+  const handleNavigationCategory = (categoryId) => {
+    navigate(`/recruit?category=${categoryId}`);
   };
 
   // 로그인 상태 전환 함수 (임시)
@@ -91,10 +91,6 @@ export default function Header() {
     "사진 & 영상 & 영화",
     "디지털 콘텐츠 & 그래픽 디자인",
   ];
-
-  useEffect(() => {
-    console.log("회원이름", username);
-  }, []);
 
   const UserTypeLabel = () => {
     if (roleType === "MEMBER") {

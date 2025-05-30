@@ -1,8 +1,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import RecruitBlock from "../components/recruitBlock";
 import StudentProfileList from "./studentProfileList";
 import SearchBar from "../components/SearchBar";
+import SearchDropdown from "../components/SearchDropdown";
+import { getRecruit } from "../api/recruit";
+import Feed from "../components/feed";
 
 export default function Recruit() {
   const location = useLocation();
@@ -11,142 +14,159 @@ export default function Recruit() {
   const [activeTab, setActiveTab] = useState("recruit");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("title");
+  const [allRecruits, setAllRecruits] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // 피드 데이터 (실제로는 API에서 가져와야 함)
+  const feedData = [
+    {
+      id: "1",
+      topic: "봄 프로젝트 1회차",
+      content: "오늘은 봄날의 벚꽃길을 그려보았습니다. 부드러운 색감과 따뜻한 햇살을 표현하기 위해 수채화 기법을 사용했습니다. 특히 벚꽃의 섬세한 질감과 바람에 흩날리는 꽃잎의 움직임을 중점적으로 표현했습니다.",
+      tags: ["봄", "벚꽃", "수채화", "자연"],
+      originalFileNames: ["https://placehold.co/600x400?text=Work1", "https://placehold.co/600x400?text=Work1"]
+    },
+    {
+      id: "2",
+      topic: "도시의 밤 프로젝트",
+      content: "비 내리는 도시의 밤을 네온사인과 함께 표현한 디지털 아트입니다. 반사되는 빛과 물의 효과를 중점적으로 표현했으며, 특히 빗물에 비친 네온사인의 반사 효과를 디테일하게 작업했습니다.",
+      tags: ["도시", "밤", "비", "네온사인", "디지털아트"],
+      originalFileNames: ["https://placehold.co/600x400?text=Work2", "https://placehold.co/600x400?text=Work2"]
+    },
+    {
+      id: "3",
+      topic: "미래 도시 컨셉아트",
+      content: "미래의 도시를 상상하며 그린 디지털 아트입니다. 하이테크 건물들과 공중 자동차들이 특징이며, 특히 빛나는 건물 외벽과 반투명한 구조물들을 통해 미래지향적인 분위기를 표현했습니다.",
+      tags: ["미래", "도시", "디지털아트", "컨셉아트"],
+      originalFileNames: ["https://placehold.co/600x400?text=Work3", "https://placehold.co/600x400?text=Work3"]
+    },
+    {
+      id: "4",
+      topic: "바다 일몰 스케치",
+      content: "바다 위로 지는 해를 그린 유화입니다. 오렌지색과 퍼플 계열의 색감이 조화롭게 어우러지도록 작업했으며, 특히 바다의 반사광과 하늘의 그라데이션을 자연스럽게 표현했습니다.",
+      tags: ["바다", "일몰", "유화", "자연"],
+      originalFileNames: ["https://placehold.co/600x400?text=Work4", "https://placehold.co/600x400?text=Work4"]
+    },
+    {
+      id: "5",
+      topic: "가을 풍경 프로젝트",
+      content: "가을과 강아지와 주인과 풍경과 도로와 차에 대한 일러스트입니다. 따뜻한 색감을 살린 느낌으로 작업했으며, 특히 낙엽이 떨어지는 모습과 강아지의 털 질감을 섬세하게 표현했습니다.",
+      tags: ["가을", "강아지", "일러스트", "풍경"],
+      originalFileNames: ["https://placehold.co/600x400?text=Work5", "https://placehold.co/600x400?text=Work5"]
+    }
+  ];
 
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
 
-  const sampleRecruits = [
-    {
-      id: 1,
-      title: "로고 디자인 프로젝트",
-      categoryMain: "디지털 콘텐츠 & 그래픽 디자인",
-      categoryMiddle: "브랜드 디자인",
-      categorySmall: "로고 디자인",
-      content: "신규 사업을 위한 로고 디자인을 의뢰합니다. 미니멀하고 현대적인 디자인을 선호하며, 기업의 가치를 잘 표현할 수 있는 디자인을 찾고 있습니다.",
-      applicants: 12,
-      minPrice: 300000,
-      maxPrice: 500000,
-      preferMajor: true,
-      location: "서울",
-      deadline: "2025-05-30"
-    },
-    {
-      id: 2,
-      title: "웹사이트 일러스트레이션 작업",
-      categoryMain: "순수미술 & 일러스트",
-      categoryMiddle: "일러스트·캐릭터 디자인",
-      categorySmall: "2D 캐릭터",
-      content: "회사 웹사이트 리뉴얼을 위한 일러스트레이션 작업을 의뢰합니다. 약 5-7개의 일러스트가 필요하며, 각 페이지의 콘셉트에 맞는 작업물이 필요합니다.",
-      applicants: 8,
-      minPrice: 500000,
-      maxPrice: 1000000,
-      preferMajor: false,
-      location: "지역무관",
-      deadline: "2023-12-15"
-    },
-    {
-      id: 3,
-      title: "제품 소개 영상 제작",
-      categoryMain: "사진 & 영상 & 영화",
-      categoryMiddle: "영상",
-      categorySmall: "광고·홍보 영상",
-      content: "신제품 출시에 맞춰 30초 분량의 소개 영상이 필요합니다. 제품의 주요 기능과 특징을 효과적으로 보여줄 수 있는 영상을 원합니다.",
-      applicants: 5,
-      minPrice: 1000000,
-      maxPrice: 2000000,
-      preferMajor: true,
-      location: "원격",
-      deadline: "2025-11-30"
-    },
-    {
-      id: 4,
-      title: "도자기 작품 의뢰",
-      categoryMain: "공예 & 제작",
-      categoryMiddle: "조형 예술",
-      categorySmall: "도예·도자기",
-      content:
-        "카페에서 사용할 독특한 디자인의 머그컵과 접시 세트를 제작해주실 분을 찾고 있습니다. 카페의 분위기에 어울리는 자연스럽고 따뜻한 느낌의 디자인을 원합니다.",
-      applicants: 3,
-      minPrice: 800000,
-      maxPrice: 1500000,
-      preferMajor: true,
-      location: "부산",
-      deadline: "2025-04-15",
-    },
-    {
-      id: 5,
-      title: "음악 페스티벌 테마곡 작곡",
-      categoryMain: "음악 & 음향",
-      categoryMiddle: "음향",
-      categorySmall: "기타 음향·음악",
-      content:
-        "지역 음악 페스티벌의 테마곡을 작곡해주실 분을 찾습니다. 밝고 활기찬 분위기의 곡으로, 페스티벌의 정체성을 잘 표현할 수 있는 작품을 원합니다.",
-      applicants: 7,
-      minPrice: 700000,
-      maxPrice: 1200000,
-      preferMajor: false,
-      location: "대전",
-      deadline: "2025-03-20",
-    },
-  ];
+  // fetchRecruits 함수를 useCallback으로 메모이제이션
+  const fetchRecruits = useCallback(async (categoryParams = {}) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const recruits = await getRecruit({
+        ...categoryParams,
+        page: 0,
+        size: 10,
+        sort: "createdAt,desc"
+      });
+      setAllRecruits(recruits);
+      setFilteredRecruits(recruits);
+    } catch (err) {
+      setError('공고 목록을 불러오는데 실패했습니다.');
+      console.error('Error fetching recruits:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRecruits();
+  }, [fetchRecruits]);
 
   useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(decodeURIComponent(categoryParam));
-      const filtered = sampleRecruits.filter(
-        (recruit) => recruit.categoryMain === decodeURIComponent(categoryParam)
-      );
-      setFilteredRecruits(filtered);
+      // 카테고리 파라미터에 따라 API 호출
+      const [firstCategory, secondCategory, thirdCategory] = categoryParam.split(',').map(Number);
+      fetchRecruits({
+        firstCategory: firstCategory || 0,
+        secondCategory: secondCategory || 0,
+        thirdCategory: thirdCategory || 0
+      });
     } else {
       setSelectedCategory("전체");
-      setFilteredRecruits(sampleRecruits);
+      fetchRecruits();
     }
-  }, [categoryParam]);
+  }, [categoryParam, fetchRecruits]);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    // 검색 기능 구현
-    console.log('Search query:', searchQuery);
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [firstCategory, secondCategory, thirdCategory] = selectedCategory.split(',').map(Number);
+      const recruits = await getRecruit({
+        firstCategory: firstCategory || 0,
+        secondCategory: secondCategory || 0,
+        thirdCategory: thirdCategory || 0,
+        page: 0,
+        size: 10,
+        sort: "createdAt,desc"
+      });
+
+      // 검색어로 필터링
+      let filtered = recruits;
+      if (searchQuery.trim()) {
+        filtered = filtered.filter(recruit => {
+          if (searchType === "title") {
+            return recruit.title.toLowerCase().includes(searchQuery.toLowerCase());
+          } else if (searchType === "content") {
+            return recruit.content.toLowerCase().includes(searchQuery.toLowerCase());
+          }
+          return true;
+        });
+      }
+
+      setFilteredRecruits(filtered);
+    } catch (err) {
+      setError('검색 중 오류가 발생했습니다.');
+      console.error('Error searching recruits:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleSearchTypeChange = (type) => {
+    setSearchType(type);
+    if (searchQuery.trim()) {
+      handleSearch({ preventDefault: () => {} });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-point"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="pt-24 px-6">
+    <div className="pt-12 px-6">
       <div className="flex justify-between items-center mb-8">
-        <div className="flex gap-4">
-          <button
-            className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-              activeTab === "recruit" ? "text-yellow-point" : "text-gray-700"
-            }`}
-            onClick={() => setActiveTab("recruit")}
-          >
-            <span>기업 공고문</span>
-            <span
-              className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                activeTab === "recruit" ? "w-3/4" : "w-0 group-hover:w-3/4"
-              }`}
-            ></span>
-          </button>
-          <button
-            className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-              activeTab === "profile" ? "text-yellow-point" : "text-gray-700"
-            }`}
-            onClick={() => setActiveTab("profile")}
-          >
-            <span>대학생 프로필</span>
-            <span
-              className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                activeTab === "profile" ? "w-3/4" : "w-0 group-hover:w-3/4"
-              }`}
-            ></span>
-          </button>
-        </div>
         <div className="flex items-center gap-4">
-          <SearchBar
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onSubmit={handleSearch}
-            placeholder="검색어를 입력하세요"
-          />
           {activeTab === "recruit" ? (
             <button
               onClick={() => navigate('/recruit/upload')}
@@ -154,14 +174,64 @@ export default function Recruit() {
             >
               공고문 작성하기
             </button>
-          ) : (
+          ) : activeTab === "profile" ? (
             <button
               onClick={() => navigate('/profile/upload')}
               className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
             >
               피드 작성하기
             </button>
-          )}
+          ) : null}
+          <div className="flex">
+            <button
+              className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+                activeTab === "recruit" ? "text-yellow-point" : "text-gray-700"
+              }`}
+              onClick={() => setActiveTab("recruit")}
+            >
+              <span>기업 공고문</span>
+              <span
+                className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                  activeTab === "recruit" ? "w-3/4" : "w-0 group-hover:w-3/4"
+                }`}
+              ></span>
+            </button>
+            <button
+              className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+                activeTab === "profile" ? "text-yellow-point" : "text-gray-700"
+              }`}
+              onClick={() => setActiveTab("profile")}
+            >
+              <span>대학생 프로필</span>
+              <span
+                className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                  activeTab === "profile" ? "w-3/4" : "w-0 group-hover:w-3/4"
+                }`}
+              ></span>
+            </button>
+            <button
+              className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+                activeTab === "feed" ? "text-yellow-point" : "text-gray-700"
+              }`}
+              onClick={() => setActiveTab("feed")}
+            >
+              <span>대학생 피드</span>
+              <span
+                className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                  activeTab === "feed" ? "w-3/4" : "w-0 group-hover:w-3/4"
+                }`}
+              ></span>
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <SearchDropdown onSelect={handleSearchTypeChange} />
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onSubmit={handleSearch}
+            placeholder="검색어를 입력하세요"
+          />
         </div>
       </div>
 
@@ -191,9 +261,17 @@ export default function Recruit() {
             </div>
           )}
         </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-sm p-6 max-w-5xl mx-auto">
+      ) : activeTab === "profile" ? (
+        <div className="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto">
           <StudentProfileList />
+        </div>
+      ) : (
+        <div className="max-w-4xl mx-auto">
+          {feedData.map((post) => (
+            <div key={post.id} className="mb-8">
+              <Feed worksData={post} />
+            </div>
+          ))}
         </div>
       )}
     </div>
