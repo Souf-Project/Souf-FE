@@ -1,0 +1,373 @@
+{
+"third_category": [
+	{
+		"third_category_id" : 1,
+		"name" : "일러스트",
+		"second_category_id" : 1
+	},
+	{
+		"third_category_id" : 2,
+		"name" : "캐리커쳐",
+		"second_category_id" : 1
+	},
+	{
+		"third_category_id" : 3,
+		"name" : "웹툰·콘티",
+		"second_category_id" : 1
+	},
+	{
+		"third_category_id" : 4,
+		"name" : "2D 캐릭터",
+		"second_category_id" : 1
+	},
+	{
+		"third_category_id" : 5,
+		"name" : "이모티콘",
+		"second_category_id" : 1
+	},
+	{
+		"third_category_id" : 6,
+		"name" : "폰트",
+		"second_category_id" : 2
+	},
+	{
+		"third_category_id" : 7,
+		"name" : "사인·직인",
+		"second_category_id" : 2
+	},
+	{
+		"third_category_id" : 8,
+		"name" : "캘리그라피",
+		"second_category_id" : 2
+	},
+	{
+		"third_category_id" : 9,
+		"name" : "타이포그라피",
+		"second_category_id" : 2
+	},
+	{
+		"third_category_id" : 10,
+		"name" : "서양화",
+		"second_category_id" : 3
+	},
+	{
+		"third_category_id" : 11,
+		"name" : "동양화",
+		"second_category_id" : 3
+	},
+	{
+		"third_category_id" : 12,
+		"name" : "서예",
+		"second_category_id" : 3
+	},
+	{
+		"third_category_id" : 13,
+		"name" : "시제품·3D 프린팅",
+		"second_category_id" : 4
+	},
+	{
+		"third_category_id" : 14,
+		"name" : "제품·기구 설계",
+		"second_category_id" : 5
+	},
+	{
+		"third_category_id" : 15,
+		"name" : "제품 도면·스케치",
+		"second_category_id" : 5
+	},
+	{
+		"third_category_id" : 16,
+		"name" : "도면 제작·수정",
+		"second_category_id" : 5
+	},
+	{
+		"third_category_id" : 17,
+		"name" : "인테리어 컨설팅",
+		"second_category_id" : 5
+	},
+	{
+		"third_category_id" : 18,
+		"name" : "전시·무대 디자인",
+		"second_category_id" : 5
+	},
+	{
+		"third_category_id" : 19,
+		"name" : "간판·시공",
+		"second_category_id" : 5
+	},
+	{
+		"third_category_id" : 20,
+		"name" : "의류·쥬얼리 디자인",
+		"second_category_id" : 6
+	},
+	{
+		"third_category_id" : 21,
+		"name" : "텍스타일 디자인",
+		"second_category_id" : 6
+	},
+	{
+		"third_category_id" : 22,
+		"name" : "3D 도식화",
+		"second_category_id" : 6
+	},
+	{
+		"third_category_id" : 23,
+		"name" : "도예·도자기",
+		"second_category_id" : 7
+	},
+	{
+		"third_category_id" : 24,
+		"name" : "조형",
+		"second_category_id" : 7
+	},
+	{
+		"third_category_id" : 25,
+		"name" : "유리·금속·목 공예",
+		"second_category_id" : 7
+	},
+	{
+		"third_category_id" : 26,
+		"name" : "성우",
+		"second_category_id" : 8
+	},
+	{
+		"third_category_id" : 27,
+		"name" : "음악·음원·작곡·편곡",
+		"second_category_id" : 8
+	},
+	{
+		"third_category_id" : 28,
+		"name" : "오디오 엔지니어링",
+		"second_category_id" : 8
+	},
+	{
+		"third_category_id" : 29,
+		"name" : "기타 음향·음악",
+		"second_category_id" : 8
+	},
+	{
+		"third_category_id" : 30,
+		"name" : "제품·홍보 사진",
+		"second_category_id" : 9
+	},
+	{
+		"third_category_id" : 31,
+		"name" : "개인·프로필 사진",
+		"second_category_id" : 9
+	},
+	{
+		"third_category_id" : 32,
+		"name" : "이벤트 사진",
+		"second_category_id" : 9
+	},
+	{
+		"third_category_id" : 33,
+		"name" : "사진 보정(포토샵)",
+		"second_category_id" : 9
+	},
+	{
+		"third_category_id" : 34,
+		"name" : "광고·홍보 영상",
+		"second_category_id" : 10
+	},
+	{
+		"third_category_id" : 35,
+		"name" : "숏폼 영상",
+		"second_category_id" : 10
+	},
+	{
+		"third_category_id" : 36,
+		"name" : "영상 편집",
+		"second_category_id" : 10
+	},
+	{
+		"third_category_id" : 37,
+		"name" : "드론 촬영",
+		"second_category_id" : 10
+	},
+	{
+		"third_category_id" : 38,
+		"name" : "영상 후반 작업",
+		"second_category_id" : 10
+	},
+	{
+		"third_category_id" : 39,
+		"name" : "감독",
+		"second_category_id" : 11
+	},
+	{
+		"third_category_id" : 40,
+		"name" : "배우",
+		"second_category_id" : 11
+	},
+	{
+		"third_category_id" : 41,
+		"name" : "조명",
+		"second_category_id" : 11
+	},
+	{
+		"third_category_id" : 42,
+		"name" : "로고 디자인",
+		"second_category_id" : 12
+	},
+	{
+		"third_category_id" : 43,
+		"name" : "브랜드 디자인·가이드",
+		"second_category_id" : 12
+	},
+	{
+		"third_category_id" : 44,
+		"name" : "명함",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 45,
+		"name" : "전단지·포스터·인쇄물",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 46,
+		"name" : "현수막·배너",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 47,
+		"name" : "메뉴판",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 48,
+		"name" : "홍보물 인쇄·출력]",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 49,
+		"name" : "스티커·봉투·초대장",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 50,
+		"name" : "패키지·커버",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 51,
+		"name" : "책표지·내지",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 52,
+		"name" : "앨범 커버",
+		"second_category_id" : 13
+	},
+	{
+		"third_category_id" : 53,
+		"name" : "웹 UI·UX",
+		"second_category_id" : 14
+	},
+	{
+		"third_category_id" : 54,
+		"name" : "앱\/모바일 UI·UX",
+		"second_category_id" : 14
+	},
+	{
+		"third_category_id" : 55,
+		"name" : "상세페이지",
+		"second_category_id" : 15
+	},
+	{
+		"third_category_id" : 56,
+		"name" : "SNS·썸네일 디자인",
+		"second_category_id" : 15
+	},
+	{
+		"third_category_id" : 57,
+		"name" : "채널아트 디자인",
+		"second_category_id" : 15
+	},
+	{
+		"third_category_id" : 58,
+		"name" : "블로그·카페 디자인",
+		"second_category_id" : 15
+	},
+	{
+		"third_category_id" : 59,
+		"name" : "모션그래픽",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 60,
+		"name" : "인포그래픽",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 61,
+		"name" : "미디어·아트",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 62,
+		"name" : "인트로·로고",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 63,
+		"name" : "AR·VR·XR",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 64,
+		"name" : "방송용 아바타",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 65,
+		"name" : "3D 캐릭터·피규어",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 66,
+		"name" : "3D 제품 모델링·렌더링",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 67,
+		"name" : "3D 공간 모델링",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 68,
+		"name" : "3D 의류·쥬얼리",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 69,
+		"name" : "NFT 아트",
+		"second_category_id" : 16
+	},
+	{
+		"third_category_id" : 70,
+		"name" : "VR·AR 게임",
+		"second_category_id" : 17
+	},
+	{
+		"third_category_id" : 71,
+		"name" : "메타버스",
+		"second_category_id" : 17
+	},
+	{
+		"third_category_id" : 72,
+		"name" : "3D 게임용 소스",
+		"second_category_id" : 17
+	},
+	{
+		"third_category_id" : 73,
+		"name" : "2D 애니메이션",
+		"second_category_id" : 18
+	},
+	{
+		"third_category_id" : 74,
+		"name" : "3D 애니메이션",
+		"second_category_id" : 18
+	}
+]}
