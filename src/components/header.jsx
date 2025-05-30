@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect} from 'react';
 import ChatIcon from '../assets/images/chatIco.svg';
+import firstCategoryData from '../assets/categoryIndex/first_category.json';
 
 
 export default function Header() {
@@ -63,9 +64,8 @@ useEffect(() => {
     setShowUserMenu(false); 
   };
 
-  const handleNavigationCategory = (category) => {
-    const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${encoded}`);
+  const handleNavigationCategory = (categoryId) => {
+    navigate(`/recruit?category=${categoryId}`);
   };
   
   // 로그인 상태 전환 함수 (임시)
@@ -79,13 +79,7 @@ useEffect(() => {
     setShowUserMenu(!showUserMenu);
   };
 
-  const categories = [
-    "순수미술 & 일러스트",
-    "공예 & 제작",
-    "음악 & 음향",
-    "사진 & 영상 & 영화",
-    "디지털 콘텐츠 & 그래픽 디자인"
-  ];
+  const categories = firstCategoryData.first_category;
   
   const UserTypeLabel = () => {
     if (userType === 'student') {
@@ -112,22 +106,21 @@ useEffect(() => {
         <ul className="flex items-center gap-x-8 font-bold text-xl text-black">
           {categories.map((category) => (
             <li
-            key={category}
-            className={`px-2 cursor-pointer  transition-colors duration-200 relative group ${
-              activeCategory === category ? "text-yellow-point" : ""
-            }`}
-            onClick={() => handleNavigationCategory(category)}
-          >
-            <span>{category}</span>
-            <span 
-              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                activeCategory === category 
-                  ? 'w-full' 
-                  : 'w-0 group-hover:w-full origin-left'
+              key={category.first_category_id}
+              className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+                activeCategory === category.first_category_id.toString() ? "text-yellow-point" : ""
               }`}
-            ></span>
-          </li>
-          
+              onClick={() => handleNavigationCategory(category.first_category_id)}
+            >
+              <span>{category.name}</span>
+              <span 
+                className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                  activeCategory === category.first_category_id.toString() 
+                    ? 'w-full' 
+                    : 'w-0 group-hover:w-full origin-left'
+                }`}
+              ></span>
+            </li>
           ))}
         </ul>
 
