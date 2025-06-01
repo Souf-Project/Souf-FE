@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NAprofileIco from '../assets/images/NAprofileIco.svg'
-import NAeditInfoIco from '../assets/images/NAeditInfoIco.svg'
 import NAappliIco from '../assets/images/NAappliIco.svg'
 
 import AprofileIco from '../assets/images/AprofileIco.svg'
-import AeditInfoIco from '../assets/images/AeditInfoIco.svg'
 import AappliIco from '../assets/images/AappliIco.svg'
 
 // 분리된 컴포넌트 import

@@ -1,18 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EditBox from '../components/editBox';
 import CategorySelectBox from './categorySelectBox';
+import { getProfile, putProfileEdit } from '../api/mypage';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: "김시은",
-    nickname: "김시은",
-    email: "Souf@gmail.com",
-    password: "******",
-    introduction: "안녕하세요 어쩌구저쩌구",
-    website: "안녕하세요 어쩌구저쩌구",
-    categories: ["", "", ""]
+    id: 0,
+    email: "",
+    username: "",
+    nickname: "",
+    intro: "",
+    personalUrl: "",
+    role: "",
+    newCategories: [
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null
+      },
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null
+      },
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null
+      }
+    ],
+    profileImage: null
   });
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await getProfile();
+      if (response.status === 200 && response.data?.result) {
+        setFormData(prev => ({
+          ...prev,
+          ...response.data.result
+        }));
+      } else {
+        console.error('프로필 데이터 조회 실패:', response.data?.message);
+      }
+      
+    } catch (error) {
+      console.error('프로필 데이터 조회 중 에러 발생:', error);
+      console.log(formData);
+    }
+  };
 
   const handleChange = (field) => (value) => {
     setFormData(prev => ({
@@ -21,21 +62,105 @@ export default function ProfileEditContent() {
     }));
   };
 
-  const handleCategoryChange = (index) => (value) => {
-    setFormData(prev => ({
-      ...prev,
-      categories: prev.categories.map((cat, i) => i === index ? value : cat)
-    }));
+  const handleCategoryChange = (index) => (categoryData) => {
+    console.log('ProfileEditContent - 카테고리 변경:', { index, categoryData });
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        newCategories: prev.newCategories.map((cat, i) => 
+          i === index ? categoryData : cat
+        )
+      };
+      console.log('ProfileEditContent - 변경된 전체 formData:', newData);
+      return newData;
+    });
   };
 
-  const handleSave = () => {
-    // TODO: API 호출하여 데이터 저장
-    console.log('저장할 데이터:', formData);
-    setIsEditing(false);
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    const validateImageSize = (file) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const isValid = img.width <= 800 && img.height <= 800;
+          if (!isValid) {
+            alert('이미지 크기는 800x800px 이하여야 합니다.');
+          }
+          resolve(isValid);
+        };
+        img.onerror = () => {
+          alert('이미지 파일을 읽을 수 없습니다.');
+          resolve(false);
+        };
+        img.src = URL.createObjectURL(file);
+      });
+    };
+
+    const isValid = await validateImageSize(file);
+    if (isValid) {
+      setFormData(prev => ({
+        ...prev,
+        profileImage: file
+      }));
+    }
   };
 
+  const handleSave = async () => {
+    try {
+      // 선택된 카테고리 필터링 (모든 필드가 null이 아닌 카테고리만 선택)
+      const selectedCategories = formData.newCategories.filter(category => 
+        category.firstCategory !== null && 
+        category.secondCategory !== null && 
+        category.thirdCategory !== null
+      );
+
+      console.log('선택된 카테고리:', selectedCategories);
+
+      // 카테고리 개수 검증
+      if (selectedCategories.length === 0) {
+        alert('최소 1개 이상의 카테고리를 선택해주세요.');
+        return;
+      }
+
+      if (selectedCategories.length > 3) {
+        alert('최대 3개까지의 카테고리만 선택 가능합니다.');
+        return;
+      }
+
+      const requestData = {
+        username: formData.username,
+        nickname: formData.nickname,
+        intro: formData.intro,
+        personalUrl: formData.personalUrl,
+        newCategories: selectedCategories
+      };
+
+      console.log('ProfileEditContent - API 요청 데이터:', requestData);
+      const response = await putProfileEdit(requestData);
+   
+      if (response.status === 200) {
+        alert("프로필이 성공적으로 수정되었습니다.");
+        fetchProfileData(); 
+        setIsEditing(false);
+      } else {
+        alert("프로필 수정에 실패했습니다: " + response?.data?.message);
+      }
+    } catch (error) {
+      console.error("프로필 수정 중 에러 발생:", error);
+      alert("프로필 수정 중 오류가 발생했습니다.");
+    }
+  };
+  
+  
   const handleCancel = () => {
-    // TODO: 원래 데이터로 복원
+    fetchProfileData(); // 원래 데이터로 복원
     setIsEditing(false);
   };
 
@@ -43,19 +168,39 @@ export default function ProfileEditContent() {
     <div>
       <div className="grid grid-cols-1 gap-6">
         <div className="flex items-center space-x-6 m-5">
-          <div className="w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-gray-400">사진</span>
+          <div className="w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+            {formData.profileImage ? (
+              <img 
+                src={URL.createObjectURL(formData.profileImage)} 
+                alt="프로필" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-gray-400">사진</span>
+            )}
           </div>
           <div>
-            <div className="text-4xl font-bold mb-3">멋있는 개발자</div>
-            <button 
-              className="bg-white text-black border border-grey-border px-4 py-2 rounded-md"
+            <div className="text-4xl font-bold mb-3">{formData.username}</div>
+            <input
+              type="file"
+              id="profileImage"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="hidden"
               disabled={!isEditing}
+            />
+            <label 
+              htmlFor="profileImage"
+              className={`inline-block bg-white text-black border border-grey-border px-4 py-2 rounded-md cursor-pointer ${
+                !isEditing ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               프로필 사진 변경하기
-            </button>
-            <p className="text-sm text-gray-500 mt-2">800*800 크기의<br/>
-            PNG, JPG 사진만 업로드 가능합니다.</p>
+            </label>
+            <p className="text-sm text-gray-500 mt-2">
+              800x800px 크기의<br/>
+              PNG, JPG 사진만 업로드 가능합니다.
+            </p>
           </div>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg">
@@ -63,8 +208,8 @@ export default function ProfileEditContent() {
           <div className="grid grid-cols-1 gap-6">
             <EditBox 
               title="이름" 
-              value={formData.name}
-              onChange={handleChange('name')}
+              value={formData.username}
+              onChange={handleChange('username')}
               isEditing={isEditing}
             />
             <EditBox 
@@ -79,12 +224,6 @@ export default function ProfileEditContent() {
               onChange={handleChange('email')}
               isEditing={isEditing}
             />
-            <EditBox 
-              title="비밀번호" 
-              value={formData.password}
-              onChange={handleChange('password')}
-              isEditing={isEditing}
-            />
           </div>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg">
@@ -92,14 +231,14 @@ export default function ProfileEditContent() {
           <div className="grid grid-cols-1 gap-6">
             <EditBox 
               title="자기소개" 
-              value={formData.introduction}
-              onChange={handleChange('introduction')}
+              value={formData.intro}
+              onChange={handleChange('intro')}
               isEditing={isEditing}
             />
             <EditBox 
               title="개인 웹사이트 URL" 
-              value={formData.website}
-              onChange={handleChange('website')}
+              value={formData.personalUrl}
+              onChange={handleChange('personalUrl')}
               isEditing={isEditing}
             />
           </div>
@@ -107,7 +246,7 @@ export default function ProfileEditContent() {
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">관심분야</h2>
           <div className="grid grid-cols-3 gap-4">
-            {formData.categories.map((category, index) => (
+            {formData.newCategories.map((category, index) => (
               <CategorySelectBox 
                 key={index}
                 title=""
