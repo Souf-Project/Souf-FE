@@ -24,38 +24,58 @@ export default function Recruit() {
     {
       id: "1",
       topic: "봄 프로젝트 1회차",
-      content: "오늘은 봄날의 벚꽃길을 그려보았습니다. 부드러운 색감과 따뜻한 햇살을 표현하기 위해 수채화 기법을 사용했습니다. 특히 벚꽃의 섬세한 질감과 바람에 흩날리는 꽃잎의 움직임을 중점적으로 표현했습니다.",
+      content:
+        "오늘은 봄날의 벚꽃길을 그려보았습니다. 부드러운 색감과 따뜻한 햇살을 표현하기 위해 수채화 기법을 사용했습니다. 특히 벚꽃의 섬세한 질감과 바람에 흩날리는 꽃잎의 움직임을 중점적으로 표현했습니다.",
       tags: ["봄", "벚꽃", "수채화", "자연"],
-      originalFileNames: ["https://placehold.co/600x400?text=Work1", "https://placehold.co/600x400?text=Work1"]
+      originalFileNames: [
+        "https://placehold.co/600x400?text=Work1",
+        "https://placehold.co/600x400?text=Work1",
+      ],
     },
     {
       id: "2",
       topic: "도시의 밤 프로젝트",
-      content: "비 내리는 도시의 밤을 네온사인과 함께 표현한 디지털 아트입니다. 반사되는 빛과 물의 효과를 중점적으로 표현했으며, 특히 빗물에 비친 네온사인의 반사 효과를 디테일하게 작업했습니다.",
+      content:
+        "비 내리는 도시의 밤을 네온사인과 함께 표현한 디지털 아트입니다. 반사되는 빛과 물의 효과를 중점적으로 표현했으며, 특히 빗물에 비친 네온사인의 반사 효과를 디테일하게 작업했습니다.",
       tags: ["도시", "밤", "비", "네온사인", "디지털아트"],
-      originalFileNames: ["https://placehold.co/600x400?text=Work2", "https://placehold.co/600x400?text=Work2"]
+      originalFileNames: [
+        "https://placehold.co/600x400?text=Work2",
+        "https://placehold.co/600x400?text=Work2",
+      ],
     },
     {
       id: "3",
       topic: "미래 도시 컨셉아트",
-      content: "미래의 도시를 상상하며 그린 디지털 아트입니다. 하이테크 건물들과 공중 자동차들이 특징이며, 특히 빛나는 건물 외벽과 반투명한 구조물들을 통해 미래지향적인 분위기를 표현했습니다.",
+      content:
+        "미래의 도시를 상상하며 그린 디지털 아트입니다. 하이테크 건물들과 공중 자동차들이 특징이며, 특히 빛나는 건물 외벽과 반투명한 구조물들을 통해 미래지향적인 분위기를 표현했습니다.",
       tags: ["미래", "도시", "디지털아트", "컨셉아트"],
-      originalFileNames: ["https://placehold.co/600x400?text=Work3", "https://placehold.co/600x400?text=Work3"]
+      originalFileNames: [
+        "https://placehold.co/600x400?text=Work3",
+        "https://placehold.co/600x400?text=Work3",
+      ],
     },
     {
       id: "4",
       topic: "바다 일몰 스케치",
-      content: "바다 위로 지는 해를 그린 유화입니다. 오렌지색과 퍼플 계열의 색감이 조화롭게 어우러지도록 작업했으며, 특히 바다의 반사광과 하늘의 그라데이션을 자연스럽게 표현했습니다.",
+      content:
+        "바다 위로 지는 해를 그린 유화입니다. 오렌지색과 퍼플 계열의 색감이 조화롭게 어우러지도록 작업했으며, 특히 바다의 반사광과 하늘의 그라데이션을 자연스럽게 표현했습니다.",
       tags: ["바다", "일몰", "유화", "자연"],
-      originalFileNames: ["https://placehold.co/600x400?text=Work4", "https://placehold.co/600x400?text=Work4"]
+      originalFileNames: [
+        "https://placehold.co/600x400?text=Work4",
+        "https://placehold.co/600x400?text=Work4",
+      ],
     },
     {
       id: "5",
       topic: "가을 풍경 프로젝트",
-      content: "가을과 강아지와 주인과 풍경과 도로와 차에 대한 일러스트입니다. 따뜻한 색감을 살린 느낌으로 작업했으며, 특히 낙엽이 떨어지는 모습과 강아지의 털 질감을 섬세하게 표현했습니다.",
+      content:
+        "가을과 강아지와 주인과 풍경과 도로와 차에 대한 일러스트입니다. 따뜻한 색감을 살린 느낌으로 작업했으며, 특히 낙엽이 떨어지는 모습과 강아지의 털 질감을 섬세하게 표현했습니다.",
       tags: ["가을", "강아지", "일러스트", "풍경"],
-      originalFileNames: ["https://placehold.co/600x400?text=Work5", "https://placehold.co/600x400?text=Work5"]
-    }
+      originalFileNames: [
+        "https://placehold.co/600x400?text=Work5",
+        "https://placehold.co/600x400?text=Work5",
+      ],
+    },
   ];
 
   const searchParams = new URLSearchParams(location.search);
@@ -70,13 +90,13 @@ export default function Recruit() {
         ...categoryParams,
         page: 0,
         size: 10,
-        sort: "createdAt,desc"
+        sort: "createdAt,desc",
       });
       setAllRecruits(recruits);
       setFilteredRecruits(recruits);
     } catch (err) {
-      setError('공고 목록을 불러오는데 실패했습니다.');
-      console.error('Error fetching recruits:', err);
+      setError("공고 목록을 불러오는데 실패했습니다.");
+      console.error("Error fetching recruits:", err);
     } finally {
       setLoading(false);
     }
@@ -90,11 +110,13 @@ export default function Recruit() {
     if (categoryParam) {
       setSelectedCategory(decodeURIComponent(categoryParam));
       // 카테고리 파라미터에 따라 API 호출
-      const [firstCategory, secondCategory, thirdCategory] = categoryParam.split(',').map(Number);
+      const [firstCategory, secondCategory, thirdCategory] = categoryParam
+        .split(",")
+        .map(Number);
       fetchRecruits({
         firstCategory: firstCategory || 0,
         secondCategory: secondCategory || 0,
-        thirdCategory: thirdCategory || 0
+        thirdCategory: thirdCategory || 0,
       });
     } else {
       setSelectedCategory("전체");
@@ -108,24 +130,30 @@ export default function Recruit() {
       setLoading(true);
       setError(null);
 
-      const [firstCategory, secondCategory, thirdCategory] = selectedCategory.split(',').map(Number);
+      const [firstCategory, secondCategory, thirdCategory] = selectedCategory
+        .split(",")
+        .map(Number);
       const recruits = await getRecruit({
         firstCategory: firstCategory || 0,
         secondCategory: secondCategory || 0,
         thirdCategory: thirdCategory || 0,
         page: 0,
         size: 10,
-        sort: "createdAt,desc"
+        sort: "createdAt,desc",
       });
 
       // 검색어로 필터링
       let filtered = recruits;
       if (searchQuery.trim()) {
-        filtered = filtered.filter(recruit => {
+        filtered = filtered.filter((recruit) => {
           if (searchType === "title") {
-            return recruit.title.toLowerCase().includes(searchQuery.toLowerCase());
+            return recruit.title
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase());
           } else if (searchType === "content") {
-            return recruit.content.toLowerCase().includes(searchQuery.toLowerCase());
+            return recruit.content
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase());
           }
           return true;
         });
@@ -133,8 +161,8 @@ export default function Recruit() {
 
       setFilteredRecruits(filtered);
     } catch (err) {
-      setError('검색 중 오류가 발생했습니다.');
-      console.error('Error searching recruits:', err);
+      setError("검색 중 오류가 발생했습니다.");
+      console.error("Error searching recruits:", err);
     } finally {
       setLoading(false);
     }
@@ -164,74 +192,45 @@ export default function Recruit() {
   }
 
   return (
-    <div className="pt-12 px-6">
+    <div className="pt-12 px-6 w-[80%]">
       <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-4">
-          {activeTab === "recruit" ? (
-            <button
-              onClick={() => navigate('/recruit/upload')}
-              className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-            >
-              공고문 작성하기
-            </button>
-          ) : activeTab === "profile" ? (
-            <button
-              onClick={() => navigate('/profile/upload')}
-              className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-            >
-              피드 작성하기
-            </button>
-          ) : null}
-          <div className="flex">
-            <button
-              className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-                activeTab === "recruit" ? "text-yellow-point" : "text-gray-700"
-              }`}
-              onClick={() => setActiveTab("recruit")}
-            >
-              <span>기업 공고문</span>
-              <span
-                className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                  activeTab === "recruit" ? "w-3/4" : "w-0 group-hover:w-3/4"
+        <div className="flex justify-between items-center w-full">
+          {/* 왼쪽 탭들 */}
+          <div className="flex items-center gap-4">
+            {["recruit", "profile", "feed"].map((tab) => (
+              <button
+                key={tab}
+                className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+                  activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
-              ></span>
-            </button>
-            <button
-              className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-                activeTab === "profile" ? "text-yellow-point" : "text-gray-700"
-              }`}
-              onClick={() => setActiveTab("profile")}
-            >
-              <span>대학생 프로필</span>
-              <span
-                className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                  activeTab === "profile" ? "w-3/4" : "w-0 group-hover:w-3/4"
-                }`}
-              ></span>
-            </button>
-            <button
-              className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-                activeTab === "feed" ? "text-yellow-point" : "text-gray-700"
-              }`}
-              onClick={() => setActiveTab("feed")}
-            >
-              <span>대학생 피드</span>
-              <span
-                className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                  activeTab === "feed" ? "w-3/4" : "w-0 group-hover:w-3/4"
-                }`}
-              ></span>
-            </button>
+                onClick={() => setActiveTab(tab)}
+              >
+                <span>
+                  {tab === "recruit"
+                    ? "기업 공고문"
+                    : tab === "profile"
+                    ? "대학생 프로필"
+                    : "대학생 피드"}
+                </span>
+                <span
+                  className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                    activeTab === tab ? "w-3/4" : "w-0 group-hover:w-3/4"
+                  }`}
+                ></span>
+              </button>
+            ))}
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <SearchDropdown onSelect={handleSearchTypeChange} />
-          <SearchBar
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onSubmit={handleSearch}
-            placeholder="검색어를 입력하세요"
-          />
+
+          {/* 오른쪽 검색 영역 */}
+          <div className="flex items-center gap-4">
+            <SearchDropdown onSelect={handleSearchTypeChange} />
+            <SearchBar
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onSubmit={handleSearch}
+              placeholder="검색어를 입력하세요"
+            />
+          </div>
         </div>
       </div>
 
@@ -257,7 +256,9 @@ export default function Recruit() {
             ))
           ) : (
             <div className="text-center py-10">
-              <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
+              <p className="text-gray-500">
+                선택한 카테고리의 공고가 없습니다.
+              </p>
             </div>
           )}
         </div>
