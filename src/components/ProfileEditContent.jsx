@@ -62,13 +62,18 @@ export default function ProfileEditContent() {
     }));
   };
 
-  const handleCategoryChange = (index, field) => (value) => {
-    setFormData(prev => ({
-      ...prev,
-      newCategories: prev.newCategories.map((cat, i) => 
-        i === index ? { ...cat, [field]: value } : cat
-      )
-    }));
+  const handleCategoryChange = (index) => (categoryData) => {
+    console.log('ProfileEditContent - 카테고리 변경:', { index, categoryData });
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        newCategories: prev.newCategories.map((cat, i) => 
+          i === index ? categoryData : cat
+        )
+      };
+      console.log('ProfileEditContent - 변경된 전체 formData:', newData);
+      return newData;
+    });
   };
 
   const handleImageChange = async (e) => {
@@ -109,19 +114,35 @@ export default function ProfileEditContent() {
 
   const handleSave = async () => {
     try {
+      // 선택된 카테고리 필터링 (모든 필드가 null이 아닌 카테고리만 선택)
+      const selectedCategories = formData.newCategories.filter(category => 
+        category.firstCategory !== null && 
+        category.secondCategory !== null && 
+        category.thirdCategory !== null
+      );
+
+      console.log('선택된 카테고리:', selectedCategories);
+
+      // 카테고리 개수 검증
+      if (selectedCategories.length === 0) {
+        alert('최소 1개 이상의 카테고리를 선택해주세요.');
+        return;
+      }
+
+      if (selectedCategories.length > 3) {
+        alert('최대 3개까지의 카테고리만 선택 가능합니다.');
+        return;
+      }
+
       const requestData = {
-        id: formData.id,
         username: formData.username,
         nickname: formData.nickname,
         intro: formData.intro,
         personalUrl: formData.personalUrl,
-        newCategories: formData.newCategories.map(category => ({
-          firstCategory: category.firstCategory || null ,
-          secondCategory: category.secondCategory || null,
-          thirdCategory: category.thirdCategory || null
-        }))
+        newCategories: selectedCategories
       };
 
+      console.log('ProfileEditContent - API 요청 데이터:', requestData);
       const response = await putProfileEdit(requestData);
    
       if (response.status === 200) {
@@ -233,7 +254,7 @@ export default function ProfileEditContent() {
                 defaultValue={category}
                 type="text"
                 isEditing={isEditing}
-                onChange={(field) => (value) => handleCategoryChange(index, field)(value)}
+                onChange={handleCategoryChange(index)}
               />
             ))}
           </div>

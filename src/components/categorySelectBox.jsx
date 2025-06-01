@@ -127,6 +127,7 @@ export default function CategorySelectBox({
 
   const handleSave = () => {
     const valueToSave = getValueToSave();
+    console.log('CategorySelectBox - 선택된 카테고리 값:', valueToSave);
     setSelectedValue(selectedSubSubOption?.name || selectedSubOption?.name || selectedOption?.name || "카테고리 선택");
     if (onChange) {
       onChange(valueToSave);
