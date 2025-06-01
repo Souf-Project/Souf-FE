@@ -9,7 +9,9 @@ export default function EditBox({title, value, onChange, isEditing}) {
       <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
         <input 
           type="text" 
-          className="flex-1 p-5 pl-7 border-0 outline-none bg-[#F7F7F7]"
+          className={`flex-1 p-5 pl-7 border-0 outline-none ${
+            isEditing ? 'bg-white text-black' : 'bg-[#F7F7F7] text-gray-600'
+          }`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={!isEditing}

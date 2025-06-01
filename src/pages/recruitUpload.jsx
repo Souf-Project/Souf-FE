@@ -29,10 +29,39 @@ export default function RecruitUpload() {
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
     if (type === 'file') {
-      setFormData(prev => ({
-        ...prev,
-        files: Array.from(files)
-      }));
+      const fileArray = Array.from(files);
+      
+      const validateImageSize = async (file) => {
+        if (!file.type.startsWith('image/')) {
+          return true; // 이미지가 아닌 파일은 그대로 허용
+        }
+
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const isValid = img.width <= 1080 && img.height <= 1080;
+            if (!isValid) {
+              alert(`${file.name}의 크기가 1080x1080px를 초과합니다.`);
+            }
+            resolve(isValid);
+          };
+          img.onerror = () => {
+            alert(`${file.name} 파일을 읽을 수 없습니다.`);
+            resolve(false);
+          };
+          img.src = URL.createObjectURL(file);
+        });
+      };
+
+
+      Promise.all(fileArray.map(validateImageSize))
+        .then(results => {
+          const validFiles = fileArray.filter((_, index) => results[index]);
+          setFormData(prev => ({
+            ...prev,
+            files: validFiles
+          }));
+        });
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -244,8 +273,12 @@ export default function RecruitUpload() {
             name="files"
             onChange={handleChange}
             multiple
+            accept="image/*"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
           />
+          <p className="mt-1 text-sm text-gray-500">
+            이미지 파일은 1080x1080px 이하로 업로드해주세요.
+          </p>
         </div>
 
         <div className="flex gap-4 items-center justify-center">
