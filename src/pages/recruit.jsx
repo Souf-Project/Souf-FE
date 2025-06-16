@@ -6,6 +6,7 @@ import SearchBar from "../components/SearchBar";
 import SearchDropdown from "../components/SearchDropdown";
 import { getRecruit } from "../api/recruit";
 import Feed from "../components/feed";
+import Pagination from "../components/pagination";
 
 export default function Recruit() {
   const location = useLocation();
@@ -18,48 +19,49 @@ export default function Recruit() {
   const [allRecruits, setAllRecruits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
 
-  // fetchRecruits 함수를 useCallback으로 메모이제이션
-  const fetchRecruits = useCallback(async (categoryParams = {}) => {
+
+  const fetchRecruits = useCallback(async (categoryParams = {}, searchParams = {}) => {
     try {
       setLoading(true);
       setError(null);
+
       const response = await getRecruit({
         ...categoryParams,
-        page: 0,
-        size: 10,
-        sort: "createdAt,desc"
+        recruitSearchReqDto: searchParams,  // title, content 들어감
+        pageable: {
+          page: currentPage,
+          size: pageSize,
+          sort: ["createdAt,desc"]
+        }
       });
-      
-      if (response.data && response.data.result) {
-        setAllRecruits(response.data.result);
-        setFilteredRecruits(response.data.result);
-      } else if (response.data && Array.isArray(response.data)) {
-        setAllRecruits(response.data);
-        setFilteredRecruits(response.data);
+
+      if (response.data) {
+        const recruits = response.data.content || response.data;
+        setAllRecruits(recruits);
+        setFilteredRecruits(recruits);
+        setTotalPages(Math.ceil((response.data.totalElements || recruits.length) / pageSize));
       } else {
-  
         console.error('Unexpected response structure:', response.data);
+        setError('데이터를 불러오는데 실패했습니다.');
       }
     } catch (err) {
-
       console.error('Error fetching recruits:', err);
+      setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchRecruits();
-  }, [fetchRecruits]);
+  }, [currentPage, pageSize]);
 
   useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(decodeURIComponent(categoryParam));
-      // 카테고리 파라미터에 따라 API 호출
       const [firstCategory, secondCategory, thirdCategory] = categoryParam.split(',').map(Number);
       fetchRecruits({
         firstCategory: firstCategory || 0,
@@ -72,6 +74,10 @@ export default function Recruit() {
     }
   }, [categoryParam, fetchRecruits]);
 
+  useEffect(() => {
+    fetchRecruits();
+  }, [fetchRecruits, currentPage]);
+
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
@@ -79,42 +85,50 @@ export default function Recruit() {
       setError(null);
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory.split(',').map(Number);
-      const recruits = await getRecruit({
+      
+      // 검색어를 recruitSearchReqDto에 담아 서버로 요청
+      const searchParams = {
+        title: searchType === "title" ? searchQuery : "",
+        content: searchType === "content" ? searchQuery : ""
+      };
+
+      const response = await getRecruit({
         firstCategory: firstCategory || 0,
         secondCategory: secondCategory || 0,
         thirdCategory: thirdCategory || 0,
-        page: 0,
-        size: 10,
-        sort: "createdAt,desc"
+        recruitSearchReqDto: searchParams,
+        pageable: {
+          page: 0,
+          size: 10,
+          sort: ["createdAt,desc"]
+        }
       });
 
-      // 검색어로 필터링
-      let filtered = recruits;
-      if (searchQuery.trim()) {
-        filtered = filtered.filter(recruit => {
-          if (searchType === "title") {
-            return recruit.title.toLowerCase().includes(searchQuery.toLowerCase());
-          } else if (searchType === "content") {
-            return recruit.content.toLowerCase().includes(searchQuery.toLowerCase());
-          }
-          return true;
-        });
+      if (response.data) {
+        const recruits = response.data.content || response.data;
+        setFilteredRecruits(recruits);
+      } else {
+        setFilteredRecruits([]);
+        console.error('Unexpected response structure:', response.data);
       }
-
-      setFilteredRecruits(filtered);
     } catch (err) {
-      setError('검색 중 오류가 발생했습니다.');
       console.error('Error searching recruits:', err);
+      setError('검색 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleSearchTypeChange = (type) => {
     setSearchType(type);
     if (searchQuery.trim()) {
       handleSearch({ preventDefault: () => {} });
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
   };
 
   if (loading) {
@@ -208,23 +222,30 @@ export default function Recruit() {
       {activeTab === "recruit" ? (
         <div className="w-5xl mx-auto">
           {filteredRecruits.length > 0 ? (
-            filteredRecruits.map((recruit) => (
-              <RecruitBlock
-                key={recruit.id}
-                id={recruit.id}
-                title={recruit.title}
-                categoryMain={recruit.categoryMain}
-                categoryMiddle={recruit.categoryMiddle}
-                categorySmall={recruit.categorySmall}
-                content={recruit.content}
-                applicants={recruit.applicants}
-                minPrice={recruit.minPrice}
-                maxPrice={recruit.maxPrice}
-                preferMajor={recruit.preferMajor}
-                location={recruit.location}
-                deadline={recruit.deadline}
+            <>
+              {filteredRecruits.map((recruit) => (
+                <RecruitBlock
+                  key={recruit.id}
+                  id={recruit.id}
+                  title={recruit.title}
+                  categoryMain={recruit.categoryMain}
+                  categoryMiddle={recruit.categoryMiddle}
+                  categorySmall={recruit.categorySmall}
+                  content={recruit.content}
+                  applicants={recruit.applicants}
+                  minPrice={recruit.minPrice}
+                  maxPrice={recruit.maxPrice}
+                  preferMajor={recruit.preferMajor}
+                  location={recruit.location}
+                  deadline={recruit.deadline}
+                />
+              ))}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
               />
-            ))
+            </>
           ) : (
             <div className="text-center py-10">
               <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
