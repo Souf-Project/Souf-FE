@@ -13,7 +13,10 @@ const client = axios.create({
 // 요청 인터셉터 추가
 client.interceptors.request.use(
   (config) => {
-    // 요청 전에 수행할 작업
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {

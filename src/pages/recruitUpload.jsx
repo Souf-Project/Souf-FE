@@ -1,26 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategorySelectBox from '../components/categorySelectBox';
+// import { uploadRecruit } from '../api/recruit';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
-    companyName: '',
-    minSalary: '',
-    maxSalary: '',
-    workType: 'online', // 'online' 또는 'offline'
-    location: '',
-    isLocationIrrelevant: false,
-    deadline: '',
-    hasPreferences: false,
-    preferences: '',
-    category: '',
     content: '',
-    files: []
+    region: '',
+    deadline: '',
+    companyName: '',
+    minpayment: '',
+    maxpayment: '',
+    workType: 'online',
+    isregionIrrelevant: false,
+    preferentialTreatment: '',
+    categoryDtos: {
+      firstCategory: null,
+      secondCategory: null,
+      thirdCategory: null
+    },
+    
+    originalFileNames: []
   });
 
-  const locations = [
+  const regions = [
     '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
     '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
     '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
@@ -67,7 +72,7 @@ export default function RecruitUpload() {
         ...prev,
         [name]: checked,
         // 지역 무관 체크 시 지역 선택 초기화
-        ...(name === 'isLocationIrrelevant' && checked ? { location: '' } : {})
+        ...(name === 'isregionIrrelevant' && checked ? { region: '' } : {})
       }));
     } else {
       setFormData(prev => ({
@@ -77,11 +82,35 @@ export default function RecruitUpload() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log('Form submitted:', formData);
-    navigate('/recruit');
+    try {
+      const formDataToSend = {
+        title: formData.title,
+        content: formData.content,
+        region: formData.isregionIrrelevant ? "지역 무관" : formData.region,
+        deadline: new Date(formData.deadline).toISOString(),
+        payment: `${formData.minpayment}~${formData.maxpayment}만원`,
+        preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : "",
+        categoryDtos: [formData.category],
+        originalFileNames: formData.files.map(file => file.name)
+      };
+
+      // await uploadRecruit(formDataToSend);
+      alert('공고가 성공적으로 등록되었습니다.');
+      navigate('/recruit');
+    } catch (error) {
+      console.error('공고 등록 중 오류 발생:', error);
+      alert('공고 등록에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
+
+  const handleCategoryChange = (categoryData) => {
+    setFormData(prev => ({
+      ...prev,
+      category: categoryData
+    }));
   };
 
   return (
@@ -124,8 +153,8 @@ export default function RecruitUpload() {
             <div className="flex-1">
               <input
                 type="number"
-                name="minSalary"
-                value={formData.minSalary}
+                name="minpayment"
+                value={formData.minpayment}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
@@ -135,8 +164,8 @@ export default function RecruitUpload() {
             <div className="flex-1">
               <input
                 type="number"
-                name="maxSalary"
-                value={formData.maxSalary}
+                name="maxpayment"
+                value={formData.maxpayment}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
@@ -169,8 +198,8 @@ export default function RecruitUpload() {
               <div className="flex items-center gap-2">
                 <input
                   type="checkbox"
-                  name="isLocationIrrelevant"
-                  checked={formData.isLocationIrrelevant}
+                  name="isregionIrrelevant"
+                  checked={formData.isregionIrrelevant}
                   onChange={handleChange}
                   className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded "
                 />
@@ -178,19 +207,19 @@ export default function RecruitUpload() {
               </div>
             </div>
             <select
-              name="location"
-              value={formData.location}
+              name="region"
+              value={formData.region}
               onChange={handleChange}
-              disabled={formData.isLocationIrrelevant}
+              disabled={formData.isregionIrrelevant}
               className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
-                formData.isLocationIrrelevant ? 'bg-gray-100' : ''
+                formData.isregionIrrelevant ? 'bg-gray-100' : ''
               }`}
-              required={!formData.isLocationIrrelevant}
+              required={!formData.isregionIrrelevant}
             >
               <option value="">지역 선택</option>
-              {locations.map(location => (
-                <option key={location} value={location}>
-                  {location}
+              {regions.map(region => (
+                <option key={region} value={region}>
+                  {region}
                 </option>
               ))}
             </select>
@@ -215,8 +244,8 @@ export default function RecruitUpload() {
           <div className="flex items-center gap-2 mb-2">
             <input
               type="checkbox"
-              name="hasPreferences"
-              checked={formData.hasPreferences}
+              name="hasPreference"
+              checked={formData.hasPreference}
               onChange={handleChange}
               className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded"
             />
@@ -224,10 +253,10 @@ export default function RecruitUpload() {
               우대사항 유무
             </label>
           </div>
-          {formData.hasPreferences && (
+          {formData.hasPreference && (
             <textarea
-              name="preferences"
-              value={formData.preferences}
+              name="preferentialTreatment"
+              value={formData.preferentialTreatment}
               onChange={handleChange}
               rows="3"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
@@ -240,14 +269,14 @@ export default function RecruitUpload() {
           <label className="block text-xl font-semibold text-gray-700 mb-2">
             카테고리
           </label>
-       
-            <CategorySelectBox 
-              title=""
-              content=""
-              defaultValue=""
-              type="text"
-            />
-           
+          <CategorySelectBox 
+            title="카테고리 선택"
+            content=""
+            defaultValue={formData.categoryDtos}
+            type="join"
+            onChange={handleCategoryChange}
+            isEditing={true}
+          />
         </div>
 
         <div>
