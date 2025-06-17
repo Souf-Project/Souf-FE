@@ -5,7 +5,6 @@ export default function Profile({
   profileId,
   profileImg,
   temperature,
-  hashtag,
   userName,
   userDetail,
   userWorks,
@@ -23,16 +22,6 @@ export default function Profile({
       <img className="absolute top-4 right-4 w-11" src={sendIco} />
       <img src={profileImg} className="rounded-full" />
       <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div>
-      <div className="flex flex-wrap gap-[5px]">
-        {hashtag.map((data, index) => (
-          <div
-            key={index}
-            className="rounded-[10px] bg-[#FFF5E6] px-3 py-1 text-center text-[#5F5F5F] text-[14px]"
-          >
-            {data}
-          </div>
-        ))}
-      </div>
       <div className="flex flex-col justify-center">
         <div className="font-semibold text-2xl">{userName}</div>
         <div className="text-[#5B5B5B]">{userDetail}</div>

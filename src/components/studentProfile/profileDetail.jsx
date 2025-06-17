@@ -12,7 +12,6 @@ export default function ProfileDetail({}) {
     id: 1,
     profileImg: "https://placehold.co/100",
     temperature: "85",
-    hashtag: ["#React", "#Frontend", "#UXUI"],
     userName: "홍길동",
     userDetail: "사용자 중심의 UI/UX를 설계하는 프론트엔드 개발자",
     userWorks: [
@@ -50,16 +49,6 @@ export default function ProfileDetail({}) {
         <div className="flex gap-12 my-14 pl-6">
           <img src={userData.profileImg} className="rounded-full w-1/4" />
           <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap gap-[5px]">
-              {userData.hashtag.map((data, index) => (
-                <div
-                  key={index}
-                  className="rounded-[10px] bg-[#FFF5E6] px-3 py-1 text-center text-[#5F5F5F]"
-                >
-                  {data}
-                </div>
-              ))}
-            </div>
             <div className="font-semibold text-[23px]">{userData.userName}</div>
             <div className="text-[#5B5B5B]">{userData.userDetail}</div>
           </div>

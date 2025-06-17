@@ -23,10 +23,27 @@ export async function postSignUp(email, password) {
 }
 
 /* 비밀번호 찾기 */
+export async function patchResetPassword(email, newPassword, confirmPassword) {
+  const response = await client.patch("/api/v1/auth/reset/password", {
+    email: email,
+    newPassword: newPassword,
+    confirmPassword: confirmPassword,
+  });
+  return response;
+}
 
 /* 이메일 인증 */
 export async function postEmailVerification(email) {
-  const response = await client.post(`/api/v1/auth/email/send?email=${email}`);
+  const response = await client.post(
+    `/api/v1/auth/signup/email/send?email=${email}`
+  );
+  return response;
+}
+
+export async function postResetEmailVerification(email) {
+  const response = await client.post(
+    `/api/v1/auth/reset/email/send?email=${email}`
+  );
   return response;
 }
 

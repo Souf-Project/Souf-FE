@@ -95,17 +95,17 @@ export default function Header() {
   const UserTypeLabel = () => {
     if (roleType === "MEMBER") {
       return (
-        <>
+        <div className="flex justify-center gap-2">
           <span className="font-bold">학생</span>
           <span className="font-normal ml-1">{username}</span>
-        </>
+        </div>
       );
     } else {
       return (
-        <>
+        <div>
           <span className="font-bold">기업</span>
           <span className="font-normal ml-1">{username}</span>
-        </>
+        </div>
       );
     }
   };
@@ -150,7 +150,7 @@ export default function Header() {
             </button>
             <div className="relative user-menu-container">
               <button
-                className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg"
+                className="text-black bg-yellow-main py-2 font-bold rounded-lg w-36"
                 onClick={toggleUserMenu}
               >
                 <UserTypeLabel />
@@ -163,6 +163,12 @@ export default function Header() {
                     onClick={() => handleNavigation("/mypage")}
                   >
                     마이페이지
+                  </button>
+                  <button
+                    className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                    onClick={() => handleNavigation("/postUpload")}
+                  >
+                    피드 작성하기
                   </button>
                   <button
                     className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
