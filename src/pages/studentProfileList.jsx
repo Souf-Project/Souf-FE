@@ -1,6 +1,13 @@
+import { useState, useEffect } from "react";
 import Profile from "../components/studentProfile/profile";
+import Pagination from "../components/pagination";
 
 export default function StudentProfileList() {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [displayedProfiles, setDisplayedProfiles] = useState([]);
+  const pageSize = 6;
+
   const userData = [
     {
       id: 1,
@@ -75,7 +82,7 @@ export default function StudentProfileList() {
       profileImg: "https://placehold.co/100",
       temperature: "85",
       hashtag: ["#React", "#Frontend", "#UXUI"],
-      userName: "홍길동",
+      userName: "김시은",
       userDetail: "사용자 중심의 UI/UX를 설계하는 프론트엔드 개발자",
       userWorks: [
         "https://placehold.co/100x100?text=Work1",
@@ -88,7 +95,7 @@ export default function StudentProfileList() {
       profileImg: "https://placehold.co/100",
       temperature: "92",
       hashtag: ["#AI", "#Python", "#ML"],
-      userName: "이서연",
+      userName: "이시영",
       userDetail: "머신러닝 기반 서비스 개발 경험 보유",
       userWorks: [
         "https://placehold.co/100x100?text=ML1",
@@ -98,7 +105,7 @@ export default function StudentProfileList() {
     {
       id: 9,
       profileImg: "https://placehold.co/100",
-      temperature: "78",
+      temperature: "박정곤",
       hashtag: ["#Backend", "#Node.js"],
       userName: "김지훈",
       userDetail: "빠르고 안정적인 서버 구축을 지향합니다",
@@ -109,7 +116,7 @@ export default function StudentProfileList() {
       profileImg: "https://placehold.co/100",
       temperature: "88",
       hashtag: ["#Data", "#SQL", "#Visualization"],
-      userName: "최은지",
+      userName: "배성현",
       userDetail: "데이터로 문제를 해결하는 분석가",
       userWorks: [
         "https://placehold.co/100x100?text=Chart1",
@@ -140,11 +147,24 @@ export default function StudentProfileList() {
     },
   ];
 
+  useEffect(() => {
+    setTotalPages(Math.ceil(userData.length / pageSize));
+    
+    const startIndex = currentPage * pageSize;
+    const endIndex = startIndex + pageSize;
+    setDisplayedProfiles(userData.slice(startIndex, endIndex));
+  }, [currentPage, userData.length]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
-    <div className="w-full flex items-center justify-center ">
+    <div className="w-full flex flex-col items-center justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
-        {userData.map((data) => (
+        {displayedProfiles.map((data) => (
           <Profile
+            key={data.id}
             profileId={data.id}
             profileImg={data.profileImg}
             temperature={data.temperature}
@@ -155,6 +175,11 @@ export default function StudentProfileList() {
           />
         ))}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }

@@ -33,6 +33,8 @@ export default function Login() {
         roleType: result.roleType,
       });
 
+      localStorage.setItem("accessToken", result.accessToken);
+
       navigate("/");
     },
 
