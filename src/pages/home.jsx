@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import searchIco from '../assets/images/searchIco.svg';
 import cate1Img from '../assets/images/cate1Img.svg'; 
@@ -7,10 +7,12 @@ import cate3Img from '../assets/images/cate3Img.svg';
 import cate4Img from '../assets/images/cate4Img.svg';
 import cate5Img from '../assets/images/cate5Img.svg';
 import Background from '../assets/images/background.png';
+import competitionData from '../assets/competitionData/건축_건설_인테리어.json';
 
 export default function Home() {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [competitions, setCompetitions] = useState([]);
     
     const categories = [
         "순수미술 & 일러스트",
@@ -66,7 +68,10 @@ export default function Home() {
         }
     ];
 
-    
+    useEffect(() => {
+        // JSON 데이터에서 상위 3개만 가져오기
+        setCompetitions(competitionData.slice(0, 3));
+    }, []);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -192,6 +197,43 @@ export default function Home() {
                             </div>
                         ))}
                     </div> */}
+                </div>
+            </div>
+
+            {/* 공모전 정보 섹션 추가 */}
+            <div className="relative max-w-6xl mx-auto px-6 py-16">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
+                    <button 
+                        onClick={() => navigate('/competitions')}
+                        className="px-4 py-2 bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-colors duration-200"
+                    >
+                        더보기
+                    </button>
+                </div>
+                <div className="grid grid-cols-3 gap-6">
+                    {competitions.map((competition, index) => (
+                        <div
+                            key={index}
+                            className="bg-white p-6 rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200"
+                        >
+                            <h3 className="text-xl font-bold mb-2">{competition.제목}</h3>
+                            <p className="text-gray-600 mb-2">주최: {competition.주최}</p>
+                            <div className="flex flex-col gap-1 text-sm text-gray-500">
+                                <span>시상금: {competition.시상규모}</span>
+                                <span>접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}</span>
+                                <span>참여대상: {competition.참여대상}</span>
+                            </div>
+                            <a 
+                                href={competition.홈페이지}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-4 inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                            >
+                                자세히 보기
+                            </a>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

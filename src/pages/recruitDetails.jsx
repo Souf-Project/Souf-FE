@@ -23,7 +23,7 @@ export default function RecruitDetail() {
   };
 
   return (
-    <div className="pt-24 px-8 max-w-4xl mx-auto">
+    <div className="pt-24 px-8 w-5/6 mx-auto">
       <button 
         className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
         onClick={handleGoBack}
@@ -83,7 +83,7 @@ export default function RecruitDetail() {
 
         <div className="border-t border-gray-200 my-6"></div>
         <div>
-          <p className="text-gray-800 whitespace-pre-wrap">{recruitData.content}</p>
+          <p className="text-2xl font-regular text-gray-800">{recruitData.content}</p>
         </div>
 
       <div className="flex justify-center mt-8">
