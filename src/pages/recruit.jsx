@@ -6,11 +6,18 @@ import SearchBar from "../components/SearchBar";
 import SearchDropdown from "../components/SearchDropdown";
 import { getRecruit } from "../api/recruit";
 import Feed from "../components/feed";
+import CategoryMenu from "../components/categoryMenu";
+import SecondCategory from "../assets/categoryIndex/second_category.json";
+import ThirdCategory from "../assets/categoryIndex/third_category.json";
+import {
+  getFirstCategoryId,
+  getSecondCategoriesByFirstId,
+} from "../utils/getCategoryById";
 
 export default function Recruit() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [selectedCategory, setSelectedCategory] = useState("순수미술");
   const [activeTab, setActiveTab] = useState("recruit");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +25,9 @@ export default function Recruit() {
   const [allRecruits, setAllRecruits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const [firstId, setFirstId] = useState("");
+  const [secondCategories, setSecondCategories] = useState([]);
 
   // 피드 데이터 (실제로는 API에서 가져와야 함)
   const feedData = [
@@ -109,6 +119,8 @@ export default function Recruit() {
   useEffect(() => {
     if (categoryParam) {
       setSelectedCategory(decodeURIComponent(categoryParam));
+      console.log("카테고리명", decodeURIComponent(categoryParam));
+
       // 카테고리 파라미터에 따라 API 호출
       const [firstCategory, secondCategory, thirdCategory] = categoryParam
         .split(",")
@@ -119,9 +131,11 @@ export default function Recruit() {
         thirdCategory: thirdCategory || 0,
       });
     } else {
-      setSelectedCategory("전체");
+      setSelectedCategory("순수미술");
       fetchRecruits();
     }
+    setFirstId(getFirstCategoryId(decodeURIComponent(categoryParam)));
+    setSecondCategories(getSecondCategoriesByFirstId(firstId));
   }, [categoryParam, fetchRecruits]);
 
   const handleSearch = async (e) => {
@@ -233,48 +247,53 @@ export default function Recruit() {
           </div>
         </div>
       </div>
-
-      {activeTab === "recruit" ? (
-        <div className="w-5xl mx-auto">
-          {filteredRecruits.length > 0 ? (
-            filteredRecruits.map((recruit) => (
-              <RecruitBlock
-                key={recruit.id}
-                id={recruit.id}
-                title={recruit.title}
-                categoryMain={recruit.categoryMain}
-                categoryMiddle={recruit.categoryMiddle}
-                categorySmall={recruit.categorySmall}
-                content={recruit.content}
-                applicants={recruit.applicants}
-                minPrice={recruit.minPrice}
-                maxPrice={recruit.maxPrice}
-                preferMajor={recruit.preferMajor}
-                location={recruit.location}
-                deadline={recruit.deadline}
-              />
-            ))
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-gray-500">
-                선택한 카테고리의 공고가 없습니다.
-              </p>
-            </div>
-          )}
-        </div>
-      ) : activeTab === "profile" ? (
-        <div className="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto">
-          <StudentProfileList />
-        </div>
-      ) : (
-        <div className="max-w-4xl mx-auto">
-          {feedData.map((post) => (
-            <div key={post.id} className="mb-8">
-              <Feed worksData={post} />
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="flex flex-row">
+        <CategoryMenu
+          secondCategories={getSecondCategoriesByFirstId(firstId)}
+          thirdCategories={ThirdCategory}
+        />
+        {activeTab === "recruit" ? (
+          <div className="w-5xl mx-auto">
+            {filteredRecruits.length > 0 ? (
+              filteredRecruits.map((recruit) => (
+                <RecruitBlock
+                  key={recruit.id}
+                  id={recruit.id}
+                  title={recruit.title}
+                  categoryMain={recruit.categoryMain}
+                  categoryMiddle={recruit.categoryMiddle}
+                  categorySmall={recruit.categorySmall}
+                  content={recruit.content}
+                  applicants={recruit.applicants}
+                  minPrice={recruit.minPrice}
+                  maxPrice={recruit.maxPrice}
+                  preferMajor={recruit.preferMajor}
+                  location={recruit.location}
+                  deadline={recruit.deadline}
+                />
+              ))
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-gray-500">
+                  선택한 카테고리의 공고가 없습니다.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : activeTab === "profile" ? (
+          <div className="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto">
+            <StudentProfileList />
+          </div>
+        ) : (
+          <div className="max-w-4xl mx-auto">
+            {feedData.map((post) => (
+              <div key={post.id} className="mb-8">
+                <Feed worksData={post} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
