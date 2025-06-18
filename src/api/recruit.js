@@ -1,45 +1,5 @@
 import client from "./client";
 
-export const getRecruit = async (params = {}) => {
-  try {
-    const {
-      firstCategory = 0,
-      secondCategory = 0,
-      thirdCategory = 0,
-      page = 0,
-      size = 10,
-      sort = "createdAt,desc",
-    } = params;
-
-    const response = await client.get("/recruit", {
-      params: {
-        firstCategory,
-        secondCategory,
-        thirdCategory,
-        page,
-        size,
-        sort,
-      },
-    });
-
-    if (response.data && response.data.result) {
-      return response.data.result;
-    } else if (response.data && Array.isArray(response.data)) {
-      return response.data;
-    } else {
-      console.error("Unexpected response structure:", response.data);
-      return [];
-    }
-  } catch (error) {
-    console.error("공고문 조회 에러", error);
-    if (error.response?.status === 403) {
-      // 403 에러는 이미 client.js의 인터셉터에서 처리됨
-      return [];
-    }
-    throw error;
-  }
-};
-
 export const getPopularRecruit = async (pageable) => {
   try {
     const response = await client.get("/api/v1/recruit/popular", {
@@ -54,3 +14,68 @@ export const getPopularRecruit = async (pageable) => {
     throw error;
   }
 };
+
+export async function getRecruit(params = {}) {
+    try {
+        const {
+            firstCategory = 1,
+            secondCategory = 1,
+            thirdCategory = 1,
+            recruitSearchReqDto = {},
+            pageable = { page: 0, size: 10, sort: ["createdAt,desc"] }
+        } = params;        
+
+        const queryParams = {
+            firstCategory,
+            ...(secondCategory ? { secondCategory } : {}),
+            ...(thirdCategory ? { thirdCategory } : {}),
+            'pageable.page': pageable.page,
+            'pageable.size': pageable.size
+        };
+
+        if (recruitSearchReqDto.title?.trim()) {
+            queryParams['recruitSearchReqDto.title'] = recruitSearchReqDto.title;
+        }
+        if (recruitSearchReqDto.content?.trim()) {
+            queryParams['recruitSearchReqDto.content'] = recruitSearchReqDto.content;
+        }
+
+        if (pageable.sort && pageable.sort.length > 0) {
+            queryParams['pageable.sort'] = pageable.sort.join(',');
+        }
+
+        const response = await client.get('/api/v1/recruit', {
+            params: queryParams,
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+
+        return response;
+    } catch (error) {
+        // if (error.response?.status === 403) {
+        //     // 403 에러 발생 시 로그인 페이지로 리다이렉트
+        //     window.location.href = '/login';
+        //     return;
+        // }
+        console.error('Recruit API 오류 발생:', error);
+        throw error;
+    }
+}
+
+// export async function uploadRecruit(data) {
+//     try {
+//         const response = await client.post('/api/v1/recruit', data, {
+//             headers: {
+//                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+//                 'Content-Type': 'application/json'
+//             }
+//         });
+//         return response;
+//     } catch (error) {
+//         console.error('Recruit Upload API 오류 발생:', error);
+//         throw error;
+//     }
+// }
+
+

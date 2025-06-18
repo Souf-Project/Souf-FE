@@ -188,6 +188,101 @@ Object
                   url={profile.mediaResDto.fileUrl}
                   context={profile.categoryName}
                   username={profile.nickname}
+=======
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import searchIco from '../assets/images/searchIco.svg';
+import cate1Img from '../assets/images/cate1Img.svg'; 
+import cate2Img from '../assets/images/cate2Img.svg';
+import cate3Img from '../assets/images/cate3Img.svg';
+import cate4Img from '../assets/images/cate4Img.svg';
+import cate5Img from '../assets/images/cate5Img.svg';
+import Background from '../assets/images/background.png';
+import competitionData from '../assets/competitionData/건축_건설_인테리어.json';
+
+export default function Home() {
+    const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState('');
+    const [competitions, setCompetitions] = useState([]);
+    
+    const categories = [
+        "순수미술 & 일러스트",
+        "공예 & 제작",
+        "음악 & 음향",
+        "사진 & 영상 & 영화",
+        "디지털 콘텐츠 & 그래픽 디자인"
+    ];
+
+    // 실제 공고문 데이터
+    const sampleRecruits = [
+        {
+            id: 1,
+            title: "로고 디자인 프로젝트",
+            categoryMain: "디지털 콘텐츠 & 그래픽 디자인",
+            categoryMiddle: "브랜드 디자인",
+            categorySmall: "로고 디자인",
+            content: "신규 사업을 위한 로고 디자인을 의뢰합니다. 미니멀하고 현대적인 디자인을 선호하며, 기업의 가치를 잘 표현할 수 있는 디자인을 찾고 있습니다.",
+            applicants: 12,
+            minPrice: 300000,
+            maxPrice: 500000,
+            preferMajor: true,
+            location: "서울",
+            deadline: "2025-05-30"
+        },
+        {
+            id: 2,
+            title: "웹사이트 일러스트레이션 작업",
+            categoryMain: "순수미술 & 일러스트",
+            categoryMiddle: "일러스트·캐릭터 디자인",
+            categorySmall: "2D 캐릭터",
+            content: "회사 웹사이트 리뉴얼을 위한 일러스트레이션 작업을 의뢰합니다. 약 5-7개의 일러스트가 필요하며, 각 페이지의 콘셉트에 맞는 작업물이 필요합니다.",
+            applicants: 8,
+            minPrice: 500000,
+            maxPrice: 1000000,
+            preferMajor: false,
+            location: "지역무관",
+            deadline: "2023-12-15"
+        },
+        {
+            id: 3,
+            title: "제품 소개 영상 제작",
+            categoryMain: "사진 & 영상 & 영화",
+            categoryMiddle: "영상",
+            categorySmall: "광고·홍보 영상",
+            content: "신제품 출시에 맞춰 30초 분량의 소개 영상이 필요합니다. 제품의 주요 기능과 특징을 효과적으로 보여줄 수 있는 영상을 원합니다.",
+            applicants: 5,
+            minPrice: 1000000,
+            maxPrice: 2000000,
+            preferMajor: true,
+            location: "원격",
+            deadline: "2025-11-30"
+        }
+    ];
+
+    useEffect(() => {
+        // JSON 데이터에서 상위 3개만 가져오기
+        setCompetitions(competitionData.slice(0, 3));
+    }, []);
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        // 검색 기능 구현
+        console.log('Search query:', searchQuery);
+    };
+
+    const handleCategoryClick = (category) => {
+        const encoded = encodeURIComponent(category);
+        navigate(`/recruit?category=${encoded}`);
+    };
+
+    return (
+        <div className="relative">
+            {/* 배경 이미지 섹션 */}
+            <div className="relative h-[600px] w-screen">
+                <img 
+                    src={Background} 
+                    alt="background" 
+                    className="absolute z-[-1] inset-0 w-full h-full object-cover"
                 />
               ))}
   
@@ -324,6 +419,43 @@ Object
               ))}
             </div>
           }
+
+            {/* 공모전 정보 섹션 추가 */}
+            <div className="relative max-w-6xl mx-auto px-6 py-16">
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
+                    <button 
+                        onClick={() => navigate('/competitions')}
+                        className="px-4 py-2 bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-colors duration-200"
+                    >
+                        더보기
+                    </button>
+                </div>
+                <div className="grid grid-cols-3 gap-6">
+                    {competitions.map((competition, index) => (
+                        <div
+                            key={index}
+                            className="bg-white p-6 rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200"
+                        >
+                            <h3 className="text-xl font-bold mb-2">{competition.제목}</h3>
+                            <p className="text-gray-600 mb-2">주최: {competition.주최}</p>
+                            <div className="flex flex-col gap-1 text-sm text-gray-500">
+                                <span>시상금: {competition.시상규모}</span>
+                                <span>접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}</span>
+                                <span>참여대상: {competition.참여대상}</span>
+                            </div>
+                            <a 
+                                href={competition.홈페이지}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mt-4 inline-block px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200"
+                            >
+                                자세히 보기
+                            </a>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
       </div>
     </div>
