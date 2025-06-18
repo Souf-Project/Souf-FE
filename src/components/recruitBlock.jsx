@@ -73,7 +73,7 @@ export default function RecruitBlock({
   return (
     <div
       onClick={handleClick}
-      className="bg-white rounded-[30px] px-10 shadow-sm p-6 mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
+      className="w-full bg-white rounded-[30px] px-10 shadow-sm p-6 mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
       <div className="flex items-center gap-2 mb-4">
         <div className={getDdayStyle(deadLine)}>{calculateDday(deadLine)}</div>

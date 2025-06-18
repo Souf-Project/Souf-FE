@@ -22,7 +22,7 @@ export async function getRecruit(params = {}) {
             secondCategory = 1,
             thirdCategory = 1,
             recruitSearchReqDto = {},
-            pageable = { page: 0, size: 10, sort: ["createdAt,desc"] }
+            pageable = { page: 0, size: 10, sort: "createdAt,desc" }
         } = params;        
 
         const queryParams = {
@@ -32,6 +32,8 @@ export async function getRecruit(params = {}) {
             'pageable.page': pageable.page,
             'pageable.size': pageable.size
         };
+
+        console.log("Query params:", queryParams);
 
         if (recruitSearchReqDto.title?.trim()) {
             queryParams['recruitSearchReqDto.title'] = recruitSearchReqDto.title;
@@ -44,21 +46,39 @@ export async function getRecruit(params = {}) {
             queryParams['pageable.sort'] = pageable.sort.join(',');
         }
 
+        // 토큰 확인
+        const token = localStorage.getItem('accessToken');
+        console.log("Token exists:", !!token);
+        if (token) {
+            console.log("Token preview:", token.substring(0, 20) + "...");
+        }
+
         const response = await client.get('/api/v1/recruit', {
             params: queryParams,
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
         });
-
+        
         return response;
     } catch (error) {
-        // if (error.response?.status === 403) {
-        //     // 403 에러 발생 시 로그인 페이지로 리다이렉트
-        //     window.location.href = '/login';
-        //     return;
-        // }
         console.error('Recruit API 오류 발생:', error);
+        
+        if (error.response?.status === 403) {
+            console.error('403 Forbidden - 권한이 없습니다.');
+            console.error('Response data:', error.response.data);
+            
+            // 토큰이 만료되었거나 유효하지 않은 경우
+            if (error.response.data?.message?.includes('token') || 
+                error.response.data?.message?.includes('unauthorized')) {
+                console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
+                localStorage.removeItem('accessToken');
+                window.location.href = '/login';
+                return;
+            }
+        }
+        
         throw error;
     }
 }
@@ -77,5 +97,4 @@ export async function getRecruit(params = {}) {
 //         throw error;
 //     }
 // }
-
 

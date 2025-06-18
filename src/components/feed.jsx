@@ -61,7 +61,7 @@ export default function Feed() {
   }
 
   return (
-    <div className="flex flex-col py-6 px-4 max-w-4xl w-full mx-auto">
+    <div className="flex flex-col py-6 px-4 w mx-auto">
       {feeds.map((feed) => (
         <div key={feed.feedId} className="rounded-2xl border border-gray-200 p-6 w-full shadow-sm mb-6">
           <div className="flex justify-between items-start mb-4">

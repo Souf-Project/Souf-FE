@@ -7,7 +7,6 @@ export default function SearchDropdown({ onSelect }) {
     const options = [
         { value: 'title', label: '제목' },
         { value: 'titleContent', label: '제목+내용' },
-        { value: 'category', label: '카테고리' }
     ];
 
     const handleSelect = (option) => {
@@ -16,13 +15,26 @@ export default function SearchDropdown({ onSelect }) {
         setIsOpen(false);
     };
 
+    const handleClickOutside = (e) => {
+        if (!e.target.closest('.search-dropdown')) {
+            setIsOpen(false);
+        }
+    };
+
+    React.useEffect(() => {
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, []);
+
     return (
-        <div className="relative">
+        <div className="relative search-dropdown">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center justify-between w-32 gap-2 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none "
+                className="flex items-center justify-between w-32 gap-2 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none hover:border-gray-300 transition-colors"
             >
-                <span>{selectedOption}</span>
+                <span className="text-sm">{selectedOption}</span>
                 <svg
                     className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                     fill="none"
@@ -38,7 +50,7 @@ export default function SearchDropdown({ onSelect }) {
                         <button
                             key={option.value}
                             onClick={() => handleSelect(option)}
-                            className="w-full px-4 py-2 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50"
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors"
                         >
                             {option.label}
                         </button>
