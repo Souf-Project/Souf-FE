@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../input";
 import ButtonInput from "../buttonInput";
@@ -8,40 +8,67 @@ import {
   getNickNameVerify,
   postEmailVerification,
   postEmailVerify,
+  postSignUp,
 } from "../../api/member";
 import CategorySelectBox from "../categorySelectBox";
 import AlertModal from "../alertModal";
 
 export default function Step1() {
-  const [username, setUsername] = useState("");
-  const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
 
   const [checkResult, setCheckResult] = useState(null);
   const [nicknameModal, setNicknameModal] = useState(false);
   const [emailModal, setEmailModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [nickname, setNickname] = useState("");
+  const [isNameConfirm, setIsNameConfirm] = useState(undefined);
+
+  const [formData, setFormData] = useState({
+    username: "",
+    nickname: "",
+    email: "",
+    password: "",
+    passwordCheck: "",
+    categoryDtos: [
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null,
+      },
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null,
+      },
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null,
+      },
+    ],
+  });
 
   const emailVerificationMutation = useMutation({
     mutationFn: (email) => postEmailVerification(email),
     onSuccess: (response) => {
+      console.log(response?.data?.message);
       setModalTitle("인증번호 발송");
       setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
       setEmailModal(true);
     },
     onError: (error) => {
-      if (error.response?.status === 400) {
+      console.log("에러발생", error?.response);
+      if (error.response?.data?.code === 400) {
         setModalTitle("중복된 이메일");
-        setDescription("이미 회원가입된 이메일입니다.");
+        setDescription(error.response?.data?.message);
       } else {
         setModalTitle("인증번호 발송 오류");
         setDescription("올바르지 않은 이메일 형식입니다.");
       }
-      setIsEmailModal(true);
+      setEmailModal(true);
     },
   });
 
@@ -52,15 +79,17 @@ export default function Step1() {
     error,
     data,
   } = useMutation({
-    mutationFn: () => getNickNameVerify(nickname),
-    onSuccess: (data) => {
-      setCheckResult(data.result); // true/false 반환한다고 가정
+    mutationFn: (nickname) => getNickNameVerify(nickname),
+    onSuccess: (response) => {
+      console.log(response.data);
+      setCheckResult(response.data.result);
+      setNicknameModal(true);
     },
   });
 
   const emailNumberVerificationMutation = useMutation({
-    mutationFn: ({ email, verification }) =>
-      postEmailVerify(email, verification),
+    mutationFn: ({ verification }) =>
+      postEmailVerify(formData.email, verification),
     onSuccess: (response, { email }) => {
       if (response.result === true) {
         updateUserData("email", email);
@@ -79,65 +108,160 @@ export default function Step1() {
     },
   });
 
+  const postSignUpMutation = useMutation({
+    mutationFn: () => {
+      const cleanedCategories = formData.categoryDtos
+        .map((category) => {
+          const cleaned = {};
+          if (category.firstCategory !== null)
+            cleaned.firstCategory = category.firstCategory;
+          if (category.secondCategory !== null)
+            cleaned.secondCategory = category.secondCategory;
+          if (category.thirdCategory !== null)
+            cleaned.thirdCategory = category.thirdCategory;
+          return Object.keys(cleaned).length > 0 ? cleaned : null;
+        })
+        .filter(Boolean); // null 제거
+
+      // 선택된 카테고리 수 검증
+      if (cleanedCategories.length === 0) {
+        alert("최소 1개 이상의 카테고리를 선택해주세요.");
+        return;
+      }
+
+      if (cleanedCategories.length > 3) {
+        alert("최대 3개까지의 카테고리만 선택 가능합니다.");
+        return;
+      }
+
+      // 최종 전송 데이터 구성
+      const finalData = {
+        ...formData,
+        categoryDtos: cleanedCategories,
+      };
+
+      return postSignUp(finalData);
+    },
+    onSuccess: (response) => {
+      console.log(response);
+    },
+    onError: (error) => {
+      setApproveText("서버 오류로 인증에 실패했습니다.");
+      setEmailVerification(false);
+    },
+  });
+
+  const handleCategoryChange = (index) => (categoryData) => {
+    setFormData((prev) => {
+      const updatedCategories = prev.categoryDtos.map((cat, i) =>
+        i === index ? categoryData : cat
+      );
+      return {
+        ...prev,
+        categoryDtos: updatedCategories,
+      };
+    });
+  };
+
+  const handleInputChange = (name, e) => {
+    const { value } = e.target;
+    if (value === "") {
+      setIsNameConfirm(true);
+    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    console.log(formData);
+  };
+
   //  const nickNameVerification = useMutation({})
 
   return (
     <div className="w-full rounded-[30px] border-[1px] py-20 px-52 flex flex-col items-center justify-center">
       <Input
         title="이름"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        name="username"
+        value={formData.username}
+        onChange={(e) => handleInputChange("username", e)}
+        disapproveText="이름을 입력해주세요."
+        essentialText="이름을 입력해주세요."
       />
       <ButtonInput
-        value={nickname}
-        onChange={(e) => setNickname(e.target.value)}
+        name="nickname"
+        value={formData.nickname}
+        onChange={(e) => {
+          setNickname(e.target.value);
+          handleInputChange("nickname", e);
+        }}
         title="닉네임"
         btnText="중복확인"
+        essentialText="닉네임을 입력해주세요."
         onClick={() => checkNickname(nickname)}
       />
       <ButtonInput
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        name="email"
+        value={formData.email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          handleInputChange("email", e);
+        }}
         title="이메일"
         btnText="인증요청"
+        essentialText="이메일을 입력해주세요."
         onClick={() => emailVerificationMutation.mutate(email)}
       />
+
       <ButtonInput
         value={verification}
         onChange={(e) => setVerification(e.target.value)}
         title="이메일 인증"
         btnText="인증확인"
-        onClick={() =>
-          emailNumberVerificationMutation.mutate({ email, verification })
-        }
+        onClick={() => emailNumberVerificationMutation.mutate({ verification })}
       />
       <Input
         title="비밀번호"
         type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        name="password"
+        value={formData.password}
+        onChange={(e) => handleInputChange("password", e)}
       />
       <Input
         title="비밀번호 확인"
         type="password"
-        value={passwordCheck}
-        onChange={(e) => setPasswordCheck(e.target.value)}
+        name="passwordCheck"
+        value={formData.passwordCheck}
+        onChange={(e) => handleInputChange("passwordCheck", e)}
       />
-      <div className="w-full relative mb-8">
-        <div className="text-black text-2xl font-regular mb-4">
+      <div className="w-full relative mb-8 flex flex-col gap-3">
+        <div className="text-black text-2xl font-regular mb-2">
           관심분야 <span className="text-gray-500 text-sm">(선택)</span>
         </div>
-        <CategorySelectBox defaultValue="추가하기" type="join" />
-        {/* 백엔드 필드 나오는 거 보고 해당 개수 최대 3개로 해서 추가되게 하기
-        store 로 저장해서 카테고리가 하나있다면 하나 더. 
-        두개라면 하나더 이런식으로 ... ?
-        그럼 store 에서 최대값을 지정해주고 그 최대값 만큼 해주는 걸로?
-        3으로 잡아두고 -1 씩하면서 0이면 더이상 추가하기 안 보이게 하는 느낌 */}
-        <CategorySelectBox defaultValue="추가하기" type="join" />
-        <CategorySelectBox defaultValue="추가하기" type="join" />
+        {formData?.categoryDtos?.map((category, index) => (
+          <CategorySelectBox
+            key={index}
+            title=""
+            content=""
+            defaultValue={category}
+            type="text"
+            isEditing={true}
+            onChange={handleCategoryChange(index)}
+          />
+        ))}
+        {formData?.categoryDtos.length < 3 && (
+          <CategorySelectBox
+            key={formData?.categoryDtos.length + 1}
+            title=""
+            content=""
+            defaultValue={category}
+            type="text"
+            isEditing={true}
+            onChange={handleCategoryChange(formData?.categoryDtos.length + 1)}
+          />
+        )}
       </div>
 
-      <Button btnText="회원가입" />
+      <Button btnText="회원가입" onClick={() => postSignUpMutation.mutate()} />
       {nicknameModal && (
         <AlertModal
           type={checkResult ? "success" : "warning"}
@@ -147,11 +271,14 @@ export default function Step1() {
               : "이미 가입된 닉네임입니다."
           }
           TrueBtnText="확인"
+          onClickTrue={() => setNicknameModal(false)}
         />
       )}
       {emailModal && (
         <AlertModal
+          type="simple"
           title={modalTitle}
+          description={description}
           TrueBtnText="확인"
           onClickTrue={() => setEmailModal(false)}
         />
