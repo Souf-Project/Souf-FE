@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
-import competitionData from '../assets/competitionData/건축_건설_인테리어.json';
+import competitionData from "../assets/competitionData/건축_건설_인테리어.json";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -82,8 +82,13 @@ export default function Home() {
     },
   ];
 
-  const { data: recruitData } = usePopularRecruit();
-  const { data: feedData } = usePopularFeed();
+  const pageable = {
+    page: 0,
+    size: 12,
+  };
+
+  const { data: recruitData } = usePopularRecruit(pageable);
+  const { data: feedData } = usePopularFeed(pageable);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -222,8 +227,8 @@ export default function Home() {
       <div className="relative max-w-6xl mx-auto px-6 py-16">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
-          <button 
-            onClick={() => navigate('/competitions')}
+          <button
+            onClick={() => navigate("/competitions")}
             className="px-4 py-2 bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-colors duration-200"
           >
             더보기
@@ -239,10 +244,13 @@ export default function Home() {
               <p className="text-gray-600 mb-2">주최: {competition.주최}</p>
               <div className="flex flex-col gap-1 text-sm text-gray-500">
                 <span>시상금: {competition.시상규모}</span>
-                <span>접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}</span>
+                <span>
+                  접수기간: {competition.접수기간.시작일} ~{" "}
+                  {competition.접수기간.마감일}
+                </span>
                 <span>참여대상: {competition.참여대상}</span>
               </div>
-              <a 
+              <a
                 href={competition.홈페이지}
                 target="_blank"
                 rel="noopener noreferrer"
