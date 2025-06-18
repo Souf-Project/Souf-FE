@@ -1,4 +1,19 @@
-import client from './client';
+import client from "./client";
+
+export const getPopularRecruit = async (pageable) => {
+  try {
+    const response = await client.get("/api/v1/recruit/popular", {
+      params: {
+        page: pageable.page,
+        size: pageable.size,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("인기 공고문 조회 에러:", error);
+    throw error;
+  }
+};
 
 export async function getRecruit(params = {}) {
     try {
@@ -62,4 +77,5 @@ export async function getRecruit(params = {}) {
 //         throw error;
 //     }
 // }
+
 
