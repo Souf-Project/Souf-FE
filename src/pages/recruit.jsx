@@ -98,21 +98,29 @@ export default function Recruit() {
   const allSecondCategories = SecondCategory.second_category;
   const allThirdCategories = ThirdCategory;
 
+  // 선택된 대분류에 따라 중분류와 소분류 필터링
+  const getFilteredCategories = () => {
+    const selectedFirstCategory = selectedCategory[0];
+    
+    // 선택된 대분류에 해당하는 중분류만 필터링
+    const filteredSecondCategories = allSecondCategories.filter(
+      (second) => second.first_category_id === selectedFirstCategory
+    );
+
+    return {
+      filteredSecondCategories,
+      thirdCategories: allThirdCategories
+    };
+  };
+
+  const { filteredSecondCategories, thirdCategories } = getFilteredCategories();
+
   const fetchRecruits = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
-
-      let searchParams = {};
-
-      // searchType, searchQuery를 보고 조건 분기
-      if (searchType === "title" && searchQuery.trim() !== "") {
-        searchParams.title = searchQuery;
-      } else if (searchType === "content" && searchQuery.trim() !== "") {
-        searchParams.content = searchQuery;
-      }
 
       const response = await getRecruit({
         firstCategory,
@@ -129,7 +137,6 @@ export default function Recruit() {
       if (response.data) {
         const recruits = response.data.result?.content || [];
         setFilteredRecruits(recruits);
-        console.log(recruits);
       
         const totalElements = response.data.result?.page?.totalElements || recruits.length;
         setTotalPages(Math.ceil(totalElements / pageSize));
@@ -143,7 +150,69 @@ export default function Recruit() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchQuery, searchType, currentPage, pageSize]);
+  }, [selectedCategory, currentPage, pageSize]);
+
+  const performSearch = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
+
+      const response = await getRecruit({
+        firstCategory,
+        secondCategory,
+        thirdCategory,
+        pageable: {
+          page: currentPage,
+          size: pageSize,
+          sort: ["createdAt,desc"]
+        }
+      });
+
+      if (response.data) {
+        let recruits = response.data.result?.content || [];
+        
+        // 프론트엔드에서 검색 필터링 적용
+        if (searchQuery.trim() !== "") {
+          recruits = recruits.filter(recruit => {
+            if (searchType === "title") {
+              return recruit.title?.toLowerCase().includes(searchQuery.toLowerCase());
+            } else if (searchType === "titleContent") {
+              return (
+                recruit.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                recruit.content?.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            } else if (searchType === "category") {
+              // 카테고리 이름으로 검색
+              const categoryNames = recruit.secondCategory?.map(catId => {
+                const category = allSecondCategories.find(cat => cat.second_category_id === catId);
+                return category?.name || '';
+              }) || [];
+              
+              return categoryNames.some(name => 
+                name.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            }
+            return true;
+          });
+        }
+
+        setFilteredRecruits(recruits);
+      
+        const totalElements = response.data.result?.page?.totalElements || recruits.length;
+        setTotalPages(Math.ceil(totalElements / pageSize));
+      } else {
+        setFilteredRecruits([]);
+        setError("데이터를 불러오는데 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("Error fetching recruits:", err);
+      setError("서버 연결에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCategory, searchQuery, searchType, currentPage, pageSize, allSecondCategories]);
 
   useEffect(() => {
     if (categoryParam) {
@@ -158,22 +227,20 @@ export default function Recruit() {
     }
   }, [categoryParam]);
 
+  // 카테고리나 페이지 변경 시에만 실행
   useEffect(() => {
     fetchRecruits();
-  }, [fetchRecruits]);
+  }, [selectedCategory, currentPage, fetchRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(0);
-    fetchRecruits();
+    setCurrentPage(0); // 검색 시 첫 페이지로 이동
+    performSearch();
   };
 
   const handleSearchTypeChange = (type) => {
     setSearchType(type);
-    if (searchQuery.trim()) {
-      setCurrentPage(0);
-      fetchRecruits();
-    }
+    setCurrentPage(0); // 검색 타입 변경 시 첫 페이지로 이동
   };
 
   const handlePageChange = (newPage) => {
@@ -253,11 +320,11 @@ export default function Recruit() {
 
       <div className="flex flex-row">
         <CategoryMenu
-          secondCategories={allSecondCategories}
-          thirdCategories={allThirdCategories}
+          secondCategories={filteredSecondCategories}
+          thirdCategories={thirdCategories}
         />
         {activeTab === "recruit" ? (
-          <div className="w-5xl mx-auto">
+          <div className="w-3/4 mx-auto">
             {filteredRecruits.length > 0 ? (
               <>
                 {filteredRecruits.map((recruit) => (
@@ -286,11 +353,11 @@ export default function Recruit() {
             )}
           </div>
         ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-6 w-3/4 mx-auto">
             <StudentProfileList />
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto">
+          <div className="w-3/4 mx-auto">
             {feedData.map((post) => (
               <div key={post.id} className="mb-8">
                 <Feed worksData={post} />

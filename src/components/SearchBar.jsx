@@ -9,8 +9,13 @@ export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
         }
     };
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSubmit(e);
+    };
+
     return (
-        <form onSubmit={onSubmit} className="w-[300px]">
+        <form onSubmit={handleSubmit} className="w-[300px]">
             <div className="relative">
                 <input
                     type="text"
@@ -18,7 +23,7 @@ export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
                     onChange={onChange}
                     onKeyPress={handleKeyPress}
                     placeholder={placeholder}
-                    className="w-full pl-3  py-1 text-lg rounded-[30px] border border-gray-200 shadow-md focus-none"
+                    className="w-full pl-3 py-1 text-lg rounded-[30px] border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 />
                 <button
                     type="submit"

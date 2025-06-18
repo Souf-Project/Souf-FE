@@ -23,7 +23,7 @@ export default function RecruitDetail() {
   };
 
   return (
-    <div className="pt-24 px-8 w-5/6 mx-auto">
+    <div className="pt-16 px-8 w-5/6 mx-auto">
       <button 
         className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
         onClick={handleGoBack}
