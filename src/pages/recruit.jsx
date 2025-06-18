@@ -15,23 +15,22 @@ import {
 } from "../utils/getCategoryById";
 import Pagination from "../components/pagination";
 
-
 export default function Recruit() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
-
   const [activeTab, setActiveTab] = useState("recruit");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-
   const [firstId, setFirstId] = useState("");
   const [secondCategories, setSecondCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
   // 피드 데이터 (실제로는 API에서 가져와야 함)
   const feedData = [
@@ -92,19 +91,17 @@ export default function Recruit() {
     },
   ];
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
-
-
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
+
+  // CategoryMenu에 전달할 데이터 준비
+  const allSecondCategories = SecondCategory.second_category;
+  const allThirdCategories = ThirdCategory;
 
   const fetchRecruits = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
 
@@ -116,7 +113,6 @@ export default function Recruit() {
       } else if (searchType === "content" && searchQuery.trim() !== "") {
         searchParams.content = searchQuery;
       }
-      
 
       const response = await getRecruit({
         firstCategory,
@@ -137,16 +133,13 @@ export default function Recruit() {
       
         const totalElements = response.data.result?.page?.totalElements || recruits.length;
         setTotalPages(Math.ceil(totalElements / pageSize));
-      }
-       else {
+      } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
     } catch (err) {
-
       console.error("Error fetching recruits:", err);
       setError("서버 연결에 실패했습니다.");
-
     } finally {
       setLoading(false);
     }
@@ -154,7 +147,6 @@ export default function Recruit() {
 
   useEffect(() => {
     if (categoryParam) {
-
       const categoryArr = categoryParam.split(",").map(Number);
       setSelectedCategory([
         categoryArr[0] || 0,
@@ -169,6 +161,11 @@ export default function Recruit() {
   useEffect(() => {
     fetchRecruits();
   }, [fetchRecruits]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(0);
+    fetchRecruits();
   };
 
   const handleSearchTypeChange = (type) => {
@@ -200,7 +197,6 @@ export default function Recruit() {
   }
 
   return (
-
     <div className="pt-12 px-6 w-4/5">
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
@@ -220,7 +216,6 @@ export default function Recruit() {
             </button>
           ) : null}
           <div className="flex">
-
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
@@ -229,7 +224,6 @@ export default function Recruit() {
                 }`}
                 onClick={() => setActiveTab(tab)}
               >
-
                 <span>
                   {tab === "recruit"
                     ? "기업 공고문"
@@ -237,7 +231,6 @@ export default function Recruit() {
                     ? "대학생 프로필"
                     : "대학생 피드"}
                 </span>
-
                 <span
                   className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
                     activeTab === tab ? "w-3/4" : "w-0 group-hover:w-3/4"
@@ -246,87 +239,49 @@ export default function Recruit() {
               </button>
             ))}
           </div>
-
-
-          <div className="flex items-center gap-4">
-            <SearchDropdown onSelect={handleSearchTypeChange} />
-            <SearchBar
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onSubmit={handleSearch}
-              placeholder="검색어를 입력하세요"
-            />
-          </div>
-
-      {activeTab === "recruit" ? (
-        <div className="w-5xl mx-auto">
-          {filteredRecruits.length > 0 ? (
-            <>
-              {filteredRecruits.map((recruit) => (
-                <RecruitBlock 
-                  key={recruit.recruitId} 
-                  id={recruit.recruitId}
-                  title={recruit.title}
-                  content={recruit.content}
-                  deadLine={recruit.deadLine}
-                  payment={recruit.payment}
-                  recruitCount={recruit.recruitCount}
-                  region={recruit.region}
-                  secondCategory={recruit.secondCategory}
-                />
-              ))}
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </>
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
-            </div>
-          )}
         </div>
-      ) : activeTab === "profile" ? (
-        <div className="bg-white rounded-lg shadow-sm p-6 max-w-6xl mx-auto">
-          <StudentProfileList />
-        </div>
-      ) : (
-        <div className="max-w-4xl mx-auto">
-          <Feed />
-
+        <div className="flex items-center gap-4">
+          <SearchDropdown onSelect={handleSearchTypeChange} />
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onSubmit={handleSearch}
+            placeholder="검색어를 입력하세요"
+          />
         </div>
       </div>
+
       <div className="flex flex-row">
         <CategoryMenu
-          secondCategories={getSecondCategoriesByFirstId(firstId)}
-          thirdCategories={ThirdCategory}
+          secondCategories={allSecondCategories}
+          thirdCategories={allThirdCategories}
         />
         {activeTab === "recruit" ? (
           <div className="w-5xl mx-auto">
             {filteredRecruits.length > 0 ? (
-              filteredRecruits.map((recruit) => (
-                <RecruitBlock
-                  key={recruit.id}
-                  id={recruit.id}
-                  title={recruit.title}
-                  categoryMain={recruit.categoryMain}
-                  categoryMiddle={recruit.categoryMiddle}
-                  categorySmall={recruit.categorySmall}
-                  content={recruit.content}
-                  applicants={recruit.applicants}
-                  minPrice={recruit.minPrice}
-                  maxPrice={recruit.maxPrice}
-                  preferMajor={recruit.preferMajor}
-                  location={recruit.location}
-                  deadline={recruit.deadline}
+              <>
+                {filteredRecruits.map((recruit) => (
+                  <RecruitBlock 
+                    key={recruit.recruitId} 
+                    id={recruit.recruitId}
+                    title={recruit.title}
+                    content={recruit.content}
+                    deadLine={recruit.deadLine}
+                    payment={recruit.payment}
+                    recruitCount={recruit.recruitCount}
+                    region={recruit.region}
+                    secondCategory={recruit.secondCategory}
+                  />
+                ))}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
                 />
-              ))
+              </>
             ) : (
               <div className="text-center py-10">
-                <p className="text-gray-500">
-                  선택한 카테고리의 공고가 없습니다.
-                </p>
+                <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
               </div>
             )}
           </div>
