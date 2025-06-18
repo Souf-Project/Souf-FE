@@ -28,7 +28,6 @@ export default function Login() {
       console.log("멤버", result.roleType);
 
       UserStore.getState().setUser({
-        accessToken: result.accessToken,
         memberId: result.memberId,
         username: result.username,
         roleType: result.roleType,
@@ -80,6 +79,7 @@ export default function Login() {
             title="비밀번호"
             // isValidateTrigger={isValidateTrigger}
             // isConfirmed={isConfirmed}
+            type="password"
             placeholder=""
             onChange={(e) => setPassword(e.target.value)}
             essentialText="비밀번호를 입력해주세요"
@@ -87,8 +87,10 @@ export default function Login() {
             // onValidChange={onValidChange}
           />
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
-            <button>회원가입</button>
-            <button>비밀번호 재설정</button>
+            <button onClick={() => navigate("/join")}>회원가입</button>
+            <button onClick={() => navigate("/pwdFind")}>
+              비밀번호 재설정
+            </button>
           </div>
           <div className="flex justify-center">
             <button
