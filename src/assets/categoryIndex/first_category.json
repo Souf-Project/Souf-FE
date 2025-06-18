@@ -1,23 +1,24 @@
 {
-"first_category": [
-	{
-		"first_category_id" : 1,
-		"name" : "순수 미술 & 일러스트"
-	},
-	{
-		"first_category_id" : 2,
-		"name" : "만들기"
-	},
-	{
-		"first_category_id" : 3,
-		"name" : "음악"
-	},
-	{
-		"first_category_id" : 4,
-		"name" : "사진 & 영상 & 영화"
-	},
-	{
-		"first_category_id" : 5,
-		"name" : "디지털 콘텐츠 & 그래픽 디자인"
-	}
-]}
+  "first_category": [
+    {
+      "first_category_id": 1,
+      "name": "순수미술"
+    },
+    {
+      "first_category_id": 2,
+      "name": "공예"
+    },
+    {
+      "first_category_id": 3,
+      "name": "음악"
+    },
+    {
+      "first_category_id": 4,
+      "name": "사진"
+    },
+    {
+      "first_category_id": 5,
+      "name": "디지털 콘텐츠"
+    }
+  ]
+}
