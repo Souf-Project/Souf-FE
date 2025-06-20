@@ -9,11 +9,11 @@ export default function RecruitUpload() {
     title: '',
     content: '',
     region: '',
+    city: '',
     deadline: '',
     companyName: '',
-    minpayment: '',
-    maxpayment: '',
-    workType: 'online',
+    minPayment: '',
+    maxPayment: '',
     isregionIrrelevant: false,
     preferentialTreatment: '',
     categoryDtos: {
@@ -22,13 +22,19 @@ export default function RecruitUpload() {
       thirdCategory: null
     },
     
-    originalFileNames: []
+    originalFileNames: [],
+    workType: 'online',
   });
 
   const regions = [
     '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
     '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
     '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
+  ];
+
+  const cities = [
+    { value: '서울', label: '서울' },
+    { value: '경기', label: '경기' }
   ];
 
   const handleChange = (e) => {
@@ -38,7 +44,7 @@ export default function RecruitUpload() {
       
       const validateImageSize = async (file) => {
         if (!file.type.startsWith('image/')) {
-          return true; // 이미지가 아닌 파일은 그대로 허용
+          return true;
         }
 
         return new Promise((resolve) => {
@@ -89,7 +95,7 @@ export default function RecruitUpload() {
       const formDataToSend = {
         title: formData.title,
         content: formData.content,
-        region: formData.isregionIrrelevant ? "지역 무관" : formData.region,
+        region: formData.isregionIrrelevant ? "지역 무관" : `${formData.city} ${formData.region}`,
         deadline: new Date(formData.deadline).toISOString(),
         payment: `${formData.minpayment}~${formData.maxpayment}만원`,
         preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : "",
@@ -97,7 +103,6 @@ export default function RecruitUpload() {
         originalFileNames: formData.files.map(file => file.name)
       };
 
-      // await uploadRecruit(formDataToSend);
       alert('공고가 성공적으로 등록되었습니다.');
       navigate('/recruit');
     } catch (error) {
@@ -206,23 +211,42 @@ export default function RecruitUpload() {
                 <label className="text-xl text-gray-600">지역 무관</label>
               </div>
             </div>
-            <select
-              name="region"
-              value={formData.region}
-              onChange={handleChange}
-              disabled={formData.isregionIrrelevant}
-              className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
-                formData.isregionIrrelevant ? 'bg-gray-100' : ''
-              }`}
-              required={!formData.isregionIrrelevant}
-            >
-              <option value="">지역 선택</option>
-              {regions.map(region => (
-                <option key={region} value={region}>
-                  {region}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                disabled={formData.isregionIrrelevant}
+                className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
+                  formData.isregionIrrelevant ? 'bg-gray-100' : ''
+                }`}
+                required={!formData.isregionIrrelevant}
+              >
+                <option value="">시/도 선택</option>
+                {cities.map(city => (
+                  <option key={city.value} value={city.value}>
+                    {city.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="region"
+                value={formData.region}
+                onChange={handleChange}
+                disabled={formData.isregionIrrelevant}
+                className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
+                  formData.isregionIrrelevant ? 'bg-gray-100' : ''
+                }`}
+                required={!formData.isregionIrrelevant}
+              >
+                <option value="">지역 선택</option>
+                {regions.map(region => (
+                  <option key={region} value={region}>
+                    {region}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 

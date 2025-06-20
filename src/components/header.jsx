@@ -9,11 +9,10 @@ import { UserStore } from "../store/userStore";
 export default function Header() {
   const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("");
-  //const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [userType, setUserType] = useState("");
-  //const [userName, setUserName] = useState("김시은");
-
+  const [userName, setUserName] = useState("");
   const { username, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
@@ -33,7 +32,7 @@ export default function Header() {
       setIsLogin(true);
 
       const type = localStorage.getItem("userType") || "student";
-      const name = localStorage.getItem("userName") || "김시은";
+      const name = localStorage.getItem("userName") || "";
       setUserType(type);
       setUserName(name);
     }
@@ -88,7 +87,7 @@ export default function Header() {
   const categories = firstCategoryData.first_category;
 
   const UserTypeLabel = () => {
-    if (roleType === "MEMBER") {
+    if (roleType === "STUDENT") {
       return (
         <div className="flex justify-center gap-2">
           <span className="font-bold">학생</span>

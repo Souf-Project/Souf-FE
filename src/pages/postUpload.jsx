@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import Button from "../components/button";
-import Hashtag from "../components/post/hashtag";
+// import Hashtag from "../components/post/hashtag";
 import ImageUpload from "../components/post/imageUpload";
 import PostInput from "../components/postInput";
 import { postFeed, postMedia, uploadToS3 } from "../api/feed";
@@ -12,6 +12,7 @@ export default function PostUpload() {
   const [formData, setFormData] = useState({
     topic: "",
     content: "",
+    tags: [],
     originalFileNames: [],
     categoryDtos: [
       {
@@ -44,11 +45,8 @@ export default function PostUpload() {
   };
 
   /*
-  파일관련 데이터 저장하는 거 위에랑 ImageUpload 컴포넌트 내부 코드 참고하고
   카테고리 3개 아니면 null인 거 없애고 null 아닌 것만 보내는 그런 거 지금 아무것도 추가 안되어있어서
   나중에 추가해야대 ... 
-  요거 나중에 한 번 카테고리 관련된 애들 모두 적용시켜야할 것 같애서 나중에 하자 ㅜㅜ 이거 나중에 보고지워도 되고
-  아님 그냥 나중에 내가 지우겟삼
   */
   const { mutate, isPending } = useMutation({
     mutationFn: (postData) => {

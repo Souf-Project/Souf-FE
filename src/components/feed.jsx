@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getPopularFeed } from "../api/feed";
+import { getFeed } from "../api/feed";
 import { getFormattedDate } from "../utils/getDate";
 
 export default function Feed({ feedData }) {
@@ -13,6 +14,7 @@ export default function Feed({ feedData }) {
     page: 1,
     size: 10,
   });
+  
 
   if (loading) {
     return (
@@ -58,9 +60,9 @@ export default function Feed({ feedData }) {
       </div>
 
       <div className="w-full overflow-hidden rounded-md mb-4">
-        {feedData?.mediaResDtos ? (
+        {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
           <img
-            src={feedData?.mediaResDto?.fileUrl[0]}
+            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${feedData.mediaResDtos[0].fileUrl}`}
             alt={feedData?.topic || "이미지"}
             className="w-full h-auto object-cover"
           />
