@@ -20,7 +20,7 @@ export const getPopularFeed = async (pageable) => {
 {
   "topic": "봄 프로젝트 1회차",
   "content": "오늘 작업 내용...",
-  "tags": "[봄, 산책, 나들이, 어린이 대공원]('#'는 빼고 보내주세요!",
+  "tags": [], // 빈 배열로 보내거나 태그가 있을 때 배열로 보내기
   "originalFileNames": "[fileName.jpg, dog.jpg..]",
   "categoryDtos": [
     {
