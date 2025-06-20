@@ -14,6 +14,8 @@ import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import competitionData from "../assets/competitionData/건축_건설_인테리어.json";
+import { calculateDday } from "../utils/getDate";
+import Carousel from "../components/home/carousel";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -176,11 +178,12 @@ export default function Home() {
 
       {/* 인기 공고문 섹션 */}
       <div className="relative mt-16">
-        <div className="relative max-w-6xl mx-auto px-6 py-16">
+        <div className="relative flex flex-col max-w-6xl mx-auto px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>
-
+          <Carousel />
+          {/*
           <div className="grid grid-cols-3 gap-6">
             {recruitData?.result?.content?.map((recruit) => (
               <div
@@ -194,13 +197,12 @@ export default function Home() {
                 </p>
                 <p className="mb-4 text-md">{recruit.content}</p>
                 <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span>
-                    {recruit.minPrice / 10000} - {recruit.maxPrice / 10000}
-                  </span>
+                  <span>{calculateDday(recruit.deadLine)}</span>
                 </div>
               </div>
             ))}
           </div>
+           */}
         </div>
       </div>
 
