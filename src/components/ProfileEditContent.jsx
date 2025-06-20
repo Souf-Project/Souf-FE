@@ -30,7 +30,7 @@ export default function ProfileEditContent() {
         thirdCategory: null
       }
     ],
-    profileImage: null
+    profileImageUrl: null
   });
 
   useEffect(() => {
@@ -44,7 +44,9 @@ export default function ProfileEditContent() {
         setFormData(prev => ({
           ...prev,
           ...response.data.result
+          
         }));
+        console.log(response.data.result);
       } else {
         console.error('프로필 데이터 조회 실패:', response.data?.message);
       }
@@ -107,14 +109,13 @@ export default function ProfileEditContent() {
     if (isValid) {
       setFormData(prev => ({
         ...prev,
-        profileImage: file
+        profileImageUrl: file
       }));
     }
   };
 
   const handleSave = async () => {
     try {
-      // 선택된 카테고리 필터링 (모든 필드가 null이 아닌 카테고리만 선택)
       const selectedCategories = formData.newCategories.filter(category => 
         category.firstCategory !== null && 
         category.secondCategory !== null && 
@@ -123,7 +124,6 @@ export default function ProfileEditContent() {
 
       console.log('선택된 카테고리:', selectedCategories);
 
-      // 카테고리 개수 검증
       if (selectedCategories.length === 0) {
         alert('최소 1개 이상의 카테고리를 선택해주세요.');
         return;
@@ -139,7 +139,8 @@ export default function ProfileEditContent() {
         nickname: formData.nickname,
         intro: formData.intro,
         personalUrl: formData.personalUrl,
-        newCategories: selectedCategories
+        newCategories: selectedCategories,
+        profileImageUrl: formData.profileImageUrl
       };
 
       console.log('ProfileEditContent - API 요청 데이터:', requestData);
@@ -169,9 +170,9 @@ export default function ProfileEditContent() {
       <div className="grid grid-cols-1 gap-6">
         <div className="flex items-center space-x-6 m-5">
           <div className="w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-            {formData.profileImage ? (
+            {formData.profileImageUrl ? (
               <img 
-                src={URL.createObjectURL(formData.profileImage)} 
+                src={formData.profileImageUrl} 
                 alt="프로필" 
                 className="w-full h-full object-cover"
               />

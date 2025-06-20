@@ -4,7 +4,7 @@ import Hashtag from "../components/post/hashtag";
 import ImageUpload from "../components/post/imageUpload";
 import PostInput from "../components/postInput";
 import { postFeed, postMedia, uploadToS3 } from "../api/feed";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CategorySelectBox from "../components/categorySelectBox";
 
 export default function PostUpload() {
@@ -12,53 +12,84 @@ export default function PostUpload() {
   const [formData, setFormData] = useState({
     topic: "",
     content: "",
-    //tags: "[봄, 산책, 나들이]",
-    originalFileNames: selectedFiles.map((file) => file.name),
-    categoryDtos: [],
+    originalFileNames: [],
+    categoryDtos: [
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null,
+      },
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null,
+      },
+      {
+        firstCategory: null,
+        secondCategory: null,
+        thirdCategory: null,
+      },
+    ],
   });
 
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      originalFileNames: selectedFiles.map((file) => file.name),
+    }));
+  }, [selectedFiles]);
+
   const handleImagesChange = (files) => {
-    setSelectedFiles(files); // 🔹 File[]을 상태로 저장
+    setSelectedFiles(files); //파일 저장
   };
 
+  /*
+  파일관련 데이터 저장하는 거 위에랑 ImageUpload 컴포넌트 내부 코드 참고하고
+  카테고리 3개 아니면 null인 거 없애고 null 아닌 것만 보내는 그런 거 지금 아무것도 추가 안되어있어서
+  나중에 추가해야대 ... 
+  요거 나중에 한 번 카테고리 관련된 애들 모두 적용시켜야할 것 같애서 나중에 하자 ㅜㅜ 이거 나중에 보고지워도 되고
+  아님 그냥 나중에 내가 지우겟삼
+  */
   const { mutate, isPending } = useMutation({
-    mutationFn: (postData) => postFeed(postData),
-    onSuccess: async ({ feedId, dtoList }) => {
+    mutationFn: (postData) => {
+      //1. 백엔드에서 presigned-url 받아오기 위해 텍스트관련된 내용 먼저 보내기
+      return postFeed(postData);
+    },
+    onSuccess: async (response) => {
+      const { feedId, dtoList } = response.result; // 위에 mutationFn 로 받은 결과중에 미디어파일관련된 것만 받아옴
+
       try {
-        // 1. S3에 모두 업로드
+        // 2. AWS s3 에 모두 업로드함
         await Promise.all(
           dtoList.map(({ presignedUrl }, i) =>
             uploadToS3(presignedUrl, selectedFiles[i])
           )
         );
 
-        // 2. 업로드 후 서버에 메타데이터 전송
-        /*
-        {
-  "postId": 1,
-  "fileUrl": "https://iamsouf.s3.amazonaws.com/feed/original/example.jpg",
-  "fileName": "[fileName, pictureName, spring, hihi]",
-  "fileType": "[jpg, jpg, png, jpeg]"
-}
+        //이건 각각 파일 여러개면 list로 만들어야해서 코드 추가함
+        const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+        const fileNames = selectedFiles.map((file) => file.name);
+        const fileTypes = selectedFiles.map((file) =>
+          file.type.split("/")[1].toUpperCase()
+        );
 
-        */
+        //3. s3에 업로드 성공 후 미디어파일관련 백엔드에 보내주기
         await Promise.all(
-          dtoList.map(({ fileUrl }, i) =>
-            sendMetaData({
+          dtoList.map(({ presignedUrl }, i) =>
+            postMedia({
               feedId,
-              fileUrl,
-              fileName: imageFiles[i].name,
-              fileType: imageFiles[i].type.split("/")[1], // 'jpg' 등
+              fileUrl: fileUrls,
+              fileName: fileNames,
+              fileType: fileTypes,
             })
           )
         );
-      } catch (err) {
-        console.error("업로드 실패:", err);
-        alert("업로드 중 오류 발생");
+
+        //여기는 추후에 파일 전송완료되면 실행시킬 코드 추가 ..
+      } catch (error) {
+        console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
+        alert("업로드 중 오류가 발생했습니다.");
       }
-    },
-    onError: () => {
-      alert("게시물 생성 실패");
     },
   });
 
@@ -70,6 +101,18 @@ export default function PostUpload() {
       [name]: value,
     }));
     console.log(formData);
+  };
+
+  const handleCategoryChange = (index) => (categoryData) => {
+    setFormData((prev) => {
+      const updatedCategories = prev.categoryDtos.map((cat, i) =>
+        i === index ? categoryData : cat
+      );
+      return {
+        ...prev,
+        categoryDtos: updatedCategories,
+      };
+    });
   };
 
   return (
@@ -87,10 +130,22 @@ export default function PostUpload() {
           value={formData.content}
           onChange={(e) => handleInputChange("content", e)}
         />
-        <CategorySelectBox />
+        <div className="flex gap-2 w-full">
+          {formData?.categoryDtos?.map((category, index) => (
+            <CategorySelectBox
+              key={index}
+              title=""
+              content=""
+              defaultValue={category}
+              type="text"
+              isEditing={true}
+              onChange={handleCategoryChange(index)}
+            />
+          ))}
+        </div>
         <ImageUpload onImagesChange={handleImagesChange} />
         <div className="flex flex-row px-52 gap-6">
-          <Button btnText="업로드" onClick={() => mutate(postData)} />
+          <Button btnText="업로드" onClick={() => mutate(formData)} />
           <button className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border">
             취소
           </button>
