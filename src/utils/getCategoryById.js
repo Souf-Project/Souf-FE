@@ -6,9 +6,11 @@ import ThirdCategory from "../assets/categoryIndex/third_category.json";
 
 // 이름으로 first_category_id 찾기
 export const getFirstCategoryId = (name) => {
-  const category = FirstCategory.first_category.find(
-    (cat) => cat.name.trim() === name.trim()
-  );
+  const category = FirstCategory.first_category.find((cat) => {
+    if (typeof name !== "string" || typeof cat.name !== "string") return false;
+    return cat.name.trim() === name.trim();
+  });
+
   return category ? category.first_category_id : 0;
 };
 

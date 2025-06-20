@@ -14,6 +14,7 @@ import {
   getSecondCategoriesByFirstId,
 } from "../utils/getCategoryById";
 import Pagination from "../components/pagination";
+import StudentFeedList from "./studentFeedList";
 
 export default function Recruit() {
   const location = useLocation();
@@ -101,7 +102,7 @@ export default function Recruit() {
   // 선택된 대분류에 따라 중분류와 소분류 필터링
   const getFilteredCategories = () => {
     const selectedFirstCategory = selectedCategory[0];
-    
+
     // 선택된 대분류에 해당하는 중분류만 필터링
     const filteredSecondCategories = allSecondCategories.filter(
       (second) => second.first_category_id === selectedFirstCategory
@@ -109,7 +110,7 @@ export default function Recruit() {
 
     return {
       filteredSecondCategories,
-      thirdCategories: allThirdCategories
+      thirdCategories: allThirdCategories,
     };
   };
 
@@ -130,15 +131,16 @@ export default function Recruit() {
         pageable: {
           page: currentPage,
           size: pageSize,
-          sort: ["createdAt,desc"]
-        }
+          sort: ["createdAt,desc"],
+        },
       });
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
         setFilteredRecruits(recruits);
-      
-        const totalElements = response.data.result?.page?.totalElements || recruits.length;
+
+        const totalElements =
+          response.data.result?.page?.totalElements || recruits.length;
         setTotalPages(Math.ceil(totalElements / pageSize));
       } else {
         setFilteredRecruits([]);
@@ -166,31 +168,40 @@ export default function Recruit() {
         pageable: {
           page: currentPage,
           size: pageSize,
-          sort: ["createdAt,desc"]
-        }
+          sort: ["createdAt,desc"],
+        },
       });
 
       if (response.data) {
         let recruits = response.data.result?.content || [];
-        
+
         // 프론트엔드에서 검색 필터링 적용
         if (searchQuery.trim() !== "") {
-          recruits = recruits.filter(recruit => {
+          recruits = recruits.filter((recruit) => {
             if (searchType === "title") {
-              return recruit.title?.toLowerCase().includes(searchQuery.toLowerCase());
+              return recruit.title
+                ?.toLowerCase()
+                .includes(searchQuery.toLowerCase());
             } else if (searchType === "titleContent") {
               return (
-                recruit.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                recruit.content?.toLowerCase().includes(searchQuery.toLowerCase())
+                recruit.title
+                  ?.toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                recruit.content
+                  ?.toLowerCase()
+                  .includes(searchQuery.toLowerCase())
               );
             } else if (searchType === "category") {
               // 카테고리 이름으로 검색
-              const categoryNames = recruit.secondCategory?.map(catId => {
-                const category = allSecondCategories.find(cat => cat.second_category_id === catId);
-                return category?.name || '';
-              }) || [];
-              
-              return categoryNames.some(name => 
+              const categoryNames =
+                recruit.secondCategory?.map((catId) => {
+                  const category = allSecondCategories.find(
+                    (cat) => cat.second_category_id === catId
+                  );
+                  return category?.name || "";
+                }) || [];
+
+              return categoryNames.some((name) =>
                 name.toLowerCase().includes(searchQuery.toLowerCase())
               );
             }
@@ -199,8 +210,9 @@ export default function Recruit() {
         }
 
         setFilteredRecruits(recruits);
-      
-        const totalElements = response.data.result?.page?.totalElements || recruits.length;
+
+        const totalElements =
+          response.data.result?.page?.totalElements || recruits.length;
         setTotalPages(Math.ceil(totalElements / pageSize));
       } else {
         setFilteredRecruits([]);
@@ -212,7 +224,14 @@ export default function Recruit() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, searchQuery, searchType, currentPage, pageSize, allSecondCategories]);
+  }, [
+    selectedCategory,
+    searchQuery,
+    searchType,
+    currentPage,
+    pageSize,
+    allSecondCategories,
+  ]);
 
   useEffect(() => {
     if (categoryParam) {
@@ -220,7 +239,7 @@ export default function Recruit() {
       setSelectedCategory([
         categoryArr[0] || 0,
         categoryArr[1] || 0,
-        categoryArr[2] || 0
+        categoryArr[2] || 0,
       ]);
     } else {
       setSelectedCategory([0, 0, 0]);
@@ -267,21 +286,6 @@ export default function Recruit() {
     <div className="pt-12 px-6 w-4/5">
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
-          {activeTab === "recruit" ? (
-            <button
-              onClick={() => navigate("/recruit/upload")}
-              className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-            >
-              공고문 작성하기
-            </button>
-          ) : activeTab === "profile" ? (
-            <button
-              onClick={() => navigate("/profile/upload")}
-              className="bg-yellow-point text-white w-40 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
-            >
-              피드 작성하기
-            </button>
-          ) : null}
           <div className="flex">
             {["recruit", "profile", "feed"].map((tab) => (
               <button
@@ -328,8 +332,8 @@ export default function Recruit() {
             {filteredRecruits.length > 0 ? (
               <>
                 {filteredRecruits.map((recruit) => (
-                  <RecruitBlock 
-                    key={recruit.recruitId} 
+                  <RecruitBlock
+                    key={recruit.recruitId}
                     id={recruit.recruitId}
                     title={recruit.title}
                     content={recruit.content}
@@ -348,7 +352,9 @@ export default function Recruit() {
               </>
             ) : (
               <div className="text-center py-10">
-                <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
+                <p className="text-gray-500">
+                  선택한 카테고리의 공고가 없습니다.
+                </p>
               </div>
             )}
           </div>
@@ -358,11 +364,7 @@ export default function Recruit() {
           </div>
         ) : (
           <div className="w-3/4 mx-auto">
-            {feedData.map((post) => (
-              <div key={post.id} className="mb-8">
-                <Feed worksData={post} />
-              </div>
-            ))}
+            <StudentFeedList />
           </div>
         )}
       </div>

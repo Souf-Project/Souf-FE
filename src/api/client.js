@@ -13,9 +13,9 @@ const client = axios.create({
 // 요청 인터셉터 추가
 client.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.set("Authorization", `Bearer ${token}`);
     }
     return config;
   },
@@ -24,14 +24,28 @@ client.interceptors.request.use(
   }
 );
 
+/*
+client.interceptors.request.use(
+    async (config) => {
+        if (typeof window !== undefined) {
+            const token = sessionStorage.getItem('access_token');
+            config.headers.set('Authorization', `Bearer ${token}`);
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+*/
+
 // 응답 인터셉터 추가
 client.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
-    if (error.code === 'ERR_NETWORK') {
-      console.error('서버 연결 실패');
+    if (error.code === "ERR_NETWORK") {
+      console.error("서버 연결 실패");
     }
     return Promise.reject(error);
   }

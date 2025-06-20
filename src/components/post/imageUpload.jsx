@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 
-export default function ImageUpload() {
+export default function ImageUpload({ onImagesChange }) {
   const [images, setImages] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -10,11 +10,25 @@ export default function ImageUpload() {
       file,
       preview: URL.createObjectURL(file),
     }));
-    setImages((prev) => [...prev, ...newImages]);
+    const updatedImages = [...images, ...newImages];
+    setImages(updatedImages);
+    onImagesChange(updatedImages.map((img) => img.file)); // 👉 부모로 File[] 전달
   };
 
   const handleClick = () => {
     fileInputRef.current.click();
+  };
+
+  const handleCategoryChange = (index) => (categoryData) => {
+    setFormData((prev) => {
+      const updatedCategories = prev.categoryDtos.map((cat, i) =>
+        i === index ? categoryData : cat
+      );
+      return {
+        ...prev,
+        categoryDtos: updatedCategories,
+      };
+    });
   };
 
   return (
