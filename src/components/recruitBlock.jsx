@@ -1,6 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
+import { getRecruitDetail } from '../api/recruit';
+
+const parsePayment = (paymentString) => {
+  if (!paymentString || typeof paymentString !== 'string') return 0;
+  let numStr = paymentString.replace(/[^0-9.]/g, '');
+  let num = parseFloat(numStr);
+  if (paymentString.includes('만')) {
+    num *= 10000;
+  }
+  return isNaN(num) ? 0 : num;
+};
 
 export default function RecruitBlock({
   id,
@@ -8,13 +19,17 @@ export default function RecruitBlock({
   content,
   deadLine,
   payment,
-  recruitCount,
-  region,
-  secondCategory
+  minPayment,
+  maxPayment,
+  cityName,
+  cityDetailName,
+  secondCategory,
+  categoryDtoList,
 }) {
   const navigate = useNavigate();
 
   const getCategoryName = (categoryId) => {
+    if (!categoryId) return '';
     const category = secondCategoryData.second_category.find(
       (cat) => cat.second_category_id === categoryId
     );
@@ -22,6 +37,7 @@ export default function RecruitBlock({
   };
 
   const calculateDday = (deadline) => {
+    if (!deadline) return "마감";
     const today = new Date();
     const deadlineDate = new Date(deadline);
     const timeDiff = deadlineDate - today;
@@ -35,6 +51,7 @@ export default function RecruitBlock({
   };
 
   const getDdayStyle = (deadline) => {
+    if (!deadline) return 'font-regular text-base bg-yellow-main text-gray-500 rounded-lg px-5 py-1';
     const today = new Date();
     const deadlineDate = new Date(deadline);
     const timeDiff = deadlineDate - today;
@@ -47,27 +64,51 @@ export default function RecruitBlock({
     }
   };
 
-  const handleClick = () => {
-    const categoryMain = "디자인"; // 임시로 고정값 설정
-    const categoryMiddle = getCategoryName(secondCategory[0]);
-    const categorySmall = "전체"; // 임시로 고정값 설정
+  const handleClick = async () => {
+    const minPrice = parsePayment(minPayment);
+    const maxPrice = parsePayment(maxPayment);
+    
+    try {
+      const response = await getRecruitDetail(id);
+      console.log('Recruit detail response:', response);
+      
+      const recruitDetail = response.data.result;
+      
+      navigate(`/recruitDetails/${id}`, {
+        state: {
+          title,
+          content,
+          cityName,
+          cityDetailName,
+          minPrice,
+          maxPrice,
+          deadline: deadLine,
+          location: cityName,
+          preferMajor: false, 
+          id,
+          recruitDetail,
+          categoryDtoList,
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching recruit detail:', error);
 
-    navigate(`/recruitDetails/${id}`, {
-      state: {
-        title,
-        content,
-        categoryMain,
-        categoryMiddle,
-        categorySmall,
-        minPrice: parseInt(payment.replace(/[^0-9]/g, '')),
-        maxPrice: parseInt(payment.replace(/[^0-9]/g, '')),
-        deadline: deadLine,
-        location: region,
-        preferMajor: false, // 임시로 고정값 설정
-        applicants: recruitCount,
-        id
-      }
-    });
+      navigate(`/recruitDetails/${id}`, {
+        state: {
+          title,
+          content,
+          cityName,
+          cityDetailName,
+          minPrice,
+          maxPrice,
+          deadline: deadLine,
+          location: cityName,
+          preferMajor: false,
+          id,
+          categoryDtoList,
+        }
+      });
+    }
   };
 
   return (
@@ -77,7 +118,7 @@ export default function RecruitBlock({
     >
       <div className="flex items-center gap-2 mb-4">
         <div className={getDdayStyle(deadLine)}>{calculateDday(deadLine)}</div>
-        <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{region}</div>
+        <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName}</div>
       </div>
       <div className="flex flex-col justify-between items-start mb-4">
         <h2 className="text-3xl font-semibold text-gray-800">{title}</h2>
@@ -86,9 +127,7 @@ export default function RecruitBlock({
       <p className="text-lg font-regular text-gray-600 mb-4">{content}</p>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <span className="text-2xl font-regular text-black">모집 인원 {recruitCount}명</span>
-          <span className="text-yellow-main text-2xl font-bold">|</span>
-          <span className="text-2xl font-regular text-black ">{payment}</span>
+          <span className="text-2xl font-regular text-black ">{payment || '금액 협의'}</span>
         </div>
        
       </div>

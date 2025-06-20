@@ -26,16 +26,57 @@ export default function RecruitUpload() {
     workType: 'online',
   });
 
-  const regions = [
-    '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
-    '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
-    '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'
+  const cityDetailData = [
+    { city_detail_id: 1, name: "강남구", city_id: 1 },
+    { city_detail_id: 2, name: "강동구", city_id: 1 },
+    { city_detail_id: 3, name: "강북구", city_id: 1 },
+    { city_detail_id: 4, name: "강서구", city_id: 1 },
+    { city_detail_id: 5, name: "관악구", city_id: 1 },
+    { city_detail_id: 6, name: "광진구", city_id: 1 },
+    { city_detail_id: 7, name: "구로구", city_id: 1 },
+    { city_detail_id: 8, name: "금천구", city_id: 1 },
+    { city_detail_id: 9, name: "노원구", city_id: 1 },
+    { city_detail_id: 10, name: "도봉구", city_id: 1 },
+    { city_detail_id: 11, name: "동대문구", city_id: 1 },
+    { city_detail_id: 12, name: "동작구", city_id: 1 },
+    { city_detail_id: 13, name: "마포구", city_id: 1 },
+    { city_detail_id: 14, name: "서대문구", city_id: 1 },
+    { city_detail_id: 15, name: "서초구", city_id: 1 },
+    { city_detail_id: 16, name: "성동구", city_id: 1 },
+    { city_detail_id: 17, name: "성북구", city_id: 1 },
+    { city_detail_id: 18, name: "송파구", city_id: 1 },
+    { city_detail_id: 19, name: "양천구", city_id: 1 },
+    { city_detail_id: 20, name: "영등포구", city_id: 1 },
+    { city_detail_id: 21, name: "용산구", city_id: 1 },
+    { city_detail_id: 22, name: "은평구", city_id: 1 },
+    { city_detail_id: 23, name: "종로구", city_id: 1 },
+    { city_detail_id: 24, name: "중구", city_id: 1 },
+    { city_detail_id: 25, name: "중랑구", city_id: 1 },
+    { city_detail_id: 26, name: "지역 무관", city_id: 1 },
+    { city_detail_id: 27, name: "고양", city_id: 2 },
+    { city_detail_id: 28, name: "수원역", city_id: 2 },
+    { city_detail_id: 29, name: "동수원", city_id: 2 },
+    { city_detail_id: 30, name: "성남", city_id: 2 },
+    { city_detail_id: 31, name: "부천", city_id: 2 },
+    { city_detail_id: 32, name: "용인", city_id: 2 },
+    { city_detail_id: 33, name: "김포", city_id: 2 },
+    { city_detail_id: 34, name: "파주", city_id: 2 },
+    { city_detail_id: 35, name: "안산", city_id: 2 },
+    { city_detail_id: 36, name: "안양", city_id: 2 },
+    { city_detail_id: 37, name: "화성", city_id: 2 },
+    { city_detail_id: 38, name: "남양주", city_id: 2 },
+    { city_detail_id: 39, name: "의정부", city_id: 2 },
+    { city_detail_id: 40, name: "하남", city_id: 2 },
+    { city_detail_id: 41, name: "여주", city_id: 2 },
+    { city_detail_id: 42, name: "포천", city_id: 2 },
+    { city_detail_id: 43, name: "지역 무관", city_id: 2 },
   ];
 
-  const cities = [
-    { value: '서울', label: '서울' },
-    { value: '경기', label: '경기' }
+  const cityData = [
+    { city_id: 1, name: "서울"},
+    { city_id: 2, name: "경기"}
   ];
+  
 
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
@@ -223,7 +264,7 @@ export default function RecruitUpload() {
                 required={!formData.isregionIrrelevant}
               >
                 <option value="">시/도 선택</option>
-                {cities.map(city => (
+                {city_data.map(city => (
                   <option key={city.value} value={city.value}>
                     {city.label}
                   </option>
