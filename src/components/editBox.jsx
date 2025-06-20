@@ -1,15 +1,22 @@
 import React from 'react';
+import editIco from '../assets/images/editIco.svg';
+import checkBtnIco from '../assets/images/checkBtnIco.svg';
 
-export default function EditBox({title, content, defaultValue, type}) {
+export default function EditBox({title, value, onChange, isEditing}) {
   return (
-    <div>
-          <label className="block text-black font-semibold text-3xl mb-2">{title}</label>
-          <input 
-            type="text" 
-            className="w-full p-2 border border-gray-300 rounded-md"
-            defaultValue={defaultValue}
-          />
-          <button className="bg-yellow-point text-white px-6 py-2 rounded-md">저장하기</button>
-        </div>
+    <div className="m-4">
+      <label className="block text-black font-semibold text-3xl mb-2">{title}</label>
+      <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+        <input 
+          type="text" 
+          className={`flex-1 p-5 pl-7 border-0 outline-none ${
+            isEditing ? 'bg-white text-black' : 'bg-[#F7F7F7] text-gray-600'
+          }`}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          disabled={!isEditing}
+        />
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>STOMP Chat Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+  </head>
+  <body>
+    <h2>✅ 콘솔(F12)에서 로그 확인하세요.</h2>
+
+    <script>
+      // 1️⃣ WebSocket 연결
+      const socket = new WebSocket("ws://localhost:8080/ws");
+      const client = Stomp.over(socket);
+
+      // 2️⃣ 토큰 설정 (실제 JWT 토큰으로 교체)
+      const token =
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0amRndXMzNDg4QG5hdmVyLmNvbSIsImlhdCI6MTc0NzgxOTYxMywiZXhwIjoxNzQ3ODIxNDEzfQ.HaKJ1wfw0zjz6BlZsogqtU8E5p9xyQbIgnslZ17Ye88";
+
+      // 3️⃣ 연결 시도
+      client.connect({ Authorization: token }, function (frame) {
+        console.log("🔗 Connected:", frame);
+
+        // 4️⃣ 구독 : 이걸(topic/chatroom/2) 구독한 사람은 다 메시지를 볼 수 있는데, 사용자를 1명으로 제한해서 개인 채팅으로 사용할 예정
+        client.subscribe(
+          "/topic/chatroom/2",
+          function (message) {
+            console.log("📨 받은 메시지:", JSON.parse(message.body));
+          },
+          {
+            Authorization: token, // 👈 SUBSCRIBE에도 토큰을 명시적으로 넣어야 함
+          }
+        );
+
+        // 5️⃣ 메시지 발송 (원하면 1~2초 뒤 실행)
+        setTimeout(() => {
+          client.send(
+            "/app/chat.sendMessage", // 보낼때는 무조건 이걸로 호출(고정)
+            {
+              Authorization: token,
+            },
+            JSON.stringify({
+              roomId: 2,
+              type: "TALK",
+              content: "안녕하세요! 👋", // 메세지 내용
+            })
+          );
+        }, 1000);
+        // 구독은 한 번만 하고, 메세지 전송은 5번만 반복하면 됨
+      });
+    </script>
+  </body>
+</html>
