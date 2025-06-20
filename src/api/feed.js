@@ -67,7 +67,7 @@ export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
     });
     return response.data;
   } catch (error) {
-    console.error("인기 피드 조회 에러:", error);
+    console.error("피드 이미지 조회 에러:", error);
     throw error;
   }
 };
