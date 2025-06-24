@@ -120,18 +120,18 @@ export async function getRecruitDetail(recruitId) {
     }
 }
 
-// export async function uploadRecruit(data) {
-//     try {
-//         const response = await client.post('/api/v1/recruit', data, {
-//             headers: {
-//                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-//                 'Content-Type': 'application/json'
-//             }
-//         });
-//         return response;
-//     } catch (error) {
-//         console.error('Recruit Upload API 오류 발생:', error);
-//         throw error;
-//     }
-// }
+export async function uploadRecruit(data) {
+    try {
+        const response = await client.post('/api/v1/recruit', data, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Recruit Upload API 오류 발생:', error);
+        throw error;
+    }
+}
 

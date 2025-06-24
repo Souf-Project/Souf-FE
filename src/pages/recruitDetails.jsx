@@ -17,26 +17,28 @@ const parsePayment = (paymentString) => {
 
 const getCategoryNames = (categoryDtoList) => {
     if (!categoryDtoList || categoryDtoList.length === 0) {
-        return { first: '', second: '', third: '' };
+        return [];
     }
 
-    const firstCatId = categoryDtoList[0].firstCategory;
-    const secondCatId = categoryDtoList[0].secondCategory;
-    const thirdCatIds = categoryDtoList.map(dto => dto.thirdCategory);
+    return categoryDtoList.map(dto => {
+        const firstCatId = dto.firstCategory;
+        const secondCatId = dto.secondCategory;
+        const thirdCatId = dto.thirdCategory;
 
-    const firstName = firstCategoryData.first_category.find(
-        cat => cat.first_category_id === firstCatId
-    )?.name || '';
+        const firstName = firstCategoryData.first_category.find(
+            cat => cat.first_category_id === firstCatId
+        )?.name || '';
 
-    const secondName = secondCategoryData.second_category.find(
-        cat => cat.second_category_id === secondCatId
-    )?.name || '';
+        const secondName = secondCategoryData.second_category.find(
+            cat => cat.second_category_id === secondCatId
+        )?.name || '';
 
-    const thirdNames = thirdCatIds.map(id => 
-        thirdCategoryData.third_category.find(cat => cat.third_category_id === id)?.name
-    ).filter(Boolean).join(', ');
+        const thirdName = thirdCategoryData.third_category.find(
+            cat => cat.third_category_id === thirdCatId
+        )?.name || '';
 
-    return { first: firstName, second: secondName, third: thirdNames };
+        return { first: firstName, second: secondName, third: thirdName };
+    });
 };
 
 export default function RecruitDetail() {
@@ -72,7 +74,7 @@ export default function RecruitDetail() {
   // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
   const displayData = recruitDetail || recruitData;
   const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
-  const { first: categoryMain, second: categoryMiddle, third: categorySmall } = getCategoryNames(categoryList);
+  const categoryNames = getCategoryNames(categoryList);
 
   const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : displayData.minPrice;
   const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : displayData.maxPrice;
@@ -89,15 +91,20 @@ export default function RecruitDetail() {
 
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
         <h1 className="text-3xl font-semibold">{displayData.title}</h1>
+        <div className="border-t border-gray-200 my-6"></div>
         
-        <div className="flex items-center text-gray-600 mb-6 mt-2">
-          <span>{categoryMain}</span>
-          <span className="mx-2">&gt;</span>
-          <span>{categoryMiddle}</span>
-          <span className="mx-2">&gt;</span>
-          <span className="font-medium text-black">{categorySmall}</span>
+        <div className="flex flex-col text-gray-600 mb-6 mt-2">
+          {categoryNames.map((category, index) => (
+            <div key={index} className="mb-1">
+              <span>{category.first}</span>
+              <span className="mx-2">&gt;</span>
+              <span>{category.second}</span>
+              <span className="mx-2">&gt;</span>
+              <span className="font-medium text-black">{category.third}</span>
+            </div>
+          ))}
         </div>
-
+        {/* <div className="border-t border-gray-200 my-6"></div> */}
         <div className="grid grid-cols-2 gap-8 my-6">
           <div className="space-y-4">
             <div>

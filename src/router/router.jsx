@@ -43,7 +43,7 @@ function AppRouter() {
           <Route path="/companyMyPage" element={<CompanyMyPage />} />
           <Route path="/postEdit" element={<PostEdit />} />
           <Route path="/postUpload" element={<PostUpload />} />
-          <Route path="/recruit/upload" element={<RecruitUpload />} />
+          <Route path="/recruitUpload" element={<RecruitUpload />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/competitions" element={<Competitions />} />
         </Routes>

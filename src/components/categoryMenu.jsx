@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 
-const CategoryMenu = ({ secondCategories, thirdCategories }) => {
+const CategoryMenu = ({ secondCategories, thirdCategories, onSelect }) => {
   const [openSecondCategory, setOpenSecondCategory] = useState(null);
 
   const toggleSecondCategory = (id) => {
     setOpenSecondCategory((prev) => (prev === id ? null : id));
+  };
+
+  const handleThirdCategoryClick = (secondCategory, thirdCategory) => {
+    if (onSelect) {
+      onSelect(secondCategory.first_category_id, secondCategory.second_category_id, thirdCategory.third_category_id);
+    }
   };
 
   if (!secondCategories || secondCategories.length === 0) {
@@ -55,6 +61,7 @@ const CategoryMenu = ({ secondCategories, thirdCategories }) => {
                   <div 
                     key={third.third_category_id} 
                     className="py-1 px-2 text-xs text-gray-600 hover:text-yellow-point hover:bg-yellow-50 rounded cursor-pointer transition-colors"
+                    onClick={() => handleThirdCategoryClick(second, third)}
                   >
                     {third.name}
                   </div>
