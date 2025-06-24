@@ -4,7 +4,7 @@ import CategorySelectBox from '../components/categorySelectBox';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
-import { uploadRecruit } from '../api/recruit';
+import { uploadRecruit, uploadToS3, postRecruitMedia } from '../api/recruit';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -207,7 +207,45 @@ export default function RecruitUpload() {
       };
   
       console.log('Sending data:', formDataToSend);
-      await uploadRecruit(formDataToSend);
+      
+      // 1. 공고문 업로드 (presigned URL 포함된 응답 받기)
+      const recruitResponse = await uploadRecruit(formDataToSend);
+      const { recruitId, dtoList } = recruitResponse.data.result;
+      
+      // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
+      if (formData.files.length > 0 && dtoList) {
+        try {
+          // S3에 모든 파일 업로드
+          await Promise.all(
+            dtoList.map(({ presignedUrl }, i) =>
+              uploadToS3(presignedUrl, formData.files[i])
+            )
+          );
+
+          // 파일 정보 추출
+          const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+          const fileNames = formData.files.map((file) => file.name);
+          const fileTypes = formData.files.map((file) =>
+            file.type.split("/")[1].toUpperCase()
+          );
+
+          // 3. S3 업로드 성공 후 미디어 정보 저장
+          await Promise.all(
+            dtoList.map(({ presignedUrl }, i) =>
+              postRecruitMedia({
+                recruitId,
+                fileUrl: fileUrls,
+                fileName: fileNames,
+                fileType: fileTypes,
+              })
+            )
+          );
+        } catch (error) {
+          console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
+          alert('파일 업로드 중 오류가 발생했습니다.');
+        }
+      }
+      
       alert('공고가 성공적으로 등록되었습니다.');
       navigate('/recruit?category=1');
     } catch (error) {

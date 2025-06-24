@@ -1,4 +1,5 @@
 import client from "./client";
+import axios from "axios";
 
 export const getPopularRecruit = async (pageable) => {
   try {
@@ -134,4 +135,25 @@ export async function uploadRecruit(data) {
         throw error;
     }
 }
+
+// S3 업로드 함수
+export const uploadToS3 = async (url, file) => {
+  return axios.put(url, file, {});
+};
+
+// 공고문 미디어 정보 저장 함수 (피드와 동일한 형식)
+export const postRecruitMedia = async ({ recruitId, fileUrl, fileName, fileType }) => {
+  try {
+    const response = await client.post("/api/v1/recruit/upload", {
+      postId: recruitId,
+      fileUrl: fileUrl,
+      fileName: fileName,
+      fileType: fileType,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("공고문 이미지 업로드 에러:", error);
+    throw error;
+  }
+};
 

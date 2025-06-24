@@ -144,26 +144,22 @@ export default function RecruitDetail() {
 
         <div className="border-t border-gray-200 my-6"></div>
         <div>
-          <p className="text-2xl font-regular text-gray-800"  style={{ whiteSpace: 'pre-wrap' }}>{displayData.content}</p>
+          <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData.content}</p>
+          
+          {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
+          <img
+            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${recruitDetail.mediaResDtos[0].fileUrl}`}
+            alt={recruitDetail.mediaResDtos[0].fileName || "이미지"}
+            className="w-full h-auto object-cover"
+          />
+        ) : (
+          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+            <p className="text-gray-400">이미지가 없습니다</p>
+          </div>
+        )}
         </div>
 
-        {/* API에서 받은 추가 정보가 있으면 표시 */}
-        {recruitDetail && (
-          <>
-            {recruitDetail.requirements && (
-              <div className="border-t border-gray-200 my-6 pt-6">
-                <h3 className="text-xl font-semibold mb-4">요구사항</h3>
-                <p className="text-lg text-gray-700">{recruitDetail.requirements}</p>
-              </div>
-            )}
-            {recruitDetail.benefits && (
-              <div className="border-t border-gray-200 my-6 pt-6">
-                <h3 className="text-xl font-semibold mb-4">혜택</h3>
-                <p className="text-lg text-gray-700">{recruitDetail.benefits}</p>
-              </div>
-            )}
-          </>
-        )}
+       
 
       <div className="flex justify-center mt-8">
         <button 
