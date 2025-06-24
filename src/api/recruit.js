@@ -83,6 +83,43 @@ export async function getRecruit(params = {}) {
     }
 }
 
+export async function getRecruitDetail(recruitId) {
+    try {
+        const token = localStorage.getItem('accessToken');
+        console.log("Token exists:", !!token);
+        if (token) {
+            console.log("Token preview:", token.substring(0, 20) + "...");
+        }
+
+        const response = await client.get(`/api/v1/recruit/${recruitId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('Recruit Detail API 오류 발생:', error);
+        
+        if (error.response?.status === 403) {
+            console.error('403 Forbidden - 권한이 없습니다.');
+            console.error('Response data:', error.response.data);
+            
+            // 토큰이 만료되었거나 유효하지 않은 경우
+            if (error.response.data?.message?.includes('token') || 
+                error.response.data?.message?.includes('unauthorized')) {
+                console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
+                localStorage.removeItem('accessToken');
+                window.location.href = '/login';
+                return;
+            }
+        }
+        
+        throw error;
+    }
+}
+
 // export async function uploadRecruit(data) {
 //     try {
 //         const response = await client.post('/api/v1/recruit', data, {
