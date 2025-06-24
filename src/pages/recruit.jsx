@@ -33,6 +33,7 @@ export default function Recruit() {
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;
 
+ 
   // 피드 데이터 (실제로는 API에서 가져와야 함)
   const feedData = [
     {
@@ -331,19 +332,34 @@ export default function Recruit() {
           <div className="w-3/4 mx-auto">
             {filteredRecruits.length > 0 ? (
               <>
-                {filteredRecruits.map((recruit) => (
-                  <RecruitBlock
-                    key={recruit.recruitId}
-                    id={recruit.recruitId}
-                    title={recruit.title}
-                    content={recruit.content}
-                    deadLine={recruit.deadLine}
-                    payment={recruit.payment}
-                    recruitCount={recruit.recruitCount}
-                    region={recruit.region}
-                    secondCategory={recruit.secondCategory}
-                  />
-                ))}
+                {filteredRecruits.map((recruit) => {
+                  const paymentString =
+                    recruit.minPayment && recruit.maxPayment
+                      ? recruit.minPayment === recruit.maxPayment
+                        ? recruit.minPayment
+                        : `${recruit.minPayment} ~ ${recruit.maxPayment}`
+                      : recruit.minPayment || recruit.maxPayment || "금액 협의";
+
+                  const secondCategories = recruit.categoryDtoList 
+                    ? recruit.categoryDtoList.map((cat) => cat.secondCategory) 
+                    : [];
+
+                  return (
+                    <RecruitBlock
+                      key={recruit.recruitId}
+                      id={recruit.recruitId}
+                      title={recruit.title}
+                      content={recruit.content}
+                      deadLine={recruit.deadline}
+                      payment={paymentString}
+                      minPayment={recruit.minPayment}
+                      maxPayment={recruit.maxPayment}
+                      cityName={recruit.cityName}
+                      cityDetailName={recruit.cityDetailName}
+                      secondCategory={secondCategories}
+                    />
+                  );
+                })}
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
