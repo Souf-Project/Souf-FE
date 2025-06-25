@@ -311,6 +311,43 @@ export default function RecruitUpload() {
         // 수정 모드: updateRecruit API 사용
         const recruitId = editData.recruitId || editData.id;
         response = await updateRecruit(recruitId, formDataToSend);
+        
+        // 수정 모드에서도 파일 업로드 처리
+        if (formData.files.length > 0 && response.data?.result?.dtoList) {
+          try {
+            const { recruitId: updatedRecruitId, dtoList } = response.data.result;
+            
+            // S3에 모든 파일 업로드
+            await Promise.all(
+              dtoList.map(({ presignedUrl }, i) =>
+                uploadToS3(presignedUrl, formData.files[i])
+              )
+            );
+
+            // 파일 정보 추출
+            const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+            const fileNames = formData.files.map((file) => file.name);
+            const fileTypes = formData.files.map((file) =>
+              file.type.split("/")[1].toUpperCase()
+            );
+
+            // S3 업로드 성공 후 미디어 정보 저장
+            await Promise.all(
+              dtoList.map(({ presignedUrl }, i) =>
+                postRecruitMedia({
+                  recruitId: updatedRecruitId,
+                  fileUrl: fileUrls,
+                  fileName: fileNames,
+                  fileType: fileTypes,
+                })
+              )
+            );
+          } catch (error) {
+            console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
+            alert('파일 업로드 중 오류가 발생했습니다.');
+          }
+        }
+        
         alert('공고가 성공적으로 수정되었습니다.');
       } else {
         // 새 공고 작성 모드: uploadRecruit API 사용
