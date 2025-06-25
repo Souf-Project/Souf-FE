@@ -61,18 +61,9 @@ export default function ProfileImageUpdate({
           className="hidden"
           disabled={!isEditing}
         />
-        <button
-          type="button"
-          onClick={handleClick}
-          className={`inline-block bg-white text-black border border-gray-300 px-4 py-2 rounded-md ${
-            !isEditing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-          }`}
-          disabled={!isEditing}
-        >
-          프로필 사진 변경
-        </button>
         <p className="text-sm text-gray-500 mt-2">
-          PNG, JPG, GIF (800x800px)
+          PNG, JPG 형식만 업로드 가능합니다.<br/>
+          (최대 800x800px)
         </p>
       </div>
     </div>
