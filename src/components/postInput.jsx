@@ -6,7 +6,7 @@ export default function PostInput({
 }) {
   return (
     <div className="flex flex-col items-start gap-2 w-full">
-      <div className="font-semibold text-lg">{title}</div>
+      <div className="text-xl font-semibold text-gray-700">{title}</div>
       <textarea
         className={`border-2 p-2 rounded-[10px] w-full resize-none overflow-auto ${inputHeight}`}
         value={value}

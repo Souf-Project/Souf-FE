@@ -114,11 +114,11 @@ export default function PostUpload() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto my-10">
+    <div className="max-w-[1000px] mx-auto my-10">
       <div className="w-[1000px] border-2 flex flex-col justify-center items-left p-10 gap-4">
-        <div className="text-center font-bold text-4xl">게시물 업로드</div>
+        <div className="text-center font-bold text-3xl">게시물 작성</div>
         <PostInput
-          title="주제"
+          title="제목"
           value={formData.topic}
           onChange={(e) => handleInputChange("topic", e)}
         />
@@ -128,7 +128,11 @@ export default function PostUpload() {
           value={formData.content}
           onChange={(e) => handleInputChange("content", e)}
         />
-        <div className="flex gap-2 w-full">
+        <div className="flex flex-col gap-2 w-full">
+        <label className="block text-xl font-semibold text-gray-700 mb-2">
+            카테고리
+          </label>
+          <div className="flex gap-2 w-full">
           {formData?.categoryDtos?.map((category, index) => (
             <CategorySelectBox
               key={index}
@@ -138,13 +142,24 @@ export default function PostUpload() {
               type="text"
               isEditing={true}
               onChange={handleCategoryChange(index)}
+              width='w-full'
             />
           ))}
+          </div>
         </div>
         <ImageUpload onImagesChange={handleImagesChange} />
-        <div className="flex flex-row px-52 gap-6">
-          <Button btnText="업로드" onClick={() => mutate(formData)} />
-          <button className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border">
+        <div className="flex gap-4 items-center justify-center">
+           <button
+            onClick={() => mutate(formData)}
+            className="px-6 py-3 bg-yellow-main text-black rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+          >
+            업로드
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/recruit?category=1')}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 transition-colors duration-200"
+          >
             취소
           </button>
         </div>

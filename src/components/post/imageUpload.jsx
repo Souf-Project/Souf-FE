@@ -33,7 +33,7 @@ export default function ImageUpload({ onImagesChange }) {
 
   return (
     <div>
-      <h3 className="font-semibold text-lg mb-2">사진 첨부</h3>
+      <h3 className="text-xl font-semibold text-gray-700 mb-2">파일 첨부</h3>
       <div className="flex gap-4">
         {images.map((img, index) => (
           <img

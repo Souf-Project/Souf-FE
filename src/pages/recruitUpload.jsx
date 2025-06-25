@@ -360,12 +360,14 @@ export default function RecruitUpload() {
   const thirdCategories = thirdCategoryData.third_category || [];
 
   return (
-    <div className="pt-24 px-6 w-1/2 max-w-5xl mx-auto mb-12">
-      <h1 className="text-3xl font-bold w-1/4 mx-auto">공고문 작성</h1>
+        <div className="max-w-[1000px] mx-auto my-10">
+                <div className="w-[1000px] border-2 flex flex-col justify-center items-left p-10 gap-4">
+  
+      <h1 className="text-3xl font-bold mx-auto">공고문 작성</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-            공고문 제목
+            제목
           </label>
           <input
             type="text"
@@ -588,7 +590,7 @@ export default function RecruitUpload() {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleFirstCategory}
             isEditing={true}
           />
@@ -596,7 +598,7 @@ export default function RecruitUpload() {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleSecondCategory}
             isEditing={true}
           />
@@ -604,7 +606,7 @@ export default function RecruitUpload() {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleThirdCategory}
             isEditing={true}
           />
@@ -613,7 +615,7 @@ export default function RecruitUpload() {
 
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-            공고문 내용
+            내용
           </label>
           <textarea
             name="content"
@@ -659,6 +661,7 @@ export default function RecruitUpload() {
           
         </div>
       </form>
+    </div>
     </div>
   );
 } 
