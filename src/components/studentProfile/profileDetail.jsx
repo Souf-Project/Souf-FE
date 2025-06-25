@@ -1,34 +1,85 @@
 import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getProfileDetail } from "../../api/profile";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
   const navigate = useNavigate();
   const [star, setStar] = useState(false);
+  const [userData, setUserData] = useState([]);
+  const [userWorks, setUserWorks] = useState([]);
 
-  // 추후에 백엔드에서 데이터 받아올 것 같아서 id 만 받아오고 데이터 고정해놓음
-  const userData = {
-    id: 1,
-    profileImg: "https://placehold.co/100",
-    temperature: "85",
-    userName: "홍길동",
-    userDetail: "사용자 중심의 UI/UX를 설계하는 프론트엔드 개발자",
-    userWorks: [
-      { id: 1, url: "https://placehold.co/100x100?text=Work1" },
-      { id: 2, url: "https://placehold.co/100x100?text=Work2" },
-      { id: 3, url: "https://placehold.co/100x100?text=Work3" },
-    ],
-  };
+  //추후에 백엔드에서 데이터 받아올 것 같아서 id 만 받아오고 데이터 고정해놓음
+  // const userData = {
+  //   id: 1,
+  //   profileImg: "https://placehold.co/100",
+  //   temperature: "85",
+  //   userName: "홍길동",
+  //   userDetail: "사용자 중심의 UI/UX를 설계하는 프론트엔드 개발자",
+  //   userWorks: [
+  //     { id: 1, url: "https://placehold.co/100x100?text=Work1" },
+  //     { id: 2, url: "https://placehold.co/100x100?text=Work2" },
+  //     { id: 3, url: "https://placehold.co/100x100?text=Work3" },
+  //   ],
+  // };
+
+  
+      const {
+      data: feedData,
+      isLoading,
+      error,
+    } = useQuery({
+      queryKey: ["profileDetail"],
+      queryFn: async () => {
+        const data = await getProfileDetail(id);
+        console.log("사람 디테일:", data);
+        setUserData(data.result.memberResDto);
+        setUserWorks(data.result.feedSimpleResDtoPage.content)
+        
+        return data;
+      },
+      keepPreviousData: true,
+    });
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
+
   const onWorkClick = (worksId) => {
-    console.log(id + "안녕 " + worksId);
-    navigate(`/profileDetail/${id}/post/${worksId}`);
+    navigate(`/profileDetail/${userData.id}/post/${worksId}`);
   };
+
+  /*
+  email
+: 
+"tjdgus3488@naver.com"
+id
+: 
+1
+intro
+: 
+"유저 검색 필터링 테스트 중입니당"
+nickname
+: 
+"1st테스트"
+personalUrl
+: 
+"https://github.com/username"
+profileUrl
+: 
+""
+role
+: 
+"MEMBER"
+username
+: 
+"배성현"
+  
+  */
+
   return (
     <div className="flex flex-col pt-24 px-4 max-w-4xl w-full ">
       <button
@@ -47,19 +98,20 @@ export default function ProfileDetail({}) {
         </button>
 
         <div className="flex gap-12 my-14 pl-6">
-          <img src={userData.profileImg} className="rounded-full w-1/4" />
+          <img src={userData?.profileUrl} className="rounded-full w-1/4" />
           <div className="flex flex-col gap-2">
-            <div className="font-semibold text-[23px]">{userData.userName}</div>
-            <div className="text-[#5B5B5B]">{userData.userDetail}</div>
+            <div className="font-semibold text-[23px]">{userData?.nickname}</div>
+            <div className="text-[#5B5B5B]">{userData?.intro}</div>
+             <div className="text-[#5B5B5B]">{userData?.personalUrl}</div>
           </div>
         </div>
         <hr className="border-t border-gray-200 my-6" />
         <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
-          {userData.userWorks.map((data) => (
+          {userWorks?.map((data) => (
             <img
-              src={data.url}
+              src={data.mediaResDto?.fileUrl}
               className="w-full"
-              onClick={() => onWorkClick(data.id)}
+              onClick={() => onWorkClick(data.feedId)}
             />
           ))}
         </div>

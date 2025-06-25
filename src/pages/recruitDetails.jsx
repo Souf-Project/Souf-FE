@@ -4,6 +4,7 @@ import backArrow from '../assets/images/backArrow.svg';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
+import { UserStore } from '../store/userStore';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -17,26 +18,28 @@ const parsePayment = (paymentString) => {
 
 const getCategoryNames = (categoryDtoList) => {
     if (!categoryDtoList || categoryDtoList.length === 0) {
-        return { first: '', second: '', third: '' };
+        return [];
     }
 
-    const firstCatId = categoryDtoList[0].firstCategory;
-    const secondCatId = categoryDtoList[0].secondCategory;
-    const thirdCatIds = categoryDtoList.map(dto => dto.thirdCategory);
+    return categoryDtoList.map(dto => {
+        const firstCatId = dto.firstCategory;
+        const secondCatId = dto.secondCategory;
+        const thirdCatId = dto.thirdCategory;
 
-    const firstName = firstCategoryData.first_category.find(
-        cat => cat.first_category_id === firstCatId
-    )?.name || '';
+        const firstName = firstCategoryData.first_category.find(
+            cat => cat.first_category_id === firstCatId
+        )?.name || '';
 
-    const secondName = secondCategoryData.second_category.find(
-        cat => cat.second_category_id === secondCatId
-    )?.name || '';
+        const secondName = secondCategoryData.second_category.find(
+            cat => cat.second_category_id === secondCatId
+        )?.name || '';
 
-    const thirdNames = thirdCatIds.map(id => 
-        thirdCategoryData.third_category.find(cat => cat.third_category_id === id)?.name
-    ).filter(Boolean).join(', ');
+        const thirdName = thirdCategoryData.third_category.find(
+            cat => cat.third_category_id === thirdCatId
+        )?.name || '';
 
-    return { first: firstName, second: secondName, third: thirdNames };
+        return { first: firstName, second: secondName, third: thirdName };
+    });
 };
 
 export default function RecruitDetail() {
@@ -45,6 +48,8 @@ export default function RecruitDetail() {
   const location = useLocation();
   const recruitData = location.state;
   const [recruitDetail, setRecruitDetail] = useState(null);
+  const [showMenu, setShowMenu] = useState(true);
+  const { username } = UserStore();
 
   useEffect(() => {
     // API에서 받은 상세 정보가 있으면 사용
@@ -53,6 +58,20 @@ export default function RecruitDetail() {
       console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
+
+  // 메뉴 외부 클릭 시 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMenu && !event.target.closest('.relative')) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMenu]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -65,17 +84,48 @@ export default function RecruitDetail() {
     return `${year}.${month}.${day} ${hours}:${minutes}`;
   };
 
+  // 닉네임 마스킹 함수
+  const maskNickname = (nickname) => {
+    if (!nickname || nickname.length <= 1) return nickname;
+    return nickname.charAt(0) + '*'.repeat(nickname.length - 1);
+  };
+
   const handleGoBack = () => {
     navigate(-1);
+  };
+
+  // 메뉴 토글 함수
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
+  // 수정 버튼 핸들러
+  const handleEdit = () => {
+    // TODO: 수정 페이지로 이동
+    console.log('수정 버튼 클릭');
+    setShowMenu(false);
+  };
+
+  // 삭제 버튼 핸들러
+  const handleDelete = () => {
+    if (window.confirm('정말로 이 공고를 삭제하시겠습니까?')) {
+      // TODO: 삭제 API 호출
+      console.log('삭제 버튼 클릭');
+      setShowMenu(false);
+      navigate('/recruit?category=1');
+    }
   };
 
   // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
   const displayData = recruitDetail || recruitData;
   const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
-  const { first: categoryMain, second: categoryMiddle, third: categorySmall } = getCategoryNames(categoryList);
+  const categoryNames = getCategoryNames(categoryList);
 
   const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : displayData.minPrice;
   const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : displayData.maxPrice;
+
+  // 현재 로그인한 사용자가 공고 작성자인지 확인
+  const isAuthor = username === displayData?.nickname;
 
   return (
     <div className="pt-16 px-8 w-5/6 mx-auto">
@@ -88,16 +138,52 @@ export default function RecruitDetail() {
       </button>
 
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
-        <h1 className="text-3xl font-semibold">{displayData.title}</h1>
-        
-        <div className="flex items-center text-gray-600 mb-6 mt-2">
-          <span>{categoryMain}</span>
-          <span className="mx-2">&gt;</span>
-          <span>{categoryMiddle}</span>
-          <span className="mx-2">&gt;</span>
-          <span className="font-medium text-black">{categorySmall}</span>
+        <div className="flex justify-between items-start">
+          <div>{maskNickname(displayData.nickname)}</div>
+          {/* {isAuthor && ( */}
+            <div className="relative">
+              <button
+                onClick={toggleMenu}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 10a2 2 0 110-4 2 2 0 010 4zM10 10a2 2 0 110-4 2 2 0 010 4zM17 10a2 2 0 110-4 2 2 0 010 4z" />
+                </svg>
+              </button>
+              
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+                  <button
+                    onClick={handleEdit}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-50 rounded-t-lg"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-50 text-red-600 rounded-b-lg"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
+          {/* )} */}
         </div>
-
+        <h1 className="text-3xl font-semibold">{displayData.title}</h1>
+        <div className="border-t border-gray-200 my-6"></div>
+        
+        <div className="flex flex-col text-gray-600 mb-6 mt-2">
+          {categoryNames.map((category, index) => (
+            <div key={index} className="mb-1">
+              <span>{category.first}</span>
+              <span className="mx-2">&gt;</span>
+              <span>{category.second}</span>
+              <span className="mx-2">&gt;</span>
+              <span className="font-medium text-black">{category.third}</span>
+            </div>
+          ))}
+        </div>
         <div className="grid grid-cols-2 gap-8 my-6">
           <div className="space-y-4">
             <div>
@@ -137,26 +223,20 @@ export default function RecruitDetail() {
 
         <div className="border-t border-gray-200 my-6"></div>
         <div>
-          <p className="text-2xl font-regular text-gray-800"  style={{ whiteSpace: 'pre-wrap' }}>{displayData.content}</p>
+          <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData.content}</p>
+          
+          {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
+          <img
+            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${recruitDetail.mediaResDtos[0].fileUrl}`}
+            alt={recruitDetail.mediaResDtos[0].fileName || "이미지"}
+            className="w-full h-auto object-cover"
+          />
+        ) : (
+          <></>
+        )}
         </div>
 
-        {/* API에서 받은 추가 정보가 있으면 표시 */}
-        {recruitDetail && (
-          <>
-            {recruitDetail.requirements && (
-              <div className="border-t border-gray-200 my-6 pt-6">
-                <h3 className="text-xl font-semibold mb-4">요구사항</h3>
-                <p className="text-lg text-gray-700">{recruitDetail.requirements}</p>
-              </div>
-            )}
-            {recruitDetail.benefits && (
-              <div className="border-t border-gray-200 my-6 pt-6">
-                <h3 className="text-xl font-semibold mb-4">혜택</h3>
-                <p className="text-lg text-gray-700">{recruitDetail.benefits}</p>
-              </div>
-            )}
-          </>
-        )}
+       
 
       <div className="flex justify-center mt-8">
         <button 

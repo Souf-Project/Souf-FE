@@ -1,28 +1,52 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategorySelectBox from '../components/categorySelectBox';
-// import { uploadRecruit } from '../api/recruit';
+import firstCategoryData from '../assets/categoryIndex/first_category.json';
+import secondCategoryData from '../assets/categoryIndex/second_category.json';
+import thirdCategoryData from '../assets/categoryIndex/third_category.json';
+import { uploadRecruit, uploadToS3, postRecruitMedia } from '../api/recruit';
+import { UserStore } from '../store/userStore';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
+  // 나중에 닉네임으로 바꾸기
+  const { username } = UserStore();
+  
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     region: '',
     city: '',
     deadline: '',
-    companyName: '',
+    deadlineTime: '00:00',
+    deadlineHour: '00',
+    deadlineMinute: '00',
+    deadlinePeriod: 'AM',
+    companyName: username || '',
     minPayment: '',
     maxPayment: '',
     isregionIrrelevant: false,
     preferentialTreatment: '',
-    categoryDtos: {
-      firstCategory: null,
-      secondCategory: null,
-      thirdCategory: null
-    },
-    
-    originalFileNames: [],
+    hasPreference: false,
+    categoryDtos: [
+      {
+        "firstCategory": null,
+        "secondCategory": null,
+        "thirdCategory": null
+      },
+      {
+        "firstCategory": null,
+        "secondCategory": null,
+        "thirdCategory": null
+      },
+      {
+        "firstCategory": null,
+        "secondCategory": null,
+        "thirdCategory": null
+      }
+    ],
+    selectedCategories: [],
+    files: [],
     workType: 'online',
   });
 
@@ -129,28 +153,127 @@ export default function RecruitUpload() {
     }
   };
 
+  // 12시간 형식을 24시간 형식으로 변환하는 함수
+  const convertTo24HourFormat = (hour, minute, period) => {
+    let hour24 = parseInt(hour);
+    
+    if (period === 'PM' && hour24 !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hour24 === 12) {
+      hour24 = 0;
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
+      // selectedCategories 배열에서 유효한 카테고리만 필터링
+      const categoryDtos = formData.selectedCategories
+        .filter(category => 
+          category && 
+          category.firstCategory && 
+          category.secondCategory && 
+          category.thirdCategory
+        )
+        .map(category => ({
+          firstCategory: category.firstCategory,
+          secondCategory: category.secondCategory,
+          thirdCategory: category.thirdCategory
+        }));
+      
+      // 카테고리 검증
+      if (categoryDtos.length === 0) {
+        alert('카테고리를 선택해주세요.');
+        return;
+      }
+
+      console.log('Selected categories:', categoryDtos);
+
+      let cityId = null;
+      let cityDetailId = null;
+  
+      if (formData.isregionIrrelevant) {
+        // 지역무관 선택 시
+        cityId = 3;
+        cityDetailId = 43;
+      } else {
+        if (formData.city === '서울') {
+          cityId = 1;
+        } else if (formData.city === '경기') {
+          cityId = 2;
+        }
+  
+        const cityDetail = cityDetailData.find((detail) => detail.name === formData.region);
+        cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
+      }
+  
+      const deadlineDateTime = `${formData.deadline}T${convertTo24HourFormat(formData.deadlineHour, formData.deadlineMinute, formData.deadlinePeriod)}`;
+  
       const formDataToSend = {
         title: formData.title,
         content: formData.content,
-        region: formData.isregionIrrelevant ? "지역 무관" : `${formData.city} ${formData.region}`,
-        deadline: new Date(formData.deadline).toISOString(),
-        payment: `${formData.minpayment}~${formData.maxpayment}만원`,
-        preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : "",
-        categoryDtos: [formData.category],
-        originalFileNames: formData.files.map(file => file.name)
+        cityId: cityId,
+        cityDetailId: cityDetailId,
+        deadline: deadlineDateTime,
+        minPayment: `${formData.minPayment}만원`,
+        maxPayment: `${formData.maxPayment}만원`,
+        preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
+        categoryDtos: categoryDtos,
+        originalFileNames: formData.files.map((file) => file.name),
+        workType: formData.workType.toUpperCase(),
       };
+  
+      console.log('Sending data:', formDataToSend);
+      
+      // 1. 공고문 업로드 (presigned URL 포함된 응답 받기)
+      const recruitResponse = await uploadRecruit(formDataToSend);
+      const { recruitId, dtoList } = recruitResponse.data.result;
+      
+      // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
+      if (formData.files.length > 0 && dtoList) {
+        try {
+          // S3에 모든 파일 업로드
+          await Promise.all(
+            dtoList.map(({ presignedUrl }, i) =>
+              uploadToS3(presignedUrl, formData.files[i])
+            )
+          );
 
+          // 파일 정보 추출
+          const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+          const fileNames = formData.files.map((file) => file.name);
+          const fileTypes = formData.files.map((file) =>
+            file.type.split("/")[1].toUpperCase()
+          );
+
+          // 3. S3 업로드 성공 후 미디어 정보 저장
+          await Promise.all(
+            dtoList.map(({ presignedUrl }, i) =>
+              postRecruitMedia({
+                recruitId,
+                fileUrl: fileUrls,
+                fileName: fileNames,
+                fileType: fileTypes,
+              })
+            )
+          );
+        } catch (error) {
+          console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
+          alert('파일 업로드 중 오류가 발생했습니다.');
+        }
+      }
+      
       alert('공고가 성공적으로 등록되었습니다.');
-      navigate('/recruit');
+      navigate('/recruit?category=1');
     } catch (error) {
       console.error('공고 등록 중 오류 발생:', error);
       alert('공고 등록에 실패했습니다. 다시 시도해주세요.');
     }
   };
+  
 
   const handleCategoryChange = (categoryData) => {
     setFormData(prev => ({
@@ -158,6 +281,83 @@ export default function RecruitUpload() {
       category: categoryData
     }));
   };
+
+  // 첫 번째 카테고리 선택 핸들러
+  const handleFirstCategory = (categoryData) => {
+    console.log('첫 번째 카테고리 선택:', categoryData);
+    if (categoryData && categoryData.firstCategory && categoryData.secondCategory && categoryData.thirdCategory) {
+      const newCategory = {
+        firstCategory: parseInt(categoryData.firstCategory),
+        secondCategory: parseInt(categoryData.secondCategory),
+        thirdCategory: parseInt(categoryData.thirdCategory)
+      };
+      
+      // NaN 체크
+      if (isNaN(newCategory.firstCategory) || isNaN(newCategory.secondCategory) || isNaN(newCategory.thirdCategory)) {
+        console.error('카테고리 값이 유효하지 않습니다:', newCategory);
+        alert('카테고리 선택에 문제가 있습니다. 다시 선택해주세요.');
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        selectedCategories: [newCategory, ...prev.selectedCategories.slice(1, 3)]
+      }));
+    }
+  };
+
+  // 두 번째 카테고리 선택 핸들러
+  const handleSecondCategory = (categoryData) => {
+    console.log('두 번째 카테고리 선택:', categoryData);
+    if (categoryData && categoryData.firstCategory && categoryData.secondCategory && categoryData.thirdCategory) {
+      const newCategory = {
+        firstCategory: parseInt(categoryData.firstCategory),
+        secondCategory: parseInt(categoryData.secondCategory),
+        thirdCategory: parseInt(categoryData.thirdCategory)
+      };
+      
+      // NaN 체크
+      if (isNaN(newCategory.firstCategory) || isNaN(newCategory.secondCategory) || isNaN(newCategory.thirdCategory)) {
+        console.error('카테고리 값이 유효하지 않습니다:', newCategory);
+        alert('카테고리 선택에 문제가 있습니다. 다시 선택해주세요.');
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        selectedCategories: [prev.selectedCategories[0], newCategory, prev.selectedCategories[2]]
+      }));
+    }
+  };
+
+  // 세 번째 카테고리 선택 핸들러
+  const handleThirdCategory = (categoryData) => {
+    console.log('세 번째 카테고리 선택:', categoryData);
+    if (categoryData && categoryData.firstCategory && categoryData.secondCategory && categoryData.thirdCategory) {
+      const newCategory = {
+        firstCategory: parseInt(categoryData.firstCategory),
+        secondCategory: parseInt(categoryData.secondCategory),
+        thirdCategory: parseInt(categoryData.thirdCategory)
+      };
+      
+      // NaN 체크
+      if (isNaN(newCategory.firstCategory) || isNaN(newCategory.secondCategory) || isNaN(newCategory.thirdCategory)) {
+        console.error('카테고리 값이 유효하지 않습니다:', newCategory);
+        alert('카테고리 선택에 문제가 있습니다. 다시 선택해주세요.');
+        return;
+      }
+      
+      setFormData(prev => ({
+        ...prev,
+        selectedCategories: [prev.selectedCategories[0], prev.selectedCategories[1], newCategory]
+      }));
+    }
+  };
+
+  // 카테고리 데이터 배열 추출
+  const firstCategories = firstCategoryData.first_category || [];
+  const secondCategories = secondCategoryData.second_category || [];
+  const thirdCategories = thirdCategoryData.third_category || [];
 
   return (
     <div className="pt-24 px-6 w-1/2 max-w-5xl mx-auto mb-12">
@@ -186,8 +386,10 @@ export default function RecruitUpload() {
             name="companyName"
             value={formData.companyName}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
             required
+            readOnly
+            disabled
           />
         </div>
 
@@ -199,8 +401,8 @@ export default function RecruitUpload() {
             <div className="flex-1">
               <input
                 type="number"
-                name="minpayment"
-                value={formData.minpayment}
+                name="minPayment"
+                value={formData.minPayment}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
@@ -210,8 +412,8 @@ export default function RecruitUpload() {
             <div className="flex-1">
               <input
                 type="number"
-                name="maxpayment"
-                value={formData.maxpayment}
+                name="maxPayment"
+                value={formData.maxPayment}
                 onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
@@ -264,9 +466,9 @@ export default function RecruitUpload() {
                 required={!formData.isregionIrrelevant}
               >
                 <option value="">시/도 선택</option>
-                {city_data.map(city => (
-                  <option key={city.value} value={city.value}>
-                    {city.label}
+                {cityData.map(city => (
+                  <option key={city.city_id} value={city.name}>
+                    {city.name}
                   </option>
                 ))}
               </select>
@@ -281,28 +483,75 @@ export default function RecruitUpload() {
                 required={!formData.isregionIrrelevant}
               >
                 <option value="">지역 선택</option>
-                {regions.map(region => (
-                  <option key={region} value={region}>
-                    {region}
-                  </option>
-                ))}
+                {cityDetailData
+                  .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
+                  .map(detail => (
+                    <option key={detail.city_detail_id} value={detail.name}>
+                      {detail.name}
+                    </option>
+                  ))}
               </select>
             </div>
           </div>
         </div>
 
-        <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            모집 기한
-          </label>
-          <input
-            type="date"
-            name="deadline"
-            value={formData.deadline}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-            required
-          />
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              마감 기한
+            </label>
+            <input
+              type="date"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              마감 시간
+            </label>
+            <div className="flex items-center gap-2">
+            <select
+                name="deadlinePeriod"
+                value={formData.deadlinePeriod}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                <option value="AM">오전</option>
+                <option value="PM">오후</option>
+              </select>
+              <select
+                name="deadlineHour"
+                value={formData.deadlineHour}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+              <span className="text-gray-500">:</span>
+              <select
+                name="deadlineMinute"
+                value={formData.deadlineMinute}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i * 5} value={(i * 5).toString().padStart(2, '0')}>
+                    {(i * 5).toString().padStart(2, '0')}
+                  </option>
+                ))}
+              </select>
+              
+            </div>
+          </div>
         </div>
 
         <div>
@@ -334,14 +583,32 @@ export default function RecruitUpload() {
           <label className="block text-xl font-semibold text-gray-700 mb-2">
             카테고리
           </label>
+          <div className="grid grid-cols-3 gap-4 mb-4">
           <CategorySelectBox 
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
             type="join"
-            onChange={handleCategoryChange}
+            onChange={handleFirstCategory}
             isEditing={true}
           />
+          <CategorySelectBox 
+            title="카테고리 선택"
+            content=""
+            defaultValue={formData.categoryDtos}
+            type="join"
+            onChange={handleSecondCategory}
+            isEditing={true}
+          />
+          <CategorySelectBox 
+            title="카테고리 선택"
+            content=""
+            defaultValue={formData.categoryDtos}
+            type="join"
+            onChange={handleThirdCategory}
+            isEditing={true}
+          />
+            </div>
         </div>
 
         <div>
@@ -384,7 +651,7 @@ export default function RecruitUpload() {
           </button>
           <button
             type="button"
-            onClick={() => navigate('/recruit')}
+            onClick={() => navigate('/recruit?category=1')}
             className="px-6 py-3 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 transition-colors duration-200"
           >
             취소
