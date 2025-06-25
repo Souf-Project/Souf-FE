@@ -15,7 +15,7 @@ export default function ProfileEditContent() {
   
   const [formData, setFormData] = useState(null);
 
-  const S3_BUCKET_URL = import.meta.env.S3_BUCKET_URL;
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   useEffect(() => {
     if (!isEditing) {
@@ -110,11 +110,15 @@ export default function ProfileEditContent() {
     }
     
     // 선택되지 않은 2차, 3차 카테고리는 null로 처리하여 전송
-    const finalCategories = selectedCategories.map(cat => ({
-        firstCategory: cat.firstCategory,
-        secondCategory: cat.secondCategory || null,
-        thirdCategory: cat.thirdCategory || null,
-    }));
+    const finalCategories = selectedCategories.map(cat => {
+      const category = {
+        firstCategory: cat.firstCategory
+      };
+      if (cat.secondCategory) category.secondCategory = cat.secondCategory;
+      if (cat.thirdCategory) category.thirdCategory = cat.thirdCategory;
+      return category;
+    });
+    
 
     profileUpdateMutation.mutate({ ...formData, newCategories: finalCategories });
   };
