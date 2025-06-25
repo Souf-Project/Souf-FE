@@ -4,6 +4,7 @@ import BasicImg1 from "../../assets/images/BasicprofileImg1.png";
 import BasicImg2 from "../../assets/images/BasicprofileImg2.png";
 import BasicImg3 from "../../assets/images/BasicprofileImg3.png";
 import BasicImg4 from "../../assets/images/BasicprofileImg4.png";
+import BasicImg5 from "../../assets/images/BasicprofileImg5.png";
 
 export default function Profile({
   profileId,
@@ -17,7 +18,7 @@ export default function Profile({
   
   // 기본 이미지를 랜덤으로 선택하는 함수
   const getRandomDefaultImage = () => {
-    const defaultImages = [BasicImg1, BasicImg2, BasicImg3, BasicImg4];
+    const defaultImages = [BasicImg1, BasicImg2, BasicImg3, BasicImg4, BasicImg5];
     const randomIndex = Math.floor(Math.random() * defaultImages.length);
     return defaultImages[randomIndex];
   };
