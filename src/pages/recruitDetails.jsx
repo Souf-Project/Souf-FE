@@ -153,9 +153,7 @@ export default function RecruitDetail() {
             className="w-full h-auto object-cover"
           />
         ) : (
-          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-            <p className="text-gray-400">이미지가 없습니다</p>
-          </div>
+          <></>
         )}
         </div>
 

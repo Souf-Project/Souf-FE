@@ -5,9 +5,13 @@ import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { uploadRecruit, uploadToS3, postRecruitMedia } from '../api/recruit';
+import { UserStore } from '../store/userStore';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
+  // 나중에 닉네임으로 바꾸기
+  const { username } = UserStore();
+  
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -15,7 +19,10 @@ export default function RecruitUpload() {
     city: '',
     deadline: '',
     deadlineTime: '00:00',
-    companyName: '',
+    deadlineHour: '00',
+    deadlineMinute: '00',
+    deadlinePeriod: 'AM',
+    companyName: username || '',
     minPayment: '',
     maxPayment: '',
     isregionIrrelevant: false,
@@ -146,6 +153,19 @@ export default function RecruitUpload() {
     }
   };
 
+  // 12시간 형식을 24시간 형식으로 변환하는 함수
+  const convertTo24HourFormat = (hour, minute, period) => {
+    let hour24 = parseInt(hour);
+    
+    if (period === 'PM' && hour24 !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hour24 === 12) {
+      hour24 = 0;
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -190,7 +210,7 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
-      const deadlineDateTime = `${formData.deadline}T${formData.deadlineTime}`;
+      const deadlineDateTime = `${formData.deadline}T${convertTo24HourFormat(formData.deadlineHour, formData.deadlineMinute, formData.deadlinePeriod)}`;
   
       const formDataToSend = {
         title: formData.title,
@@ -366,8 +386,10 @@ export default function RecruitUpload() {
             name="companyName"
             value={formData.companyName}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
             required
+            readOnly
+            disabled
           />
         </div>
 
@@ -476,7 +498,7 @@ export default function RecruitUpload() {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              모집 기한
+              마감 기한
             </label>
             <input
               type="date"
@@ -490,16 +512,45 @@ export default function RecruitUpload() {
           
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              모집 시간
+              마감 시간
             </label>
-            <input
-              type="time"
-              name="deadlineTime"
-              value={formData.deadlineTime}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
+            <div className="flex items-center gap-2">
+            <select
+                name="deadlinePeriod"
+                value={formData.deadlinePeriod}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                <option value="AM">오전</option>
+                <option value="PM">오후</option>
+              </select>
+              <select
+                name="deadlineHour"
+                value={formData.deadlineHour}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+              <span className="text-gray-500">:</span>
+              <select
+                name="deadlineMinute"
+                value={formData.deadlineMinute}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i * 5} value={(i * 5).toString().padStart(2, '0')}>
+                    {(i * 5).toString().padStart(2, '0')}
+                  </option>
+                ))}
+              </select>
+              
+            </div>
           </div>
         </div>
 
