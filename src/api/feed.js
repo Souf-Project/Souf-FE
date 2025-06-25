@@ -87,3 +87,15 @@ export const getFeed = async (firstCategory, pageable) => {
     throw error;
   }
 };
+
+
+
+export const getFeedDetail = async (memberId,feedId) => {
+  try {
+    const response = await client.get(`/api/v1/feed/${memberId}/${feedId}`);
+    return response.data;
+  } catch (error) {
+    console.error("인기 피드 조회 에러:", error);
+    throw error;
+  }
+};

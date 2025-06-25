@@ -54,7 +54,7 @@ export default function StudentProfileList() {
         {displayedProfiles && displayedProfiles.map((data) => (
           <Profile
             key={data.id}
-            profileId={data.id}
+            profileId={data.memberId}
             profileImg={data.profileImgUrl}
             temperature={data.temperature}
             userName={data.nickname}
