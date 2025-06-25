@@ -5,14 +5,9 @@ import StudentProfileList from "./studentProfileList";
 import SearchBar from "../components/SearchBar";
 import SearchDropdown from "../components/SearchDropdown";
 import { getRecruit } from "../api/recruit";
-import Feed from "../components/feed";
 import CategoryMenu from "../components/categoryMenu";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
 import ThirdCategory from "../assets/categoryIndex/third_category.json";
-import {
-  getFirstCategoryId,
-  getSecondCategoriesByFirstId,
-} from "../utils/getCategoryById";
 import Pagination from "../components/pagination";
 import StudentFeedList from "./studentFeedList";
 
@@ -27,8 +22,6 @@ export default function Recruit() {
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [firstId, setFirstId] = useState("");
-  const [secondCategories, setSecondCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 10;

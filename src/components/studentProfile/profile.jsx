@@ -27,8 +27,8 @@ export default function Profile({
         <div className="text-[#5B5B5B]">{userDetail}</div>
       </div>
       <div className="grid grid-cols-3 justify-center gap-2">
-        {userWorks.map((data) => (
-          <img src={data} />
+        {userWorks.map((data,i) => (
+          <img key={i} src={data} />
         ))}
       </div>
     </div>

@@ -96,11 +96,12 @@ export default function Home() {
     e.preventDefault();
     // 검색 기능 구현
     console.log("Search query:", searchQuery);
+    navigate(`/search/${searchQuery}`);
   };
 
   const handleCategoryClick = (category) => {
-    const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${encoded}`);
+    //const encoded = encodeURIComponent(category);
+    navigate(`/recruit?category=${category}`);
   };
 
   return (
@@ -157,7 +158,7 @@ export default function Home() {
                 return (
                   <button
                     key={category}
-                    onClick={() => handleCategoryClick(category)}
+                    onClick={() => handleCategoryClick(index + 1)}
                     className="flex flex-col items-center gap-2 w-40"
                   >
                     <img
