@@ -160,9 +160,9 @@ export default function Header() {
                   </button>
                   <button
                     className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
-                    onClick={() => handleNavigation("/postUpload")}
+                    onClick={() => handleNavigation(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")}
                   >
-                    피드 작성하기
+                    {roleType === "MEMBER" ? "공고문 작성하기" : "피드 작성하기"}
                   </button>
                   <button
                     className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
