@@ -4,6 +4,7 @@ import backArrow from '../assets/images/backArrow.svg';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
+import AlertModal from '../components/alertModal';
 import { UserStore } from '../store/userStore';
 
 const parsePayment = (paymentString) => {
@@ -48,8 +49,11 @@ export default function RecruitDetail() {
   const location = useLocation();
   const recruitData = location.state;
   const [recruitDetail, setRecruitDetail] = useState(null);
-  const [showMenu, setShowMenu] = useState(true);
-  const { username } = UserStore();
+  const [showMenu, setShowMenu] = useState(false);
+  const { username, memberId } = UserStore();
+
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
 
   useEffect(() => {
     // API에서 받은 상세 정보가 있으면 사용
@@ -124,8 +128,8 @@ export default function RecruitDetail() {
   const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : displayData.minPrice;
   const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : displayData.maxPrice;
 
-  // 현재 로그인한 사용자가 공고 작성자인지 확인
-  const isAuthor = username === displayData?.nickname;
+  // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
+  const isAuthor = memberId === (recruitDetail?.memberId || displayData?.memberId);
 
   return (
     <div className="pt-16 px-8 w-5/6 mx-auto">
@@ -140,7 +144,7 @@ export default function RecruitDetail() {
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
         <div className="flex justify-between items-start">
           <div>{maskNickname(displayData.nickname)}</div>
-          {/* {isAuthor && ( */}
+          {isAuthor && (
             <div className="relative">
               <button
                 onClick={toggleMenu}
@@ -168,7 +172,7 @@ export default function RecruitDetail() {
                 </div>
               )}
             </div>
-          {/* )} */}
+          )}
         </div>
         <h1 className="text-3xl font-semibold">{displayData.title}</h1>
         <div className="border-t border-gray-200 my-6"></div>
@@ -227,7 +231,7 @@ export default function RecruitDetail() {
           
           {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
           <img
-            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${recruitDetail.mediaResDtos[0].fileUrl}`}
+            src={`${S3_BUCKET_URL}${recruitDetail.mediaResDtos[0].fileUrl}`}
             alt={recruitDetail.mediaResDtos[0].fileName || "이미지"}
             className="w-full h-auto object-cover"
           />

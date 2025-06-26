@@ -75,9 +75,23 @@ export default function Header() {
 
   // 로그인 상태 전환 함수 (임시)
   const toggleLogin = () => {
-    setIsLogin(!isLogin);
-    localStorage.setItem("isLogin", !isLogin);
+    // userStore 초기화
+    UserStore.getState().clearUser();
+    
+    // 로컬 스토리지 초기화
+    localStorage.removeItem("isLogin");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user-storage");
+    
+    // 로그인 상태 변경
+    setIsLogin(false);
     setShowUserMenu(false);
+    
+    // 홈페이지로 이동
+    navigate("/");
   };
 
   const toggleUserMenu = () => {
