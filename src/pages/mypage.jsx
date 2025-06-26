@@ -4,20 +4,24 @@ import profileImgOff from '../assets/images/profileImgOff.svg'
 import applyImgOff from '../assets/images/applyImgOff.svg'
 import starImgOn from "../assets/images/starImgOn.png"
 import feedImgOn from "../assets/images/feedImgOn.png"
+import recruitImgOn from "../assets/images/recruitImgOn.png"
 
 import profileImgOn from '../assets/images/profileImgOn.svg'
 import applyImgOn from '../assets/images/applyImgOn.svg'
 import starImgOff from "../assets/images/starImgOff.png"
 import feedImgOff from "../assets/images/feedImgOff.png"
+import recruitImgOff from "../assets/images/recruitImgOff.png"
 
 // 분리된 컴포넌트 import
 import ProfileEditContent from '../components/ProfileEditContent';
 import ApplicationsContent from '../components/ApplicationsContent';
 import FavoritesContent from '../components/FavoritesContent';
+import { UserStore } from '../store/userStore';
 
 export default function MyPage() {
   const navigate = useNavigate();
   const [activeSubmenu, setActiveSubmenu] = useState('profileEdit'); // 기본 서브메뉴
+  const { roleType } = UserStore();
 
   // 서브메뉴 변경 핸들러
   const handleSubmenuChange = (submenu) => {
@@ -35,10 +39,78 @@ export default function MyPage() {
         return <FavoritesContent />;
       case 'myFeed':
         return <div>내 피드 내용이 여기에 표시됩니다.</div>;
+      case 'myRecruits':
+        return <div>작성한 공고문 내용이 여기에 표시됩니다.</div>;
       default:
         return <ProfileEditContent />;
     }
   };
+
+  // roleType에 따른 메뉴 렌더링
+  const renderMenuItems = () => {
+    const baseMenus = [
+      {
+        id: 'profileEdit',
+        label: '프로필 수정',
+        iconOn: profileImgOn,
+        iconOff: profileImgOff
+      },
+      {
+        id: 'favorites',
+        label: '내 즐겨찾기',
+        iconOn: starImgOn,
+        iconOff: starImgOff
+      },
+      {
+        id: 'applications',
+        label: '지원 내역',
+        iconOn: applyImgOn,
+        iconOff: applyImgOff
+      }
+    ];
+
+    const roleSpecificMenus = [];
+
+    // STUDENT: 내 피드까지 보여줌
+    if (roleType === 'STUDENT') {
+      roleSpecificMenus.push({
+        id: 'myFeed',
+        label: '내 피드',
+        iconOn: feedImgOn,
+        iconOff: feedImgOff
+      });
+    }
+    
+    // MEMBER: 작성한 공고문 보여줌
+    if (roleType === 'MEMBER') {
+      roleSpecificMenus.push({
+        id: 'myRecruits',
+        label: '작성한 공고문',
+        iconOn: recruitImgOn,
+        iconOff: recruitImgOff
+      });
+    }
+    
+    // ADMIN: 둘 다 보여줌
+    if (roleType === 'ADMIN') {
+      roleSpecificMenus.push({
+        id: 'myFeed',
+        label: '내 피드',
+        iconOn: feedImgOn,
+        iconOff: feedImgOff
+      });
+      roleSpecificMenus.push({
+        id: 'myRecruits',
+        label: '작성한 공고문',
+        iconOn: recruitImgOn,
+        iconOff: recruitImgOff
+      });
+    }
+
+    return [...baseMenus, ...roleSpecificMenus];
+  };
+
+  const menuItems = renderMenuItems();
 
   return (
     <div className="min-h-screen flex pt-24 bg-yellow-main">
@@ -46,75 +118,25 @@ export default function MyPage() {
         
         <div className="mt-4">
           <ul className="ml-2 space-y-2">
-            <li className='mb-4'>
-              <button 
-                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
-                  activeSubmenu === 'profileEdit' 
-                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
-                    : 'text-black hover:bg-gray-50'
-                }`}
-                onClick={() => handleSubmenuChange('profileEdit')}
-              >
-                <img 
-                  src={activeSubmenu === 'profileEdit' ? profileImgOn : profileImgOff} 
-                  alt="프로필 아이콘" 
-                  className="w-5 h-5 mr-2"
-                />
-                프로필 수정
-              </button>
-            </li>
-            <li className='mb-4'>
-              <button 
-                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
-                  activeSubmenu === 'favorites' 
-                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
-                    : 'text-black hover:bg-gray-50'
-                }`}
-                onClick={() => handleSubmenuChange('favorites')}
-              >
-                <img 
-                  src={activeSubmenu === 'favorites' ? starImgOn : starImgOff} 
-                  alt="즐겨찾기 아이콘" 
-                  className="w-5 h-5 mr-2"
-                />
-                내 즐겨찾기
-              </button>
-            </li>
-            
-            <li className='mb-4'>
-              <button 
-                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
-                  activeSubmenu === 'applications' 
-                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
-                    : 'text-black hover:bg-gray-50'
-                }`}
-                onClick={() => handleSubmenuChange('applications')}
-              >
-                <img 
-                  src={activeSubmenu === 'applications' ? applyImgOn : applyImgOff} 
-                  alt="지원내역 아이콘" 
-                  className="w-5 h-5 mr-2"
-                />
-                지원 내역
-              </button>
-            </li>
-            <li className='mb-4'>
-              <button 
-                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
-                  activeSubmenu === 'myFeed' 
-                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
-                    : 'text-black hover:bg-gray-50'
-                }`}
-                onClick={() => handleSubmenuChange('myFeed')}
-              >
-                <img 
-                  src={activeSubmenu === 'myFeed' ? feedImgOn : feedImgOff} 
-                  alt="내 피드 아이콘" 
-                  className="w-5 h-5 mr-2"
-                />
-                내 피드
-              </button>
-            </li>
+            {menuItems.map((item) => (
+              <li key={item.id} className='mb-4'>
+                <button 
+                  className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
+                    activeSubmenu === item.id 
+                      ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
+                      : 'text-black hover:bg-gray-50'
+                  }`}
+                  onClick={() => handleSubmenuChange(item.id)}
+                >
+                  <img 
+                    src={activeSubmenu === item.id ? item.iconOn : item.iconOff} 
+                    alt={item.label} 
+                    className="w-5 h-5 mr-2"
+                  />
+                  {item.label}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
@@ -127,6 +149,7 @@ export default function MyPage() {
           {activeSubmenu === 'applications' && <h3 className="text-4xl font-medium  mb-4">지원 내역</h3>}
           {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
           {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium  mb-4">내 피드</h3>}
+          {activeSubmenu === 'myRecruits' && <h3 className="text-4xl font-medium  mb-4">작성한 공고문</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>
