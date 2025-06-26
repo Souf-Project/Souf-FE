@@ -29,8 +29,29 @@ export default function ProfileEditContent() {
       const response = await getProfile();
       if (response.status === 200 && response.data?.result) {
         const profileData = response.data.result;
+        
+        // 백엔드에서 받은 categoryDtoList를 newCategories 형식으로 변환
+        let newCategories = [
+          { firstCategory: null, secondCategory: null, thirdCategory: null },
+          { firstCategory: null, secondCategory: null, thirdCategory: null },
+          { firstCategory: null, secondCategory: null, thirdCategory: null }
+        ];
+        
+        if (profileData.categoryDtoList && Array.isArray(profileData.categoryDtoList)) {
+          profileData.categoryDtoList.forEach((category, index) => {
+            if (index < 3) { // 최대 3개까지만 처리
+              newCategories[index] = {
+                firstCategory: category.firstCategory,
+                secondCategory: category.secondCategory,
+                thirdCategory: category.thirdCategory
+              };
+            }
+          });
+        }
+        
         setFormData({
           ...profileData,
+          newCategories: newCategories,
           originalNickname: profileData.nickname // 원본 닉네임 저장
         });
       } else {

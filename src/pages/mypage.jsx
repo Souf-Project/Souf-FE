@@ -33,6 +33,8 @@ export default function MyPage() {
         return <ApplicationsContent />;
       case 'favorites':
         return <FavoritesContent />;
+      case 'myFeed':
+        return <div>내 피드 내용이 여기에 표시됩니다.</div>;
       default:
         return <ProfileEditContent />;
     }
@@ -96,6 +98,23 @@ export default function MyPage() {
                 지원 내역
               </button>
             </li>
+            <li className='mb-4'>
+              <button 
+                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
+                  activeSubmenu === 'myFeed' 
+                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
+                    : 'text-black hover:bg-gray-50'
+                }`}
+                onClick={() => handleSubmenuChange('myFeed')}
+              >
+                <img 
+                  src={activeSubmenu === 'myFeed' ? feedImgOn : feedImgOff} 
+                  alt="내 피드 아이콘" 
+                  className="w-5 h-5 mr-2"
+                />
+                내 피드
+              </button>
+            </li>
           </ul>
         </div>
       </div>
@@ -107,6 +126,7 @@ export default function MyPage() {
           {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium  mb-4">개인정보 수정</h3>}
           {activeSubmenu === 'applications' && <h3 className="text-4xl font-medium  mb-4">지원 내역</h3>}
           {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
+          {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium  mb-4">내 피드</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>
