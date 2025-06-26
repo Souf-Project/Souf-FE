@@ -48,8 +48,8 @@ export default function RecruitDetail() {
   const location = useLocation();
   const recruitData = location.state;
   const [recruitDetail, setRecruitDetail] = useState(null);
-  const [showMenu, setShowMenu] = useState(true);
-  const { username } = UserStore();
+  const [showMenu, setShowMenu] = useState(false);
+  const { username, memberId } = UserStore();
 
   useEffect(() => {
     // API에서 받은 상세 정보가 있으면 사용
@@ -124,8 +124,8 @@ export default function RecruitDetail() {
   const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : displayData.minPrice;
   const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : displayData.maxPrice;
 
-  // 현재 로그인한 사용자가 공고 작성자인지 확인
-  const isAuthor = username === displayData?.nickname;
+  // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
+  const isAuthor = memberId === (recruitDetail?.memberId || displayData?.memberId);
 
   return (
     <div className="pt-16 px-8 w-5/6 mx-auto">
@@ -140,7 +140,7 @@ export default function RecruitDetail() {
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
         <div className="flex justify-between items-start">
           <div>{maskNickname(displayData.nickname)}</div>
-          {/* {isAuthor && ( */}
+          {isAuthor && (
             <div className="relative">
               <button
                 onClick={toggleMenu}
@@ -168,7 +168,7 @@ export default function RecruitDetail() {
                 </div>
               )}
             </div>
-          {/* )} */}
+          )}
         </div>
         <h1 className="text-3xl font-semibold">{displayData.title}</h1>
         <div className="border-t border-gray-200 my-6"></div>
