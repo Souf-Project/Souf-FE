@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NAprofileIco from '../assets/images/NAprofileIco.svg'
 import NAappliIco from '../assets/images/NAappliIco.svg'
+import StarOnIco from "../assets/images/mypageStarOn.png"
 
 import AprofileIco from '../assets/images/AprofileIco.svg'
 import AappliIco from '../assets/images/AappliIco.svg'
+import StarOffIco from "../assets/images/mypageStarOff.png"
 
 // 분리된 컴포넌트 import
 import ProfileEditContent from '../components/ProfileEditContent';
 import ApplicationsContent from '../components/ApplicationsContent';
+import FavoritesContent from '../components/FavoritesContent';
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -26,6 +29,8 @@ export default function MyPage() {
         return <ProfileEditContent />;
       case 'applications':
         return <ApplicationsContent />;
+      case 'favorites':
+        return <FavoritesContent />;
       default:
         return <ProfileEditContent />;
     }
@@ -62,6 +67,23 @@ export default function MyPage() {
         <div className="mb-6 border-b pb-4">
           <h3 className="text-lg font-bold mb-3 text-gray-700">개인정보</h3>
           <ul className="ml-2 space-y-2">
+            <li>
+              <button 
+                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
+                  activeSubmenu === 'favorites' 
+                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
+                    : 'text-black hover:bg-gray-50'
+                }`}
+                onClick={() => handleSubmenuChange('favorites')}
+              >
+                <img 
+                  src={activeSubmenu === 'favorites' ? StarOnIco : StarOffIco} 
+                  alt="즐겨찾기 아이콘" 
+                  className="w-5 h-5 mr-2"
+                />
+                내 즐겨찾기
+              </button>
+            </li>
             
             <li>
               <button 
@@ -90,6 +112,7 @@ export default function MyPage() {
           {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium  mb-4">프로필 수정</h3>}
           {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium  mb-4">개인정보 수정</h3>}
           {activeSubmenu === 'applications' && <h3 className="text-4xl font-medium  mb-4">지원 내역</h3>}
+          {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>
