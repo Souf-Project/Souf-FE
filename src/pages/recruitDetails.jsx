@@ -51,6 +51,8 @@ export default function RecruitDetail() {
   const [recruitDetail, setRecruitDetail] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const { username, memberId } = UserStore();
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isApplySuccessModalOpen, setIsApplySuccessModalOpen] = useState(false);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -118,6 +120,17 @@ export default function RecruitDetail() {
       setShowMenu(false);
       navigate('/recruit?category=1');
     }
+  };
+
+  const handleApply = () => {
+    console.log('지원 버튼 클릭');
+    setIsApplyModalOpen(true);
+  };
+
+  const handleApplyTrue = () => {
+    console.log('지원 하기 완료');
+    setIsApplyModalOpen(false);
+    setIsApplySuccessModalOpen(true);
   };
 
   // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
@@ -245,14 +258,37 @@ export default function RecruitDetail() {
       <div className="flex justify-center mt-8">
         <button 
           className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-          onClick={() => alert('지원 기능')}
+          onClick={handleApply}
         >
           지원하기
         </button>
       </div>
       </div>
+{isApplyModalOpen && (
+      <AlertModal
+        type="warning"
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        title="해당 기업에 지원하시겠습니까?"
+        description={`지원 시 내 프로필 정보가 기업에게 전송됩니다.\n마이페이지에서 지원 취소가 가능합니다.\n지원 직후에는, 기업에게 지원 알림이 전송됩니다.`}
+        FalseBtnText = "취소"
+        TrueBtnText = "지원"
+        onClickFalse={() => setIsApplyModalOpen(false)}
+        onClickTrue={handleApplyTrue}
+      />
+    )}
+    {isApplySuccessModalOpen && (
+      <AlertModal
+        type="success"
+        isOpen={isApplySuccessModalOpen}
+        onClose={() => setIsApplySuccessModalOpen(false)}
+        title="지원 완료"
+        description="지원이 완료되었습니다."
+         TrueBtnText = "확인"
+         onClickTrue={() => setIsApplySuccessModalOpen(false)}
+      />
+    )}
 
-      
     </div>
   );
 }
