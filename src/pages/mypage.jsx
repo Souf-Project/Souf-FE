@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import NAprofileIco from '../assets/images/NAprofileIco.svg'
-import NAappliIco from '../assets/images/NAappliIco.svg'
-import StarOnIco from "../assets/images/mypageStarOn.png"
+import profileImgOff from '../assets/images/profileImgOff.svg'
+import applyImgOff from '../assets/images/applyImgOff.svg'
+import starImgOn from "../assets/images/starImgOn.png"
+import feedImgOn from "../assets/images/feedImgOn.png"
 
-import AprofileIco from '../assets/images/AprofileIco.svg'
-import AappliIco from '../assets/images/AappliIco.svg'
-import StarOffIco from "../assets/images/mypageStarOff.png"
+import profileImgOn from '../assets/images/profileImgOn.svg'
+import applyImgOn from '../assets/images/applyImgOn.svg'
+import starImgOff from "../assets/images/starImgOff.png"
+import feedImgOff from "../assets/images/feedImgOff.png"
 
 // 분리된 컴포넌트 import
 import ProfileEditContent from '../components/ProfileEditContent';
@@ -40,10 +42,9 @@ export default function MyPage() {
     <div className="min-h-screen flex pt-24 bg-yellow-main">
       <div className="w-64 fixed z-10 left-0 top-16 bottom-0 bg-white p-6 z-10 overflow-y-auto">
         
-        <div className="mb-6 border-b pb-4">
-          <h3 className="text-lg font-bold mb-3 text-gray-700">프로필</h3>
+        <div className="mt-4">
           <ul className="ml-2 space-y-2">
-            <li>
+            <li className='mb-4'>
               <button 
                 className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
                   activeSubmenu === 'profileEdit' 
@@ -53,21 +54,14 @@ export default function MyPage() {
                 onClick={() => handleSubmenuChange('profileEdit')}
               >
                 <img 
-                  src={activeSubmenu === 'profileEdit' ? AprofileIco : NAprofileIco} 
+                  src={activeSubmenu === 'profileEdit' ? profileImgOn : profileImgOff} 
                   alt="프로필 아이콘" 
                   className="w-5 h-5 mr-2"
                 />
                 프로필 수정
               </button>
             </li>
-          </ul>
-        </div>
-        
-        {/* 개인정보 섹션 */}
-        <div className="mb-6 border-b pb-4">
-          <h3 className="text-lg font-bold mb-3 text-gray-700">개인정보</h3>
-          <ul className="ml-2 space-y-2">
-            <li>
+            <li className='mb-4'>
               <button 
                 className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
                   activeSubmenu === 'favorites' 
@@ -77,7 +71,7 @@ export default function MyPage() {
                 onClick={() => handleSubmenuChange('favorites')}
               >
                 <img 
-                  src={activeSubmenu === 'favorites' ? StarOnIco : StarOffIco} 
+                  src={activeSubmenu === 'favorites' ? starImgOn : starImgOff} 
                   alt="즐겨찾기 아이콘" 
                   className="w-5 h-5 mr-2"
                 />
@@ -85,7 +79,7 @@ export default function MyPage() {
               </button>
             </li>
             
-            <li>
+            <li className='mb-4'>
               <button 
                 className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
                   activeSubmenu === 'applications' 
@@ -95,7 +89,7 @@ export default function MyPage() {
                 onClick={() => handleSubmenuChange('applications')}
               >
                 <img 
-                  src={activeSubmenu === 'applications' ? AappliIco : NAappliIco} 
+                  src={activeSubmenu === 'applications' ? applyImgOn : applyImgOff} 
                   alt="지원내역 아이콘" 
                   className="w-5 h-5 mr-2"
                 />

@@ -168,7 +168,7 @@ export default function RecruitUpload() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       // selectedCategories 배열에서 유효한 카테고리만 필터링
       const categoryDtos = formData.selectedCategories
@@ -472,42 +472,42 @@ export default function RecruitUpload() {
                   </option>
                 ))}
               </select>
-              <select
+            <select
                 name="region"
                 value={formData.region}
-                onChange={handleChange}
+              onChange={handleChange}
                 disabled={formData.isregionIrrelevant}
                 className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
                   formData.isregionIrrelevant ? 'bg-gray-100' : ''
                 }`}
                 required={!formData.isregionIrrelevant}
-              >
-                <option value="">지역 선택</option>
+            >
+              <option value="">지역 선택</option>
                 {cityDetailData
                   .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
                   .map(detail => (
                     <option key={detail.city_detail_id} value={detail.name}>
                       {detail.name}
-                    </option>
-                  ))}
-              </select>
+                </option>
+              ))}
+            </select>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
               마감 기한
-            </label>
-            <input
-              type="date"
-              name="deadline"
-              value={formData.deadline}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
+          </label>
+          <input
+            type="date"
+            name="deadline"
+            value={formData.deadline}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            required
+          />
           </div>
           
           <div>
@@ -600,9 +600,9 @@ export default function RecruitUpload() {
             onChange={handleSecondCategory}
             isEditing={true}
           />
-          <CategorySelectBox 
+            <CategorySelectBox 
             title="카테고리 선택"
-            content=""
+              content=""
             defaultValue={formData.categoryDtos}
             type="join"
             onChange={handleThirdCategory}
