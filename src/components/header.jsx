@@ -46,6 +46,9 @@ export default function Header() {
       // /recruit 경로지만 카테고리가 없는 경우는 카테고리 선택 없음
       setActiveCategory("");
     } else if (location.pathname.includes("/recruitDetails/")) {
+    } else if (location.pathname === "/contests") {
+      // 공모전 정보 페이지인 경우
+      setActiveCategory("contests");
     } else {
       setActiveCategory("");
     }
@@ -75,9 +78,23 @@ export default function Header() {
 
   // 로그인 상태 전환 함수 (임시)
   const toggleLogin = () => {
-    setIsLogin(!isLogin);
-    localStorage.setItem("isLogin", !isLogin);
+    // userStore 초기화
+    UserStore.getState().clearUser();
+    
+    // 로컬 스토리지 초기화
+    localStorage.removeItem("isLogin");
+    localStorage.removeItem("userType");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user-storage");
+    
+    // 로그인 상태 변경
+    setIsLogin(false);
     setShowUserMenu(false);
+    
+    // 홈페이지로 이동
+    navigate("/");
   };
 
   const toggleUserMenu = () => {
@@ -132,6 +149,22 @@ export default function Header() {
               ></span>
             </li>
           ))}
+          <li className="text-gray-400">|</li>
+          <li
+            className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+              activeCategory === "contests" ? "text-yellow-point" : ""
+            }`}
+            onClick={() => handleNavigation("/contests")}
+          >
+            <span>공모전 정보</span>
+            <span
+              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                activeCategory === "contests"
+                  ? "w-full"
+                  : "w-0 group-hover:w-full origin-left"
+              }`}
+            ></span>
+          </li>
         </ul>
       </div>
 

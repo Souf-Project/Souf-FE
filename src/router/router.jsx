@@ -18,7 +18,8 @@ import PostEdit from "../pages/postEdit";
 import PostUpload from "../pages/postUpload";
 import RecruitUpload from "../pages/recruitUpload";
 import Chat from "../pages/chat";
-import Competitions from "../pages/competitions";
+import Contests from "../pages/contests";
+import ContestDetail from "../pages/contestDetail";
 
 function AppRouter() {
   return (
@@ -45,7 +46,8 @@ function AppRouter() {
           <Route path="/postUpload" element={<PostUpload />} />
           <Route path="/recruitUpload" element={<RecruitUpload />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/competitions" element={<Competitions />} />
+          <Route path="/contests" element={<Contests />} />
+          <Route path="/contests/:category/:id" element={<ContestDetail />} />
         </Routes>
       </main>
       <Footer />
