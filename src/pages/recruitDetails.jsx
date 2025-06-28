@@ -5,6 +5,7 @@ import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import AlertModal from '../components/alertModal';
+import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
 
 const parsePayment = (paymentString) => {
@@ -127,8 +128,22 @@ export default function RecruitDetail() {
     setIsApplyModalOpen(true);
   };
 
-  const handleApplyTrue = () => {
-    console.log('지원 하기 완료');
+  const handleApplyTrue = async () => {
+    try {
+      const response = await postApplication(id);
+      console.log("지원 성공:", response.data);
+      setIsApplyModalOpen(false);
+      setIsApplySuccessModalOpen(true);
+    } catch (error) {
+      console.error("지원 실패:", error);
+      if (error.response?.status === 403) {
+        alert("학생 계정만 지원이 가능합니다.");
+        navigate('/login');
+      } else {
+        alert("지원 중 오류가 발생했습니다.");
+      }
+      setIsApplyModalOpen(false);
+    }
     setIsApplyModalOpen(false);
     setIsApplySuccessModalOpen(true);
   };
