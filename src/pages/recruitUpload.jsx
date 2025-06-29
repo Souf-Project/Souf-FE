@@ -1,53 +1,131 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CategorySelectBox from '../components/categorySelectBox';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
-import { uploadRecruit, uploadToS3, postRecruitMedia } from '../api/recruit';
+import { uploadRecruit, uploadToS3, postRecruitMedia, updateRecruit } from '../api/recruit';
 import { UserStore } from '../store/userStore';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
+  const location = useLocation();
   // 나중에 닉네임으로 바꾸기
   const { username } = UserStore();
   
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    region: '',
-    city: '',
-    deadline: '',
-    deadlineTime: '00:00',
-    deadlineHour: '00',
-    deadlineMinute: '00',
-    deadlinePeriod: 'AM',
-    companyName: username || '',
-    minPayment: '',
-    maxPayment: '',
-    isregionIrrelevant: false,
-    preferentialTreatment: '',
-    hasPreference: false,
-    categoryDtos: [
-      {
-        "firstCategory": null,
-        "secondCategory": null,
-        "thirdCategory": null
-      },
-      {
-        "firstCategory": null,
-        "secondCategory": null,
-        "thirdCategory": null
-      },
-      {
-        "firstCategory": null,
-        "secondCategory": null,
-        "thirdCategory": null
-      }
-    ],
-    selectedCategories: [],
-    files: [],
-    workType: 'online',
+  // 수정 모드 확인
+  const isEditMode = location.state?.isEditMode || false;
+  const editData = location.state?.recruitDetail || location.state?.recruitData;
+  
+  // 급여 파싱 함수
+  const parsePayment = (paymentString) => {
+    if (!paymentString || typeof paymentString !== 'string') return '';
+    let numStr = paymentString.replace(/[^0-9.]/g, '');
+    return numStr;
+  };
+
+  // 날짜와 시간 파싱 함수
+  const parseDateTime = (dateTimeString) => {
+    if (!dateTimeString) return { date: '', hour: '01', minute: '00', period: 'AM' };
+    
+    const date = new Date(dateTimeString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    
+    const dateStr = `${year}-${month}-${day}`;
+    const hourStr = hours === 0 ? '12' : hours > 12 ? String(hours - 12).padStart(2, '0') : String(hours).padStart(2, '0');
+    const minuteStr = String(Math.floor(minutes / 5) * 5).padStart(2, '0');
+    const period = hours >= 12 ? 'PM' : 'AM';
+    
+    return { date: dateStr, hour: hourStr, minute: minuteStr, period };
+  };
+  
+  const [formData, setFormData] = useState(() => {
+    if (isEditMode && editData) {
+      const dateTime = parseDateTime(editData.deadline);
+      return {
+        title: editData.title || '',
+        content: editData.content || '',
+        region: editData.cityDetailName || '',
+        city: editData.cityName || '',
+        deadline: dateTime.date,
+        deadlineTime: '00:00',
+        deadlineHour: dateTime.hour,
+        deadlineMinute: dateTime.minute,
+        deadlinePeriod: dateTime.period,
+        companyName: editData.nickname || username || '',
+        minPayment: parsePayment(editData.minPayment),
+        maxPayment: parsePayment(editData.maxPayment),
+        isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
+        preferentialTreatment: editData.preferentialTreatment || '',
+        hasPreference: !!editData.preferentialTreatment,
+        categoryDtos: [
+          {
+            "firstCategory": null,
+            "secondCategory": null,
+            "thirdCategory": null
+          },
+          {
+            "firstCategory": null,
+            "secondCategory": null,
+            "thirdCategory": null
+          },
+          {
+            "firstCategory": null,
+            "secondCategory": null,
+            "thirdCategory": null
+          }
+        ],
+        selectedCategories: editData.categoryDtoList?.map(cat => ({
+          firstCategory: cat.firstCategory,
+          secondCategory: cat.secondCategory,
+          thirdCategory: cat.thirdCategory
+        })) || [],
+        files: [],
+        workType: editData.workType?.toLowerCase() || 'online',
+      };
+    } else {
+      return {
+        title: '',
+        content: '',
+        region: '',
+        city: '',
+        deadline: '',
+        deadlineTime: '00:00',
+        deadlineHour: '01',
+        deadlineMinute: '00',
+        deadlinePeriod: 'AM',
+        companyName: username || '',
+        minPayment: '',
+        maxPayment: '',
+        isregionIrrelevant: false,
+        preferentialTreatment: '',
+        hasPreference: false,
+        categoryDtos: [
+          {
+            "firstCategory": null,
+            "secondCategory": null,
+            "thirdCategory": null
+          },
+          {
+            "firstCategory": null,
+            "secondCategory": null,
+            "thirdCategory": null
+          },
+          {
+            "firstCategory": null,
+            "secondCategory": null,
+            "thirdCategory": null
+          }
+        ],
+        selectedCategories: [],
+        files: [],
+        workType: 'online',
+      };
+    }
   });
 
   const cityDetailData = [
@@ -101,6 +179,18 @@ export default function RecruitUpload() {
     { city_id: 2, name: "경기"}
   ];
   
+  // 12시간 형식을 24시간 형식으로 변환하는 함수
+  const convertTo24HourFormat = (hour, minute, period) => {
+    let hour24 = parseInt(hour);
+    
+    if (period === 'PM' && hour24 !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hour24 === 12) {
+      hour24 = 0;
+    }
+    
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+  };
 
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
@@ -151,19 +241,6 @@ export default function RecruitUpload() {
         [name]: value
       }));
     }
-  };
-
-  // 12시간 형식을 24시간 형식으로 변환하는 함수
-  const convertTo24HourFormat = (hour, minute, period) => {
-    let hour24 = parseInt(hour);
-    
-    if (period === 'PM' && hour24 !== 12) {
-      hour24 += 12;
-    } else if (period === 'AM' && hour24 === 12) {
-      hour24 = 0;
-    }
-    
-    return `${hour24.toString().padStart(2, '0')}:${minute}`;
   };
 
   const handleSubmit = async (e) => {
@@ -228,49 +305,95 @@ export default function RecruitUpload() {
   
       console.log('Sending data:', formDataToSend);
       
-      // 1. 공고문 업로드 (presigned URL 포함된 응답 받기)
-      const recruitResponse = await uploadRecruit(formDataToSend);
-      const { recruitId, dtoList } = recruitResponse.data.result;
+      let response;
       
-      // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
-      if (formData.files.length > 0 && dtoList) {
-        try {
-          // S3에 모든 파일 업로드
-          await Promise.all(
-            dtoList.map(({ presignedUrl }, i) =>
-              uploadToS3(presignedUrl, formData.files[i])
-            )
-          );
+      if (isEditMode) {
+        // 수정 모드: updateRecruit API 사용
+        const recruitId = editData.recruitId || editData.id;
+        response = await updateRecruit(recruitId, formDataToSend);
+        
+        // 수정 모드에서도 파일 업로드 처리
+        if (formData.files.length > 0 && response.data?.result?.dtoList) {
+          try {
+            const { recruitId: updatedRecruitId, dtoList } = response.data.result;
+            
+            // S3에 모든 파일 업로드
+            await Promise.all(
+              dtoList.map(({ presignedUrl }, i) =>
+                uploadToS3(presignedUrl, formData.files[i])
+              )
+            );
 
-          // 파일 정보 추출
-          const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
-          const fileNames = formData.files.map((file) => file.name);
-          const fileTypes = formData.files.map((file) =>
-            file.type.split("/")[1].toUpperCase()
-          );
+            // 파일 정보 추출
+            const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+            const fileNames = formData.files.map((file) => file.name);
+            const fileTypes = formData.files.map((file) =>
+              file.type.split("/")[1].toUpperCase()
+            );
 
-          // 3. S3 업로드 성공 후 미디어 정보 저장
-          await Promise.all(
-            dtoList.map(({ presignedUrl }, i) =>
-              postRecruitMedia({
-                recruitId,
-                fileUrl: fileUrls,
-                fileName: fileNames,
-                fileType: fileTypes,
-              })
-            )
-          );
-        } catch (error) {
-          console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
-          alert('파일 업로드 중 오류가 발생했습니다.');
+            // S3 업로드 성공 후 미디어 정보 저장
+            await Promise.all(
+              dtoList.map(({ presignedUrl }, i) =>
+                postRecruitMedia({
+                  recruitId: updatedRecruitId,
+                  fileUrl: fileUrls,
+                  fileName: fileNames,
+                  fileType: fileTypes,
+                })
+              )
+            );
+          } catch (error) {
+            console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
+            alert('파일 업로드 중 오류가 발생했습니다.');
+          }
         }
+        
+        alert('공고가 성공적으로 수정되었습니다.');
+      } else {
+        // 새 공고 작성 모드: uploadRecruit API 사용
+        response = await uploadRecruit(formDataToSend);
+        const { recruitId, dtoList } = response.data.result;
+        
+        // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
+        if (formData.files.length > 0 && dtoList) {
+          try {
+            // S3에 모든 파일 업로드
+            await Promise.all(
+              dtoList.map(({ presignedUrl }, i) =>
+                uploadToS3(presignedUrl, formData.files[i])
+              )
+            );
+
+            // 파일 정보 추출
+            const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+            const fileNames = formData.files.map((file) => file.name);
+            const fileTypes = formData.files.map((file) =>
+              file.type.split("/")[1].toUpperCase()
+            );
+
+            // 3. S3 업로드 성공 후 미디어 정보 저장
+            await Promise.all(
+              dtoList.map(({ presignedUrl }, i) =>
+                postRecruitMedia({
+                  recruitId,
+                  fileUrl: fileUrls,
+                  fileName: fileNames,
+                  fileType: fileTypes,
+                })
+              )
+            );
+          } catch (error) {
+            console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
+            alert('파일 업로드 중 오류가 발생했습니다.');
+          }
+        }
+        alert('공고가 성공적으로 등록되었습니다.');
       }
       
-      alert('공고가 성공적으로 등록되었습니다.');
       navigate('/recruit?category=1');
     } catch (error) {
-      console.error('공고 등록 중 오류 발생:', error);
-      alert('공고 등록에 실패했습니다. 다시 시도해주세요.');
+      console.error('공고 등록/수정 중 오류 발생:', error);
+      alert(isEditMode ? '공고 수정에 실패했습니다. 다시 시도해주세요.' : '공고 등록에 실패했습니다. 다시 시도해주세요.');
     }
   };
   
@@ -361,7 +484,9 @@ export default function RecruitUpload() {
 
   return (
     <div className="pt-24 px-6 w-1/2 max-w-5xl mx-auto mb-12">
-      <h1 className="text-3xl font-bold w-1/4 mx-auto">공고문 작성</h1>
+      <h1 className="text-3xl font-bold w-1/4 mx-auto">
+        {isEditMode ? '공고문 수정' : '공고문 작성'}
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
@@ -404,8 +529,12 @@ export default function RecruitUpload() {
                 name="minPayment"
                 value={formData.minPayment}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
+                  isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                }`}
                 required
+                disabled={isEditMode}
+                readOnly={isEditMode}
               />
             </div>
             <span className="text-gray-500">~</span>
@@ -415,8 +544,12 @@ export default function RecruitUpload() {
                 name="maxPayment"
                 value={formData.maxPayment}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
+                  isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                }`}
                 required
+                disabled={isEditMode}
+                readOnly={isEditMode}
               />
             </div>
             <span className="text-gray-500 whitespace-nowrap">만원</span>
@@ -459,9 +592,9 @@ export default function RecruitUpload() {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                disabled={formData.isregionIrrelevant}
+                disabled={formData.isregionIrrelevant || isEditMode}
                 className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
-                  formData.isregionIrrelevant ? 'bg-gray-100' : ''
+                  formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
                 }`}
                 required={!formData.isregionIrrelevant}
               >
@@ -475,10 +608,12 @@ export default function RecruitUpload() {
             <select
                 name="region"
                 value={formData.region}
+
               onChange={handleChange}
                 disabled={formData.isregionIrrelevant}
+
                 className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
-                  formData.isregionIrrelevant ? 'bg-gray-100' : ''
+                  formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
                 }`}
                 required={!formData.isregionIrrelevant}
             >
@@ -590,7 +725,7 @@ export default function RecruitUpload() {
             defaultValue={formData.categoryDtos}
             type="join"
             onChange={handleFirstCategory}
-            isEditing={true}
+            isEditing={!isEditMode}
           />
           <CategorySelectBox 
             title="카테고리 선택"
@@ -598,7 +733,7 @@ export default function RecruitUpload() {
             defaultValue={formData.categoryDtos}
             type="join"
             onChange={handleSecondCategory}
-            isEditing={true}
+            isEditing={!isEditMode}
           />
             <CategorySelectBox 
             title="카테고리 선택"
@@ -606,7 +741,7 @@ export default function RecruitUpload() {
             defaultValue={formData.categoryDtos}
             type="join"
             onChange={handleThirdCategory}
-            isEditing={true}
+            isEditing={!isEditMode}
           />
             </div>
         </div>
@@ -647,7 +782,7 @@ export default function RecruitUpload() {
             type="submit"
             className="px-6 py-3 bg-yellow-main text-black rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
           >
-            업로드
+            {isEditMode ? '수정완료' : '업로드'}
           </button>
           <button
             type="button"

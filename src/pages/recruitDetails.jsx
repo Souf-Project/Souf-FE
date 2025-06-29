@@ -108,14 +108,20 @@ export default function RecruitDetail() {
 
   // 수정 버튼 핸들러
   const handleEdit = () => {
-    // TODO: 수정 페이지로 이동
-    console.log('수정 버튼 클릭');
+    // 수정 모드로 recruitUpload 페이지로 이동
+    navigate('/recruitUpload', { 
+      state: { 
+        isEditMode: true,
+        recruitData: displayData,
+        recruitDetail: recruitDetail
+      } 
+    });
     setShowMenu(false);
   };
 
   // 삭제 버튼 핸들러
   const handleDelete = () => {
-    if (window.confirm('정말로 이 공고를 삭제하시겠습니까?')) {
+    if (window.confirm('해당 공고를 지원 마감 상태로 바꾸시겠습니까?')) {
       // TODO: 삭제 API 호출
       console.log('삭제 버튼 클릭');
       setShowMenu(false);
@@ -195,7 +201,7 @@ export default function RecruitDetail() {
                     onClick={handleDelete}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 text-red-600 rounded-b-lg"
                   >
-                    삭제
+                    지원 마감
                   </button>
                 </div>
               )}
