@@ -22,6 +22,7 @@
         console.log("🔗 Connected:", frame);
 
         // 4️⃣ 구독 : 이걸(topic/chatroom/2) 구독한 사람은 다 메시지를 볼 수 있는데, 사용자를 1명으로 제한해서 개인 채팅으로 사용할 예정
+        // 2 가 roomId
         client.subscribe(
           "/topic/chatroom/2",
           function (message) {

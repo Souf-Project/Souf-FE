@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import SearchBar from "../components/SearchBar";
 import ChatEmpty from "../components/chat/chatEmpty";
 import ChatMessage from "../components/chat/chatMessage";
+import { useQuery } from "@tanstack/react-query";
+import { getChat } from "../api/chat";
+import { getFormattedDate } from "../utils/getDate";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -12,6 +15,7 @@ export default function Chat() {
     console.log("Search query:", searchQuery);
   };
 
+  
   // 임시 채팅 데이터
   const chatList = [
     {
@@ -37,6 +41,34 @@ export default function Chat() {
     },
   ];
 
+    const {
+    data: chatData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["chatList"],
+    queryFn: async () => {
+      const data = await getChat();
+      
+      console.log("채팅 조회:", data);
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
+  /*
+  {
+        "roomId": 2,
+        "opponentNickname": "1st테스트",
+        "opponentProfileImageUrl": null,
+        "lastMessage": "안녕하세요! \uD83D\uDC4B",
+        "lastMessageTime": "2025-06-25T02:53:19.841245",
+        "unreadCount": 0
+    }
+
+
+  
+  */
   return (
     <div className="h-[calc(100vh-64px-80px)] px-6 ">
       <div className="w-screen mx-auto h-full">
@@ -54,23 +86,23 @@ export default function Chat() {
                 />
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
-                {chatList.map((chat) => (
+                {chatData?.map((chat) => (
                   <div
-                    key={chat.id}
+                    key={chat.roomId}
                     className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
-                      selectedChat === chat.id ? "bg-gray-50" : ""
+                      selectedChat === chat.roomId ? "bg-gray-50" : ""
                     }`}
-                    onClick={() => setSelectedChat(chat.id)}
+                    onClick={() => setSelectedChat(chat.roomId)}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold">{chat.name}</span>
-                      <span className="text-sm text-gray-500">{chat.time}</span>
+                      <span className="font-semibold">{chat.opponentNickname}</span>
+                      <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <p className="text-gray-600 truncate">
                         {chat.lastMessage}
                       </p>
-                      {chat.unread > 0 && (
+                      {chat.unreadCount > 0 && (
                         <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
                           {chat.unread}
                         </span>
@@ -82,9 +114,10 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8">
+            <div className="col-span-8 h-screen">
               {selectedChat ? (
                 <ChatMessage
+                  roomId={selectedChat}
                   chatUsername={
                     chatList.find((chat) => chat.id === selectedChat)?.name
                   }
