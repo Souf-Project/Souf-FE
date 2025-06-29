@@ -26,3 +26,18 @@ export async function getMyApplications(pageable = { page: 0, size: 10 }) {
     });
     return response;
 }
+
+/* 특정 공고문 지원자 리스트 조회 */
+export async function getApplicantsByRecruitId(recruitId, pageable = { page: 0, size: 10 }) {
+    const accessToken = localStorage.getItem('accessToken');
+    const response = await client.get(`/api/v1/applications/${recruitId}/applicants`, {
+        params: {
+          page: pageable.page,
+          size: pageable.size,
+        },
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+        }
+    });
+    return response;
+}

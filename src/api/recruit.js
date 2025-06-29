@@ -157,3 +157,45 @@ export const postRecruitMedia = async ({ recruitId, fileUrl, fileName, fileType 
   }
 };
 
+// 내가 작성한 공고문 리스트 조회
+export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
+    try {
+        const token = localStorage.getItem('accessToken');
+        console.log("Token exists:", !!token);
+        if (token) {
+            console.log("Token preview:", token.substring(0, 20) + "...");
+        }
+
+        const response = await client.get('/api/v1/recruit/my', {
+            params: {
+                page: pageable.page,
+                size: pageable.size,
+            },
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('내 공고문 조회 API 오류 발생:', error);
+        
+        if (error.response?.status === 403) {
+            console.error('403 Forbidden - 권한이 없습니다.');
+            console.error('Response data:', error.response.data);
+            
+            // 토큰이 만료되었거나 유효하지 않은 경우
+            if (error.response.data?.message?.includes('token') || 
+                error.response.data?.message?.includes('unauthorized')) {
+                console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
+                localStorage.removeItem('accessToken');
+                window.location.href = '/login';
+                return;
+            }
+        }
+        
+        throw error;
+    }
+}
+

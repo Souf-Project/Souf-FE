@@ -16,6 +16,8 @@ import recruitImgOff from "../assets/images/recruitImgOff.png"
 import ProfileEditContent from '../components/ProfileEditContent';
 import ApplicationsContent from '../components/ApplicationsContent';
 import FavoritesContent from '../components/FavoritesContent';
+import RecruitPostList from '../components/companyMyPage/recruitPostList';
+import CompanyApplicants from '../components/companyMyPage/companyApplicants';
 import { UserStore } from '../store/userStore';
 
 export default function MyPage() {
@@ -33,14 +35,16 @@ export default function MyPage() {
     switch (activeSubmenu) {
       case 'profileEdit':
         return <ProfileEditContent />;
-      case 'applications':
+      case 'studentApplications':
         return <ApplicationsContent />;
+      case 'companyApplications':
+        return <CompanyApplicants />;
       case 'favorites':
         return <FavoritesContent />;
       case 'myFeed':
         return <div>내 피드 내용이 여기에 표시됩니다.</div>;
       case 'myRecruits':
-        return <div>작성한 공고문 내용이 여기에 표시됩니다.</div>;
+        return <RecruitPostList />;
       default:
         return <ProfileEditContent />;
     }
@@ -60,19 +64,19 @@ export default function MyPage() {
         label: '내 즐겨찾기',
         iconOn: starImgOn,
         iconOff: starImgOff
-      },
-      {
-        id: 'applications',
-        label: '지원 내역',
-        iconOn: applyImgOn,
-        iconOff: applyImgOff
       }
     ];
 
     const roleSpecificMenus = [];
 
-    // STUDENT: 내 피드까지 보여줌
+    // STUDENT: 내 지원 내역과 내 피드 보여줌
     if (roleType === 'STUDENT') {
+      roleSpecificMenus.push({
+        id: 'studentApplications',
+        label: '지원 내역',
+        iconOn: applyImgOn,
+        iconOff: applyImgOff
+      });
       roleSpecificMenus.push({
         id: 'myFeed',
         label: '내 피드',
@@ -81,8 +85,14 @@ export default function MyPage() {
       });
     }
     
-    // MEMBER: 작성한 공고문 보여줌
+    // MEMBER: 기업 지원 내역과 작성한 공고문 보여줌
     if (roleType === 'MEMBER') {
+      roleSpecificMenus.push({
+        id: 'companyApplications',
+        label: '지원 내역',
+        iconOn: applyImgOn,
+        iconOff: applyImgOff
+      });
       roleSpecificMenus.push({
         id: 'myRecruits',
         label: '작성한 공고문',
@@ -91,8 +101,20 @@ export default function MyPage() {
       });
     }
     
-    // ADMIN: 둘 다 보여줌
+    // ADMIN: 모든 메뉴 보여줌
     if (roleType === 'ADMIN') {
+      roleSpecificMenus.push({
+        id: 'studentApplications',
+        label: '학생 지원 내역',
+        iconOn: applyImgOn,
+        iconOff: applyImgOff
+      });
+      roleSpecificMenus.push({
+        id: 'companyApplications',
+        label: '기업 지원 내역',
+        iconOn: applyImgOn,
+        iconOff: applyImgOff
+      });
       roleSpecificMenus.push({
         id: 'myFeed',
         label: '내 피드',
@@ -146,7 +168,8 @@ export default function MyPage() {
         <div className="max-w-4xl mx-auto">
           {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium  mb-4">프로필 수정</h3>}
           {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium  mb-4">개인정보 수정</h3>}
-          {activeSubmenu === 'applications' && <h3 className="text-4xl font-medium  mb-4">지원 내역</h3>}
+          {activeSubmenu === 'studentApplications' && <h3 className="text-4xl font-medium  mb-4">학생 지원 내역</h3>}
+          {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium  mb-4">기업 지원 내역</h3>}
           {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
           {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium  mb-4">내 피드</h3>}
           {activeSubmenu === 'myRecruits' && <h3 className="text-4xl font-medium  mb-4">작성한 공고문</h3>}

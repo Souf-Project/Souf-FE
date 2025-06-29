@@ -271,12 +271,29 @@ export default function RecruitDetail() {
        
 
       <div className="flex justify-center mt-8">
-        <button 
-          className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-          onClick={handleApply}
-        >
-          지원하기
-        </button>
+        {isAuthor ? (
+          <div className="flex gap-4 w-full">
+            <button 
+              className="bg-blue-500 text-white flex-1 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+              onClick={handleViewApplicants}
+            >
+              지원자 리스트 보기
+            </button>
+            <button 
+              className="bg-yellow-main text-black flex-1 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+              onClick={handleEdit}
+            >
+              공고 수정
+            </button>
+          </div>
+        ) : (
+          <button 
+            className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+            onClick={handleApply}
+          >
+            지원하기
+          </button>
+        )}
       </div>
       </div>
 {isApplyModalOpen && (
