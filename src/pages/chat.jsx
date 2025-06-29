@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import SearchBar from "../components/SearchBar";
 import ChatEmpty from "../components/chat/chatEmpty";
 import ChatMessage from "../components/chat/chatMessage";
+import { useQuery } from "@tanstack/react-query";
+import { getChat } from "../api/chat";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -12,6 +14,7 @@ export default function Chat() {
     console.log("Search query:", searchQuery);
   };
 
+  
   // 임시 채팅 데이터
   const chatList = [
     {
@@ -37,6 +40,34 @@ export default function Chat() {
     },
   ];
 
+    const {
+    data: chatData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["chatList"],
+    queryFn: async () => {
+      const data = await getChat();
+      
+      console.log("채팅 조회:", data);
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
+  /*
+  {
+        "roomId": 2,
+        "opponentNickname": "1st테스트",
+        "opponentProfileImageUrl": null,
+        "lastMessage": "안녕하세요! \uD83D\uDC4B",
+        "lastMessageTime": "2025-06-25T02:53:19.841245",
+        "unreadCount": 0
+    }
+
+
+  
+  */
   return (
     <div className="h-[calc(100vh-64px-80px)] px-6 ">
       <div className="w-screen mx-auto h-full">
@@ -54,7 +85,7 @@ export default function Chat() {
                 />
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
-                {chatList.map((chat) => (
+                {chatData.map((chat) => (
                   <div
                     key={chat.id}
                     className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
