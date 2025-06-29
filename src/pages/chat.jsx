@@ -4,6 +4,7 @@ import ChatEmpty from "../components/chat/chatEmpty";
 import ChatMessage from "../components/chat/chatMessage";
 import { useQuery } from "@tanstack/react-query";
 import { getChat } from "../api/chat";
+import { getFormattedDate } from "../utils/getDate";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -87,21 +88,21 @@ export default function Chat() {
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
                 {chatData.map((chat) => (
                   <div
-                    key={chat.id}
+                    key={chat.roomId}
                     className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
-                      selectedChat === chat.id ? "bg-gray-50" : ""
+                      selectedChat === chat.roomId ? "bg-gray-50" : ""
                     }`}
-                    onClick={() => setSelectedChat(chat.id)}
+                    onClick={() => setSelectedChat(chat.roomId)}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold">{chat.name}</span>
-                      <span className="text-sm text-gray-500">{chat.time}</span>
+                      <span className="font-semibold">{chat.opponentNicknamee}</span>
+                      <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <p className="text-gray-600 truncate">
                         {chat.lastMessage}
                       </p>
-                      {chat.unread > 0 && (
+                      {chat.unreadCount > 0 && (
                         <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
                           {chat.unread}
                         </span>
@@ -116,6 +117,7 @@ export default function Chat() {
             <div className="col-span-8">
               {selectedChat ? (
                 <ChatMessage
+                  roomId={chatData.roomId}
                   chatUsername={
                     chatList.find((chat) => chat.id === selectedChat)?.name
                   }
