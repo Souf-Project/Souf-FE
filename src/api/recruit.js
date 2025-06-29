@@ -136,6 +136,21 @@ export async function uploadRecruit(data) {
     }
 }
 
+export async function updateRecruit(recruitId, data) {
+    try {
+        const response = await client.patch(`/api/v1/recruit/${recruitId}`, data, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Recruit Update API 오류 발생:', error);
+        throw error;
+    }
+}
+
 // S3 업로드 함수
 export const uploadToS3 = async (url, file) => {
   return axios.put(url, file, {});
