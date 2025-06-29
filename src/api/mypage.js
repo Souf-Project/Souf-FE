@@ -71,3 +71,14 @@ export async function putProfileEdit(data) {
 
   return response;
 }
+
+
+/* 닉네임 검증 */
+
+export async function getNickNameVerify(nickname) {
+  const encoded = encodeURIComponent(nickname);
+  const response = await client.get(
+    `/api/v1/auth/nickname/available?nickname=${encoded}`
+  );
+  return response;
+}

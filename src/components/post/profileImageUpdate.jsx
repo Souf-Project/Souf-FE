@@ -1,4 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
+import SouFLogo from '../../assets/images/SouFLogo.png';
+
 
 export default function ProfileImageUpdate({
   isEditing,
@@ -43,7 +45,8 @@ export default function ProfileImageUpdate({
             className="w-full h-full object-cover"
           />
         ) : (
-          <span className="text-gray-400">사진</span>
+          <img src={SouFLogo} alt="SouFLogo" className="w-full h-full object-cover border-2 border-gray-300 rounded-full" />
+         
         )}
         {isEditing && (
             <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center text-white text-lg font-bold">

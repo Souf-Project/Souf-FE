@@ -14,6 +14,7 @@ export async function postLogin(email, password) {
 export async function postSignUp(formData) {
   console.log(formData);
   const response = await client.post("/api/v1/auth/signup", formData);
+  console.log(response); 
   return response;
 }
 
@@ -48,13 +49,30 @@ export async function postResetEmailVerification(email) {
   return response;
 }
 
-export async function postEmailVerify(email, code, purpose = "SIGNUP") {
-  const response = await client.post(`/api/v1/auth/email/verify`, {
-    email : email,
-    code : code,
-    purpose : purpose,
-  });
-  return response;
+
+export async function postEmailVerify(email, code, purpose) {
+  try {
+    const response = await client.post(
+      `/api/v1/auth/email/verify?email=${email}&code=${code}&purpose=${purpose}`
+    );
+    console.log("✅ 응답 성공:", response);
+    return response.data;
+  } catch (error) {
+    console.error("❌ 요청 실패:", error);
+    if (error.response) {
+      console.error("📡 서버 응답 에러:", {
+        status: error.response.status,
+        data: error.response.data,
+        headers: error.response.headers,
+      });
+    } else if (error.request) {
+      console.error("📭 요청은 보내졌지만 응답 없음:", error.request);
+    } else {
+      console.error("🚨 요청 설정 중 에러:", error.message);
+    }
+    throw error; // 다시 던져서 useMutation onError로 보내기
+  }
+
 }
 
 

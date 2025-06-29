@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 
-import AprofileIco from "../assets/images/AappliIco.svg";
-import NAprofileIco from "../assets/images/NAprofileIco.svg";
-import NAappliIco from "../assets/images/NAappliIco.svg";
-import AappliIco from "../assets/images/AappliIco.svg";
+import profileImgOn from "../assets/images/applyImgOn.svg";
+import profileImgOff from "../assets/images/profileImgOff.svg";
+import applyImgOff from "../assets/images/applyImgOff.svg";
+import applyImgOn from "../assets/images/applyImgOn.svg";
+
+import starImgOn from "../assets/images/starImgOn.png"
+import starImgOff from "../assets/images/starImgOff.png"
+
 import TrashIcon from "../assets/images/trashIco.svg";
 import CompanyProfileEdit from "../components/companyMyPage/companyProfileEdit";
 import RecruitPostList from "../components/companyMyPage/recruitPostList";
@@ -40,7 +44,7 @@ export default function CompanyMyPage() {
             onClick={() => setActiveTab("profileEdit")}
           >
             <img
-              src={activeTab === "profileEdit" ? AprofileIco : NAprofileIco}
+              src={activeTab === "profileEdit" ? profileImgOn : profileImgOff}
               alt="프로필 수정"
               className="w-5 h-5 mr-2"
             />
@@ -59,7 +63,7 @@ export default function CompanyMyPage() {
             onClick={() => setActiveTab("postHistory")}
           >
             <img
-              src={activeTab === "postHistory" ? AappliIco : NAappliIco}
+              src={activeTab === "postHistory" ? applyImgOn : applyImgOff}
               alt="공고문 내역"
               className="w-5 h-5 mr-2"
             />
