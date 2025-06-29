@@ -60,7 +60,7 @@ export default function Step1() {
       setEmailModal(true);
     },
     onError: (error) => {
-      console.log("에러발생", error?.response);
+      console.log("에러발생", error);
       if (error.response?.data?.code === 400) {
         setModalTitle("중복된 이메일");
         setDescription(error.response?.data?.message);
@@ -88,8 +88,8 @@ export default function Step1() {
   });
 
   const emailNumberVerificationMutation = useMutation({
-    mutationFn: ({ verification }) =>
-      postEmailVerify(formData.email, verification),
+    mutationFn: ({ email, verification }) =>
+      postEmailVerify(email, verification, "SIGNUP"),
     onSuccess: (response, { email }) => {
       if (response.result === true) {
         updateUserData("email", email);
@@ -147,6 +147,7 @@ export default function Step1() {
     },
     onError: (error) => {
       setApproveText("서버 오류로 인증에 실패했습니다.");
+      console.log(error);
       setEmailVerification(false);
     },
   });
@@ -212,13 +213,19 @@ export default function Step1() {
         onClick={() => emailVerificationMutation.mutate(email)}
       />
 
-      <ButtonInput
-        value={verification}
-        onChange={(e) => setVerification(e.target.value)}
-        title="이메일 인증"
-        btnText="인증확인"
-        onClick={() => emailNumberVerificationMutation.mutate({ verification })}
-      />
+<ButtonInput
+  value={verification}
+  onChange={(e) => setVerification(e.target.value)}
+  title="이메일 인증"
+  btnText="인증확인"
+  onClick={() =>
+    emailNumberVerificationMutation.mutate({
+      email: formData.email,
+      verification,
+    })
+  }
+/>
+
       <Input
         title="비밀번호"
         type="password"
