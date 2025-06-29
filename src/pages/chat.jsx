@@ -86,7 +86,7 @@ export default function Chat() {
                 />
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
-                {chatData.map((chat) => (
+                {chatData?.map((chat) => (
                   <div
                     key={chat.roomId}
                     className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
@@ -95,7 +95,7 @@ export default function Chat() {
                     onClick={() => setSelectedChat(chat.roomId)}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold">{chat.opponentNicknamee}</span>
+                      <span className="font-semibold">{chat.opponentNickname}</span>
                       <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -114,10 +114,10 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8">
+            <div className="col-span-8 h-screen">
               {selectedChat ? (
                 <ChatMessage
-                  roomId={chatData.roomId}
+                  roomId={selectedChat}
                   chatUsername={
                     chatList.find((chat) => chat.id === selectedChat)?.name
                   }
