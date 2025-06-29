@@ -30,24 +30,33 @@ export async function patchResetPassword(email, newPassword, confirmPassword) {
 /* 이메일 인증 */
 export async function postEmailVerification(email) {
   const response = await client.post(
-    `/api/v1/auth/signup/email/send?email=${email}`
+    `/api/v1/auth/signup/email/send`,
+    {
+      email : email
+    }
   );
   return response;
 }
 
 export async function postResetEmailVerification(email) {
   const response = await client.post(
-    `/api/v1/auth/reset/email/send?email=${email}`
+    `/api/v1/auth/reset/email/send`,
+    {
+      email : email
+    }
   );
   return response;
 }
 
-export async function postEmailVerify(email, code) {
-  const response = await client.post(
-    `/api/v1/auth/email/verify?email=${email}&code=${code}`
-  );
+export async function postEmailVerify(email, code, purpose = "SIGNUP") {
+  const response = await client.post(`/api/v1/auth/email/verify`, {
+    email : email,
+    code : code,
+    purpose : purpose,
+  });
   return response;
 }
+
 
 /* 닉네임 검증 */
 
@@ -55,6 +64,19 @@ export async function getNickNameVerify(nickname) {
   const encoded = encodeURIComponent(nickname);
   const response = await client.get(
     `/api/v1/auth/nickname/available?nickname=${encoded}`
+  );
+  return response;
+}
+
+
+/* 대학생 인증 */
+export async function postStudentVerify(originalEmail, acKrEmail) {
+  const response = await client.post(
+    `/api/v1/member/modify/email/send`,
+      {
+        originalEmail: originalEmail,
+        acKrEmail: acKrEmail
+      }
   );
   return response;
 }

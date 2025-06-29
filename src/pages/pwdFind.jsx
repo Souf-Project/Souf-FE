@@ -48,7 +48,7 @@ export default function PwdFind({}) {
   });
   const emailNumberVerificationMutation = useMutation({
     mutationFn: ({ email, verification }) =>
-      postEmailVerify(email, verification),
+      postEmailVerify(email, verification , "RESET"),
     onSuccess: (response) => {
       console.log(response);
       if (response.data.result === true) {
