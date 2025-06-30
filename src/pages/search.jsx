@@ -5,6 +5,7 @@ import StudentProfileList from './studentProfileList';
 import StudentFeedList from './studentFeedList';
 import RecruitBlock from '../components/recruitBlock';
 import Loading from '../components/loading';
+import SearchBar from '../components/SearchBar';
 
 const useQuery = () => new URLSearchParams(useLocation().search);
 
@@ -14,6 +15,7 @@ export default function Search(){
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("recruit");
+  const [searchQuery, setSearchQuery] = useState("");
 
   
   useEffect(() => {
@@ -57,8 +59,8 @@ export default function Search(){
 
   return (
     <div className="flex flex-col justify-center items-center pt-12 px-6 w-4/5">
-        <div className="flex justify-start items-start mx-auto py-8 gap-4 w-full">
-            <div>
+        <div className="flex justify-between items-center mx-auto py-8 gap-4 w-full">
+            <div className='flex'>
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
@@ -81,7 +83,14 @@ export default function Search(){
                 ></span>
               </button>
             ))}
+            
             </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="검색어를 입력하세요"
+              width='w-[60%]'
+            />
         </div>
 
       {loading ? (
