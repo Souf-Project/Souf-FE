@@ -5,6 +5,7 @@ import ChatMessage from "../components/chat/chatMessage";
 import { useQuery } from "@tanstack/react-query";
 import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
+import { patchChatRooms } from "../api/chat";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -14,6 +15,8 @@ export default function Chat() {
     e.preventDefault();
     console.log("Search query:", searchQuery);
   };
+
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   
   // 임시 채팅 데이터
@@ -65,10 +68,15 @@ export default function Chat() {
         "lastMessageTime": "2025-06-25T02:53:19.841245",
         "unreadCount": 0
     }
-
-
   
   */
+
+    const hadleChat = (roomId) => {
+      setSelectedChat(roomId);
+      patchChatRooms(roomId);
+
+
+    }
   return (
     <div className="h-[calc(100vh-64px-80px)] px-6 ">
       <div className="w-screen mx-auto h-full">
@@ -85,23 +93,34 @@ export default function Chat() {
                   placeholder="검색어를 입력하세요"
                 />
               </div>
-              <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
+              <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
                 {chatData?.map((chat) => (
                   <div
                     key={chat.roomId}
                     className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
                       selectedChat === chat.roomId ? "bg-gray-50" : ""
                     }`}
-                    onClick={() => setSelectedChat(chat.roomId)}
+                    onClick={() => hadleChat(chat.roomId)}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold">{chat.opponentNickname}</span>
-                      <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-start items-start mb-2 w-full">
+                      
+                      <img src={S3_BUCKET_URL + chat.opponentProfileImageUrl} alt="profile" className="w-10 h-10 rounded-full" />
+                      <div className="flex flex-col ml-4">
+                      <div className="flex justify-between items-center w-full">
+                      <span className="font-semibold ">{chat.opponentNickname}</span>
+                     <span className="text-sm text-gray-500 ml-auto">{getFormattedDate(chat.lastMessageTime)}</span>
+                     </div>
+                     
+                     
                       <p className="text-gray-600 truncate">
                         {chat.lastMessage}
                       </p>
+                      
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center w-full">
+                     
+                      
                       {chat.unreadCount > 0 && (
                         <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
                           {chat.unread}
@@ -114,7 +133,7 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8 h-screen">
+            <div className="col-span-8 overflow-y-auto h-[calc(100vh-64px-80px)]">
               {selectedChat ? (
                 <ChatMessage
                   roomId={selectedChat}

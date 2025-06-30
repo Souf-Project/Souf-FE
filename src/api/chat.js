@@ -12,9 +12,10 @@ export const getChat = async (memberId,feedId) => {
 
 
 
-export async function putChatRooms(roomId) {
-  const response = await client.put(`/api/v1/chatrooms/${roomId}/read`, data, 
+export async function patchChatRooms(roomId) {
+  const response = await client.patch(`/api/v1/chatrooms/${roomId}/read`, 
   );
+  console.log(response);
   return response;
 }
 
