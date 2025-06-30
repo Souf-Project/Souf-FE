@@ -4,10 +4,11 @@ import starOn from "../../assets/images/starOn.svg";
 import starOff from "../../assets/images/starOff.svg";
 
 import BasicImg4 from "../../assets/images/BasicprofileImg4.png";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProfileDetail } from "../../api/profile";
-import { getFavorite } from "../../api/favorite";
+import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
+import { UserStore } from "../../store/userStore";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -16,6 +17,7 @@ export default function ProfileDetail({}) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [userData, setUserData] = useState([]);
   const [userWorks, setUserWorks] = useState([]);
+  const fromMemberId = UserStore.getState().memberId;
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -37,10 +39,54 @@ export default function ProfileDetail({}) {
     });
 
     const handleFavorite = async () => {
-      const fromMemberId = userStore.getMemberId();
-      const data = await getFavorite(fromMemberId, userData.id);
-      console.log("즐겨찾기:", data);
+
+      if (!fromMemberId || !userData.id) {
+        console.error("ID가 없습니다. fromMemberId:", fromMemberId, "userData.id:", userData.id);
+        return;
+      }
+      
+      try {
+        if (!star) {
+          const data = await postFavorite(fromMemberId, userData.id);
+          console.log("즐겨찾기 생성:", data);
+        } else {
+          const data = await deleteFavorite(fromMemberId, userData.id);
+          console.log("즐겨찾기 삭제:", data);
+        }
+        
+        // API 호출 성공 후 UI 상태 변경
+        handleStarClick();
+      } catch (error) {
+        console.error("즐겨찾기 처리 에러:", error);
+        // 에러 발생 시 UI 상태 변경하지 않음
+      }
     }
+
+    useEffect(() => {
+      const fetchFavoriteStatus = async () => {
+        if (fromMemberId && userData.id && fromMemberId !== userData.id) {
+          try {
+            const response = await getFavorite(fromMemberId, 0, 100);
+            console.log("즐겨찾기 목록:", response);
+            
+            // 응답에서 해당 사용자가 즐겨찾기 목록에 있는지 확인
+            const favoriteList = response.result?.content || [];
+            
+            
+            const favoriteIds = favoriteList.map(favorite => favorite.id);
+           
+            const isFavorited = favoriteIds.includes(userData.id);
+            console.log("즐겨찾기 상태:", isFavorited);
+            setStar(isFavorited);
+          } catch (error) {
+            console.error("즐겨찾기 상태 확인 에러:", error);
+            setStar(false);
+          }
+        }
+      };
+  
+      fetchFavoriteStatus();
+    }, [userData.id, fromMemberId]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -59,6 +105,8 @@ export default function ProfileDetail({}) {
   const onWorkClick = (worksId) => {
     navigate(`/profileDetail/${userData.id}/post/${worksId}`);
   };
+
+
 
   return (
     <div className="flex flex-col pt-24 px-4 max-w-4xl w-full ">
@@ -80,18 +128,20 @@ export default function ProfileDetail({}) {
           <div className="flex flex-col gap-2 mt-4 w-full">
             <div className="flex items-center ">
             <div className="font-semibold text-[23px]">{userData?.nickname}</div>
-            <button
-          className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
-            isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
-          } hover:scale-110 `}
-          onClick={handleStarClick}
-        >
-          <img 
-            src={star ? starOn : starOff} 
-            alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
-            className="w-8 h-8"
-          />
-        </button>
+            {UserStore.getState().memberId !== userData?.id && (
+              <button
+                className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
+                  isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
+                } hover:scale-110 `}
+                onClick={handleFavorite}
+              >
+                <img 
+                  src={star ? starOn : starOff} 
+                  alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                  className="w-8 h-8"
+                />
+              </button>
+            )}
             </div>
            
             <div className="text-[#5B5B5B]">{userData?.intro}</div>
