@@ -1,7 +1,14 @@
+import { useQuery } from "@tanstack/react-query";
+import { getChatRooms } from "../../api/chat";
 import ReceiverMessage from "./ReceiverMessage";
 import SenderMessage from "./senderMessage";
+import { UserStore } from "../../store/userStore";
 
-export default function ChatMessage({ chatUsername }) {
+export default function ChatMessage({ chatUsername,roomId }) {
+    const { username } = UserStore();
+
+  
+  /*
   const chatMessages = [
     {
       id: 1,
@@ -59,42 +66,58 @@ export default function ChatMessage({ chatUsername }) {
       time: "2025-05-18T05:14:50",
       fromMe: true,
     },
-  ];
+  ];*/
+
+      const {
+    data: chatMessages,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["chatRoom"],
+    queryFn: async () => {
+      const data = await getChatRooms(roomId);
+      
+      console.log("채팅 조회:", data);
+      return data;
+    },
+    keepPreviousData: true,
+  });
 
   return (
-    <div className="h-full flex flex-col">
-      {/* 채팅 헤더 */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="font-semibold">{chatUsername}</h2>
-      </div>
+   <div className="h-full flex flex-col">
+  {/* 채팅 헤더 */}
+  <div className="p-4 border-b border-gray-200">
+    <h2 className="font-semibold">{chatUsername}</h2>
+  </div>
 
-      {/* 채팅 메시지 영역 */}
-      <div className="flex-grow p-4 overflow-y-auto">
-        <div className="text-center text-gray-500 text-sm mb-4">
-          {new Date().toLocaleDateString()}
-        </div>
-        {chatMessages.map((chat) =>
-          chat.fromMe ? (
-            <SenderMessage content={chat.content} />
-          ) : (
-            <ReceiverMessage content={chat.content} />
-          )
-        )}
-      </div>
-
-      {/* 메시지 입력 영역 */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="메시지를 입력하세요"
-            className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
-          />
-          <button className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200">
-            전송
-          </button>
-        </div>
-      </div>
+  {/* 채팅 메시지 영역 */}
+  <div className="flex-1 p-4 overflow-y-auto">
+    <div className="text-center text-gray-500 text-sm mb-4">
+      {new Date().toLocaleDateString()}
     </div>
+    {chatMessages?.map((chat, idx) =>
+      chat.sender === username ? (
+        <SenderMessage key={idx} content={chat.content} />
+      ) : (
+        <ReceiverMessage key={idx} content={chat.content} />
+      )
+    )}
+  </div>
+
+  {/* 메시지 입력 영역 */}
+  <div className="p-4 border-t border-gray-200">
+    <div className="flex gap-2">
+      <input
+        type="text"
+        placeholder="메시지를 입력하세요"
+        className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
+      />
+      <button className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200">
+        전송
+      </button>
+    </div>
+  </div>
+</div>
+
   );
 }
