@@ -6,9 +6,13 @@ import PostInput from "../components/postInput";
 import { postFeed, postMedia, uploadToS3 } from "../api/feed";
 import { useEffect, useState } from "react";
 import CategorySelectBox from "../components/categorySelectBox";
+import { useNavigate } from "react-router-dom";
+import AlertModal from "../components/alertModal";
 
 export default function PostUpload() {
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isModal , setIsModal] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     topic: "",
     content: "",
@@ -33,6 +37,14 @@ export default function PostUpload() {
     ],
   });
 
+  /*
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      originalFileNames: selectedFiles?.map((file) => file.name),
+    }));
+  }, [selectedFiles]); */
+
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -43,6 +55,7 @@ export default function PostUpload() {
   const handleImagesChange = (files) => {
     setSelectedFiles(files); //파일 저장
   };
+  
 
   /*
   카테고리 3개 아니면 null인 거 없애고 null 아닌 것만 보내는 그런 거 지금 아무것도 추가 안되어있어서
@@ -72,24 +85,20 @@ export default function PostUpload() {
         );
 
         //3. s3에 업로드 성공 후 미디어파일관련 백엔드에 보내주기
-        await Promise.all(
-          dtoList.map(({ presignedUrl }, i) =>
-            postMedia({
-              feedId,
-              fileUrl: fileUrls,
-              fileName: fileNames,
-              fileType: fileTypes,
-            })
-          )
-        );
-
+        await postMedia({
+          feedId,
+          fileUrl: fileUrls,
+          fileName: fileNames,
+          fileType: fileTypes,
+        });
         //여기는 추후에 파일 전송완료되면 실행시킬 코드 추가 ..
+        setIsModal(true);
       } catch (error) {
         console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
         alert("업로드 중 오류가 발생했습니다.");
       }
     },
-  });
+  }); 
 
   const handleInputChange = (name, e) => {
     const { value } = e.target;
@@ -148,7 +157,8 @@ export default function PostUpload() {
             취소
           </button>
         </div>
-      </div>
+        {isModal &&  <AlertModal type="simple" title="게시글 작성이 완료되었습니다." TrueBtnText="확인" onClickTrue={() => navigate("/recruit?category=1")}/>}
+       </div>
     </div>
   );
 }

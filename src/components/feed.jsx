@@ -1,15 +1,28 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getPopularFeed } from "../api/feed";
+import { deleteFeed, getPopularFeed } from "../api/feed";
 import { getFeed } from "../api/feed";
 import { getFormattedDate } from "../utils/getDate";
+import UpdateOption from "./updateOption";
+import { Swiper,SwiperSlide } from "swiper/react";
+import { Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import { UserStore } from "../store/userStore";
+import AlertModal from "./alertModal";
 
 export default function Feed({ feedData }) {
   const navigate = useNavigate();
-  const { id, worksId } = useParams();
   const [feeds, setFeeds] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [worksData, setWorksData] = useState([]);
+  const [mediaData, setMediaData] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const {memberId} = UserStore();
+  const maxLength = 100;
   const [pageable, setPageable] = useState({
     page: 1,
     size: 10,
@@ -35,21 +48,58 @@ export default function Feed({ feedData }) {
   useEffect(() => {
     console.log("피드데이터");
     console.log(feedData);
+     setWorksData(feedData);
+     setMediaData(feedData?.mediaResDtos);
   }, []);
+  
+  const clickHandler = (profileId) => {
+    navigate(`/profileDetail/${profileId}`);
+  };
 
-  // if (feeds.length === 0) {
-  //   return (
-  //     <div className="text-center py-10">
-  //       <p className="text-gray-500">표시할 피드가 없습니다.</p>
-  //     </div>
-  //   );
-  // }
+  //삭제하기
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
 
+  const handleDeleteConfirm = async () => {
+      try {
+        await deleteFeed(Number(feedData?.feedId));
+        setShowDeleteModal(false);
+        setShowCompleteModal(true);
+      } catch (err) {
+        console.log("실패함");
+      }
+    };
+  
+    const handleDeleteCancel = () => {
+      setShowDeleteModal(false);
+    };
+  
+    const handleCompleteConfirm = () => {
+      setShowCompleteModal(false);
+      navigate("/");
+    };
+
+
+    // 더보기쪽 함수
+    const handlerFeedContent = (length, data) => {
+      if(isExpanded){
+        return data;
+      }
+      if(data.length > length){
+        return data.slice(0, length) + "...";
+      }
+      return data;
+    }
+
+     const toggleExpand = () => setIsExpanded((prev) => !prev);
   return (
     <div
       key={feedData?.memberId}
-      className="rounded-2xl border border-gray-200 p-6 w-full shadow-sm mb-6"
+      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
+      <UpdateOption id={feedData.memberId} memberId={memberId}
+      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-semibold leading-snug text-black">
           {feedData?.topic || "제목 없음"}
@@ -59,23 +109,74 @@ export default function Feed({ feedData }) {
         </p>
       </div>
 
-      <div className="w-full overflow-hidden rounded-md mb-4">
-        {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
-          <img
-            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${feedData.mediaResDtos[0].fileUrl}`}
+      <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
+      onClick={() => clickHandler(feedData?.memberId)}>
+         <img
+            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${feedData?.profileUrl}`}
             alt={feedData?.topic || "이미지"}
-            className="w-full h-auto object-cover"
+            className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
-        ) : (
-          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-            <p className="text-gray-400">이미지가 없습니다</p>
-          </div>
-        )}
+        <h2 className="text-xl font-semibold leading-snug text-black">
+          {feedData?.nickname || "학생" }
+        </h2>
       </div>
 
+    <div className="flex justify-center w-full overflow-hidden rounded-md mb-4">
+      {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
+        <Swiper
+          pagination={{
+            dynamicBullets: true,
+          }}
+          modules={[Pagination]}
+          className="rounded-lg w-full max-w-[800px]"
+        >
+          {feedData.mediaResDtos.map((data, i) => (
+            <SwiperSlide key={i}>
+              <div className="flex justify-center items-center h-[400px]">
+                <img
+                src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${data?.fileUrl}`}
+                alt={data.fileName}
+                className="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+          <p className="text-gray-400">이미지가 없습니다</p>
+        </div>
+      )}
+    </div>
+
       <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-4">
-        {feedData?.content || "내용 없음"}
+        {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
+        <span
+          onClick={toggleExpand}
+          className="ml-2 text-gray-500 cursor-pointer font-light text-sm"
+        >
+          {feedData?.content.length <= maxLength ? "" : isExpanded ? "접기" : "더보기"}
+        </span>
       </p>
+      {showDeleteModal && (
+        <AlertModal
+          type="warning"
+          title="게시물을 삭제하시겠습니까?"
+          description="삭제 후 되돌릴 수 없습니다."
+          TrueBtnText="삭제"
+          FalseBtnText="취소"
+          onClickTrue={handleDeleteConfirm}
+          onClickFalse={handleDeleteCancel}
+        />
+      )}
+       {showCompleteModal && (
+              <AlertModal
+                type="simple"
+                title="게시물이 삭제되었습니다."
+                TrueBtnText="확인"
+                onClickTrue={handleCompleteConfirm}
+              />
+            )}
     </div>
   );
 }
