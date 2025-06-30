@@ -16,30 +16,6 @@ export const getPopularFeed = async (pageable) => {
   }
 };
 
-/*
-{
-  "topic": "봄 프로젝트 1회차",
-  "content": "오늘 작업 내용...",
-  "tags": [], // 빈 배열로 보내거나 태그가 있을 때 배열로 보내기
-  "originalFileNames": "[fileName.jpg, dog.jpg..]",
-  "categoryDtos": [
-    {
-      "firstCategory": 1,
-      "secondCategory": 1,
-      "thirdCategory": 1
-    },
-    {
-      "firstCategory": 1,
-      "secondCategory": 1,
-      "thirdCategory": 2
-    },
-    {
-      "firstCategory": 1,
-      "secondCategory": 1,
-      "thirdCategory": 4
-    }
-  ]
-} */
 
 export const postFeed = async (data) => {
   try {
@@ -89,7 +65,6 @@ export const getFeed = async (firstCategory, pageable) => {
 };
 
 
-
 export const getFeedDetail = async (memberId,feedId) => {
   try {
     const response = await client.get(`/api/v1/feed/${memberId}/${feedId}`);
@@ -99,3 +74,15 @@ export const getFeedDetail = async (memberId,feedId) => {
     throw error;
   }
 };
+
+
+export const getMemberFeed = async (memberId) => {
+  try {
+    const response = await client.get(`/api/v1/feed/${memberId}`);
+    return response.data;
+  } catch (error) {
+    console.error("특정 학생 피드 조회 에러:", error);
+    throw error;
+  }
+};
+

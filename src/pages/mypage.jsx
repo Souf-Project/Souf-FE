@@ -19,6 +19,7 @@ import FavoritesContent from '../components/FavoritesContent';
 import RecruitPostList from '../components/companyMyPage/recruitPostList';
 import CompanyApplicants from '../components/companyMyPage/companyApplicants';
 import { UserStore } from '../store/userStore';
+import MyFeed from '../components/myFeed';
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ export default function MyPage() {
       case 'favorites':
         return <FavoritesContent />;
       case 'myFeed':
-        return <div>내 피드 내용이 여기에 표시됩니다.</div>;
+        return <MyFeed/>;
       case 'myRecruits':
         return <RecruitPostList />;
       default:
