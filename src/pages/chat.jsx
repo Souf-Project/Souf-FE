@@ -7,9 +7,11 @@ import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
 
+
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -59,18 +61,6 @@ export default function Chat() {
     keepPreviousData: true,
   });
 
-  /*
-  {
-        "roomId": 2,
-        "opponentNickname": "1st테스트",
-        "opponentProfileImageUrl": null,
-        "lastMessage": "안녕하세요! \uD83D\uDC4B",
-        "lastMessageTime": "2025-06-25T02:53:19.841245",
-        "unreadCount": 0
-    }
-  
-  */
-
     const hadleChat = (roomId) => {
       setSelectedChat(roomId);
       patchChatRooms(roomId);
@@ -95,37 +85,29 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
                 {chatData?.map((chat) => (
-                  <div
-                    key={chat.roomId}
-                    className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
-                      selectedChat === chat.roomId ? "bg-gray-50" : ""
-                    }`}
-                    onClick={() => hadleChat(chat.roomId)}
-                  >
-                    <div className="flex justify-start items-start mb-2 w-full">
-                      
-                      <img src={S3_BUCKET_URL + chat.opponentProfileImageUrl} alt="profile" className="w-10 h-10 rounded-full" />
-                      <div className="flex flex-col ml-4">
-                      <div className="flex justify-between items-center w-full">
-                      <span className="font-semibold ">{chat.opponentNickname}</span>
-                     <span className="text-sm text-gray-500 ml-auto">{getFormattedDate(chat.lastMessageTime)}</span>
-                     </div>
-                     
-                     
-                      <p className="text-gray-600 truncate">
-                        {chat.lastMessage}
-                      </p>
-                      
+                  <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
+                      }`}>
+                    <img
+                      src={`${VITE_S3_BUCKET_URL}${chat.opponentProfileImageUrl}`}
+                      className="w-10 h-10 rounded-[100%]"
+                    />
+                    <div
+                      key={chat.roomId}
+                      className="px-6 py-4 cursor-pointer w-full"
+                      onClick={() => hadleChat(chat.roomId)}
+                    >
+                      <div className="flex justify-between items-center mb-2 w-full">
+                        <span className="font-semibold">{chat.opponentNickname}</span>
+                        <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center w-full">
-                     
-                      
-                      {chat.unreadCount > 0 && (
-                        <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
-                          {chat.unread}
-                        </span>
-                      )}
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-600 truncate">{chat.lastMessage}</p>
+                        {chat.unreadCount > 0 && (
+                          <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
+                            {chat.unreadCount}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

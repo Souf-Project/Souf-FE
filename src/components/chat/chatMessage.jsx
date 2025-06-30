@@ -3,70 +3,20 @@ import { getChatRooms } from "../../api/chat";
 import ReceiverMessage from "./ReceiverMessage";
 import SenderMessage from "./senderMessage";
 import { UserStore } from "../../store/userStore";
+import { useRef, useState,useEffect } from "react";
+import {
+  connectChatSocket,
+  disconnectChatSocket,
+  sendChatMessage,
+} from "../../api/chatSocket";
 
 export default function ChatMessage({ chatUsername,roomId }) {
     const { username } = UserStore();
+  const [newMessage, setNewMessage] = useState("");
+  const [realtimeMessages, setRealtimeMessages] = useState([]);
+  const scrollRef = useRef(null);
 
   
-  /*
-  const chatMessages = [
-    {
-      id: 1,
-      sender: "Alice",
-      content: "Hey, are you awake? 😴",
-      time: "2025-05-18T05:10:00",
-      fromMe: false,
-    },
-    {
-      id: 2,
-      sender: "Me",
-      content: "Yeah, just woke up. What's up?",
-      time: "2025-05-18T05:11:30",
-      fromMe: true,
-    },
-    {
-      id: 3,
-      sender: "Alice",
-      content: "Did you finish the report for our project?",
-      time: "2025-05-18T05:12:00",
-      fromMe: false,
-    },
-    {
-      id: 4,
-      sender: "Me",
-      content: "Almost! I’ll send it in 20 minutes.",
-      time: "2025-05-18T05:12:45",
-      fromMe: true,
-    },
-    {
-      id: 5,
-      sender: "Alice",
-      content: "Okay cool 😎",
-      time: "2025-05-18T05:13:00",
-      fromMe: false,
-    },
-    {
-      id: 6,
-      sender: "Me",
-      content: "BTW, did you check the new designs?",
-      time: "2025-05-18T05:14:10",
-      fromMe: true,
-    },
-    {
-      id: 7,
-      sender: "Alice",
-      content: "Yes, love them! Especially the dark mode one 🔥",
-      time: "2025-05-18T05:14:30",
-      fromMe: false,
-    },
-    {
-      id: 8,
-      sender: "Me",
-      content: "Right? I thought you’d like that. 😄",
-      time: "2025-05-18T05:14:50",
-      fromMe: true,
-    },
-  ];*/
 
       const {
     data: chatMessages,
@@ -83,6 +33,44 @@ export default function ChatMessage({ chatUsername,roomId }) {
     keepPreviousData: true,
   });
 
+    useEffect(() => {
+    connectChatSocket(roomId, (incomingMessage) => {
+      setRealtimeMessages((prev) => [...prev, incomingMessage]);
+    });
+
+    return () => {
+      disconnectChatSocket();
+    };
+  }, [roomId]);
+
+  // 스크롤 자동 내리기
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, realtimeMessages]);
+
+  const handleSend = () => {
+    if (!newMessage.trim()) return;
+
+    const messageObj = {
+      roomId,
+      type: "TALK",
+      content: newMessage,
+    };
+
+    // 소켓으로 전송
+    sendChatMessage(messageObj);
+    console.log(messageObj);
+
+    // 나도 화면에 표시
+    setRealtimeMessages((prev) => [
+      ...prev,
+      { sender: username, content: newMessage },
+    ]);
+
+    console.log(realtimeMessages);
+    setNewMessage("");
+  };
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
@@ -96,7 +84,7 @@ export default function ChatMessage({ chatUsername,roomId }) {
       {new Date().toLocaleDateString()}
     </div>
     {chatMessages?.map((chat, idx) =>
-      chat.sender === username ? (
+      chat.sender === "테스트일반계정" ? (
         <SenderMessage key={idx} content={chat.content} />
       ) : (
         <ReceiverMessage key={idx} content={chat.content} />
@@ -111,8 +99,14 @@ export default function ChatMessage({ chatUsername,roomId }) {
         type="text"
         placeholder="메시지를 입력하세요"
         className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
+        value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
-      <button className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200">
+      <button 
+        className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+        onClick={handleSend}
+      >
         전송
       </button>
     </div>
