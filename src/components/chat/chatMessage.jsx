@@ -11,63 +11,80 @@ import {
 } from "../../api/chatSocket";
 
 export default function ChatMessage({ chatUsername,roomId }) {
-    const { username } = UserStore();
+    const { nickname } = UserStore();
+    // console.log("nickname", nickname);
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
+  const [pendingMessages, setPendingMessages] = useState([]);
   const scrollRef = useRef(null);
 
-  
-
-      const {
+  const {
     data: chatMessages,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["chatRoom"],
+    queryKey: ["chatRoom", roomId],
     queryFn: async () => {
-      const data = await getChatRooms(roomId);
-      
-      console.log("채팅 조회:", data);
+      // const data = await getChatRooms(roomId);
+      // console.log("채팅 조회:", data);
       return data;
     },
     keepPreviousData: true,
   });
 
-    useEffect(() => {
+  // 기존 메시지와 실시간 메시지를 합쳐서 표시
+  const allMessages = [...(chatMessages || []), ...realtimeMessages, ...pendingMessages];
+
+  // console.log("모든 메시지:", allMessages);
+
+  useEffect(() => {
     connectChatSocket(roomId, (incomingMessage) => {
+      console.log("실시간 메시지 수신:", incomingMessage);
+      
+      // 내가 보낸 메시지가 서버에서 돌아온 경우, pending에서 제거
+      // 실시간 구현하다가 내가 보낸 메세지 수신시 두번씩 보이는 에러 있었음 ㅠ 
+      if (incomingMessage.sender === nickname) {
+        setPendingMessages((prev) => 
+          prev.filter(msg => msg.content !== incomingMessage.content)
+        );
+      }
+      
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
     });
 
     return () => {
       disconnectChatSocket();
     };
-  }, [roomId]);
+  }, [roomId, nickname]);
 
   // 스크롤 자동 내리기
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages, realtimeMessages]);
+  }, [allMessages]);
 
   const handleSend = () => {
     if (!newMessage.trim()) return;
 
     const messageObj = {
       roomId,
+      sender: nickname,
       type: "TALK",
       content: newMessage,
     };
 
-    // 소켓으로 전송
+    // 임시로 pending에 추가 (즉시 화면에 표시!)
+    const tempMessage = {
+      sender: nickname,
+      content: newMessage,
+      timestamp: new Date().toISOString(),
+      isPending: true
+    };
+    
+    setPendingMessages((prev) => [...prev, tempMessage]);
+
     sendChatMessage(messageObj);
-    console.log(messageObj);
+    // console.log("메시지 전송:", messageObj);
 
-    // 나도 화면에 표시
-    setRealtimeMessages((prev) => [
-      ...prev,
-      { sender: username, content: newMessage },
-    ]);
-
-    console.log(realtimeMessages);
     setNewMessage("");
   };
 
@@ -83,13 +100,23 @@ export default function ChatMessage({ chatUsername,roomId }) {
     <div className="text-center text-gray-500 text-sm mb-4">
       {new Date().toLocaleDateString()}
     </div>
-    {chatMessages?.map((chat, idx) =>
-      chat.sender === "테스트일반계정" ? (
-        <SenderMessage key={idx} content={chat.content} />
+    {allMessages?.map((chat, idx) => {
+      const isMyMessage = chat.sender === nickname;
+
+      return isMyMessage ? (
+        <SenderMessage 
+          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
+          content={chat.content} 
+          isPending={chat.isPending}
+        />
       ) : (
-        <ReceiverMessage key={idx} content={chat.content} />
-      )
-    )}
+        <ReceiverMessage 
+          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
+          content={chat.content} 
+        />
+      );
+    })}
+    <div ref={scrollRef} />
   </div>
 
   {/* 메시지 입력 영역 */}
@@ -100,8 +127,8 @@ export default function ChatMessage({ chatUsername,roomId }) {
         placeholder="메시지를 입력하세요"
         className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
         value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        onChange={(e) => setNewMessage(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
       <button 
         className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"

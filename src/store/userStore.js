@@ -5,19 +5,19 @@ export const UserStore = create(
   persist(
     (set) => ({
       memberId: null,
-      username: null,
+      nickname: null,
       roleType: null,
 
-      setUser: ({ memberId, username, roleType }) =>
-        set({ memberId, username, roleType }),
+      setUser: ({ memberId, nickname, roleType }) =>
+        set({ memberId, nickname, roleType }),
 
-      clearUser: () => set({ memberId: null, username: null, roleType: null }),
+      clearUser: () => set({ memberId: null, nickname: null, roleType: null }),
     }),
     {
       name: "user-storage", // localStorage에 저장될 key 이름
       partialize: (state) => ({
         memberId: state.memberId,
-        username: state.username,
+        nickname: state.nickname,
         roleType: state.roleType,
       }), // 저장할 필드만 선택
     }

@@ -120,7 +120,7 @@ export default function Chat() {
                 <ChatMessage
                   roomId={selectedChat}
                   chatUsername={
-                    chatList.find((chat) => chat.id === selectedChat)?.name
+                    chatData?.find((chat) => chat.roomId === selectedChat)?.opponentNickname
                   }
                 />
               ) : (
