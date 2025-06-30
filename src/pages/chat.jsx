@@ -120,7 +120,7 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8">
+            <div className="col-span-8 h-screen">
               {selectedChat ? (
                 <ChatMessage
                   roomId={selectedChat}
