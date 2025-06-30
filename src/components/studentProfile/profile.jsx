@@ -4,9 +4,10 @@ import BasicImg1 from "../../assets/images/BasicprofileImg1.png";
 import BasicImg2 from "../../assets/images/BasicprofileImg2.png";
 import BasicImg3 from "../../assets/images/BasicprofileImg3.png";
 import BasicImg4 from "../../assets/images/BasicprofileImg4.png";
+import { postChatrooms } from "../../api/chat";
 
 export default function Profile({
-  profileId,
+  memberId,
   profileImg,
   temperature,
   userName,
@@ -14,6 +15,11 @@ export default function Profile({
   userWorks,
 }) {
   const navigate = useNavigate();
+
+  const handleChat = async (memberId) => {
+    const response = await postChatrooms(memberId);
+    console.log(response);
+  };
   
   // 기본 이미지를 랜덤으로 선택하는 함수
   const getRandomDefaultImage = () => {
@@ -22,16 +28,16 @@ export default function Profile({
     return defaultImages[randomIndex];
   };
 
-  const clickHandler = (profileId) => {
-    navigate(`/profileDetail/${profileId}`);
+  const clickHandler = (memberId) => {
+    navigate(`/profileDetail/${memberId}`);
   };
 
   return (
     <div
       className="flex relative flex-col items-center justify-center w-full border border-[#D4D4D4] rounded-[30px] p-8 gap-2 cursor-pointer hover:shadow-md transition-all"
-      onClick={() => clickHandler(profileId)}
     >
-      <img className="absolute top-4 right-4 w-11" src={sendIco} />
+      <img className="absolute top-4 right-4 w-11 z-10" src={sendIco} onClick={() => handleChat(memberId)} />
+      <div onClick={() => clickHandler(memberId)}>
       <img 
         src={profileImg || getRandomDefaultImage()} 
         className="rounded-full" 
@@ -49,6 +55,7 @@ export default function Profile({
         {userWorks?.map((data) => (
           <img src={data} />
         ))}
+      </div>
       </div>
     </div>
   );

@@ -11,6 +11,9 @@ export default function ProfileDetail({}) {
   const [userData, setUserData] = useState([]);
   const [userWorks, setUserWorks] = useState([]);
 
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
+
   //추후에 백엔드에서 데이터 받아올 것 같아서 id 만 받아오고 데이터 고정해놓음
   // const userData = {
   //   id: 1,
@@ -98,7 +101,7 @@ username
         </button>
 
         <div className="flex gap-12 my-14 pl-6">
-          <img src={userData?.profileUrl} className="rounded-full w-1/4" />
+          <img src={S3_BUCKET_URL + userData?.profileUrl} className="rounded-full w-1/4" />
           <div className="flex flex-col gap-2">
             <div className="font-semibold text-[23px]">{userData?.nickname}</div>
             <div className="text-[#5B5B5B]">{userData?.intro}</div>
@@ -109,7 +112,7 @@ username
         <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
           {userWorks?.map((data) => (
             <img
-              src={data.mediaResDto?.fileUrl}
+              src={S3_BUCKET_URL + data.mediaResDto?.fileUrl}
               className="w-full"
               onClick={() => onWorkClick(data.feedId)}
             />

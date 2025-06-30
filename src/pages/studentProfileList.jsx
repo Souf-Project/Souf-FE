@@ -4,6 +4,7 @@ import Pagination from "../components/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "../api/profile";
 
+
 export default function StudentProfileList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -30,6 +31,7 @@ export default function StudentProfileList() {
     queryFn: async () => {
       const data = await getProfile(categoryParam, pageable);
       console.log("getProfile 결과:", data);
+      console.log("g카테고리:", categoryParam);
       setUserData(data.result.content);
       return data;
     },
@@ -54,7 +56,7 @@ export default function StudentProfileList() {
         {displayedProfiles && displayedProfiles.map((data) => (
           <Profile
             key={data.id}
-            profileId={data.memberId}
+            memberId={data.memberId}
             profileImg={data.profileImgUrl}
             temperature={data.temperature}
             userName={data.nickname}
