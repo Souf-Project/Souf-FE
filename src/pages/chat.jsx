@@ -87,26 +87,30 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
                 {chatData?.map((chat) => (
-                  <div
-                    key={chat.roomId}
-                    className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
-                      selectedChat === chat.roomId ? "bg-gray-50" : ""
-                    }`}
-                    onClick={() => setSelectedChat(chat.roomId)}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-semibold">{chat.opponentNickname}</span>
-                      <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <p className="text-gray-600 truncate">
-                        {chat.lastMessage}
-                      </p>
-                      {chat.unreadCount > 0 && (
-                        <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
-                          {chat.unread}
-                        </span>
-                      )}
+                  <div className="flex flex-row justify-start items-center pl-6 w-full">
+                    <img
+                      src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${chat.opponentProfileImageUrl}`}
+                      className="w-10 h-10 rounded-[100%]"
+                    />
+                    <div
+                      key={chat.roomId}
+                      className={`px-6 py-4 cursor-pointer  ${
+                        selectedChat === chat.roomId ? "bg-gray-50" : ""
+                      } w-full`}
+                      onClick={() => setSelectedChat(chat.roomId)}
+                    >
+                      <div className="flex justify-between items-center mb-2 w-full">
+                        <span className="font-semibold">{chat.opponentNickname}</span>
+                        <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-600 truncate">{chat.lastMessage}</p>
+                        {chat.unreadCount > 0 && (
+                          <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
+                            {chat.unreadCount}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
