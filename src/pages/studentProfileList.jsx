@@ -20,7 +20,7 @@ export default function StudentProfileList() {
   //여기나중에 currentPage로 바꾸기
   const pageable = {
     page: 0,
-    size: 12,
+    size: 1000,
   };
   const {
     data: feedData,
