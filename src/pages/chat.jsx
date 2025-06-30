@@ -5,6 +5,7 @@ import ChatMessage from "../components/chat/chatMessage";
 import { useQuery } from "@tanstack/react-query";
 import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
+import { patchChatRooms } from "../api/chat";
 
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
@@ -14,6 +15,8 @@ export default function Chat() {
     e.preventDefault();
     console.log("Search query:", searchQuery);
   };
+
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   
   // 임시 채팅 데이터
@@ -65,10 +68,15 @@ export default function Chat() {
         "lastMessageTime": "2025-06-25T02:53:19.841245",
         "unreadCount": 0
     }
-
-
   
   */
+
+    const hadleChat = (roomId) => {
+      setSelectedChat(roomId);
+      patchChatRooms(roomId);
+
+
+    }
   return (
     <div className="h-[calc(100vh-64px-80px)] px-6 ">
       <div className="w-screen mx-auto h-full">
@@ -85,7 +93,7 @@ export default function Chat() {
                   placeholder="검색어를 입력하세요"
                 />
               </div>
-              <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-80px)] ">
+              <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
                 {chatData?.map((chat) => (
                   <div className="flex flex-row justify-start items-center pl-6 w-full">
                     <img
@@ -118,7 +126,7 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8 h-screen">
+            <div className="col-span-8 overflow-y-auto h-[calc(100vh-64px-80px)]">
               {selectedChat ? (
                 <ChatMessage
                   roomId={selectedChat}
