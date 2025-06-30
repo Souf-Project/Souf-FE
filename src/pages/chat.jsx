@@ -7,9 +7,11 @@ import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
 
+
 export default function Chat() {
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -59,18 +61,6 @@ export default function Chat() {
     keepPreviousData: true,
   });
 
-  /*
-  {
-        "roomId": 2,
-        "opponentNickname": "1st테스트",
-        "opponentProfileImageUrl": null,
-        "lastMessage": "안녕하세요! \uD83D\uDC4B",
-        "lastMessageTime": "2025-06-25T02:53:19.841245",
-        "unreadCount": 0
-    }
-  
-  */
-
     const hadleChat = (roomId) => {
       setSelectedChat(roomId);
       patchChatRooms(roomId);
@@ -95,16 +85,15 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
                 {chatData?.map((chat) => (
-                  <div className="flex flex-row justify-start items-center pl-6 w-full">
+                  <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
+                      }`}>
                     <img
-                      src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${chat.opponentProfileImageUrl}`}
+                      src={`${VITE_S3_BUCKET_URL}${chat.opponentProfileImageUrl}`}
                       className="w-10 h-10 rounded-[100%]"
                     />
                     <div
                       key={chat.roomId}
-                      className={`px-6 py-4 cursor-pointer  ${
-                        selectedChat === chat.roomId ? "bg-gray-50" : ""
-                      } w-full`}
+                      className="px-6 py-4 cursor-pointer w-full"
                       onClick={() => setSelectedChat(chat.roomId)}
                     >
                       <div className="flex justify-between items-center mb-2 w-full">

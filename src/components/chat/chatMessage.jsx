@@ -3,9 +3,18 @@ import { getChatRooms } from "../../api/chat";
 import ReceiverMessage from "./ReceiverMessage";
 import SenderMessage from "./senderMessage";
 import { UserStore } from "../../store/userStore";
+import { useRef, useState,useEffect } from "react";
+import {
+  connectChatSocket,
+  disconnectChatSocket,
+  sendChatMessage,
+} from "../../api/chatSocket";
 
 export default function ChatMessage({ chatUsername,roomId }) {
     const { username } = UserStore();
+  const [newMessage, setNewMessage] = useState("");
+  const [realtimeMessages, setRealtimeMessages] = useState([]);
+  const scrollRef = useRef(null);
 
   
   /*
@@ -83,6 +92,42 @@ export default function ChatMessage({ chatUsername,roomId }) {
     keepPreviousData: true,
   });
 
+    useEffect(() => {
+    connectChatSocket(roomId, (incomingMessage) => {
+      setRealtimeMessages((prev) => [...prev, incomingMessage]);
+    });
+
+    return () => {
+      disconnectChatSocket();
+    };
+  }, [roomId]);
+
+  // 스크롤 자동 내리기
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, realtimeMessages]);
+
+  const handleSend = () => {
+    if (!newMessage.trim()) return;
+
+    const messageObj = {
+      roomId,
+      type: "TEXT",
+      content: newMessage,
+    };
+
+    // 소켓으로 전송
+    sendChatMessage(messageObj);
+
+    // 나도 화면에 표시
+    setRealtimeMessages((prev) => [
+      ...prev,
+      { sender: username, content: newMessage },
+    ]);
+
+    setNewMessage("");
+  };
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
@@ -111,6 +156,9 @@ export default function ChatMessage({ chatUsername,roomId }) {
         type="text"
         placeholder="메시지를 입력하세요"
         className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
+        value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
       <button className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200">
         전송
