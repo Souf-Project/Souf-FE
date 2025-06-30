@@ -4,6 +4,8 @@ import backArrow from '../assets/images/backArrow.svg';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
+import AlertModal from '../components/alertModal';
+import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
 
 const parsePayment = (paymentString) => {
@@ -50,6 +52,11 @@ export default function RecruitDetail() {
   const [recruitDetail, setRecruitDetail] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
   const { username, memberId } = UserStore();
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [isApplySuccessModalOpen, setIsApplySuccessModalOpen] = useState(false);
+
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
 
   useEffect(() => {
     // API에서 받은 상세 정보가 있으면 사용
@@ -120,6 +127,31 @@ export default function RecruitDetail() {
       setShowMenu(false);
       navigate('/recruit?category=1');
     }
+  };
+
+  const handleApply = () => {
+    console.log('지원 버튼 클릭');
+    setIsApplyModalOpen(true);
+  };
+
+  const handleApplyTrue = async () => {
+    try {
+      const response = await postApplication(id);
+      console.log("지원 성공:", response.data);
+      setIsApplyModalOpen(false);
+      setIsApplySuccessModalOpen(true);
+    } catch (error) {
+      console.error("지원 실패:", error);
+      if (error.response?.status === 403) {
+        alert("학생 계정만 지원이 가능합니다.");
+        navigate('/login');
+      } else {
+        alert("지원 중 오류가 발생했습니다.");
+      }
+      setIsApplyModalOpen(false);
+    }
+    setIsApplyModalOpen(false);
+    setIsApplySuccessModalOpen(true);
   };
 
   // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
@@ -233,7 +265,7 @@ export default function RecruitDetail() {
           
           {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
           <img
-            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${recruitDetail.mediaResDtos[0].fileUrl}`}
+            src={`${S3_BUCKET_URL}${recruitDetail.mediaResDtos[0].fileUrl}`}
             alt={recruitDetail.mediaResDtos[0].fileName || "이미지"}
             className="w-full h-auto object-cover"
           />
@@ -245,16 +277,56 @@ export default function RecruitDetail() {
        
 
       <div className="flex justify-center mt-8">
-        <button 
-          className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-          onClick={() => alert('지원 기능')}
-        >
-          지원하기
-        </button>
+        {isAuthor ? (
+          <div className="flex gap-4 w-full">
+            <button 
+              className="bg-blue-500 text-white flex-1 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+              onClick={handleViewApplicants}
+            >
+              지원자 리스트 보기
+            </button>
+            <button 
+              className="bg-yellow-main text-black flex-1 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+              onClick={handleEdit}
+            >
+              공고 수정
+            </button>
+          </div>
+        ) : (
+          <button 
+            className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
+            onClick={handleApply}
+          >
+            지원하기
+          </button>
+        )}
       </div>
       </div>
+{isApplyModalOpen && (
+      <AlertModal
+        type="warning"
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        title="해당 기업에 지원하시겠습니까?"
+        description={`지원 시 내 프로필 정보가 기업에게 전송됩니다.\n마이페이지에서 지원 취소가 가능합니다.\n지원 직후에는, 기업에게 지원 알림이 전송됩니다.`}
+        FalseBtnText = "취소"
+        TrueBtnText = "지원"
+        onClickFalse={() => setIsApplyModalOpen(false)}
+        onClickTrue={handleApplyTrue}
+      />
+    )}
+    {isApplySuccessModalOpen && (
+      <AlertModal
+        type="success"
+        isOpen={isApplySuccessModalOpen}
+        onClose={() => setIsApplySuccessModalOpen(false)}
+        title="지원 완료"
+        description="지원이 완료되었습니다."
+         TrueBtnText = "확인"
+         onClickTrue={() => setIsApplySuccessModalOpen(false)}
+      />
+    )}
 
-      
     </div>
   );
 }
