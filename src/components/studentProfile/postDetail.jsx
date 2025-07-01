@@ -1,25 +1,89 @@
 import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
+import { deleteFeed, getFeedDetail } from "../../api/feed";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getFormattedDate } from "../../utils/getDate";
+import {UserStore} from "../../store/userStore";
+import { useRef, useEffect } from "react"; 
+import AlertModal from "../../components/alertModal";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
+import { Pagination } from "swiper/modules";
 
 export default function PostDetail() {
   const navigate = useNavigate();
   const { id, worksId } = useParams();
+  const [worksData, setWorksData] = useState([]);
+  const [mediaData, setMediaData] = useState([]);
+  const [showOptions, setShowOptions] = useState(false);
+  const { memberId } = UserStore();
+  const optionsRef = useRef(null);
 
-  const worksData = {
-    id: "1",
-    url: "https://placehold.co/600x400?text=Work1",
-    title: "가을과 강아지와 주인과 풍경과 도로와 차",
-    postedAt: "2025-03-09",
-    views: 1000,
-    description: `이 그림은 가을과 강아지와 주인과 풍경과 도로와 차에 대한 일러스트이며 따뜻한 색감을 살린 느낌입니다.`,
-  };
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+
+    const {
+    data: feedData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["feedDetail"],
+    queryFn: async () => {
+      const data = await getFeedDetail(id,worksId);
+      console.log("feedDetail 결과:", data.result.mediaResDtos);
+      setWorksData(data.result);
+      setMediaData(data.result.mediaResDtos);
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
+  useEffect(() => {
+  function handleClickOutside(event) {
+    if (optionsRef.current && !optionsRef.current.contains(event.target)) {
+      setShowOptions(false);
+    }
+  }
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
+const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteFeed(worksId);
+      setShowDeleteModal(false);
+      setShowCompleteModal(true);
+    } catch (err) {
+      console.log("실패함");
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+  };
+
+  const handleCompleteConfirm = () => {
+    setShowCompleteModal(false);
+    navigate("/");
+  };
+
   return (
-    <div className="flex flex-col py-24 px-4 max-w-4xl w-full mx-auto">
+    <div className="flex flex-col py-16 px-4 max-w-4xl w-full mx-auto">
+      <div className="flex justify-between">
       <button
         className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
         onClick={handleGoBack}
@@ -28,32 +92,100 @@ export default function PostDetail() {
         <span>프로필로 돌아가기</span>
       </button>
 
-      <div className="rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
-        <div className="flex justify-between items-start mb-4">
-          <h2 className="text-xl font-semibold leading-snug text-black">
-            {worksData.title}
-          </h2>
-          <p className="text-sm text-gray-500">
-            누적 조회 수 {worksData.views}회
-          </p>
-        </div>
+      <p className="text-sm text-gray-500 pr-6">
+              누적 조회 수 {worksData.view}회
+            </p>
+            </div>
 
-        <div className="w-full overflow-hidden rounded-md mb-4">
-          <img
-            src={worksData.url}
-            alt={worksData.title}
-            className="w-full h-auto object-cover"
+
+      <div className="flex flex-row rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+         <div className="flex w-[65%] h-full">
+    <Swiper
+      pagination={{
+        dynamicBullets: true,
+      }}
+      modules={[Pagination]}
+      className="rounded-lg"
+    >
+      {mediaData?.map((data, i) => (
+        <SwiperSlide key={i} className="flex justify-center items-center">
+          <div className="flex justify-center items-center h-[400px]">
+            <img
+            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${data?.fileUrl}`}
+            alt={data.fileName}
+            className="w-full object-cover rounded-lg"
           />
-        </div>
+          </div>
+        </SwiperSlide>
+      ))}
+    </Swiper>
+  </div>
+          <div className="w-full max-w-[35%] h-full pl-6 relative">
+            {/* 본인일 경우에만 */}
+          {Number(id) === memberId && (
+            <div className="flex justify-end"  ref={optionsRef}>
+              <button
+                onClick={() => setShowOptions((prev) => !prev)}
+                className="text-xl px-2 py-1 rounded hover:bg-gray-100"
+              >
+                ⋯
+              </button>
 
-        <div className="flex justify-between text-sm text-gray-600 mb-2">
-          <p>{worksData.postedAt}</p>
+              {showOptions && (
+                <div className="absolute left-[250px] mt-2 w-28 bg-white border rounded shadow-lg z-10">
+                  <button
+                    onClick={() => navigate("/postEdit", {
+                              state: {
+                              worksData,
+                              mediaData
+                            }
+                          })}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                  >
+                    수정하기
+                  </button>
+                  <button
+                     onClick={handleDeleteClick}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
+                  >
+                    삭제하기
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
+            <div className=" flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3">
+            {worksData.topic}
+            </div>
+            <div className="flex flex-col justify-between text-sm text-gray-600  h-full border-t border-gray-300 pt-6 ">
+              <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
+                {worksData.content}
+              </p>
+              <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
+            </div>
+          </div>
         </div>
-
-        <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-          {worksData.description}
-        </p>
       </div>
+      {showDeleteModal && (
+        <AlertModal
+          type="warning"
+          title="게시물을 삭제하시겠습니까?"
+          description="삭제 후 되돌릴 수 없습니다."
+          TrueBtnText="삭제"
+          FalseBtnText="취소"
+          onClickTrue={handleDeleteConfirm}
+          onClickFalse={handleDeleteCancel}
+        />
+      )}
+      {showCompleteModal && (
+        <AlertModal
+          type="simple"
+          title="게시물이 삭제되었습니다."
+          TrueBtnText="확인"
+          onClickTrue={handleCompleteConfirm}
+        />
+      )}
     </div>
   );
 }

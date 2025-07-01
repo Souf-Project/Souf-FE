@@ -139,15 +139,16 @@ export default function ProfileEditContent() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-6">
-        <div className="flex items-center justify-between">
-            <h1 className="text-4xl font-bold">{formData.username}</h1>
-        </div>
+      <div className="grid grid-cols-1 gap-6 relative">
+       
         <ProfileImageUpdate
             isEditing={isEditing}
             initialImageUrl={formData.profileUrl ? `${formData.profileUrl}` : null}
             onFileSelect={handleFileSelect}
         />
+         <div className="absolute top-[40px] left-[225px]">
+            <h1 className="text-4xl font-bold ">{formData.username}</h1>
+        </div>
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
           <div className="grid grid-cols-1 gap-6">
