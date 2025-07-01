@@ -28,8 +28,8 @@ export default function StudentInfoBlock({ applicant, type = 'favorite' }) {
         {/* 지원자 정보 */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-lg font-semibold text-gray-900 truncate">
-              {applicant.member?.nickname || applicant.member?.username}
+            <h3 className="text-2xl font-semibold ">
+              {applicant.member?.nickname}
             </h3>
             {type === 'applicant' && (
               <span className={`px-2 py-1 text-xs font-semibold rounded-full 
@@ -74,18 +74,7 @@ export default function StudentInfoBlock({ applicant, type = 'favorite' }) {
             </div>
           )}
           
-          {/* 상세보기 버튼 */}
-          <div className="mt-3">
-            <button 
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                console.log('상세보기:', applicant);
-              }}
-            >
-              상세보기 →
-            </button>
-          </div>
+        
         </div>
       </div>
     </div>

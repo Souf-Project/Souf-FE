@@ -89,11 +89,11 @@ export default function RecruitUpload() {
       };
     } else {
       return {
-        title: '',
+    title: '',
         content: '',
         region: '',
         city: '',
-        deadline: '',
+    deadline: '',
         deadlineTime: '00:00',
         deadlineHour: '01',
         deadlineMinute: '00',
