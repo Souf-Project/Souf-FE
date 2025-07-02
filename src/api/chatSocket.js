@@ -1,17 +1,12 @@
 // src/api/chatSocket.js
-
+import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 
 let stompClient = null;
 
 export const connectChatSocket = (roomId, onMessage) => {
-  const socket = new WebSocket("wss://api-souf.co.kr/ws");
-  const accessToken = localStorage.getItem('accessToken');
-
+  const socket = new SockJS("http://localhost:8080/ws");
   stompClient = new Client({
-    connectHeaders: {
-      Authorization: `Bearer ${accessToken}`,
-    },
     webSocketFactory: () => socket,
     reconnectDelay: 5000,
     onConnect: () => {
@@ -20,12 +15,8 @@ export const connectChatSocket = (roomId, onMessage) => {
       // 메시지 구독
       stompClient.subscribe(`/topic/chatroom.${roomId}`, (message) => {
         const payload = JSON.parse(message.body);
-        console.log(payload);
         onMessage(payload);
       });
-    },
-    onStompError: (frame) => {
-      console.error("STOMP 오류:", frame);
     },
   });
 
@@ -33,9 +24,10 @@ export const connectChatSocket = (roomId, onMessage) => {
 };
 
 export const sendChatMessage = (message) => {
+  if (!stompClient || !stompClient.connected) return;
+
   stompClient.publish({
     destination: "/app/chat.sendMessage",
-   
     body: JSON.stringify(message),
   });
 };

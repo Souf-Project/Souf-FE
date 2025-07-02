@@ -12,9 +12,9 @@ export default function Header() {
   const [isLogin, setIsLogin] = useState(true);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [userType, setUserType] = useState("");
-  const [nickName, setNickName] = useState("");
+  const [userName, setUserName] = useState("");
   const { nickname, roleType, memberId } = UserStore();
-  //const nickname = UserStore((state) => state.nickname);
+  //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
   //const memberId = UserStore((state) => state.memberId);
 
@@ -32,9 +32,9 @@ export default function Header() {
       setIsLogin(true);
 
       const type = localStorage.getItem("userType") || "student";
-      const name = localStorage.getItem("nickName") || "";
+      const name = localStorage.getItem("userName") || "";
       setUserType(type);
-      setNickName(name);
+      setUserName(name);
     }
   }, []);
 
@@ -81,7 +81,7 @@ export default function Header() {
     // 로컬 스토리지 초기화
     localStorage.removeItem("isLogin");
     localStorage.removeItem("userType");
-    localStorage.removeItem("nickName");
+    localStorage.removeItem("userName");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user-storage");

@@ -1,14 +1,29 @@
-export default function SenderMessage({ content, isPending = false }) {
+export default function SenderMessage({ content, createdTime, isPending = false }) {
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const date = new Date(timeString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   return (
-    <div className="flex justify-end mb-2">
-      <div className={`max-w-xs px-4 py-2 rounded-lg rounded-br-none shadow ${
-        isPending ? 'bg-gray-300 text-gray-600' : 'bg-yellow-main text-gray-900'
-      }`}>
-        <p className="text-sm">{content}</p>
-        <span className="text-xs bg-yellow-main text-gray-900 block text-right mt-1">
-          {isPending && "전송 중..."}
+    <div className="flex items-end justify-end gap-2 mb-4">
+        <span className="text-xs text-gray-500 block text-right mt-1">
+          {isPending ? getCurrentTime() : formatTime(createdTime)}
         </span>
+      <div className="max-w-xs bg-yellow-main text-gray-800 px-4 py-2 rounded-lg rounded-br-none shadow">
+        <p className="text-sm">{content}</p>
+        
       </div>
+    
     </div>
   );
 }

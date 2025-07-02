@@ -10,29 +10,31 @@ import {
   sendChatMessage,
 } from "../../api/chatSocket";
 
-export default function ChatMessage({ chatUsername,roomId }) {
+export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
     const { nickname } = UserStore();
-    // console.log("nickname", nickname);
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
   const [pendingMessages, setPendingMessages] = useState([]);
   const scrollRef = useRef(null);
 
-  const {
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
+      const {
     data: chatMessages,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["chatRoom", roomId],
     queryFn: async () => {
-      // const data = await getChatRooms(roomId);
-      // console.log("채팅 조회:", data);
+      const data = await getChatRooms(roomId);
+      
+      console.log("채팅 조회:", data);
       return data;
     },
     keepPreviousData: true,
   });
 
-  // 기존 메시지와 실시간 메시지를 합쳐서 표시
+   // 기존 메시지와 실시간 메시지를 합쳐서 표시
   const allMessages = [...(chatMessages || []), ...realtimeMessages, ...pendingMessages];
 
   // console.log("모든 메시지:", allMessages);
@@ -40,7 +42,7 @@ export default function ChatMessage({ chatUsername,roomId }) {
   useEffect(() => {
     connectChatSocket(roomId, (incomingMessage) => {
       console.log("실시간 메시지 수신:", incomingMessage);
-      
+
       // 내가 보낸 메시지가 서버에서 돌아온 경우, pending에서 제거
       // 실시간 구현하다가 내가 보낸 메세지 수신시 두번씩 보이는 에러 있었음 ㅠ 
       if (incomingMessage.sender === nickname) {
@@ -48,7 +50,7 @@ export default function ChatMessage({ chatUsername,roomId }) {
           prev.filter(msg => msg.content !== incomingMessage.content)
         );
       }
-      
+
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
     });
 
@@ -79,7 +81,7 @@ export default function ChatMessage({ chatUsername,roomId }) {
       timestamp: new Date().toISOString(),
       isPending: true
     };
-    
+
     setPendingMessages((prev) => [...prev, tempMessage]);
 
     sendChatMessage(messageObj);
@@ -92,7 +94,7 @@ export default function ChatMessage({ chatUsername,roomId }) {
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
   <div className="p-4 border-b border-gray-200">
-    <h2 className="font-semibold">{chatUsername}</h2>
+    <h2 className="font-semibold">{chatNickname}</h2>
   </div>
 
   {/* 채팅 메시지 영역 */}
@@ -108,11 +110,15 @@ export default function ChatMessage({ chatUsername,roomId }) {
           key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
           content={chat.content} 
           isPending={chat.isPending}
+          createdTime={chat.createdTime}
+
         />
       ) : (
         <ReceiverMessage 
           key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
           content={chat.content} 
+          createdTime={chat.createdTime}
+          opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
         />
       );
     })}
@@ -127,8 +133,8 @@ export default function ChatMessage({ chatUsername,roomId }) {
         placeholder="메시지를 입력하세요"
         className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
         value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
       <button 
         className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"

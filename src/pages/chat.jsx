@@ -9,6 +9,7 @@ import { patchChatRooms } from "../api/chat";
 
 
 export default function Chat() {
+  const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -17,34 +18,6 @@ export default function Chat() {
     e.preventDefault();
     console.log("Search query:", searchQuery);
   };
-
-  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
-
-  
-  // 임시 채팅 데이터
-  const chatList = [
-    {
-      id: 1,
-      name: "김시은",
-      lastMessage: "안녕하세요, 프로젝트에 대해 문의드립니다.",
-      time: "10:30",
-      unread: 2,
-    },
-    {
-      id: 2,
-      name: "이지원",
-      lastMessage: "네, 알겠습니다.",
-      time: "09:15",
-      unread: 0,
-    },
-    {
-      id: 3,
-      name: "박민수",
-      lastMessage: "포트폴리오 확인했습니다.",
-      time: "어제",
-      unread: 1,
-    },
-  ];
 
     const {
     data: chatData,
@@ -56,6 +29,7 @@ export default function Chat() {
       const data = await getChat();
       
       console.log("채팅 조회:", data);
+      setChatList(data);
       return data;
     },
     keepPreviousData: true,
@@ -68,12 +42,12 @@ export default function Chat() {
 
     }
   return (
-    <div className="h-[calc(100vh-64px-80px)] px-6 ">
+    <div className="h-[calc(100vh-64px)] px-6 ">
       <div className="w-screen mx-auto h-full">
         <div className="bg-white rounded-lg shadow-sm h-full">
           <div className="grid grid-cols-12 h-full">
             {/* 채팅 목록 */}
-            <div className="col-span-4 bg-yellow-main">
+            <div className="col-span-4 bg-yellow-main h-full">
               <div className="flex justify-between items-center p-4">
                 <h1 className="text-2xl font-bold ">SouF 채팅</h1>
                 <SearchBar
@@ -94,7 +68,7 @@ export default function Chat() {
                     <div
                       key={chat.roomId}
                       className="px-6 py-4 cursor-pointer w-full"
-                      onClick={() => hadleChat(chat.roomId)}
+                      onClick={() => setSelectedChat(chat.roomId)}
                     >
                       <div className="flex justify-between items-center mb-2 w-full">
                         <span className="font-semibold">{chat.opponentNickname}</span>
@@ -115,12 +89,15 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8 overflow-y-auto h-[calc(100vh-64px-80px)]">
+            <div className="col-span-8 overflow-y-auto h-[calc(100vh-64px-10px)]">
               {selectedChat ? (
                 <ChatMessage
                   roomId={selectedChat}
                   chatUsername={
-                    chatData?.find((chat) => chat.roomId === selectedChat)?.opponentNickname
+                    chatList.find((chat) => chat.roomId === selectedChat)?.opponentNickname
+                  }
+                  opponentProfileImageUrl={
+                    chatList.find((chat) => chat.roomId === selectedChat)?.opponentProfileImageUrl
                   }
                 />
               ) : (
