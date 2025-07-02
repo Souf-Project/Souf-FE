@@ -60,3 +60,17 @@ h1 {
   font-weight: 100 900;
   font-display: swap;
 }
+
+/* 공모전 상세 페이지 레이아웃 */
+.contest-detail-layout {
+  --thumbnail-width: 40%;
+  --info-width: 60%;
+}
+
+/* 모바일에서는 세로로 배치 */
+@media (max-width: 1023px) {
+  .contest-detail-layout {
+    --thumbnail-width: 100%;
+    --info-width: 100%;
+  }
+}

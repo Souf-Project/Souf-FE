@@ -110,24 +110,6 @@ export default function RecruitPostList() {
     setStep(2);
   };
 
-  /*
-  {["상시모집", "모집중"].map((label, idx) => (
-          <button
-            key={label}
-            className="bg- text-lg font-medium px-10 py-1 rounded-[10px] w-full h-[60px] flex items-center justify-between"
-          >
-            <span>{label}</span>
-            <span className="mx-3 h-6 border-l border-[#898989]"></span>
-            <span className="font-bold">5</span>
-          </button>
-        ))}
-        <button className="bg-[#FFE58F] text-lg font-medium px-10 py-1 rounded-[10px] w-full h-[60px] flex items-center justify-between">
-          <span>모집완료</span>
-          <span className="mx-3 h-6 border-l border-[#898989]"></span>
-          <span className="font-bold">5</span>
-        </button>
-  
-  */
   return (
     <div className="bg-white p-6 rounded-lg">
       {step === 1 ? (
