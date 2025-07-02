@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserStore } from "../../store/userStore";
 import { getMyRecruits } from "../../api/recruit";
-import { getApplicantsByRecruitId } from "../../api/application";
 import firstCategoryData from "../../assets/categoryIndex/first_category.json";
 import secondCategoryData from "../../assets/categoryIndex/second_category.json";
 import thirdCategoryData from "../../assets/categoryIndex/third_category.json";
 import RecruitPostBlock from "./recruitPostBlock";
 import StateBlock from "./stateBlock";
-import Profile from "../studentProfile/profile";
-import StudentInfoBlock from "../studentInfoBlock";
 
 export default function RecruitPostList() {
   const [recruits, setRecruits] = useState([]);
@@ -121,14 +118,18 @@ export default function RecruitPostList() {
 
   const selectedRecruit = recruits.find(recruit => recruit.recruitId === selectedRecruitId);
 
+  // 상태별 개수 계산
+  const recruitingCount = recruits.filter(recruit => recruit.status === "모집 중").length;
+  const closedCount = recruits.filter(recruit => recruit.status === "마감").length;
+
   return (
     <div className="bg-white rounded-lg">
         <>
         <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">공고문 내역</h2>
           <div className="flex gap-5">
-            <StateBlock color="bg-[#FFEFBA]" label="모집중" value="5" />
-            <StateBlock color="bg-[#FFE58F]" label="모집 마감" value="5" />
+            <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
+            <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
           </div>
         </div>
           
