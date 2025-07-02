@@ -12,9 +12,7 @@ import Profile from "../studentProfile/profile";
 import StudentInfoBlock from "../studentInfoBlock";
 
 export default function RecruitPostList() {
-  const [step, setStep] = useState(1);
   const [recruits, setRecruits] = useState([]);
-  const [applicants, setApplicants] = useState([]);
   const [selectedRecruitId, setSelectedRecruitId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -100,16 +98,6 @@ export default function RecruitPostList() {
     fetchRecruits();
   }, [roleType]);
 
-  const onClickApplicants = (recruitId) => {
-    setSelectedRecruitId(recruitId);
-    setStep(2);
-  };
-
-  const goBackToRecruits = () => {
-    setSelectedRecruitId(null);
-    setStep(1);
-  };
-
   // MEMBER가 아닌 경우 빈 div 반환
   if (roleType !== 'MEMBER') {
     return <div></div>;
@@ -161,7 +149,7 @@ export default function RecruitPostList() {
                   {recruits.map((recruit) => {
                     const categoryNames = getCategoryNames(recruit.categoryDtos);
                     return (
-                      <tr key={recruit.recruitId} className="hover:bg-gray-50 cursor-pointer" onClick={() => onClickApplicants(recruit.recruitId)}>
+                      <tr key={recruit.recruitId} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{recruit.title}</div>
                         </td>
