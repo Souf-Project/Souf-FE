@@ -118,9 +118,6 @@ export default function RecruitPostList() {
 
   const selectedRecruit = recruits.find(recruit => recruit.recruitId === selectedRecruitId);
 
-  // 상태별 개수 계산
-  const recruitingCount = recruits.filter(recruit => recruit.status === "모집 중").length;
-  const closedCount = recruits.filter(recruit => recruit.status === "마감").length;
 
   return (
     <div className="bg-white rounded-lg">

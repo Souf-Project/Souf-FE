@@ -7,6 +7,8 @@ import firstCategoryData from '../../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
 import StudentInfoBlock from '../studentInfoBlock';
+import StateBlock from "./stateBlock";
+
 
 export default function CompanyApplicants({ recruitId }) {
   const params = useParams();
@@ -150,12 +152,23 @@ export default function CompanyApplicants({ recruitId }) {
 
   const selectedRecruit = recruits.find(recruit => recruit.recruitId === selectedRecruitId);
 
+    // 상태별 개수 계산
+    const recruitingCount = recruits.filter(recruit => recruit.status === "모집 중").length;
+    const closedCount = recruits.filter(recruit => recruit.status === "마감").length;
+
+    
   return (
     <div>
       {!selectedRecruitId ? (
         // 공고문 리스트 보기
         <div>
-          <h2 className="text-2xl font-bold mb-6">지원자 리스트를 확인할 공고문을 선택하세요</h2>
+          <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
+          <div className="flex gap-5">
+            <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
+            <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
+          </div>
+          </div>
           {recruits.length > 0 ? (
             <div className="border rounded-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
