@@ -237,7 +237,7 @@ export default function CompanyApplicants({ recruitId }) {
           {applicants.length > 0 ? (
             <div className="grid grid-cols-2 gap-6">
               {applicants.map((applicant) => (
-                <StudentInfoBlock key={applicant.applicationId} applicant={applicant} type="applicant" />
+                <StudentInfoBlock key={applicant.applicationId} studentInfo={applicant} type="applicant" />
               ))}
             </div>
           ) : (
