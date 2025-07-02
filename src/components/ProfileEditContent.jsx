@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import EditBox from '../components/editBox';
 import CategorySelectBox from './categorySelectBox';
-import { getProfile, updateProfileInfo, uploadToS3, confirmImageUpload } from '../api/mypage';
+import { getProfile, updateProfileInfo, uploadToS3, confirmImageUpload, getNickNameVerify } from '../api/mypage';
 import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
 
@@ -9,14 +9,17 @@ export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [nicknameVerified, setNicknameVerified] = useState(false);
+  const [verifyingNickname, setVerifyingNickname] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState('');
   
   const [formData, setFormData] = useState(null);
 
-  const S3_BUCKET_URL = "https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/";
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   useEffect(() => {
     if (!isEditing) {
-      fetchProfileData();
+    fetchProfileData();
     }
   }, [isEditing]);
 
@@ -25,7 +28,32 @@ export default function ProfileEditContent() {
     try {
       const response = await getProfile();
       if (response.status === 200 && response.data?.result) {
-        setFormData(response.data.result);
+        const profileData = response.data.result;
+        
+        // 백엔드에서 받은 categoryDtoList를 newCategories 형식으로 변환
+        let newCategories = [
+          { firstCategory: null, secondCategory: null, thirdCategory: null },
+          { firstCategory: null, secondCategory: null, thirdCategory: null },
+          { firstCategory: null, secondCategory: null, thirdCategory: null }
+        ];
+        
+        if (profileData.categoryDtoList && Array.isArray(profileData.categoryDtoList)) {
+          profileData.categoryDtoList.forEach((category, index) => {
+            if (index < 3) { // 최대 3개까지만 처리
+              newCategories[index] = {
+                firstCategory: category.firstCategory,
+                secondCategory: category.secondCategory,
+                thirdCategory: category.thirdCategory
+              };
+            }
+          });
+        }
+        
+        setFormData({
+          ...profileData,
+          newCategories: newCategories,
+          originalNickname: profileData.nickname // 원본 닉네임 저장
+        });
       } else {
         console.error('프로필 데이터 조회 실패:', response.data?.message);
         setFormData(null);
@@ -76,6 +104,8 @@ export default function ProfileEditContent() {
       alert("프로필이 성공적으로 수정되었습니다.");
       setIsEditing(false);
       setSelectedFile(null);
+      setNicknameVerified(false);
+      setVerificationMessage('');
       fetchProfileData(); // 수정 성공 후 데이터를 다시 불러옵니다.
     },
     onError: (error) => {
@@ -85,6 +115,12 @@ export default function ProfileEditContent() {
   });
 
   const handleSave = () => {
+    // 닉네임이 변경되었는데 중복확인이 되지 않은 경우
+    if (formData.nickname !== formData.originalNickname && !nicknameVerified) {
+      alert('닉네임 중복확인을 완료해주세요.');
+      return;
+    }
+
     // 1차 카테고리만 선택되어도 유효한 항목으로 간주하여 필터링
     const selectedCategories = formData.newCategories?.filter(cat => cat && cat.firstCategory !== null) || [];
     
@@ -95,11 +131,15 @@ export default function ProfileEditContent() {
     }
     
     // 선택되지 않은 2차, 3차 카테고리는 null로 처리하여 전송
-    const finalCategories = selectedCategories.map(cat => ({
-        firstCategory: cat.firstCategory,
-        secondCategory: cat.secondCategory || null,
-        thirdCategory: cat.thirdCategory || null,
-    }));
+    const finalCategories = selectedCategories.map(cat => {
+      const category = {
+        firstCategory: cat.firstCategory
+      };
+      if (cat.secondCategory) category.secondCategory = cat.secondCategory;
+      if (cat.thirdCategory) category.thirdCategory = cat.thirdCategory;
+      return category;
+    });
+    
 
     profileUpdateMutation.mutate({ ...formData, newCategories: finalCategories });
   };
@@ -107,14 +147,21 @@ export default function ProfileEditContent() {
   const handleCancel = () => {
     setIsEditing(false);
     setSelectedFile(null);
+    setNicknameVerified(false);
+    setVerificationMessage('');
   };
   
   const handleFileSelect = (file) => {
     setSelectedFile(file);
   };
-  
+
   const handleChange = (field) => (value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // 닉네임이 변경되면 검증 상태 초기화
+    if (field === 'nickname') {
+      setNicknameVerified(false);
+      setVerificationMessage('');
+    }
   };
 
   const handleCategoryChange = (index) => (categoryData) => {
@@ -123,6 +170,32 @@ export default function ProfileEditContent() {
       updatedCategories[index] = categoryData;
       return { ...prev, newCategories: updatedCategories };
     });
+  };
+
+  // 닉네임 중복확인 함수
+  const handleNicknameVerify = async () => {
+    if (!formData.nickname || formData.nickname.trim() === '') {
+      setVerificationMessage('닉네임을 입력해주세요.');
+      return;
+    }
+
+    setVerifyingNickname(true);
+    try {
+      const response = await getNickNameVerify(formData.nickname);
+      if (response.data?.result === true) {
+        setVerificationMessage('✓ 중복확인 완료');
+        setNicknameVerified(true);
+      } else {
+        setVerificationMessage('이미 사용 중인 닉네임입니다.');
+        setNicknameVerified(false);
+      }
+    } catch (error) {
+      console.error('닉네임 중복확인 중 에러:', error);
+      setVerificationMessage('닉네임 중복확인에 실패했습니다.');
+      setNicknameVerified(false);
+    } finally {
+      setVerifyingNickname(false);
+    }
   };
 
   if (loading) {
@@ -158,12 +231,36 @@ export default function ProfileEditContent() {
               onChange={handleChange('username')}
               isEditing={isEditing}
             />
+            <div>
+            <div className="flex items-end w-full">
             <EditBox 
               title="닉네임" 
               value={formData.nickname}
               onChange={handleChange('nickname')}
               isEditing={isEditing}
             />
+              <div className="m-4">
+                <div className="flex items-center gap-2 justify-end w-full">
+                  <button
+                    type="button"
+                    onClick={handleNicknameVerify}
+                    disabled={!isEditing || verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname}
+                    className={`px-6 py-5 rounded-md font-bold transition-colors mt-10 ${
+                      !isEditing
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-yellow-point text-white'
+                    }`}
+                  >
+                    {verifyingNickname ? '확인 중...' : '중복확인'}
+                  </button>
+                </div>
+              </div>
+              </div>
+              <span className="text-sm text-left ml-4">{verificationMessage}</span>
+            </div>
+           
             <EditBox 
               title="이메일" 
               value={formData.email}

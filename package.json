@@ -12,9 +12,12 @@
   "dependencies": {
     "@tanstack/react-query": "^5.79.0",
     "axios": "^1.9.0",
+    "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
