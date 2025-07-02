@@ -1,11 +1,24 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function StudentInfoBlock({ studentInfo, type }) {
+  const navigate = useNavigate();
+  
   // 공통 구조로 flatten
   const user = studentInfo?.member || studentInfo;
 
+  const handleClick = () => {
+    const userId = user?.id || studentInfo?.id;
+    if (userId) {
+      navigate(`/profileDetail/${userId}`);
+    }
+  };
+
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+    <div 
+      className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+      onClick={handleClick}
+    >
       <div className="flex items-start space-x-4">
         {/* 프로필 사진 */}
         <div className="flex-shrink-0">
