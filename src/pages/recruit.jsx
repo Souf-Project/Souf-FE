@@ -9,10 +9,6 @@ import Feed from "../components/feed";
 import CategoryMenu from "../components/categoryMenu";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
 import ThirdCategory from "../assets/categoryIndex/third_category.json";
-import {
-  getFirstCategoryId,
-  getSecondCategoriesByFirstId,
-} from "../utils/getCategoryById";
 import Pagination from "../components/pagination";
 import StudentFeedList from "./studentFeedList";
 

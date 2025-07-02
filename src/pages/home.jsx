@@ -197,10 +197,11 @@ export default function Home() {
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData } = usePopularFeed(pageable);
 
-  const handleSearch = (e) => {
+const handleSearch = (e) => {
     e.preventDefault();
-    // 검색 기능 구현
-    console.log("Search query:", searchQuery);
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
   const handleCategoryClick = (category) => {
@@ -240,6 +241,7 @@ export default function Home() {
               <button
                 type="submit"
                 className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                
               >
                 <img src={searchIco} alt="search" className="w-6 h-6" />
               </button>

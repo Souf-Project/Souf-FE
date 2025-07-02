@@ -1,7 +1,9 @@
 import React from 'react';
 import searchIco from '../assets/images/searchIco.svg';
 
-export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
+export default function SearchBar({ value, onChange, onSubmit, placeholder 
+    ,width="w-[300px]"
+}) {
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -15,7 +17,7 @@ export default function SearchBar({ value, onChange, onSubmit, placeholder }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="w-[300px]">
+        <form onSubmit={handleSubmit} className={`${width}`}>
             <div className="relative">
                 <input
                     type="text"
