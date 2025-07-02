@@ -1,174 +1,208 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserStore } from "../../store/userStore";
+import { getMyRecruits } from "../../api/recruit";
+import { getApplicantsByRecruitId } from "../../api/application";
+import firstCategoryData from "../../assets/categoryIndex/first_category.json";
+import secondCategoryData from "../../assets/categoryIndex/second_category.json";
+import thirdCategoryData from "../../assets/categoryIndex/third_category.json";
 import RecruitPostBlock from "./recruitPostBlock";
 import StateBlock from "./stateBlock";
 import Profile from "../studentProfile/profile";
+import StudentInfoBlock from "../studentInfoBlock";
 
 export default function RecruitPostList() {
   const [step, setStep] = useState(1);
-  const posts = [
-    {
-      title: "디지털 광고 컨셉 그래픽 디자이너",
-      deadline: "2025.04.01",
-      category: ["시각 예술", "제품 홍보 사진"],
-      progress: "마감",
-      applicants: 1,
-    },
-    {
-      title: "디지털 광고 컨셉 그래픽 디자이너",
-      deadline: "상시모집",
-      category: ["시각 예술", "제품 홍보 사진"],
-      progress: "모집 중",
-      applicants: 1,
-    },
-  ];
-
-  const post = [
-    {
-      title: "디지털 광고 컨셉 그래픽 디자이너",
-      deadline: "2025.04.01",
-      category: ["시각 예술", "제품 홍보 사진"],
-      progress: "마감",
-      applicants: 1,
-    },
-  ];
-
-  const userData = [
-    {
-      id: 1,
-      profileImg: "https://placehold.co/100",
-      temperature: "85",
-      hashtag: ["#React", "#Frontend", "#UXUI"],
-      userName: "홍길동",
-      userDetail: "사용자 중심의 UI/UX를 설계하는 프론트엔드 개발자",
-      userWorks: [
-        "https://placehold.co/100x100?text=Work1",
-        "https://placehold.co/100x100?text=Work2",
-        "https://placehold.co/100x100?text=Work3",
-      ],
-    },
-    {
-      id: 2,
-      profileImg: "https://placehold.co/100",
-      temperature: "92",
-      hashtag: ["#AI", "#Python", "#ML"],
-      userName: "이서연",
-      userDetail: "머신러닝 기반 서비스 개발 경험 보유",
-      userWorks: [
-        "https://placehold.co/100x100?text=ML1",
-        "https://placehold.co/100x100?text=ML2",
-      ],
-    },
-    {
-      id: 3,
-      profileImg: "https://placehold.co/100",
-      temperature: "78",
-      hashtag: ["#Backend", "#Node.js"],
-      userName: "김지훈",
-      userDetail: "빠르고 안정적인 서버 구축을 지향합니다",
-      userWorks: ["https://placehold.co/100x100?text=Server1"],
-    },
-    {
-      id: 4,
-      profileImg: "https://placehold.co/100",
-      temperature: "88",
-      hashtag: ["#Data", "#SQL", "#Visualization"],
-      userName: "최은지",
-      userDetail: "데이터로 문제를 해결하는 분석가",
-      userWorks: [
-        "https://placehold.co/100x100?text=Chart1",
-        "https://placehold.co/100x100?text=Chart2",
-        "https://placehold.co/100x100?text=Chart3",
-      ],
-    },
-    {
-      id: 5,
-      profileImg: "https://placehold.co/100",
-      temperature: "90",
-      hashtag: ["#App", "#Flutter"],
-      userName: "박찬호",
-      userDetail: "모바일 환경에 최적화된 앱 개발을 지향",
-      userWorks: [
-        "https://placehold.co/100x100?text=App1",
-        "https://placehold.co/100x100?text=App2",
-      ],
-    },
-    {
-      id: 6,
-      profileImg: "https://placehold.co/100",
-      temperature: "82",
-      hashtag: ["#Startup", "#PM", "#Strategy"],
-      userName: "정다혜",
-      userDetail: "기획과 전략으로 서비스를 이끄는 PM",
-      userWorks: ["https://placehold.co/100x100?text=Plan1"],
-    },
-  ];
-
+  const [recruits, setRecruits] = useState([]);
+  const [applicants, setApplicants] = useState([]);
+  const [selectedRecruitId, setSelectedRecruitId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
   const navigate = useNavigate();
-  const onClickApplicants = () => {
-    //navigate("/company/applicants");
+  const { roleType } = UserStore();
+
+  const getCategoryNames = (categoryDtos) => {
+    if (!categoryDtos || categoryDtos.length === 0) {
+      return [];
+    }
+
+    // 대분류와 중분류가 같은 것들을 그룹화
+    const groupedCategories = {};
+    
+    categoryDtos.forEach(dto => {
+      const firstCatId = dto.firstCategory;
+      const secondCatId = dto.secondCategory;
+      const thirdCatId = dto.thirdCategory;
+
+      const firstName = firstCategoryData.first_category.find(
+        cat => cat.first_category_id === firstCatId
+      )?.name || '';
+
+      const secondName = secondCategoryData.second_category.find(
+        cat => cat.second_category_id === secondCatId
+      )?.name || '';
+
+      const thirdName = thirdCategoryData.third_category.find(
+        cat => cat.third_category_id === thirdCatId
+      )?.name || '';
+
+      const key = `${firstCatId}-${secondCatId}`;
+      
+      if (!groupedCategories[key]) {
+        groupedCategories[key] = {
+          first: firstName,
+          second: secondName,
+          thirds: []
+        };
+      }
+      
+      groupedCategories[key].thirds.push(thirdName);
+    });
+
+    return Object.values(groupedCategories);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}.${month}.${day}<br>${hours}:${minutes}`;
+  };
+
+  // 작성한 공고문 리스트 조회
+  useEffect(() => {
+    const fetchRecruits = async () => {
+      if (roleType !== 'MEMBER') return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await getMyRecruits();
+        console.log('내 공고문 조회 성공:', response.data);
+        setRecruits(response.data.result?.content || []);
+      } catch (error) {
+        console.error('내 공고문 조회 실패:', error);
+        setError('내 공고문을 불러오는데 실패했습니다.');
+        if (error.response?.status === 403) {
+          setError('로그인이 필요합니다.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecruits();
+  }, [roleType]);
+
+  const onClickApplicants = (recruitId) => {
+    setSelectedRecruitId(recruitId);
     setStep(2);
   };
 
-  /*
-  {["상시모집", "모집중"].map((label, idx) => (
-          <button
-            key={label}
-            className="bg- text-lg font-medium px-10 py-1 rounded-[10px] w-full h-[60px] flex items-center justify-between"
-          >
-            <span>{label}</span>
-            <span className="mx-3 h-6 border-l border-[#898989]"></span>
-            <span className="font-bold">5</span>
-          </button>
-        ))}
-        <button className="bg-[#FFE58F] text-lg font-medium px-10 py-1 rounded-[10px] w-full h-[60px] flex items-center justify-between">
-          <span>모집완료</span>
-          <span className="mx-3 h-6 border-l border-[#898989]"></span>
-          <span className="font-bold">5</span>
-        </button>
-  
-  */
-  return (
-    <div className="bg-white p-6 rounded-lg">
-      {step === 1 ? (
-        <>
-          <h1 className="text-[32px] font-semibold mb-6">공고문 내역</h1>
-          <div className="flex space-x-48 mb-4">
-            <StateBlock color="bg-[#FFEFBA]" label="상시모집" value="5" />
-            <StateBlock color="bg-[#FFEFBA]" label="모집중" value="5" />
-            <StateBlock color="bg-[#FFE58F]" label="모집완료" value="5" />
-          </div>
-          <RecruitPostBlock
-            posts={posts}
-            onClickApplicants={onClickApplicants}
-          />
-        </>
-      ) : (
-        <>
-          <div className="flex justify-between items-center mb-4 pr-4">
-            <h1 className="text-[32px] font-semibold mb-6">지원자 내역</h1>
-            <StateBlock color="bg-[#FFE58F]" label="지원자 수" value="5" />
-          </div>
+  const goBackToRecruits = () => {
+    setSelectedRecruitId(null);
+    setStep(1);
+  };
 
-          <RecruitPostBlock
-            posts={post}
-            onClickApplicants={onClickApplicants}
-          />
-          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 w-full">
-            {userData.map((data) => (
-              <Profile
-                profileId={data.id}
-                profileImg={data.profileImg}
-                temperature={data.temperature}
-                hashtag={data.hashtag}
-                userName={data.userName}
-                userDetail={data.userDetail}
-                userWorks={data.userWorks}
-              />
-            ))}
+  // MEMBER가 아닌 경우 빈 div 반환
+  if (roleType !== 'MEMBER') {
+    return <div></div>;
+  }
+
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500">데이터를 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8 bg-red-50 rounded-lg">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  const selectedRecruit = recruits.find(recruit => recruit.recruitId === selectedRecruitId);
+
+  return (
+    <div className="bg-white rounded-lg">
+        <>
+        <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">공고문 내역</h2>
+          <div className="flex gap-5">
+            <StateBlock color="bg-[#FFEFBA]" label="모집중" value="5" />
+            <StateBlock color="bg-[#FFE58F]" label="모집 마감" value="5" />
           </div>
+        </div>
+          
+          
+          {recruits.length > 0 ? (
+            <div className="border rounded-lg overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공고문 제목</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">카테고리</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">진행상태</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">마감 기한</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">상세조회</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {recruits.map((recruit) => {
+                    const categoryNames = getCategoryNames(recruit.categoryDtos);
+                    return (
+                      <tr key={recruit.recruitId} className="hover:bg-gray-50 cursor-pointer" onClick={() => onClickApplicants(recruit.recruitId)}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{recruit.title}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500">
+                            {categoryNames.map((category, index) => (
+                              <div key={index}>
+                                {category.first} 
+                                <br/>{'>'} {category.second} 
+                                <br/>{'>'} {category.thirds.join(', ')}
+                              </div>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            ${recruit.status === '모집 중' ? 'bg-green-100 text-green-800' : 
+                              'bg-red-100 text-red-800'}`}>
+                            {recruit.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: formatDate(recruit.deadline) }}></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-500 ">🔍</div>
+                        </td>
+                       
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <p className="text-gray-500">아직 작성한 공고문이 없습니다.</p>
+            </div>
+          )}
         </>
-      )}
+     
     </div>
   );
 }
