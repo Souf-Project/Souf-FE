@@ -7,42 +7,17 @@ import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
 
+
 export default function Chat() {
+  const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Search query:", searchQuery);
   };
-
-  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
-
-  
-  // 임시 채팅 데이터
-  const chatList = [
-    {
-      id: 1,
-      name: "김시은",
-      lastMessage: "안녕하세요, 프로젝트에 대해 문의드립니다.",
-      time: "10:30",
-      unread: 2,
-    },
-    {
-      id: 2,
-      name: "이지원",
-      lastMessage: "네, 알겠습니다.",
-      time: "09:15",
-      unread: 0,
-    },
-    {
-      id: 3,
-      name: "박민수",
-      lastMessage: "포트폴리오 확인했습니다.",
-      time: "어제",
-      unread: 1,
-    },
-  ];
 
     const {
     data: chatData,
@@ -54,22 +29,11 @@ export default function Chat() {
       const data = await getChat();
       
       console.log("채팅 조회:", data);
+      setChatList(data);
       return data;
     },
     keepPreviousData: true,
   });
-
-  /*
-  {
-        "roomId": 2,
-        "opponentNickname": "1st테스트",
-        "opponentProfileImageUrl": null,
-        "lastMessage": "안녕하세요! \uD83D\uDC4B",
-        "lastMessageTime": "2025-06-25T02:53:19.841245",
-        "unreadCount": 0
-    }
-  
-  */
 
     const hadleChat = (roomId) => {
       setSelectedChat(roomId);
@@ -78,12 +42,12 @@ export default function Chat() {
 
     }
   return (
-    <div className="h-[calc(100vh-64px-80px)] px-6 ">
+    <div className="h-[calc(100vh-64px)] px-6 ">
       <div className="w-screen mx-auto h-full">
         <div className="bg-white rounded-lg shadow-sm h-full">
           <div className="grid grid-cols-12 h-full">
             {/* 채팅 목록 */}
-            <div className="col-span-4 bg-yellow-main">
+            <div className="col-span-4 bg-yellow-main h-full">
               <div className="flex justify-between items-center p-4">
                 <h1 className="text-2xl font-bold ">SouF 채팅</h1>
                 <SearchBar
@@ -95,37 +59,29 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
                 {chatData?.map((chat) => (
-                  <div
-                    key={chat.roomId}
-                    className={`px-6 py-4 cursor-pointer hover:bg-gray-300 ${
-                      selectedChat === chat.roomId ? "bg-gray-50" : ""
-                    }`}
-                    onClick={() => hadleChat(chat.roomId)}
-                  >
-                    <div className="flex justify-start items-start mb-2 w-full">
-                      
-                      <img src={S3_BUCKET_URL + chat.opponentProfileImageUrl} alt="profile" className="w-10 h-10 rounded-full" />
-                      <div className="flex flex-col ml-4">
-                      <div className="flex justify-between items-center w-full">
-                      <span className="font-semibold ">{chat.opponentNickname}</span>
-                     <span className="text-sm text-gray-500 ml-auto">{getFormattedDate(chat.lastMessageTime)}</span>
-                     </div>
-                     
-                     
-                      <p className="text-gray-600 truncate">
-                        {chat.lastMessage}
-                      </p>
-                      
+                  <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
+                      }`}>
+                    <img
+                      src={`${VITE_S3_BUCKET_URL}${chat.opponentProfileImageUrl}`}
+                      className="w-10 h-10 rounded-[100%]"
+                    />
+                    <div
+                      key={chat.roomId}
+                      className="px-6 py-4 cursor-pointer w-full"
+                      onClick={() => setSelectedChat(chat.roomId)}
+                    >
+                      <div className="flex justify-between items-center mb-2 w-full">
+                        <span className="font-semibold">{chat.opponentNickname}</span>
+                        <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
                       </div>
-                    </div>
-                    <div className="flex justify-between items-center w-full">
-                     
-                      
-                      {chat.unreadCount > 0 && (
-                        <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
-                          {chat.unread}
-                        </span>
-                      )}
+                      <div className="flex justify-between items-center">
+                        <p className="text-gray-600 truncate">{chat.lastMessage}</p>
+                        {chat.unreadCount > 0 && (
+                          <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
+                            {chat.unreadCount}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -133,12 +89,15 @@ export default function Chat() {
             </div>
 
             {/* 채팅 내용 */}
-            <div className="col-span-8 overflow-y-auto h-[calc(100vh-64px-80px)]">
+            <div className="col-span-8 overflow-y-auto h-[calc(100vh-64px-10px)]">
               {selectedChat ? (
                 <ChatMessage
                   roomId={selectedChat}
                   chatUsername={
-                    chatList.find((chat) => chat.id === selectedChat)?.name
+                    chatList.find((chat) => chat.roomId === selectedChat)?.opponentNickname
+                  }
+                  opponentProfileImageUrl={
+                    chatList.find((chat) => chat.roomId === selectedChat)?.opponentProfileImageUrl
                   }
                 />
               ) : (

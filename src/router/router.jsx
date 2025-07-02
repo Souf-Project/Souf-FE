@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -22,6 +22,9 @@ import Competitions from "../pages/competitions";
 import Search from "../pages/search";
 
 function AppRouter() {
+  const location = useLocation();
+  const isChatPage = location.pathname === "/chat";
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -50,7 +53,7 @@ function AppRouter() {
           <Route path="/search" element={<Search/>}/>
         </Routes>
       </main>
-      <Footer />
+      {!isChatPage && <Footer />}
     </div>
   );
 }
