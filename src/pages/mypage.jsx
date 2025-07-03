@@ -44,8 +44,6 @@ export default function MyPage() {
         return <FavoritesContent />;
       case 'myFeed':
         return <MyFeed/>;
-      case 'myRecruits':
-        return <RecruitPostList />;
       default:
         return <ProfileEditContent />;
     }
@@ -94,12 +92,7 @@ export default function MyPage() {
         iconOn: applyImgOn,
         iconOff: applyImgOff
       });
-      roleSpecificMenus.push({
-        id: 'myRecruits',
-        label: '작성한 공고문',
-        iconOn: recruitImgOn,
-        iconOff: recruitImgOff
-      });
+     
     }
     
     // ADMIN: 모든 메뉴 보여줌
@@ -122,12 +115,7 @@ export default function MyPage() {
         iconOn: feedImgOn,
         iconOff: feedImgOff
       });
-      roleSpecificMenus.push({
-        id: 'myRecruits',
-        label: '작성한 공고문',
-        iconOn: recruitImgOn,
-        iconOff: recruitImgOff
-      });
+      
     }
 
     return [...baseMenus, ...roleSpecificMenus];
@@ -173,7 +161,6 @@ export default function MyPage() {
           {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium  mb-4">기업 지원 내역</h3>}
           {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
           {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium  mb-4">내 피드</h3>}
-          {activeSubmenu === 'myRecruits' && <h3 className="text-4xl font-medium  mb-4">작성한 공고문</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>
