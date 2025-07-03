@@ -1,6 +1,6 @@
-import React, { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export default function ImageUpload({ onImagesChange }) {
+export default function ImageUpload({ onImagesChange, initialImages = [] }) {
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
   const fileInputRef = useRef(null);
@@ -8,6 +8,21 @@ export default function ImageUpload({ onImagesChange }) {
   const MAX_IMAGES = 10;
   const MAX_VIDEO = 1;
   const MAX_TOTAL_SIZE = 700 * 1024 * 1024; // 700MB in bytes
+
+  useEffect(() => {
+    if (initialImages.length !== 0) {
+      const formatted = initialImages.map((img) => {
+        const extMatch = img.fileName?.match(/\.(\w+)$/);
+        const ext = extMatch ? extMatch[1].toUpperCase() : "JPG";
+        return {
+          file: img,
+          preview: `https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${img.fileUrl}`,
+        };
+      });
+      setImages(formatted);
+      notifyParent(formatted);
+    }
+  }, [initialImages]);
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -74,12 +89,15 @@ export default function ImageUpload({ onImagesChange }) {
       <div className="flex gap-4 flex-wrap">
         {/* 이미지 미리보기 */}
         {images.map((img, index) => (
+          <div className="relative">
+            <div className="absolute top-1 right-1 bg-white bg-opacity-70 cursor-pointer text-xl px-[5px]" onClick={() => handleImageDelete(index)} >x</div>
           <img
             key={index}
             src={img.preview}
-            className="w-32 h-32 object-cover rounded"
-            alt={`img-${index}`}
+            alt={img.fileName || `업로드된 이미지 ${index + 1}`}
+            className="w-32 h-32 object-cover rounded "
           />
+          </div>
         ))}
 
         {/* 동영상 미리보기 */}

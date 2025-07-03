@@ -70,7 +70,7 @@ export const getFeedDetail = async (memberId,feedId) => {
     const response = await client.get(`/api/v1/feed/${memberId}/${feedId}`);
     return response.data;
   } catch (error) {
-    console.error("인기 피드 조회 에러:", error);
+    console.error("피드 상세 조회 에러:", error);
     throw error;
   }
 };
@@ -85,4 +85,26 @@ export const getMemberFeed = async (memberId) => {
     throw error;
   }
 };
+
+
+export async function updateFeed(feedId, data) {
+  try {
+    const response = await client.patch(`/api/v1/feed/${feedId}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("피드 수정 에러", error);
+    throw error;
+  }
+}
+
+export async function deleteFeed(feedId) {
+  try {
+    const response = await client.delete(`/api/v1/feed/${feedId}`);
+    return response.data;
+  } catch (error) {
+    console.error("피드 삭제 에러", error);
+    throw error;
+  }
+}
+
 
