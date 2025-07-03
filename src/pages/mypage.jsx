@@ -1,28 +1,27 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import profileImgOff from '../assets/images/profileImgOff.svg'
 import applyImgOff from '../assets/images/applyImgOff.svg'
 import starImgOn from "../assets/images/starImgOn.png"
 import feedImgOn from "../assets/images/feedImgOn.png"
-import recruitImgOn from "../assets/images/recruitImgOn.png"
+// import recruitImgOn from "../assets/images/recruitImgOn.png"
 
 import profileImgOn from '../assets/images/profileImgOn.svg'
 import applyImgOn from '../assets/images/applyImgOn.svg'
 import starImgOff from "../assets/images/starImgOff.png"
 import feedImgOff from "../assets/images/feedImgOff.png"
-import recruitImgOff from "../assets/images/recruitImgOff.png"
+// import recruitImgOff from "../assets/images/recruitImgOff.png"
 
 // 분리된 컴포넌트 import
 import ProfileEditContent from '../components/ProfileEditContent';
 import ApplicationsContent from '../components/ApplicationsContent';
 import FavoritesContent from '../components/FavoritesContent';
-import RecruitPostList from '../components/companyMyPage/recruitPostList';
 import CompanyApplicants from '../components/companyMyPage/companyApplicants';
 import { UserStore } from '../store/userStore';
 import MyFeed from '../components/myFeed';
 
 export default function MyPage() {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [activeSubmenu, setActiveSubmenu] = useState('profileEdit'); // 기본 서브메뉴
   const { roleType } = UserStore();
 
@@ -44,8 +43,6 @@ export default function MyPage() {
         return <FavoritesContent />;
       case 'myFeed':
         return <MyFeed/>;
-      case 'myRecruits':
-        return <RecruitPostList />;
       default:
         return <ProfileEditContent />;
     }
@@ -86,7 +83,7 @@ export default function MyPage() {
       });
     }
     
-    // MEMBER: 기업 지원 내역과 작성한 공고문 보여줌
+    // MEMBER: 기업 지원 내역 보여줌
     if (roleType === 'MEMBER') {
       roleSpecificMenus.push({
         id: 'companyApplications',
@@ -94,12 +91,7 @@ export default function MyPage() {
         iconOn: applyImgOn,
         iconOff: applyImgOff
       });
-      roleSpecificMenus.push({
-        id: 'myRecruits',
-        label: '작성한 공고문',
-        iconOn: recruitImgOn,
-        iconOff: recruitImgOff
-      });
+     
     }
     
     // ADMIN: 모든 메뉴 보여줌
@@ -122,12 +114,7 @@ export default function MyPage() {
         iconOn: feedImgOn,
         iconOff: feedImgOff
       });
-      roleSpecificMenus.push({
-        id: 'myRecruits',
-        label: '작성한 공고문',
-        iconOn: recruitImgOn,
-        iconOff: recruitImgOff
-      });
+      
     }
 
     return [...baseMenus, ...roleSpecificMenus];
@@ -173,7 +160,6 @@ export default function MyPage() {
           {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium  mb-4">기업 지원 내역</h3>}
           {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
           {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium  mb-4">내 피드</h3>}
-          {activeSubmenu === 'myRecruits' && <h3 className="text-4xl font-medium  mb-4">작성한 공고문</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>
