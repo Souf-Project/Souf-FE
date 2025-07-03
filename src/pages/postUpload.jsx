@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import Button from "../components/button";
+// import Button from "../components/button";
 // import Hashtag from "../components/post/hashtag";
 import ImageUpload from "../components/post/imageUpload";
 import PostInput from "../components/postInput";
@@ -54,15 +54,19 @@ export default function PostUpload() {
       return postFeed(postData);
     },
     onSuccess: async (response) => {
-      const { feedId, dtoList } = response.result; // 위에 mutationFn 로 받은 결과중에 미디어파일관련된 것만 받아옴
-
+      const { feedId, dtoList, videoResDto} = response.result; // 위에 mutationFn 로 받은 결과중에 미디어파일관련된 것만 받아옴
+      
+      /*
+      const chunkSize = 10*1024*1024;
+      const chunkCount = Math.floor(/chunkSize) + 1;
+      */
       try {
         // 2. AWS s3 에 모두 업로드함
         await Promise.all(
           dtoList.map(({ presignedUrl }, i) =>
             uploadToS3(presignedUrl, selectedFiles[i])
           )
-        );
+        );  
 
         //이건 각각 파일 여러개면 list로 만들어야해서 코드 추가함
         const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
