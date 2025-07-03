@@ -12,7 +12,9 @@
   "dependencies": {
     "@stomp/stompjs": "^7.1.1",
     "@tanstack/react-query": "^5.79.0",
+    "@tosspayments/payment-widget-sdk": "^0.12.0",
     "axios": "^1.9.0",
+    "nanoid": "^5.1.5",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
