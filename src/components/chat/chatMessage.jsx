@@ -9,80 +9,24 @@ import {
   disconnectChatSocket,
   sendChatMessage,
 } from "../../api/chatSocket";
+import plusIco from "../../assets/images/plusIco.svg"
 
-export default function ChatMessage({ chatUsername,roomId }) {
-    const { username } = UserStore();
+export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
+    const { nickname } = UserStore();
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
+  const [pendingMessages, setPendingMessages] = useState([]);
+  const [showButtonList, setShowButtonList] = useState(false);
   const scrollRef = useRef(null);
 
-  
-  /*
-  const chatMessages = [
-    {
-      id: 1,
-      sender: "Alice",
-      content: "Hey, are you awake? 😴",
-      time: "2025-05-18T05:10:00",
-      fromMe: false,
-    },
-    {
-      id: 2,
-      sender: "Me",
-      content: "Yeah, just woke up. What's up?",
-      time: "2025-05-18T05:11:30",
-      fromMe: true,
-    },
-    {
-      id: 3,
-      sender: "Alice",
-      content: "Did you finish the report for our project?",
-      time: "2025-05-18T05:12:00",
-      fromMe: false,
-    },
-    {
-      id: 4,
-      sender: "Me",
-      content: "Almost! I’ll send it in 20 minutes.",
-      time: "2025-05-18T05:12:45",
-      fromMe: true,
-    },
-    {
-      id: 5,
-      sender: "Alice",
-      content: "Okay cool 😎",
-      time: "2025-05-18T05:13:00",
-      fromMe: false,
-    },
-    {
-      id: 6,
-      sender: "Me",
-      content: "BTW, did you check the new designs?",
-      time: "2025-05-18T05:14:10",
-      fromMe: true,
-    },
-    {
-      id: 7,
-      sender: "Alice",
-      content: "Yes, love them! Especially the dark mode one 🔥",
-      time: "2025-05-18T05:14:30",
-      fromMe: false,
-    },
-    {
-      id: 8,
-      sender: "Me",
-      content: "Right? I thought you’d like that. 😄",
-      time: "2025-05-18T05:14:50",
-      fromMe: true,
-    },
-  ];*/
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
       const {
     data: chatMessages,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["chatRoom"],
+    queryKey: ["chatRoom", roomId],
     queryFn: async () => {
       const data = await getChatRooms(roomId);
       
@@ -92,47 +36,81 @@ export default function ChatMessage({ chatUsername,roomId }) {
     keepPreviousData: true,
   });
 
-    useEffect(() => {
+   // 기존 메시지와 실시간 메시지를 합쳐서 표시
+  const allMessages = [...(chatMessages || []), ...realtimeMessages, ...pendingMessages];
+
+  // console.log("모든 메시지:", allMessages);
+
+  useEffect(() => {
     connectChatSocket(roomId, (incomingMessage) => {
+      console.log("실시간 메시지 수신:", incomingMessage);
+
+      // 내가 보낸 메시지가 서버에서 돌아온 경우, pending에서 제거
+      // 실시간 구현하다가 내가 보낸 메세지 수신시 두번씩 보이는 에러 있었음 ㅠ 
+      if (incomingMessage.sender === nickname) {
+        setPendingMessages((prev) => 
+          prev.filter(msg => msg.content !== incomingMessage.content)
+        );
+      }
+
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
     });
 
     return () => {
       disconnectChatSocket();
     };
-  }, [roomId]);
+  }, [roomId, nickname]);
 
   // 스크롤 자동 내리기
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMessages, realtimeMessages]);
+  }, [allMessages]);
 
   const handleSend = () => {
     if (!newMessage.trim()) return;
 
     const messageObj = {
       roomId,
-      type: "TEXT",
+      sender: nickname,
+      type: "TALK",
       content: newMessage,
     };
 
-    // 소켓으로 전송
-    sendChatMessage(messageObj);
+    // 임시로 pending에 추가 (즉시 화면에 표시!)
+    const tempMessage = {
+      sender: nickname,
+      content: newMessage,
+      timestamp: new Date().toISOString(),
+      isPending: true
+    };
 
-    // 나도 화면에 표시
-    setRealtimeMessages((prev) => [
-      ...prev,
-      { sender: username, content: newMessage },
-    ]);
+    setPendingMessages((prev) => [...prev, tempMessage]);
+
+    sendChatMessage(messageObj);
+    // console.log("메시지 전송:", messageObj);
 
     setNewMessage("");
+  };
+
+  const handlePlusClick = () => {
+    setShowButtonList(!showButtonList);
+  };
+
+  const handleButton1Click = () => {
+    console.log("버튼 1 클릭");
+    setShowButtonList(false);
+  };
+
+  const handleButton2Click = () => {
+    console.log("버튼 2 클릭");
+    setShowButtonList(false);
   };
 
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
   <div className="p-4 border-b border-gray-200">
-    <h2 className="font-semibold">{chatUsername}</h2>
+    <h2 className="font-semibold">{chatNickname}</h2>
   </div>
 
   {/* 채팅 메시지 영역 */}
@@ -140,18 +118,42 @@ export default function ChatMessage({ chatUsername,roomId }) {
     <div className="text-center text-gray-500 text-sm mb-4">
       {new Date().toLocaleDateString()}
     </div>
-    {chatMessages?.map((chat, idx) =>
-      chat.sender === username ? (
-        <SenderMessage key={idx} content={chat.content} />
+    {allMessages?.map((chat, idx) => {
+      const isMyMessage = chat.sender === nickname;
+
+      return isMyMessage ? (
+        <SenderMessage 
+          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
+          content={chat.content} 
+          isPending={chat.isPending}
+          createdTime={chat.createdTime}
+
+        />
       ) : (
-        <ReceiverMessage key={idx} content={chat.content} />
-      )
-    )}
+        <ReceiverMessage 
+          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
+          content={chat.content} 
+          createdTime={chat.createdTime}
+          opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
+        />
+      );
+    })}
+    <div ref={scrollRef} />
   </div>
 
   {/* 메시지 입력 영역 */}
   <div className="p-4 border-t border-gray-200">
-    <div className="flex gap-2">
+    <div className="flex gap-4">
+      <button 
+        className="bg-gray-200 px-4 py-2 rounded-lg font-bold "
+        onClick={handlePlusClick}
+      >
+        <img 
+          src={plusIco} 
+          alt="plus" 
+          className={`w-4 h-4 transition-transform duration-200 ${showButtonList ? 'rotate-45' : 'rotate-0'}`} 
+        />
+      </button>
       <input
         type="text"
         placeholder="메시지를 입력하세요"
@@ -160,10 +162,31 @@ export default function ChatMessage({ chatUsername,roomId }) {
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
-      <button className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200">
+      <button 
+        className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+        onClick={handleSend}
+      >
         전송
       </button>
     </div>
+    
+    {/* 버튼 리스트 */}
+    {showButtonList && (
+      <div className="mt-10 mb-8 flex gap-4">
+        <button 
+          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
+          onClick={handleButton1Click}
+        >
+          버튼 1
+        </button>
+        <button 
+          className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          onClick={handleButton2Click}
+        >
+          버튼 2
+        </button>
+      </div>
+    )}
   </div>
 </div>
 

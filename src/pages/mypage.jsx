@@ -19,6 +19,7 @@ import FavoritesContent from '../components/FavoritesContent';
 import RecruitPostList from '../components/companyMyPage/recruitPostList';
 import CompanyApplicants from '../components/companyMyPage/companyApplicants';
 import { UserStore } from '../store/userStore';
+import MyFeed from '../components/myFeed';
 
 export default function MyPage() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ export default function MyPage() {
       case 'favorites':
         return <FavoritesContent />;
       case 'myFeed':
-        return <div>내 피드 내용이 여기에 표시됩니다.</div>;
+        return <MyFeed/>;
       case 'myRecruits':
         return <RecruitPostList />;
       default:
@@ -142,22 +143,22 @@ export default function MyPage() {
           <ul className="ml-2 space-y-2">
             {menuItems.map((item) => (
               <li key={item.id} className='mb-4'>
-                <button 
-                  className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
+              <button 
+                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
                     activeSubmenu === item.id 
-                      ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
-                      : 'text-black hover:bg-gray-50'
-                  }`}
+                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
+                    : 'text-black hover:bg-gray-50'
+                }`}
                   onClick={() => handleSubmenuChange(item.id)}
-                >
-                  <img 
+              >
+                <img 
                     src={activeSubmenu === item.id ? item.iconOn : item.iconOff} 
                     alt={item.label} 
-                    className="w-5 h-5 mr-2"
-                  />
+                  className="w-5 h-5 mr-2"
+                />
                   {item.label}
-                </button>
-              </li>
+              </button>
+            </li>
             ))}
           </ul>
         </div>

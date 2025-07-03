@@ -19,7 +19,7 @@ export default function ProfileEditContent() {
 
   useEffect(() => {
     if (!isEditing) {
-      fetchProfileData();
+    fetchProfileData();
     }
   }, [isEditing]);
 
@@ -154,7 +154,7 @@ export default function ProfileEditContent() {
   const handleFileSelect = (file) => {
     setSelectedFile(file);
   };
-  
+
   const handleChange = (field) => (value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // 닉네임이 변경되면 검증 상태 초기화
@@ -233,12 +233,12 @@ export default function ProfileEditContent() {
             />
             <div>
             <div className="flex items-end w-full">
-              <EditBox 
-                title="닉네임" 
-                value={formData.nickname}
-                onChange={handleChange('nickname')}
-                isEditing={isEditing}
-              />
+            <EditBox 
+              title="닉네임" 
+              value={formData.nickname}
+              onChange={handleChange('nickname')}
+              isEditing={isEditing}
+            />
               <div className="m-4">
                 <div className="flex items-center gap-2 justify-end w-full">
                   <button
