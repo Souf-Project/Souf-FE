@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserStore } from '../../store/userStore';
 import { getApplicantsByRecruitId } from '../../api/application';
-import { getMyRecruits } from '../../api/recruit';
+import { getMyRecruits, getRecruitDetail } from '../../api/recruit';
 import firstCategoryData from '../../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
@@ -70,6 +70,24 @@ export default function CompanyApplicants({ recruitId }) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}.${month}.${day}<br>${hours}:${minutes}`;
+  };
+
+  const handleRecruitDetailClick = async (recruitId) => {
+    try {
+      const response = await getRecruitDetail(recruitId);
+      console.log('API Response:', response);
+      console.log('Response data:', response.data);
+      
+      // API 응답 구조에 따라 데이터 전달
+      const stateData = response.data?.result ? response.data : { recruitDetail: response.data };
+      
+      navigate(`/recruitDetails/${recruitId}`, { state: stateData });
+      console.log('공고문 상세 조회 성공:', stateData);
+    } catch (error) {
+      console.error('공고문 상세 조회 실패:', error);
+      // 에러가 발생해도 기본 데이터로 이동
+      navigate(`/recruitDetails/${recruitId}`);
+    }
   };
 
   // 작성한 공고문 리스트 조회
@@ -241,7 +259,7 @@ export default function CompanyApplicants({ recruitId }) {
           
           {selectedRecruit && (
             <div className="bg-gray-50 p-4 rounded-lg mb-6 flex justify-between items-center">
-              <span className="text-lg font-semibold mb-2">{selectedRecruit.title}</span>
+              <span className="text-lg font-semibold mb-2 underline cursor-pointer" onClick={() => handleRecruitDetailClick(selectedRecruit.recruitId)}>{selectedRecruit.title} 🔍</span>
               <span className="text-gray-600"></span>
               <span className="text-gray-600">지원자 수: {applicants.length}명</span>
             </div>
