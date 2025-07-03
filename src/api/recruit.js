@@ -153,7 +153,11 @@ export async function updateRecruit(recruitId, data) {
 
 // S3 업로드 함수
 export const uploadToS3 = async (url, file) => {
-  return axios.put(url, file, {});
+  return axios.put(url, file , {
+    headers: {
+    "Content-Type": "application/octet-stream", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+  },
+});
 };
 
 // 공고문 미디어 정보 저장 함수 (피드와 동일한 형식)
