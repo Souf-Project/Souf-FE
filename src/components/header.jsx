@@ -13,7 +13,7 @@ export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [userType, setUserType] = useState("");
   const [userName, setUserName] = useState("");
-  const { username, roleType, memberId } = UserStore();
+  const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
   //const memberId = UserStore((state) => state.memberId);
@@ -105,14 +105,14 @@ export default function Header() {
       return (
         <div className="flex justify-center gap-2">
           <span className="font-bold">학생</span>
-          <span className="font-normal ml-1">{username}</span>
+          <span className="font-normal ml-1">{nickname}</span>
         </div>
       );
     } else {
       return (
         <div>
           <span className="font-bold">기업</span>
-          <span className="font-normal ml-1">{username}</span>
+          <span className="font-normal ml-1">{nickname}</span>
         </div>
       );
     }
