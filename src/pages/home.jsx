@@ -28,11 +28,11 @@ export default function Home() {
   }, []);
 
   const categories = [
-    "순수미술 & 일러스트",
-    "공예 & 제작",
+    "순수미술",
+    "공예",
     "음악 & 음향",
     "사진 & 영상 & 영화",
-    "디지털 콘텐츠 & 그래픽 디자인",
+    "디지털 콘텐츠",
   ];
 
   // 실제 공고문 데이터
@@ -180,7 +180,7 @@ const handleSearch = (e) => {
 
       {/* 인기 공고문 섹션 */}
       <div className="relative mt-16">
-        <div className="relative flex flex-col max-w-6xl mx-auto px-6 py-16">
+        <div className="relative flex flex-col max-w-6xl mx-auto px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>

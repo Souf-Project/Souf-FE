@@ -228,14 +228,14 @@ export default function Recruit() {
   }
 
   return (
-    <div className="pt-12 px-6 w-4/5">
+    <div className="pt-12 md:px-6 md:w-4/5 px-2 w-full">
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           <div className="flex">
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
-                className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+                className={`px-6 py-3 rounded-lg md:font-extrabold font-bold transition-colors duration-200 relative group ${
                   activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
                 onClick={() => setActiveTab(tab)}

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ChatIcon from "../assets/images/chatIco.svg";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
-
+import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
 
 export default function Header() {
@@ -13,6 +13,7 @@ export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [userType, setUserType] = useState("");
   const [userName, setUserName] = useState("");
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
@@ -41,11 +42,13 @@ export default function Header() {
   useEffect(() => {
     // /recruit 경로 & 카테고리 쿼리 파라미터가 있는 경우만
     if (location.pathname === "/recruit" && categoryFromQuery) {
-      setActiveCategory(decodeURIComponent(categoryFromQuery));
+      setActiveCategory(categoryFromQuery);
     } else if (location.pathname === "/recruit" && !categoryFromQuery) {
       // /recruit 경로지만 카테고리가 없는 경우는 카테고리 선택 없음
       setActiveCategory("");
     } else if (location.pathname.includes("/recruitDetails/")) {
+      // recruitDetails 페이지에서는 카테고리 선택 없음
+      setActiveCategory("");
     } else {
       setActiveCategory("");
     }
@@ -64,13 +67,45 @@ export default function Header() {
     };
   }, [showUserMenu]);
 
+  // 모바일 메뉴 외부 클릭 시 닫기
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (showMobileMenu && !event.target.closest(".mobile-menu-container")) {
+        setShowMobileMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMobileMenu]);
+
   const handleNavigation = (path) => {
     navigate(path);
     setShowUserMenu(false);
+    setShowMobileMenu(false);
   };
 
   const handleNavigationCategory = (categoryId) => {
-    navigate(`/recruit?category=${categoryId}`);
+    
+    
+    // 현재 경로가 /recruit가 아닌 경우에만 /recruit로 이동
+    if (location.pathname !== "/recruit") {
+     
+      navigate(`/recruit?category=${categoryId}`);
+    } else {
+    
+      const newSearchParams = new URLSearchParams(location.search);
+      newSearchParams.set("category", categoryId);
+      navigate(`/recruit?${newSearchParams.toString()}`);
+    }
+    setShowMobileMenu(false);
+  };
+
+  // 카테고리 이름을 가져오는 함수
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.first_category_id === categoryId);
+    return category ? category.name : '';
   };
 
   // 로그인 상태 전환 함수 (임시)
@@ -89,6 +124,7 @@ export default function Header() {
     // 로그인 상태 변경
     setIsLogin(false);
     setShowUserMenu(false);
+    setShowMobileMenu(false);
     
     // 홈페이지로 이동
     navigate("/");
@@ -98,7 +134,12 @@ export default function Header() {
     setShowUserMenu(!showUserMenu);
   };
 
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(!showMobileMenu);
+  };
+
   const categories = firstCategoryData.first_category;
+
 
   const UserTypeLabel = () => {
     if (roleType === "STUDENT") {
@@ -118,7 +159,8 @@ export default function Header() {
     }
   };
 
-  return (
+  // PC 버전 헤더
+  const DesktopHeader = () => (
     <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 bg-white border-b border-grey-border">
       <div className="flex items-center gap-x-10">
         <div
@@ -128,24 +170,31 @@ export default function Header() {
           SouF
         </div>
         <ul className="flex items-center gap-x-8 font-bold text-xl text-black">
-          {categories.map((category) => (
-            <li
-              key={category.first_category_id}
-              className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
-                activeCategory === category.first_category_id.toString() ? "text-yellow-point" : ""
-              }`}
-              onClick={() => handleNavigationCategory(category.first_category_id)}
-            >
-              <span>{category.name}</span>
-              <span
-                className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                  activeCategory === category.first_category_id.toString()
-                    ? "w-full"
-                    : "w-0 group-hover:w-full origin-left"
+          {categories.map((category) => {
+            return (
+              <li
+                key={category.first_category_id}
+                className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+                  activeCategory === category.first_category_id.toString() ? "text-yellow-point" : ""
                 }`}
-              ></span>
-            </li>
-          ))}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                 
+                  handleNavigationCategory(category.first_category_id);
+                }}
+              >
+                <span>{category.name}</span>
+                <span
+                  className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                    activeCategory === category.first_category_id.toString()
+                      ? "w-full"
+                      : "w-0 group-hover:w-full origin-left"
+                  }`}
+                ></span>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
@@ -216,5 +265,142 @@ export default function Header() {
         )}
       </div>
     </header>
+  );
+
+  // 모바일 버전 헤더
+  const MobileHeader = () => (
+    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-4 py-4 bg-white border-b border-grey-border">
+      <div
+        className="text-2xl font-bold text-black cursor-pointer"
+        onClick={() => handleNavigation("/")}
+      >
+        SouF
+      </div>
+
+      <div className="flex items-center gap-x-2">
+        {memberId && (
+          <button className="p-2" onClick={() => handleNavigation("/chat")}>
+            <img src={ChatIcon} alt="chat" className="w-5 h-5" />
+          </button>
+        )}
+        
+       
+        <button
+  onClick={toggleMobileMenu}
+  className="mobile-menu-container w-8 h-8 flex flex-col justify-center items-center lg:hidden focus:outline-none"
+>
+  <span
+    className={`block w-6 h-0.5 bg-black rounded origin-center 
+      transition-transform duration-300 ease-in-out
+      ${showMobileMenu ? "rotate-45 translate-y-1.5" : ""}`}
+  />
+  <span
+    className={`block w-6 h-0.5 bg-black rounded my-1 
+      transition-opacity duration-300 ease-in-out
+      ${showMobileMenu ? "opacity-0" : ""}`}
+  />
+  <span
+    className={`block w-6 h-0.5 bg-black rounded origin-center 
+      transition-transform duration-300 ease-in-out
+      ${showMobileMenu ? "-rotate-45 -translate-y-1.5" : ""}`}
+  />
+</button>
+
+
+
+      </div>
+
+      {/* 모바일 메뉴 */}
+      {showMobileMenu && (
+        <div className="mobile-menu-container absolute top-full left-0 w-full bg-white border-b border-grey-border shadow-lg z-50">
+          <div className="px-4 py-4">
+            {/* 카테고리 메뉴 */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-700 mb-3">카테고리</h3>
+              <ul className="space-y-2">
+                {categories.map((category) => (
+                  <li
+                    key={category.first_category_id}
+                    className={`px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                      activeCategory === category.first_category_id.toString() 
+                        ? "bg-yellow-point text-white" 
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    onClick={() => {
+                      handleNavigationCategory(category.first_category_id);
+                    }}
+                    
+                  >
+                    {category.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 사용자 메뉴 */}
+            {memberId ? (
+              <div className="space-y-2">
+                <div className="px-3 py-2 bg-yellow-main rounded-lg mb-4">
+                  <UserTypeLabel />
+                </div>
+                <button
+                  className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+                  onClick={() => handleNavigation("/mypage")}
+                >
+                  마이페이지
+                </button>
+                <button
+                  className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+                  onClick={() => handleNavigation(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")}
+                >
+                  {roleType === "MEMBER" ? "공고문 작성하기" : "피드 작성하기"}
+                </button>
+                <button
+                  className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+                  onClick={toggleLogin}
+                >
+                  로그아웃
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <button
+                  className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+                  onClick={() => handleNavigation("/verifyStudent")}
+                >
+                  대학생 인증
+                </button>
+                <button
+                  className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+                  onClick={() => handleNavigation("/login")}
+                >
+                  로그인
+                </button>
+                <button
+                  className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+                  onClick={() => handleNavigation("/register")}
+                >
+                  회원가입
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </header>
+  );
+
+  return (
+    <>
+      {/* PC 버전 (md 이상) */}
+      <div className="hidden lg:block">
+        <DesktopHeader />
+      </div>
+      
+      {/* 모바일 버전 (md 미만) */}
+      <div className="block lg:hidden">
+        <MobileHeader />
+      </div>
+    </>
   );
 }
