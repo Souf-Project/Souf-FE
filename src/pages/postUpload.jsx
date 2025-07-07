@@ -9,6 +9,7 @@ import CategorySelectBox from "../components/categorySelectBox";
 import { useNavigate } from "react-router-dom";
 import AlertModal from "../components/alertModal";
 import { postVideoSignedUrl, postVideoUpload, uploadToS3Video } from "../api/video";
+import { filterEmptyCategories } from "../utils/filterEmptyCategories";
 
 export default function PostUpload() {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -63,91 +64,115 @@ export default function PostUpload() {
   };
   
 
-  /*
-  카테고리 3개 아니면 null인 거 없애고 null 아닌 것만 보내는 그런 거 지금 아무것도 추가 안되어있어서
-  나중에 추가해야대 ... 
-  */
 
   const { mutate, isPending } = useMutation({
     mutationFn: (postData) => {
       //1. 백엔드에서 presigned-url 받아오기 위해 텍스트관련된 내용 먼저 보내기
-      return postFeed(postData);
+      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+          if (cleanedCategories.length === 0) {
+            alert("최소 1개 이상의 카테고리를 선택해주세요.");
+            return;
+          }
+          if (cleanedCategories.length > 3) {
+            alert("최대 3개까지 선택 가능합니다.");
+            return;
+          }
+          const finalData = {
+      ...formData,
+      categoryDtos: cleanedCategories,
+    };
+      return postFeed(finalData);
     },
-    onSuccess: async (response) => {
-      const { feedId, dtoList, videoResDto} = response.result; // 위에 mutationFn 로 받은 결과중에 미디어파일관련된 것만 받아옴
-      
-      const chunkSize = 10*1024*1024;
-      const chunkCount = Math.ceil(videoFiles[0]?.size/chunkSize);
-      let getSignedUrlRes = "";
-      
-      try {
-        // 2-1. AWS s3 이미지 모두 업로드함
-        await Promise.all(
-          dtoList.map(({ presignedUrl }, i) =>
-            uploadToS3(presignedUrl, imageFiles[i])
-          )
-        );
-        let multiUploadArray = [];
-        // 2-2. AWS s3 비디오 업로드함
-        for(let uploadCount = 1 ; uploadCount < chunkCount+1 ; uploadCount++){
-          let start = (uploadCount-1)*chunkSize;
-          let end = uploadCount*chunkSize;
-          let fileBob = uploadCount < chunkCount ? videoFiles[0].slice(start , end) : videoFiles[0].slice(start);
+   onSuccess: async (response) => {
+  const { feedId, dtoList, videoResDto } = response.result;
 
-          getSignedUrlRes =  await postVideoSignedUrl({
-             uploadId: videoResDto.uploadId,
-             partNumber: uploadCount,
-             fileName : videoResDto.fileName,
-            });
-          let preSignedUrl = getSignedUrlRes?.result?.presignedUrl;
+  const chunkSize = 10 * 1024 * 1024;
+  const chunkCount = Math.ceil(videoFiles[0]?.size / chunkSize);
+  let getSignedUrlRes = "";
+  let multiUploadArray = [];
 
-          let uploadChuck = await uploadToS3Video(preSignedUrl,fileBob);
+  try {
+    // 1. 이미지 업로드
+    if (imageFiles.length > 0 && dtoList?.length > 0) {
+      await Promise.all(
+        dtoList.map(({ presignedUrl }, i) =>
+          uploadToS3(presignedUrl, imageFiles[i])
+        )
+      );
+    }
 
-          let EtagHeader = uploadChuck.headers.get('ETag').replaceAll('\\', '');
-          let uploadPartDetails = {
-            awsETag : EtagHeader,
-            partNumber : uploadCount
-          };
-          console.log("파일 확인",uploadPartDetails);
-          multiUploadArray.push(uploadPartDetails);
-        } 
+    // 2. 비디오 업로드
+    if (videoFiles.length > 0 && videoResDto) {
+      for (let uploadCount = 1; uploadCount <= chunkCount; uploadCount++) {
+        const start = (uploadCount - 1) * chunkSize;
+        const end = uploadCount * chunkSize;
+        const fileBlob =
+          uploadCount < chunkCount
+            ? videoFiles[0].slice(start, end)
+            : videoFiles[0].slice(start);
 
-        if(videoFiles.length > 0){
-          await postVideoUpload({
-            uploadId: videoResDto?.uploadId,
-            fileName : videoResDto?.fileName,
-            parts : multiUploadArray,
-          })
-        }
-        
-        //이건 각각 이미지 여러개면 list로 만들어야해서 코드 추가함
-        const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
-        const fileNames = imageFiles.map((file) => file.name);
-        const fileTypes = imageFiles.map((file) =>
-          file.type.split("/")[1].toUpperCase()
-        );
-        fileUrls.push(getSignedUrlRes?.result?.fileUrl);
-        fileNames.push(videoFiles[0].name);
-        fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
-        
-        //3. s3에 업로드 성공 후 미디어파일관련 백엔드에 보내주기
-        await postMedia({
-          feedId,
-          fileUrl: fileUrls,
-          fileName: fileNames,
-          fileType: fileTypes,
+        const signedUrlRes = await postVideoSignedUrl({
+          uploadId: videoResDto.uploadId,
+          partNumber: uploadCount,
+          fileName: videoResDto.fileName,
         });
 
+        const presignedUrl = signedUrlRes?.result?.presignedUrl;
+        const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
 
+        const etag = uploadChunk.headers.get("ETag")?.replaceAll("\\", "");
+        multiUploadArray.push({
+          awsETag: etag,
+          partNumber: uploadCount,
+        });
 
-            
-        //여기는 추후에 파일 전송완료되면 실행시킬 코드 추가 ..
-        setIsModal(true);
-      } catch (error) {
-        console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
-        alert("업로드 중 오류가 발생했습니다.");
+        // 마지막 part만 URL 저장
+        if (uploadCount === chunkCount) {
+          getSignedUrlRes = signedUrlRes;
+        }
       }
-    },
+
+      await postVideoUpload({
+        uploadId: videoResDto.uploadId,
+        fileName: videoResDto.fileName,
+        parts: multiUploadArray,
+      });
+    }
+
+    // 3. 최종 file 정보 구성
+    const fileUrls = [];
+    const fileNames = [];
+    const fileTypes = [];
+
+    if (imageFiles.length > 0) {
+      fileUrls.push(...dtoList.map(({ fileUrl }) => fileUrl));
+      fileNames.push(...imageFiles.map((file) => file.name));
+      fileTypes.push(...imageFiles.map((file) => file.type.split("/")[1].toUpperCase()));
+    }
+
+    if (videoFiles.length > 0 && getSignedUrlRes?.result?.fileUrl) {
+      fileUrls.push(getSignedUrlRes.result.fileUrl);
+      fileNames.push(videoFiles[0].name);
+      fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
+    }
+
+    // 4. 통합 올림 서버에
+    if (fileUrls.length > 0) {
+      await postMedia({
+        feedId,
+        fileUrl: fileUrls,
+        fileName: fileNames,
+        fileType: fileTypes,
+      });
+    }
+
+    setIsModal(true);
+  } catch (error) {
+    console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
+    alert("업로드 중 오류가 발생했습니다.");
+  }
+}
+,
   }); 
 
   const handleInputChange = (name, e) => {
@@ -157,7 +182,7 @@ export default function PostUpload() {
       ...prev,
       [name]: value,
     }));
-    console.log(formData);
+    
   };
 
   const handleCategoryChange = (index) => (categoryData) => {
