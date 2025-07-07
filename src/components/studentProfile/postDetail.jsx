@@ -12,6 +12,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 
+const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
 export default function PostDetail() {
   const navigate = useNavigate();
   const { id, worksId } = useParams();
@@ -107,17 +109,30 @@ const handleDeleteClick = () => {
       modules={[Pagination]}
       className="rounded-lg"
     >
-      {mediaData?.map((data, i) => (
-        <SwiperSlide key={i} className="flex justify-center items-center">
-          <div className="flex justify-center items-center h-[400px]">
-            <img
-            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${data?.fileUrl}`}
-            alt={data.fileName}
-            className="w-full object-cover rounded-lg"
+      {mediaData?.map((data, i) => {
+  const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+
+  return (
+    <SwiperSlide key={i} className="flex justify-center items-center">
+      <div className="flex justify-center items-center h-[400px] w-full">
+        {isVideo ? (
+          <video
+            src={`${BUCKET_URL}${data.fileUrl}`}
+            controls
+            className="w-full h-full object-cover rounded-lg"
           />
-          </div>
-        </SwiperSlide>
-      ))}
+        ) : (
+          <img
+            src={`${BUCKET_URL}${data.fileUrl}`}
+            alt={data.fileName}
+            className="w-full h-full object-cover rounded-lg"
+          />
+        )}
+      </div>
+    </SwiperSlide>
+      );
+    })}
+
     </Swiper>
   </div>
           <div className="w-full max-w-[35%] h-full pl-6 relative">

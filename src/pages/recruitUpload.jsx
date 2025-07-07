@@ -795,6 +795,5 @@ export default function RecruitUpload() {
         </div>
       </form>
     </div>
-    </div>
   );
 } 

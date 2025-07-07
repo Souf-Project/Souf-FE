@@ -6,53 +6,64 @@ export default function ImageUpload({ onImagesChange, initialImages = [] }) {
   const fileInputRef = useRef(null);
 
   const MAX_IMAGES = 10;
-  const MAX_VIDEO = 1;
-  const MAX_TOTAL_SIZE = 700 * 1024 * 1024; // 700MB in bytes
+  const MAX_VIDEO_SIZE = 700 * 1024 * 1024; // 700MB
+
+  const VIDEO_EXTENSIONS = ["mp4", "mov", "avi", "webm", "mkv"];
 
   useEffect(() => {
     if (initialImages.length !== 0) {
-      const formatted = initialImages.map((img) => {
-        const extMatch = img.fileName?.match(/\.(\w+)$/);
-        const ext = extMatch ? extMatch[1].toUpperCase() : "JPG";
-        return {
+      const imageList = [];
+      let videoFile = null;
+
+      initialImages.forEach((img) => {
+        const fileUrl = img.fileUrl || "";
+        const extMatch = fileUrl.match(/\.(\w+)$/);
+        const ext = extMatch ? extMatch[1].toLowerCase() : "";
+
+        const preview = `https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${fileUrl}`;
+        const wrappedFile = {
           file: img,
-          preview: `https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${img.fileUrl}`,
+          preview,
         };
+
+        if (VIDEO_EXTENSIONS.includes(ext)) {
+          videoFile = wrappedFile;
+        } else {
+          imageList.push(wrappedFile);
+        }
       });
-      setImages(formatted);
-      notifyParent(formatted);
+
+      setImages(imageList);
+      setVideo(videoFile);
+
+      const fileList = [...imageList.map((img) => img.file)];
+      if (videoFile) fileList.push(videoFile.file);
+      onImagesChange(fileList);
     }
   }, [initialImages]);
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
-
     const imageFiles = files.filter((file) => file.type.startsWith("image/"));
     const videoFiles = files.filter((file) => file.type.startsWith("video/"));
 
-    // 개수 초과 검사
     if (images.length + imageFiles.length > MAX_IMAGES) {
       alert(`이미지는 최대 ${MAX_IMAGES}개까지 업로드할 수 있습니다.`);
       return;
     }
 
-    if (videoFiles.length > 0 && video) {
-      alert("동영상은 1개만 업로드할 수 있습니다.");
-      return;
+    if (videoFiles.length > 0) {
+      if (video) {
+        alert("동영상은 1개만 업로드할 수 있습니다.");
+        return;
+      }
+
+      if (videoFiles[0].size > MAX_VIDEO_SIZE) {
+        alert("동영상은 700MB 이하만 업로드할 수 있습니다.");
+        return;
+      }
     }
 
-    // 용량 검사
-    const totalSize =
-      images.reduce((acc, img) => acc + img.file.size, 0) +
-      (video?.file?.size || 0) +
-      files.reduce((acc, f) => acc + f.size, 0);
-
-    if (totalSize > MAX_TOTAL_SIZE) {
-      alert("총 첨부 용량은 700MB를 초과할 수 없습니다.");
-      return;
-    }
-
-    // 이미지 처리
     const newImages = imageFiles.map((file) => ({
       file,
       preview: URL.createObjectURL(file),
@@ -60,7 +71,6 @@ export default function ImageUpload({ onImagesChange, initialImages = [] }) {
     const updatedImages = [...images, ...newImages];
     setImages(updatedImages);
 
-    // 동영상 처리 (하나만)
     if (videoFiles.length > 0) {
       const videoFile = videoFiles[0];
       setVideo({
@@ -69,14 +79,28 @@ export default function ImageUpload({ onImagesChange, initialImages = [] }) {
       });
     }
 
-    // 부모에 전달
     const allFiles = [...updatedImages.map((img) => img.file)];
     if (videoFiles.length > 0) {
       allFiles.push(videoFiles[0]);
     } else if (video) {
       allFiles.push(video.file);
     }
+
     onImagesChange(allFiles);
+  };
+
+  const handleImageDelete = (index) => {
+    const updatedImages = images.filter((_, i) => i !== index);
+    setImages(updatedImages);
+
+    const fileList = [...updatedImages.map((img) => img.file)];
+    if (video) fileList.push(video.file);
+    onImagesChange(fileList);
+  };
+
+  const handleVideoDelete = () => {
+    setVideo(null);
+    onImagesChange([...images.map((img) => img.file)]);
   };
 
   const handleClick = () => {
@@ -89,25 +113,37 @@ export default function ImageUpload({ onImagesChange, initialImages = [] }) {
       <div className="flex gap-4 flex-wrap">
         {/* 이미지 미리보기 */}
         {images.map((img, index) => (
-          <div className="relative">
-            <div className="absolute top-1 right-1 bg-white bg-opacity-70 cursor-pointer text-xl px-[5px]" onClick={() => handleImageDelete(index)} >x</div>
-          <img
-            key={index}
-            src={img.preview}
-            alt={img.fileName || `업로드된 이미지 ${index + 1}`}
-            className="w-32 h-32 object-cover rounded "
-          />
+          <div className="relative" key={index}>
+            <div
+              className="absolute top-1 right-1 bg-white bg-opacity-70 cursor-pointer text-xl px-[5px]"
+              onClick={() => handleImageDelete(index)}
+            >
+              x
+            </div>
+            <img
+              src={img.preview}
+              alt={img.fileName || `업로드된 이미지 ${index + 1}`}
+              className="w-32 h-32 object-cover rounded"
+            />
           </div>
         ))}
 
-        {/* 동영상 미리보기 */}
-        {video && (
-          <video
-            src={video.preview}
-            controls
-            className="w-32 h-32 rounded object-cover"
-          />
-        )}
+{video && (
+  <div className="relative w-32 h-32">
+    <div
+      className="absolute top-1 right-1 z-10 bg-white bg-opacity-70 cursor-pointer text-xl px-[5px]"
+      onClick={handleVideoDelete}
+    >
+      x
+    </div>
+    <video
+      src={video.preview}
+      controls
+      className="w-full h-full rounded object-cover z-0"
+    />
+  </div>
+)}
+
 
         {/* 업로드 버튼 */}
         <div
