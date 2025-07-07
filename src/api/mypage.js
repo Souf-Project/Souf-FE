@@ -65,7 +65,7 @@ export async function putProfileEdit(data) {
   const response = await client.put("/api/v1/member/update", data, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+      "Content-Type": "application/octet-stream",
     },
   });
 

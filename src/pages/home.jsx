@@ -51,6 +51,8 @@ export default function Home() {
     "음악",
     "사진",
     "디지털 콘텐츠",
+  ];
+
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
     console.log('getImageUrl called with:', imagePath);
