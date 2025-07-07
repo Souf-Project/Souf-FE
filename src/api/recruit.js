@@ -93,9 +93,7 @@ export async function getRecruitDetail(recruitId) {
         }
 
         const url = `/api/v1/recruit/${recruitId}`;
-        console.log("Calling API:", url);
-        console.log("Base URL:", import.meta.env.VITE_BASE_URL);
-        console.log("Full URL:", import.meta.env.VITE_BASE_URL + url);
+     
 
         const response = await client.get(url, {
             headers: {
