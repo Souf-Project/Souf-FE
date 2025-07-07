@@ -53,7 +53,12 @@ export async function postResetEmailVerification(email) {
 export async function postEmailVerify(email, code, purpose) {
   try {
     const response = await client.post(
-      `/api/v1/auth/email/verify?email=${email}&code=${code}&purpose=${purpose}`
+      `/api/v1/auth/email/verify`,
+      {
+        email:email,
+        code:code,
+        purpose:purpose
+      }
     );
     console.log("✅ 응답 성공:", response);
     return response.data;
