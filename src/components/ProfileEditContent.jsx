@@ -4,6 +4,7 @@ import CategorySelectBox from './categorySelectBox';
 import { getProfile, updateProfileInfo, uploadToS3, confirmImageUpload, getNickNameVerify } from '../api/mypage';
 import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
+import { UserStore } from '../store/userStore';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,6 +13,7 @@ export default function ProfileEditContent() {
   const [nicknameVerified, setNicknameVerified] = useState(false);
   const [verifyingNickname, setVerifyingNickname] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState('');
+  const {roleType} = UserStore();
   
   const [formData, setFormData] = useState(null);
 
@@ -268,6 +270,7 @@ export default function ProfileEditContent() {
             />
           </div>
         </div>
+        {roleType === "STUDENT" &&
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">프로필 정보</h2>
           <div className="grid grid-cols-1 gap-6">
@@ -284,7 +287,8 @@ export default function ProfileEditContent() {
               isEditing={isEditing}
             />
           </div>
-        </div>
+        </div> }
+        
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">관심분야</h2>
           <div className="grid grid-cols-3 gap-4">
