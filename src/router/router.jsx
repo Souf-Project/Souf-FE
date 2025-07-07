@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -18,9 +18,14 @@ import PostEdit from "../pages/postEdit";
 import PostUpload from "../pages/postUpload";
 import RecruitUpload from "../pages/recruitUpload";
 import Chat from "../pages/chat";
-import Competitions from "../pages/competitions";
+import Contests from "../pages/contests";
+import ContestDetail from "../pages/contestDetail";
+import Search from "../pages/search";
 
 function AppRouter() {
+  const location = useLocation();
+  const isChatPage = location.pathname === "/chat";
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -45,10 +50,12 @@ function AppRouter() {
           <Route path="/postUpload" element={<PostUpload />} />
           <Route path="/recruitUpload" element={<RecruitUpload />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/competitions" element={<Competitions />} />
+          <Route path="/contests" element={<Contests />} />
+          <Route path="/contests/:category/:id" element={<ContestDetail />} />
+          <Route path="/search" element={<Search/>}/>
         </Routes>
       </main>
-      <Footer />
+      {!isChatPage && <Footer />}
     </div>
   );
 }

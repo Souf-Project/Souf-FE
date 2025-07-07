@@ -4,6 +4,7 @@ import Pagination from "../components/pagination";
 import { getFeed } from "../api/feed";
 import { useQuery } from "@tanstack/react-query";
 import Feed from "../components/feed";
+import Loading from "../components/loading";
 
 export default function StudentFeedList() {
   //const { data, error, isLoading, isFetching } = useFeed(firstCategory, pageable);
@@ -37,7 +38,7 @@ export default function StudentFeedList() {
   });
 
   //이거 나중에 제대로 추가하자
-  if (isLoading) return <div>로딩중...</div>;
+  if (isLoading) return <Loading/>;
   if (error) return <div>{error.message || "에러"}</div>;
 
   return (

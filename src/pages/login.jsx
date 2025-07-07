@@ -24,14 +24,16 @@ export default function Login() {
 
       const result = response.data?.result;
 
-      console.log("이름", result.username);
+      console.log("이름", result.nickname);
       console.log("멤버", result.roleType);
-
+     
       UserStore.getState().setUser({
         memberId: result.memberId,
-        username: result.username,
+        nickname: result.nickname,
         roleType: result.roleType,
       });
+     
+      
 
       localStorage.setItem("accessToken", result.accessToken);
 
