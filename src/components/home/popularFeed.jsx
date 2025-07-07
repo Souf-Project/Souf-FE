@@ -6,7 +6,7 @@ const PopularFeed = ({ url, context, username }) => {
       <img
         src={url}
         alt={`${username} 이미지`}
-        className="w-full h-auto object-cover rounded-md"
+        className="md:w-full h-auto object-cover rounded-md"
       />
       <div className="flex justify-between mt-2 px-1">
         <span className="text-gray-400 text-sm">{context}</span>
