@@ -2,46 +2,60 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Input from "../input";
+import { useMutation } from "@tanstack/react-query";
+import { deleteMemberWithdraw } from "../../api/member";
+import AlertModal from "../alertModal";
+import { UserStore } from "../../store/userStore";
 
-export default function WithdrawalConfirm({ onCancel, onSuccess }) {
+export default function WithdrawalConfirm() {
   const [password, setPassword] = useState("");
+  const [isModal, setIsModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState("");
+  const [modalDescription, setModalDescription] = useState("");
   const navigate = useNavigate();
+
+  const withdrawMutation = useMutation({
+    mutationFn: () => deleteMemberWithdraw(password),
+    onSuccess: () => {
+      setModalTitle("탈퇴가 완료되었습니다");
+      setModalDescription("");
+      setIsModal(true);
+    },
+    onError: (error) => {
+      console.error(error);
+      if (error.response?.status === 400) {
+        setModalTitle("회원 탈퇴 실패");
+        setModalDescription("비밀번호가 일치하지 않습니다.");
+      } else {
+        setModalTitle("회원탈퇴에 실패했습니다.");
+        
+      }
+      setIsModal(true);
+    },
+  });
+
   const handleSubmit = () => {
-    if (!password) {
-      alert("비밀번호를 입력해주세요.");
+    if (password.trim() === "") {
+      setModalTitle("비밀번호를 입력해주세요.");
+      setIsModal(true);
       return;
     }
 
-    // 여기에 실제 탈퇴 API 호출 로직 추가
-    // 예시로는 단순 confirm 처리
-    //const confirmWithdraw = window.confirm("정말 탈퇴하시겠습니까?");
-    if (confirmWithdraw) {
-      alert("회원탈퇴가 완료되었습니다.");
-      onSuccess(); // 성공 후 콜백 실행
-    }
+    withdrawMutation.mutate();
   };
 
-  /*
-        <input
-        type="password"
-        placeholder="비밀번호를 입력하세요"
-        className="w-full p-3 border border-gray-300 rounded-md mb-4"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-
-  */
   return (
-    <div className="w-[650px] px-36 flex flex-col ">
-        <div >
-            <div className="text-black text-2xl font-regular mb-2">비밀번호</div>
-            <input
-                type="password"
-                className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 `}
-                placeholder="비밀번호를 입력해주세요"
-            />
-        </div>
+    <div className="w-[450px] px-10 flex flex-col">
+      <div className="flex flex-col gap-3 mb-6">
+        <div className="text-black text-2xl font-regular mb-2">비밀번호</div>
+        <input
+          type="password"
+          className="w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-lg border-0 border-b-[3px] outline-none transition-colors duration-200"
+          placeholder="비밀번호를 입력해주세요"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
 
       <div className="flex justify-center gap-4">
         <button
@@ -52,11 +66,35 @@ export default function WithdrawalConfirm({ onCancel, onSuccess }) {
         </button>
         <button
           onClick={handleSubmit}
-          className="px-6 py-3 rounded-md bg-red-500 text-white font-bold hover:bg-red-600"
+          disabled={withdrawMutation.isPending}
+          className="px-6 py-3 rounded-md bg-red-500 text-white font-bold hover:bg-red-600 disabled:opacity-50"
         >
-          탈퇴 완료
+          {withdrawMutation.isPending ? "처리 중..." : "탈퇴"}
         </button>
       </div>
+
+      {isModal && (
+        <AlertModal
+          type="simple"
+          title={modalTitle}
+          description={modalDescription}
+          TrueBtnText="확인"
+          onClickTrue={() => {
+            setIsModal(false);
+            if (modalTitle === "탈퇴가 완료되었습니다") {
+                UserStore.getState().clearUser();
+                // 로컬 스토리지 초기화
+                localStorage.removeItem("isLogin");
+                localStorage.removeItem("userType");
+                localStorage.removeItem("userName");
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("refreshToken");
+                localStorage.removeItem("user-storage");
+                navigate("/"); // 탈퇴 완료 시 콜백 (ex. navigate("/"))
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
