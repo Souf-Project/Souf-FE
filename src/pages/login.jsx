@@ -47,9 +47,10 @@ export default function Login() {
   });
 
   return (
-    <div className="w-screen h-screen flex">
-      <div className="w-1/2 bg-[#FFE681] flex flex-col justify-center px-16 ">
-        <div className="my-auto">
+    <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-yellow-main">
+      {/* PC 버전 스프 설명 */}
+      <div className="hidden lg:block lg:w-1/2 my-auto  bg-[#FFE681] flex flex-col px-16 justify-center">
+        <div className="my-auto ">
           <h1 className="text-8xl font-bold mb-6">SouF</h1>
           <p className="text-4xl font-bold leading-relaxed text-gray-800 mb-10">
             합리적인 비용으로
@@ -63,10 +64,25 @@ export default function Login() {
           </div>
         </div>
       </div>
-
-      <div className="w-1/2 bg-white flex flex-col justify-center items-center px-36">
-        <h2 className="text-6xl font-bold mb-10 mr-auto">로그인</h2>
-        <div className="w-full space-y-6 bg-white p-8 border rounded-xl shadow">
+      {/* 모바일 버전 스프 설명 */}
+  <div className="lg:hidden flex justify-center items-center mt-36">
+          <h1 className="text-6xl font-bold">SouF</h1>
+          <span className="w-[2px] h-20 bg-black mx-4"></span>
+          <div>
+            
+          </div>
+          <p className="text-2xl font-bold leading-relaxed text-gray-800">
+            합리적인 비용으로
+            <br />
+            필요한 인재를 만나보세요!
+            <br />
+            지금 바로 스프에서!
+          </p>
+         
+        </div>
+      <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-36 h-full">
+        <h2 className="text-4xl lg:text-6xl font-bold mb-10 mr-auto">로그인</h2>
+        <div className="w-full space-y-6 bg-white p-6 lg:p-8 border rounded-xl shadow">
           <Input
             title="이메일"
             // isValidateTrigger={isValidateTrigger}
@@ -104,6 +120,9 @@ export default function Login() {
           </div>
         </div>
       </div>
+      <div className="mt-10  lg:hidden flex justify-center">
+            <img src={loginImg} className=" w-1/2" />
+          </div>
     </div>
   );
 }
