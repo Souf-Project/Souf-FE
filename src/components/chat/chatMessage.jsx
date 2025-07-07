@@ -12,6 +12,8 @@ import {
 import plusIco from "../../assets/images/plusIco.svg"
 import AlertModal from "../alertModal";
 import DegreeModal from "../degreeModal";
+import Checkout from "../pay/checkout";
+
 
 export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
     const { nickname } = UserStore();
@@ -19,6 +21,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   const [realtimeMessages, setRealtimeMessages] = useState([]);
   const [pendingMessages, setPendingMessages] = useState([]);
   const [showButtonList, setShowButtonList] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
   const scrollRef = useRef(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
@@ -102,6 +105,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
 
   const handleButton1Click = () => {
     console.log("버튼 1 클릭");
+    setShowCheckout(true);
     setShowButtonList(false);
   };
 
@@ -122,12 +126,31 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowButtonList(false);
   };
 
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
   <div className="p-4 border-b border-gray-200">
     <h2 className="font-semibold">{chatNickname}</h2>
   </div>
+
+  {/* Checkout 모달 */}
+  {showCheckout && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">결제</h2>
+          <button 
+            onClick={() => setShowCheckout(false)}
+            className="text-gray-500 hover:text-gray-700 text-xl"
+          >
+            ×
+          </button>
+        </div>
+        <Checkout />
+      </div>
+    </div>
+  )}
 
   {/* 채팅 메시지 영역 */}
   <div className="flex-1 p-4 overflow-y-auto">
@@ -189,11 +212,12 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     {/* 버튼 리스트 */}
     {showButtonList && (
       <div className="mt-10 mb-8 flex gap-4">
+        <Checkout />
         <button 
           className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
           onClick={handleButton1Click}
         >
-          버튼 1
+          토스
         </button>
         <button 
           className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
