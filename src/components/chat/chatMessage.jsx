@@ -10,6 +10,8 @@ import {
   sendChatMessage,
 } from "../../api/chatSocket";
 import plusIco from "../../assets/images/plusIco.svg"
+import AlertModal from "../alertModal";
+import DegreeModal from "../degreeModal";
 
 export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
     const { nickname } = UserStore();
@@ -18,6 +20,8 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   const [pendingMessages, setPendingMessages] = useState([]);
   const [showButtonList, setShowButtonList] = useState(false);
   const scrollRef = useRef(null);
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showDegreeModal, setShowDegreeModal] = useState(false);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -106,6 +110,18 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowButtonList(false);
   };
 
+  const handleButton3Click = () => {
+    console.log("버튼 3 클릭");
+    setShowAlertModal(true);
+    setShowButtonList(false);
+  };
+
+  const handleDegreeModalClick = () => {
+    setShowAlertModal(false);
+    setShowDegreeModal(true);
+    setShowButtonList(false);
+  };
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
@@ -185,7 +201,38 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         >
           버튼 2
         </button>
+        <button 
+          className="bg-yellow-300 text-white px-6 py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200"
+          onClick={handleButton3Click}
+        >
+          SouF 온도 남기기 
+        </button>
       </div>
+    )}
+    {showAlertModal && (
+      <AlertModal
+        type="simple"
+        title="SouF 온도 남기기"
+        description={`SouF 온도를 남기시겠습니까?\n온도를 남기시면 거래가 자동으로 완료 처리됩니다.`}
+        onClickTrue={() => handleDegreeModalClick()}
+        onClickFalse={() => setShowAlertModal(false)}
+        FalseBtnText="취소"
+        TrueBtnText="확인"
+      />
+    )}
+    {showDegreeModal && (
+      <DegreeModal
+        title="SouF 온도 평가"
+        description="이번 거래에 대한 만족도를 평가해주세요"
+        bottomText="별점을 선택해주세요"
+        FalseBtnText="취소"
+        TrueBtnText="확인"
+        onClickFalse={() => setShowDegreeModal(false)}
+        onClickTrue={() => {
+          console.log("온도 평가 확인");
+          setShowDegreeModal(false);
+        }}
+      />
     )}
   </div>
 </div>
