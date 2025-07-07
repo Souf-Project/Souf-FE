@@ -247,9 +247,18 @@ export default function Step1() {
         setEmailModal(true);
       },
       onNicknameChecked: (res) => {
-        console.log(res.data.result);
-        setCheckResult(res.result);
-        setNicknameModal(res.result);
+        const result = res.data.result;
+        setCheckResult(result);
+
+        if (result === true) {
+          console.log('모달을 띄웁니다!');
+          setNicknameModal(true);
+        } else if (result === false) {
+          console.log('false일 때도 모달을 띄워봅니다!');
+          setNicknameModal(true);
+        } else {
+          console.log('모달을 띄우지 않습니다. result가 true/false가 아님:', result);
+        }
       },
       onEmailVerifySuccess: (res, { email }) => {
         if (res.result === true) {
