@@ -20,6 +20,7 @@ import Chat from "../pages/chat";
 import Contests from "../pages/contests";
 import ContestDetail from "../pages/contestDetail";
 import Search from "../pages/search";
+import Withdraw from "../pages/withdraw";
 
 function AppRouter() {
   const location = useLocation();
@@ -50,7 +51,8 @@ function AppRouter() {
           <Route path="/chat" element={<Chat />} />
           <Route path="/contests" element={<Contests />} />
           <Route path="/contests/:category/:id" element={<ContestDetail />} />
-          <Route path="/search" element={<Search/>}/>
+          <Route path="/search" element={<Search />} />
+          <Route path="/withdraw" element={<Withdraw/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

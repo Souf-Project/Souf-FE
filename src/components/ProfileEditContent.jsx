@@ -5,6 +5,7 @@ import { getProfile, updateProfileInfo, uploadToS3, confirmImageUpload, getNickN
 import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
 import { UserStore } from '../store/userStore';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -16,7 +17,7 @@ export default function ProfileEditContent() {
   const {roleType} = UserStore();
   
   const [formData, setFormData] = useState(null);
-
+  const navigate = useNavigate();
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   useEffect(() => {
@@ -305,16 +306,24 @@ export default function ProfileEditContent() {
         <div className="flex justify-center gap-4 mt-8">
           {isEditing ? (
             <>
-              <button onClick={handleCancel} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-white text-gray-700 rounded-lg font-bold transition-colors border border-gray-300">취소</button>
-              <button onClick={handleSave} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">
-                {profileUpdateMutation.isPending ? '저장 중...' : '수정완료'}
-              </button>
+                <button onClick={handleCancel} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-white text-gray-700 rounded-lg font-bold transition-colors border border-gray-300">취소</button>
+                <button onClick={handleSave} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">
+                  {profileUpdateMutation.isPending ? '저장 중...' : '수정완료'}
+                </button>
             </>
           ) : (
             <button onClick={() => setIsEditing(true)} className="w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>
           )}
-        </div>
       </div>
+      <div className='flex justify-end items-end'>
+          <button
+            className="text-gray-400 underline"
+            onClick={() => navigate("/withdraw")}
+          >
+            회원탈퇴
+          </button>
+          </div>
+    </div>
     </div>
   );
 }
