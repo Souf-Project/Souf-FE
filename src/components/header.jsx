@@ -49,6 +49,9 @@ export default function Header() {
     } else if (location.pathname.includes("/recruitDetails/")) {
       // recruitDetails 페이지에서는 카테고리 선택 없음
       setActiveCategory("");
+    } else if (location.pathname === "/contests") {
+      // 공모전 정보 페이지인 경우
+      setActiveCategory("contests");
     } else {
       setActiveCategory("");
     }
@@ -195,6 +198,23 @@ export default function Header() {
               </li>
             );
           })}
+          
+          <li className="text-gray-400">|</li>
+          <li
+            className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+              activeCategory === "contests" ? "text-yellow-point" : ""
+            }`}
+            onClick={() => handleNavigation("/contests")}
+          >
+            <span>공모전 정보</span>
+            <span
+              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                activeCategory === "contests"
+                  ? "w-full"
+                  : "w-0 group-hover:w-full origin-left"
+              }`}
+            ></span>
+          </li>
         </ul>
       </div>
 
