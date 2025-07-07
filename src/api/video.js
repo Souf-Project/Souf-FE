@@ -1,0 +1,38 @@
+import axios from "axios";
+import client from "./client";
+
+export const postVideoSignedUrl = async ({ uploadId , partNumber , fileName}) => {
+  try {
+    const response = await client.post("/api/v1/upload/upload-signed-url", {
+      uploadId: uploadId,
+      partNumber: partNumber,
+      fileName: fileName,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("피드 이미지 조회 에러:", error);
+    throw error;
+  }
+};
+
+export const postVideoUpload = async ({ uploadId , fileName, parts}) => {
+  try {
+    const response = await client.post("/api/v1/upload/complete-video-upload", {
+      uploadId: uploadId,
+      fileName: fileName,
+      parts : parts
+    });
+    return response.data;
+  } catch (error) {
+    console.error("피드 이미지 조회 에러:", error);
+    throw error;
+  }
+};
+
+export const uploadToS3Video = async (url, file) => {
+  return axios.put(url, file, {
+    headers: {
+      "Content-Type": "video/mp4", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+    },
+  });
+};
