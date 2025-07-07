@@ -9,12 +9,16 @@ import {
   disconnectChatSocket,
   sendChatMessage,
 } from "../../api/chatSocket";
+import plusIco from "../../assets/images/plusIco.svg"
+import Checkout from "../pay/checkout";
 
 export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
     const { nickname } = UserStore();
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
   const [pendingMessages, setPendingMessages] = useState([]);
+  const [showButtonList, setShowButtonList] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
   const scrollRef = useRef(null);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -90,12 +94,47 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setNewMessage("");
   };
 
+  const handlePlusClick = () => {
+    setShowButtonList(!showButtonList);
+  };
+
+  const handleButton1Click = () => {
+    console.log("버튼 1 클릭");
+    setShowCheckout(true);
+    setShowButtonList(false);
+  };
+
+  const handleButton2Click = () => {
+    console.log("버튼 2 클릭");
+    setShowButtonList(false);
+  };
+
+  
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
   <div className="p-4 border-b border-gray-200">
     <h2 className="font-semibold">{chatNickname}</h2>
   </div>
+
+  {/* Checkout 모달 */}
+  {showCheckout && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">결제</h2>
+          <button 
+            onClick={() => setShowCheckout(false)}
+            className="text-gray-500 hover:text-gray-700 text-xl"
+          >
+            ×
+          </button>
+        </div>
+        <Checkout />
+      </div>
+    </div>
+  )}
 
   {/* 채팅 메시지 영역 */}
   <div className="flex-1 p-4 overflow-y-auto">
@@ -127,7 +166,17 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
 
   {/* 메시지 입력 영역 */}
   <div className="p-4 border-t border-gray-200">
-    <div className="flex gap-2">
+    <div className="flex gap-4">
+      <button 
+        className="bg-gray-200 px-4 py-2 rounded-lg font-bold "
+        onClick={handlePlusClick}
+      >
+        <img 
+          src={plusIco} 
+          alt="plus" 
+          className={`w-4 h-4 transition-transform duration-200 ${showButtonList ? 'rotate-45' : 'rotate-0'}`} 
+        />
+      </button>
       <input
         type="text"
         placeholder="메시지를 입력하세요"
@@ -143,6 +192,25 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         전송
       </button>
     </div>
+    
+    {/* 버튼 리스트 */}
+    {showButtonList && (
+      <div className="mt-10 mb-8 flex gap-4">
+        <Checkout />
+        <button 
+          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
+          onClick={handleButton1Click}
+        >
+          토스
+        </button>
+        <button 
+          className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          onClick={handleButton2Click}
+        >
+          버튼 2
+        </button>
+      </div>
+    )}
   </div>
 </div>
 
