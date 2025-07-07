@@ -267,14 +267,14 @@ export default function Recruit() {
         </div>
       </div>
 
-      <div className="flex flex-row">
+      <div className="flex flex-col lg:flex-row">
         <CategoryMenu
           secondCategories={filteredSecondCategories}
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
         />
         {activeTab === "recruit" ? (
-          <div className="w-3/4 mx-auto">
+          <div className="w-full lg:w-3/4 mx-auto">
             {filteredRecruits.length > 0 ? (
               <>
                 {filteredRecruits.map((recruit) => {
@@ -321,11 +321,11 @@ export default function Recruit() {
             )}
           </div>
         ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm p-6 w-3/4 mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-6 w-full lg:w-3/4 mx-auto">
             <StudentProfileList />
           </div>
         ) : (
-          <div className="w-3/4 mx-auto">
+          <div className="w-full lg:w-3/4 mx-auto">
             <StudentFeedList />
           </div>
         )}

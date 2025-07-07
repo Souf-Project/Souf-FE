@@ -269,7 +269,7 @@ export default function Header() {
 
   // 모바일 버전 헤더
   const MobileHeader = () => (
-    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-4 py-4 bg-white border-b border-grey-border">
+    <header className="fixed top-0 left-0 z-50 w-full flex items-center justify-between px-4 py-4 bg-white border-b border-grey-border">
       <div
         className="text-2xl font-bold text-black cursor-pointer"
         onClick={() => handleNavigation("/")}
@@ -284,30 +284,26 @@ export default function Header() {
           </button>
         )}
         
-       
         <button
-  onClick={toggleMobileMenu}
-  className="mobile-menu-container w-8 h-8 flex flex-col justify-center items-center lg:hidden focus:outline-none"
->
-  <span
-    className={`block w-6 h-0.5 bg-black rounded origin-center 
-      transition-transform duration-300 ease-in-out
-      ${showMobileMenu ? "rotate-45 translate-y-1.5" : ""}`}
-  />
-  <span
-    className={`block w-6 h-0.5 bg-black rounded my-1 
-      transition-opacity duration-300 ease-in-out
-      ${showMobileMenu ? "opacity-0" : ""}`}
-  />
-  <span
-    className={`block w-6 h-0.5 bg-black rounded origin-center 
-      transition-transform duration-300 ease-in-out
-      ${showMobileMenu ? "-rotate-45 -translate-y-1.5" : ""}`}
-  />
-</button>
-
-
-
+          onClick={toggleMobileMenu}
+          className="mobile-menu-container w-8 h-8 flex flex-col justify-center items-center lg:hidden focus:outline-none"
+        >
+          <span
+            className={`block w-6 h-0.5 bg-black rounded origin-center 
+              transition-transform duration-300 ease-in-out
+              ${showMobileMenu ? "rotate-45 translate-y-1.5" : ""}`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-black rounded my-1 
+              transition-opacity duration-300 ease-in-out
+              ${showMobileMenu ? "opacity-0" : ""}`}
+          />
+          <span
+            className={`block w-6 h-0.5 bg-black rounded origin-center 
+              transition-transform duration-300 ease-in-out
+              ${showMobileMenu ? "-rotate-45 -translate-y-1.5" : ""}`}
+          />
+        </button>
       </div>
 
       {/* 모바일 메뉴 */}
@@ -329,7 +325,6 @@ export default function Header() {
                     onClick={() => {
                       handleNavigationCategory(category.first_category_id);
                     }}
-                    
                   >
                     {category.name}
                   </li>

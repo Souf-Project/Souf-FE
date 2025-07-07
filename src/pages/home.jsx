@@ -8,8 +8,6 @@ import cate4Img from "../assets/images/cate4Img.svg";
 import cate5Img from "../assets/images/cate5Img.svg";
 import Background from "../assets/images/background.png";
 import PopularFeed from "../components/home/popularFeed";
-import { getPopularFeed } from "../api/feed";
-import { useQuery } from "@tanstack/react-query";
 import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
@@ -30,58 +28,9 @@ export default function Home() {
   const categories = [
     "순수미술",
     "공예",
-    "음악 & 음향",
-    "사진 & 영상 & 영화",
+    "음악",
+    "사진",
     "디지털 콘텐츠",
-  ];
-
-  // 실제 공고문 데이터
-  const sampleRecruits = [
-    {
-      id: 1,
-      title: "로고 디자인 프로젝트",
-      categoryMain: "디지털 콘텐츠 & 그래픽 디자인",
-      categoryMiddle: "브랜드 디자인",
-      categorySmall: "로고 디자인",
-      content:
-        "신규 사업을 위한 로고 디자인을 의뢰합니다. 미니멀하고 현대적인 디자인을 선호하며, 기업의 가치를 잘 표현할 수 있는 디자인을 찾고 있습니다.",
-      applicants: 12,
-      minPrice: 300000,
-      maxPrice: 500000,
-      preferMajor: true,
-      location: "서울",
-      deadline: "2025-05-30",
-    },
-    {
-      id: 2,
-      title: "웹사이트 일러스트레이션 작업",
-      categoryMain: "순수미술 & 일러스트",
-      categoryMiddle: "일러스트·캐릭터 디자인",
-      categorySmall: "2D 캐릭터",
-      content:
-        "회사 웹사이트 리뉴얼을 위한 일러스트레이션 작업을 의뢰합니다. 약 5-7개의 일러스트가 필요하며, 각 페이지의 콘셉트에 맞는 작업물이 필요합니다.",
-      applicants: 8,
-      minPrice: 500000,
-      maxPrice: 1000000,
-      preferMajor: false,
-      location: "지역무관",
-      deadline: "2023-12-15",
-    },
-    {
-      id: 3,
-      title: "제품 소개 영상 제작",
-      categoryMain: "사진 & 영상 & 영화",
-      categoryMiddle: "영상",
-      categorySmall: "광고·홍보 영상",
-      content:
-        "신제품 출시에 맞춰 30초 분량의 소개 영상이 필요합니다. 제품의 주요 기능과 특징을 효과적으로 보여줄 수 있는 영상을 원합니다.",
-      applicants: 5,
-      minPrice: 1000000,
-      maxPrice: 2000000,
-      preferMajor: true,
-      location: "원격",
-      deadline: "2025-11-30",
-    },
   ];
 
   const pageable = {
@@ -90,9 +39,9 @@ export default function Home() {
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
-  const { data: feedData } = usePopularFeed(pageable);
-
-const handleSearch = (e) => {
+  const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
+  console.log(feedData);
+  const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
@@ -136,7 +85,6 @@ const handleSearch = (e) => {
               <button
                 type="submit"
                 className="absolute right-4 top-1/2 transform -translate-y-1/2"
-                
               >
                 <img src={searchIco} alt="search" className="w-6 h-6" />
               </button>
@@ -185,45 +133,29 @@ const handleSearch = (e) => {
             인기있는 공고문 모집 보러가기
           </h2>
           <Carousel />
-          {/*
-          <div className="grid grid-cols-3 gap-6">
-            {recruitData?.result?.content?.map((recruit) => (
-              <div
-                key={recruit.recruitId}
-                className="bg-white p-6 rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer"
-                onClick={() => navigate(`/recruitDetails/${recruit.recruitId}`)}
-              >
-                <h3 className="text-xl font-bold">{recruit.title}</h3>
-                <p className="text-gray-500 mb-2">
-                  {getFirstCategoryNameById(recruit.firstCategory)}
-                </p>
-                <p className="mb-4 text-md">{recruit.content}</p>
-                <div className="flex items-center gap-4 text-sm text-gray-500">
-                  <span>{calculateDday(recruit.deadLine)}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-           */}
         </div>
       </div>
 
       {/* 인기 피드 섹션 */}
       <div className="relative">
-        <div className="relative items-center max-w-6xl mx-auto px-6 py-16">
+        <div className="relative items-center max-w-full md:max-w-6xl mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 피드 구경하러 가기
           </h2>
-          <div className="grid grid-cols-4 gap-x-10 gap-y-6">
-            {feedData?.result?.content?.map((profile, index) => (
-              <PopularFeed
-                key={index}
-                url={profile.mediaResDto?.fileUrl}
-                context={profile.categoryName}
-                username={profile.nickname}
-              />
-            ))}
-          </div>
+          {feedLoading ? (
+            <div className="text-center py-8">로딩중...</div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6">
+              {feedData?.result?.content?.map((profile, index) => (
+                <PopularFeed
+                  key={index}
+                  url={profile.mediaResDto?.fileUrl}
+                  context={profile.categoryName}
+                  username={profile.nickname}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
