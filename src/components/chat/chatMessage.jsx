@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getChatRooms } from "../../api/chat";
+import { getChatRooms, postChatImage, postChatImageUpload } from "../../api/chat";
 import ReceiverMessage from "./ReceiverMessage";
 import SenderMessage from "./senderMessage";
 import { UserStore } from "../../store/userStore";
@@ -13,6 +13,8 @@ import plusIco from "../../assets/images/plusIco.svg"
 import AlertModal from "../alertModal";
 import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
+import chatImgIcon from "../../assets/images/chatImgIcon.png"
+import { uploadToS3 } from "../../api/feed";
 
 
 export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
@@ -24,6 +26,8 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   const scrollRef = useRef(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
+  const fileInputRef = useRef(null);
+  const [pendingImageUpload, setPendingImageUpload] = useState(null);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -50,15 +54,28 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   useEffect(() => {
     if (!roomId || !nickname) return;
 
+    console.log("채팅 소켓 연결 시작:", { roomId, nickname });
+
     connectChatSocket(roomId, (incomingMessage) => {
       console.log("실시간 메시지 수신:", incomingMessage);
+      console.log("현재 pendingImageUpload 상태:", pendingImageUpload);
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
+      
+      // 이미지 메시지이고 대기 중인 업로드가 있는 경우 postChatImageUpload 호출
+      if (incomingMessage.type === "IMAGE" && pendingImageUpload) {
+        console.log("이미지 메시지 감지, chatId:", incomingMessage.chatId);
+        console.log("대기 중인 업로드 정보:", pendingImageUpload);
+        handleImageUploadComplete(incomingMessage.chatId, pendingImageUpload);
+      } else {
+        console.log("조건 불일치 - type:", incomingMessage.type, "pendingImageUpload:", !!pendingImageUpload);
+      }
     });
 
     return () => {
+      console.log("채팅 소켓 연결 해제");
       disconnectChatSocket();
     };
-  }, [roomId, nickname]);
+  }, [roomId, nickname, pendingImageUpload]);
 
   // 스크롤 자동 내리기
   useEffect(() => {
@@ -75,8 +92,16 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
       content: newMessage,
     };
 
-    sendChatMessage(messageObj);
-    setNewMessage("");
+    console.log("메시지 전송 시도:", messageObj);
+    
+    const success = sendChatMessage(messageObj);
+    if (success) {
+      setNewMessage("");
+      console.log("메시지 전송 완료");
+    } else {
+      console.error("메시지 전송 실패");
+      // 사용자에게 알림을 줄 수 있습니다
+    }
   };
 
   const handlePlusClick = () => {
@@ -89,9 +114,93 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowButtonList(false);
   };
 
-  const handleButton2Click = () => {
-    console.log("버튼 2 클릭");
+  const handleDegreeModalClick = () => {
+    setShowAlertModal(false);
+    setShowDegreeModal(true);
     setShowButtonList(false);
+  };
+
+  // 이미지 업로드 처리 함수
+  const handleImageUpload = async (file) => {
+    try {
+      console.log("이미지 업로드 시작:", file.name);
+      
+      // 1. 백엔드에 파일 업로드 요청하여 presigned URL 받기
+      const uploadResponse = await postChatImage([file.name]);
+      console.log("업로드 응답:", uploadResponse);
+      
+      if (!uploadResponse || uploadResponse.length === 0) {
+        throw new Error("업로드 URL을 받지 못했습니다.");
+      }
+      
+      const uploadInfo = uploadResponse[0];
+      
+      // 2. S3에 파일 업로드
+      await uploadToS3(uploadInfo.presignedUrl, file);
+      console.log("S3 업로드 완료");
+      
+      // 3. 업로드된 이미지를 채팅 메시지로 전송
+      const imageMessage = {
+        roomId,
+        sender: nickname,
+        type: "IMAGE",
+        content: uploadInfo.fileUrl,
+      };
+      
+      console.log("이미지 메시지 전송 시도:", imageMessage);
+      const success = sendChatMessage(imageMessage);
+      
+      if (success) {
+        console.log("이미지 메시지 전송 완료");
+        
+        // 4. 대기 상태 설정 - WebSocket 응답에서 chatId를 받으면 postChatImageUpload 호출
+        setPendingImageUpload({
+          fileUrl: uploadInfo.fileUrl,
+          fileName: file.name,
+          fileType: file.type.split("/")[1].toUpperCase(),
+        });
+      } else {
+        console.error("이미지 메시지 전송 실패");
+      }
+      
+    } catch (error) {
+      console.error("이미지 업로드 에러:", error);
+      alert("이미지 업로드에 실패했습니다.");
+    }
+  };
+
+  // 파일 선택 처리
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+    // 파일 입력 초기화
+    event.target.value = '';
+  };
+
+  const handleImgButtonClick = () => {
+    setShowButtonList(false);
+    fileInputRef.current?.click();
+  };
+
+  // 이미지 업로드 완료 처리
+  const handleImageUploadComplete = async (chatId, uploadInfo) => {
+    try {
+      console.log("handleImageUploadComplete 시작 - chatId:", chatId);
+      console.log("업로드 정보:", uploadInfo);
+      
+      await postChatImageUpload({
+        chatId: chatId,
+        fileUrl: [uploadInfo.fileUrl],
+        fileName: [uploadInfo.fileName],
+        fileType: [uploadInfo.fileType],
+      });
+      console.log("postChatImageUpload 완료, chatId:", chatId);
+      setPendingImageUpload(null); // 대기 상태 해제
+    } catch (error) {
+      console.error("postChatImageUpload 에러:", error);
+    }
   };
 
   const handleButton3Click = () => {
@@ -100,19 +209,21 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowButtonList(false);
   };
 
-  const handleDegreeModalClick = () => {
-    setShowAlertModal(false);
-    setShowDegreeModal(true);
-    setShowButtonList(false);
-  };
-
-
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
   <div className="p-4 border-b border-gray-200">
     <h2 className="font-semibold">{chatNickname}</h2>
   </div>
+
+  {/* 숨겨진 파일 입력 */}
+  <input
+    type="file"
+    ref={fileInputRef}
+    onChange={handleFileSelect}
+    accept="image/*"
+    style={{ display: 'none' }}
+  />
 
   {/* Checkout 모달 */}
   {showCheckout && (
@@ -164,12 +275,14 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
             <SenderMessage 
               content={chat.content} 
               createdTime={chat.createdTime}
+              type={chat.type}
             />
           ) : (
             <ReceiverMessage 
               content={chat.content} 
               createdTime={chat.createdTime}
               opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
+              type={chat.type}
             />
           )}
         </div>
@@ -219,9 +332,9 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         </button>
         <button 
           className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
-          onClick={handleButton2Click}
+          onClick={handleImgButtonClick}
         >
-          버튼 2
+          <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
         </button>
         <button 
           className="bg-yellow-300 text-white px-6 py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200"

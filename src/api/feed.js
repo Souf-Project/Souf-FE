@@ -31,7 +31,7 @@ export const postFeed = async (data) => {
 export const uploadToS3 = async (url, file) => {
   return axios.put(url, file, {
     headers: {
-      "Content-Type": "application/octet-stream", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+      "Content-Type": file.type, 
     },
   });
 };

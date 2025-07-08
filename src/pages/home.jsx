@@ -55,13 +55,13 @@ export default function Home() {
   ]
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
-    console.log('getImageUrl called with:', imagePath);
+    // console.log('getImageUrl called with:', imagePath);
     
     if (!imagePath) return null;
     
     // 이미 전체 URL인 경우 (상세내용_이미지)
     if (imagePath.startsWith('http')) {
-      console.log('Returning full URL:', imagePath);
+      // console.log('Returning full URL:', imagePath);
       return imagePath;
     }
     
@@ -70,7 +70,7 @@ export default function Home() {
       // 파일명만 추출 (594792.jpg)
       const parts = imagePath.split('\\');
       const fileName = parts[parts.length - 1];
-      console.log('Extracted fileName from thumbnails:', fileName);
+      // console.log('Extracted fileName from thumbnails:', fileName);
       
       if (!fileName) return null;
       
@@ -85,7 +85,7 @@ export default function Home() {
         `https://linkareer.com/attachments/${imageId}`
       ];
       
-      console.log('Trying URL formats:', urlFormats);
+      // console.log('Trying URL formats:', urlFormats);
       return urlFormats[0]; // 첫 번째 형식 반환
     }
     
@@ -95,7 +95,7 @@ export default function Home() {
     
     const imageId = fileName.replace(/\.(jpg|png|jpeg)$/i, '');
     const finalUrl = `https://media-cdn.linkareer.com//se2editor/image/${imageId}`;
-    console.log('Generated other URL:', finalUrl);
+    // console.log('Generated other URL:', finalUrl);
     
     return finalUrl;
   };
@@ -146,7 +146,7 @@ export default function Home() {
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-  console.log(feedData);
+  // console.log(feedData);
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -311,7 +311,7 @@ export default function Home() {
                       alt={competition.제목}
                       className="w-full h-full object-cover relative z-10"
                       onError={(e) => {
-                        console.log('Image load failed:', competition.썸네일);
+                        // console.log('Image load failed:', competition.썸네일);
                         
                         // 대체 URL 시도
                         const fallbackUrls = getFallbackUrls(competition.썸네일);
@@ -319,11 +319,11 @@ export default function Home() {
                         const nextIndex = currentIndex + 1;
                         
                         if (nextIndex < fallbackUrls.length) {
-                          console.log('Trying fallback URL:', fallbackUrls[nextIndex]);
+                          // console.log('Trying fallback URL:', fallbackUrls[nextIndex]);
                           e.target.src = fallbackUrls[nextIndex];
                         } else {
                           // 모든 URL 시도 실패 시 플레이스홀더 표시
-                          console.log('All URLs failed, showing placeholder');
+                          // console.log('All URLs failed, showing placeholder');
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
                         }

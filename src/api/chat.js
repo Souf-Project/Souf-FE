@@ -1,4 +1,5 @@
 import client from "./client";
+import axios from "axios";
 
 export const getChat = async (memberId,feedId) => {
   try {
@@ -43,3 +44,34 @@ export const postChatrooms = async (receiverId) => {
       throw error;
     }
   };
+
+export const postChatImage = async (image) => {
+  const response = await client.post(`/api/v1/chat/file-upload`, {
+    originalFileNames: image,
+  });
+  return response.data;
+};
+
+export const uploadToS3 = async (url, file) => {
+  return axios.put(url, file, {
+    headers: {
+      "Content-Type": file.type, 
+    },
+  });
+};
+
+
+export const postChatImageUpload = async ({ chatId, fileUrl, fileName, fileType }) => {
+  try {
+    const response = await client.post("/api/v1/chat/upload", {
+      postId: chatId,
+      fileUrl: fileUrl,
+      fileName: fileName,
+      fileType: fileType,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("채팅 이미지 업로드 에러:", error);
+    throw error;
+  }
+};
