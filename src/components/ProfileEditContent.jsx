@@ -72,6 +72,13 @@ export default function ProfileEditContent() {
   const profileUpdateMutation = useMutation({
     mutationFn: async (dataToSave) => {
       // 1. 프로필 텍스트 정보와 새 파일명 전송
+      // 기존 이미지 URL에서 파일명 추출
+      const getFileNameFromUrl = (url) => {
+        if (!url) return null;
+        const urlParts = url.split('/');
+        return urlParts[urlParts.length - 1];
+      };
+
       const updatePayload = {
         username: dataToSave.username,
         nickname: dataToSave.nickname,
@@ -80,6 +87,15 @@ export default function ProfileEditContent() {
         newCategories: dataToSave.newCategories,
         profileOriginalFileName: selectedFile ? selectedFile.name : null,
       };
+
+      // 이미지를 수정하지 않을 때만 profileImageUrl 추가
+      if (!selectedFile && formData.profileImageUrl) {
+        updatePayload.profileImageUrl = formData.profileImageUrl;
+      }
+
+      // console.log('서버로 전송되는 데이터:', updatePayload);
+      // console.log('selectedFile 존재 여부:', !!selectedFile);
+      // console.log('기존 이미지 URL:', formData.profileImageUrl);
 
       const updateResponse = await updateProfileInfo(updatePayload);
 
@@ -95,7 +111,7 @@ export default function ProfileEditContent() {
         await confirmImageUpload({
           postId: memberId,
           fileUrl: `${S3_BUCKET_URL}${fileUrl}`,
-          fileName: [selectedFile.name], // ✅ JS 배열
+          fileName: [selectedFile.name],
           fileType: [selectedFile.type.split('/')[1].toLowerCase()] // ✅ JS 배열
         });
         
@@ -219,7 +235,7 @@ export default function ProfileEditContent() {
        
         <ProfileImageUpdate
             isEditing={isEditing}
-            initialImageUrl={formData.profileUrl ? `${formData.profileUrl}` : null}
+            initialImageUrl={formData.profileImageUrl ? `${formData.profileImageUrl}` : null}
             onFileSelect={handleFileSelect}
         />
          <div className="absolute top-[40px] left-[225px]">
