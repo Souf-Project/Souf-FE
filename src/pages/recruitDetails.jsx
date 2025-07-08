@@ -60,7 +60,10 @@ export default function RecruitDetail() {
 
   useEffect(() => {
     // API에서 받은 상세 정보가 있으면 사용
-    if (recruitData?.recruitDetail) {
+    if (recruitData?.result) {
+      setRecruitDetail(recruitData.result);
+      console.log('Using API recruit detail:', recruitData.result);
+    } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
       console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
@@ -134,6 +137,11 @@ export default function RecruitDetail() {
     setIsApplyModalOpen(true);
   };
 
+  const handleViewApplicants = () => {
+    console.log('지원자 리스트 보기 버튼 클릭');
+    navigate(`/companyMyPage?recruitId=${id}`);
+  };
+
   const handleApplyTrue = async () => {
     try {
       const response = await postApplication(id);
@@ -159,11 +167,22 @@ export default function RecruitDetail() {
   const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
   const categoryNames = getCategoryNames(categoryList);
 
-  const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : displayData.minPrice;
-  const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : displayData.maxPrice;
+  const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : (displayData?.minPrice || null);
+  const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : (displayData?.maxPrice || null);
 
   // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
   const isAuthor = memberId === (recruitDetail?.memberId || displayData?.memberId);
+
+  // 데이터가 없으면 로딩 상태 표시
+  if (!displayData) {
+    return (
+      <div className="pt-16 px-8 w-5/6 mx-auto">
+        <div className="text-center py-8">
+          <p className="text-gray-500">데이터를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16 px-8 w-5/6 mx-auto">
@@ -177,7 +196,7 @@ export default function RecruitDetail() {
 
       <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
         <div className="flex justify-between items-start">
-          <div>{maskNickname(displayData.nickname)}</div>
+          <div>{maskNickname(displayData?.nickname)}</div>
           {isAuthor && (
             <div className="relative">
               <button
@@ -208,17 +227,25 @@ export default function RecruitDetail() {
             </div>
           )}
         </div>
-        <h1 className="text-3xl font-semibold">{displayData.title}</h1>
+        <h1 className="text-3xl font-semibold">{displayData?.title}</h1>
         <div className="border-t border-gray-200 my-6"></div>
         
         <div className="flex flex-col text-gray-600 mb-6 mt-2">
           {categoryNames.map((category, index) => (
             <div key={index} className="mb-1">
               <span>{category.first}</span>
-              <span className="mx-2">&gt;</span>
-              <span>{category.second}</span>
-              <span className="mx-2">&gt;</span>
-              <span className="font-medium text-black">{category.third}</span>
+              {category.second && (
+                <>
+                  <span className="mx-2">&gt;</span>
+                  <span>{category.second}</span>
+                </>
+              )}
+              {category.third && (
+                <>
+                  <span className="mx-2">&gt;</span>
+                  <span className="font-medium text-black">{category.third}</span>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -236,12 +263,12 @@ export default function RecruitDetail() {
             <div>
               <span className="text-black mb-1">기한</span>
               <span className="text-gray-500 mx-2">|</span>
-              <span className="font-medium">{formatDate(displayData.deadline)}</span>
+              <span className="font-medium">{formatDate(displayData?.deadline)}</span>
             </div>
             <div>
               <span className="text-black mb-1">지역</span>
               <span className="text-gray-500 mx-2">|</span>
-              <span className="font-medium">{recruitDetail ? `${recruitDetail.cityName} ${recruitDetail.cityDetailName || ''}`.trim() : displayData.location}</span>
+              <span className="font-medium">{recruitDetail ? `${recruitDetail.cityName} ${recruitDetail.cityDetailName || ''}`.trim() : displayData?.location}</span>
             </div>
           </div>
           
@@ -252,7 +279,7 @@ export default function RecruitDetail() {
               <span className="font-medium" style={{ whiteSpace: 'pre-wrap' }}>
                 {recruitDetail?.preferentialTreatment
                   ? recruitDetail.preferentialTreatment
-                  : (displayData.preferMajor ? '전공자 우대' : '경력/경험 무관')}
+                  : (displayData?.preferMajor ? '전공자 우대' : '경력/경험 무관')}
               </span>
             </div>
             
@@ -261,7 +288,7 @@ export default function RecruitDetail() {
 
         <div className="border-t border-gray-200 my-6"></div>
         <div>
-          <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData.content}</p>
+          <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
           
           {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
           <img
@@ -278,20 +305,7 @@ export default function RecruitDetail() {
 
       <div className="flex justify-center mt-8">
         {isAuthor ? (
-          <div className="flex gap-4 w-full">
-            <button 
-              className="bg-blue-500 text-white flex-1 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-              onClick={handleViewApplicants}
-            >
-              지원자 리스트 보기
-            </button>
-            <button 
-              className="bg-yellow-main text-black flex-1 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-              onClick={handleEdit}
-            >
-              공고 수정
-            </button>
-          </div>
+          <></>
         ) : (
           <button 
             className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"

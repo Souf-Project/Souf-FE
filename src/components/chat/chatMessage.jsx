@@ -10,16 +10,20 @@ import {
   sendChatMessage,
 } from "../../api/chatSocket";
 import plusIco from "../../assets/images/plusIco.svg"
+import AlertModal from "../alertModal";
+import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
+
 
 export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
     const { nickname } = UserStore();
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
-  const [pendingMessages, setPendingMessages] = useState([]);
   const [showButtonList, setShowButtonList] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
   const scrollRef = useRef(null);
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showDegreeModal, setShowDegreeModal] = useState(false);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -39,22 +43,15 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   });
 
    // 기존 메시지와 실시간 메시지를 합쳐서 표시
-  const allMessages = [...(chatMessages || []), ...realtimeMessages, ...pendingMessages];
+  const allMessages = [...(chatMessages || []), ...realtimeMessages];
 
   // console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
+    if (!roomId || !nickname) return;
+
     connectChatSocket(roomId, (incomingMessage) => {
       console.log("실시간 메시지 수신:", incomingMessage);
-
-      // 내가 보낸 메시지가 서버에서 돌아온 경우, pending에서 제거
-      // 실시간 구현하다가 내가 보낸 메세지 수신시 두번씩 보이는 에러 있었음 ㅠ 
-      if (incomingMessage.sender === nickname) {
-        setPendingMessages((prev) => 
-          prev.filter(msg => msg.content !== incomingMessage.content)
-        );
-      }
-
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
     });
 
@@ -78,19 +75,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
       content: newMessage,
     };
 
-    // 임시로 pending에 추가 (즉시 화면에 표시!)
-    const tempMessage = {
-      sender: nickname,
-      content: newMessage,
-      timestamp: new Date().toISOString(),
-      isPending: true
-    };
-
-    setPendingMessages((prev) => [...prev, tempMessage]);
-
     sendChatMessage(messageObj);
-    // console.log("메시지 전송:", messageObj);
-
     setNewMessage("");
   };
 
@@ -109,7 +94,18 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowButtonList(false);
   };
 
-  
+  const handleButton3Click = () => {
+    console.log("버튼 3 클릭");
+    setShowAlertModal(true);
+    setShowButtonList(false);
+  };
+
+  const handleDegreeModalClick = () => {
+    setShowAlertModal(false);
+    setShowDegreeModal(true);
+    setShowButtonList(false);
+  };
+
 
   return (
    <div className="h-full flex flex-col">
@@ -138,27 +134,45 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
 
   {/* 채팅 메시지 영역 */}
   <div className="flex-1 p-4 overflow-y-auto">
-    <div className="text-center text-gray-500 text-sm mb-4">
-      {new Date().toLocaleDateString()}
-    </div>
     {allMessages?.map((chat, idx) => {
       const isMyMessage = chat.sender === nickname;
+      
+      // 현재 메시지의 날짜
+      const currentMessageDate = chat.createdTime 
+        ? new Date(chat.createdTime).toLocaleDateString()
+        : new Date().toLocaleDateString();
+      
+      // 이전 메시지의 날짜 (첫 번째 메시지가 아닌 경우)
+      const previousMessageDate = idx > 0 && allMessages[idx - 1]?.createdTime
+        ? new Date(allMessages[idx - 1].createdTime).toLocaleDateString()
+        : null;
+      
+      // 날짜가 바뀌었는지 확인
+      const shouldShowDate = idx === 0 || currentMessageDate !== previousMessageDate;
 
-      return isMyMessage ? (
-        <SenderMessage 
-          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
-          content={chat.content} 
-          isPending={chat.isPending}
-          createdTime={chat.createdTime}
-
-        />
-      ) : (
-        <ReceiverMessage 
-          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
-          content={chat.content} 
-          createdTime={chat.createdTime}
-          opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
-        />
+      return (
+        <div key={`${chat.sender}-${idx}-${chat.timestamp || idx}`}>
+          {/* 날짜 표시 */}
+          {shouldShowDate && (
+            <div className="text-center text-gray-500 text-sm mb-4 mt-4">
+              {currentMessageDate}
+            </div>
+          )}
+          
+          {/* 메시지 */}
+          {isMyMessage ? (
+            <SenderMessage 
+              content={chat.content} 
+              createdTime={chat.createdTime}
+            />
+          ) : (
+            <ReceiverMessage 
+              content={chat.content} 
+              createdTime={chat.createdTime}
+              opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
+            />
+          )}
+        </div>
       );
     })}
     <div ref={scrollRef} />
@@ -209,7 +223,38 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         >
           버튼 2
         </button>
+        <button 
+          className="bg-yellow-300 text-white px-6 py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200"
+          onClick={handleButton3Click}
+        >
+          SouF 온도 남기기 
+        </button>
       </div>
+    )}
+    {showAlertModal && (
+      <AlertModal
+        type="simple"
+        title="SouF 온도 남기기"
+        description={`SouF 온도를 남기시겠습니까?\n온도를 남기시면 거래가 자동으로 완료 처리됩니다.`}
+        onClickTrue={() => handleDegreeModalClick()}
+        onClickFalse={() => setShowAlertModal(false)}
+        FalseBtnText="취소"
+        TrueBtnText="확인"
+      />
+    )}
+    {showDegreeModal && (
+      <DegreeModal
+        title="SouF 온도 평가"
+        description="이번 거래에 대한 만족도를 평가해주세요"
+        bottomText="별점을 선택해주세요"
+        FalseBtnText="취소"
+        TrueBtnText="확인"
+        onClickFalse={() => setShowDegreeModal(false)}
+        onClickTrue={() => {
+          console.log("온도 평가 확인");
+          setShowDegreeModal(false);
+        }}
+      />
     )}
   </div>
 </div>
