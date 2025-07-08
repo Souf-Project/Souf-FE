@@ -20,7 +20,8 @@ export default function Step1() {
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
 
-  const [verificationCheck, setVerificationCheck] = useState("");
+  const [verificationCheck, setVerificationCheck] = useState(undefined);
+  const [emailVerification, setEmailVerification] = useState(undefined);
   const [approveText,setApproveText] = useState("");
 
   const [checkResult, setCheckResult] = useState(undefined);
@@ -247,21 +248,31 @@ export default function Step1() {
         setEmailModal(true);
       },
       onNicknameChecked: (res) => {
-        console.log(res.data.result);
-        setCheckResult(res.result);
-        setNicknameModal(res.result);
+        const result = res.data.result;
+        setCheckResult(result);
+
+        if (result === true) {
+         
+          setNicknameModal(true);
+        } else if (result === false) {
+        
+          setNicknameModal(true);
+        } else {
+      
+        }
       },
       onEmailVerifySuccess: (res, { email }) => {
-        if (res.result === true) {
-          updateUserData("email", email);
-          setApproveText("인증번호가 확인되었습니다.");
+        const result = res.result;
+
+        if (result === true) {
           setEmailVerification(true);
           setVerificationCheck(true);
-
+         
         } else {
-          setApproveText("인증번호가 일치하지 않습니다.");
+         
           setEmailVerification(false);
           setVerificationCheck(false);
+          setApproveText("인증번호가 일치하지 않습니다.");
         }
       },
       onEmailVerifyError: () => {
@@ -269,6 +280,7 @@ export default function Step1() {
         setEmailVerification(false);
       },
       onSignUpSuccess: () => {
+        console.log('회원가입 성공! 모달을 띄웁니다.');
         setSuccessModal(true);
       },
       onSignUpError: (err) => {
@@ -280,7 +292,8 @@ export default function Step1() {
 
   const handleSignup = () => {
     const isValid = validateForm();
-        if (!isValid) return;
+    if (!isValid) return;
+    
     const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
     if (cleanedCategories.length === 0) {
       alert("최소 1개 이상의 카테고리를 선택해주세요.");
@@ -296,8 +309,8 @@ export default function Step1() {
       categoryDtos: cleanedCategories,
     };
 
+    // 회원가입 API 호출
     signUp.mutate(finalData);
-
   }
 
   return (
@@ -346,14 +359,16 @@ export default function Step1() {
       onChange={(e) => setVerification(e.target.value)}
       title="이메일 인증"
       btnText="인증확인"
-      onClick={() =>
+      onClick={() => {
+        
         emailVerify.mutate({
           email: formData.email,
           verification,
-        })
-      }
+        });
+      }}
       isConfirmed={verificationCheck}
-      approveText={approveText}
+      approveText="인증번호가 확인되었습니다."
+      disapproveText="인증번호가 일치하지 않습니다."
     />
 
       <Input

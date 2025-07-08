@@ -12,6 +12,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showError, setShowError] = useState(false);
 
   const handleLoginClick = () => {
     navigate("/");
@@ -42,7 +43,7 @@ export default function Login() {
 
     onError: (error) => {
       console.error("로그인 실패:", error);
-      //setIsModal(true); // 로그인 실패하면 모달
+      setShowError(true);
     },
   });
 
@@ -88,7 +89,10 @@ export default function Login() {
             // isValidateTrigger={isValidateTrigger}
             // isConfirmed={isConfirmed}
             placeholder="Souf@souf.com"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setShowError(false);
+            }}
             essentialText="이메일을 입력해주세요"
             disapproveText="이메일을 입력해주세요"
             // onValidChange={onValidChange}
@@ -99,11 +103,17 @@ export default function Login() {
             // isConfirmed={isConfirmed}
             type="password"
             placeholder=""
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setShowError(false);
+            }}
             essentialText="비밀번호를 입력해주세요"
             disapproveText="비밀번호를 입력해주세요"
             // onValidChange={onValidChange}
           />
+          {showError && (
+            <div className="mt-10 text-red-essential text-center">아이디 또는 비밀번호가 일치하지 않습니다.</div>
+          )}
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
             <button onClick={() => navigate("/join")}>회원가입</button>
             <button onClick={() => navigate("/pwdFind")}>
