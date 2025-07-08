@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
 import { deleteFeed, getFeedDetail } from "../../api/feed";
-import { deleteFeed, getFeedDetail } from "../../api/feed";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getFormattedDate } from "../../utils/getDate";
@@ -14,13 +13,6 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
-import {UserStore} from "../../store/userStore";
-import { useRef, useEffect } from "react"; 
-import AlertModal from "../../components/alertModal";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
 
 export default function PostDetail() {
   const navigate = useNavigate();
@@ -132,19 +124,6 @@ const handleDeleteClick = () => {
         ) : (
           <img
             src={`${BUCKET_URL}${data.fileUrl}`}
-         <div className="flex w-[65%] h-full">
-    <Swiper
-      pagination={{
-        dynamicBullets: true,
-      }}
-      modules={[Pagination]}
-      className="rounded-lg"
-    >
-      {mediaData?.map((data, i) => (
-        <SwiperSlide key={i} className="flex justify-center items-center">
-          <div className="flex justify-center items-center h-[400px]">
-            <img
-            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${data?.fileUrl}`}
             alt={data.fileName}
             className="w-full h-full object-cover rounded-lg"
           />
@@ -191,52 +170,9 @@ const handleDeleteClick = () => {
             </div>
           )}
           <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
-            className="w-full object-cover rounded-lg"
-          />
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  </div>
-          <div className="w-full max-w-[35%] h-full pl-6 relative">
-            {/* 본인일 경우에만 */}
-          {Number(id) === memberId && (
-            <div className="flex justify-end"  ref={optionsRef}>
-              <button
-                onClick={() => setShowOptions((prev) => !prev)}
-                className="text-xl px-2 py-1 rounded hover:bg-gray-100"
-              >
-                ⋯
-              </button>
-
-              {showOptions && (
-                <div className="absolute left-[250px] mt-2 w-28 bg-white border rounded shadow-lg z-10">
-                  <button
-                    onClick={() => navigate("/postEdit", {
-                              state: {
-                              worksData,
-                              mediaData
-                            }
-                          })}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                  >
-                    수정하기
-                  </button>
-                  <button
-                     onClick={handleDeleteClick}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
-                  >
-                    삭제하기
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
             <div className=" flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3">
             {worksData.topic}
             </div>
-            <div className="flex flex-col justify-between text-sm text-gray-600  h-full border-t border-gray-300 pt-6 ">
             <div className="flex flex-col justify-between text-sm text-gray-600  h-full border-t border-gray-300 pt-6 ">
               <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
                 {worksData.content}
@@ -246,25 +182,6 @@ const handleDeleteClick = () => {
           </div>
         </div>
       </div>
-      {showDeleteModal && (
-        <AlertModal
-          type="warning"
-          title="게시물을 삭제하시겠습니까?"
-          description="삭제 후 되돌릴 수 없습니다."
-          TrueBtnText="삭제"
-          FalseBtnText="취소"
-          onClickTrue={handleDeleteConfirm}
-          onClickFalse={handleDeleteCancel}
-        />
-      )}
-      {showCompleteModal && (
-        <AlertModal
-          type="simple"
-          title="게시물이 삭제되었습니다."
-          TrueBtnText="확인"
-          onClickTrue={handleCompleteConfirm}
-        />
-      )}
       {showDeleteModal && (
         <AlertModal
           type="warning"

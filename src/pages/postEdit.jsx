@@ -283,7 +283,7 @@ export default function PostEdit() {
           <button
             className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border"
             onClick={() => navigate(-1)}
-          >
+          />
           <Button btnText="수정 완료" onClick={handleSubmit} />
           <button
             className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border"

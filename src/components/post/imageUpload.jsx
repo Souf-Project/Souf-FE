@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useEffect, useRef, useState } from "react";
 
-export default function ImageUpload({ onImagesChange, initialImages = [] }) {
 export default function ImageUpload({ onImagesChange, initialImages = [] }) {
   const [images, setImages] = useState([]);
   const [video, setVideo] = useState(null);
