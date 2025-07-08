@@ -179,7 +179,7 @@ export default function Step1() {
   //  const nickNameVerification = useMutation({})
 
   return (
-    <div className="w-full rounded-[30px] border-[1px] py-20 px-52 flex flex-col items-center justify-center">
+    <div className="mx-auto w-2/3 lg:w-full rounded-[30px] border-[1px] py-20 px-16 lg:px-52 flex flex-col items-center justify-center">
       <Input
         title="이름"
         name="username"

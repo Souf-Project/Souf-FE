@@ -12,7 +12,7 @@ export default function Join({}) {
   return (
     <div className="flex items-center justify-center my-20 ">
       <div className="w-[1000px]">
-        <div className="font-semibold text-[60px]">회원 가입</div>
+        <div className="font-semibold text-[36px] w-2/3 mx-auto lg:text-[60px] mb-6 lg:mb-0">회원 가입</div>
         {step === 1 && <Step1 />}
         {step === 2 && <Step2 />}
       </div>
