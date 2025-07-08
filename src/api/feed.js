@@ -29,8 +29,13 @@ export const postFeed = async (data) => {
 };
 
 export const uploadToS3 = async (url, file) => {
-  return axios.put(url, file, {});
+  return axios.put(url, file, {
+    headers: {
+      "Content-Type": "application/octet-stream", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+    },
+  });
 };
+
 // headers: { "Content-Type": file.type },
 
 export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
@@ -76,7 +81,6 @@ export const getFeedDetail = async (memberId,feedId) => {
 };
 
 
-
 export const getMemberFeed = async (memberId) => {
   try {
     const response = await client.get(`/api/v1/feed/${memberId}`);
@@ -86,6 +90,7 @@ export const getMemberFeed = async (memberId) => {
     throw error;
   }
 };
+
 
 export async function updateFeed(feedId, data) {
   try {
@@ -106,6 +111,5 @@ export async function deleteFeed(feedId) {
     throw error;
   }
 }
-
 
 

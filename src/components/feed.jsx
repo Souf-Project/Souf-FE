@@ -11,6 +11,8 @@ import "swiper/css/pagination";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 
+const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
 export default function Feed({ feedData }) {
   const navigate = useNavigate();
   const [feeds, setFeeds] = useState([]);
@@ -130,19 +132,31 @@ export default function Feed({ feedData }) {
           modules={[Pagination]}
           className="rounded-lg w-full max-w-[800px]"
         >
-          {feedData.mediaResDtos.map((data, i) => (
+          {feedData?.mediaResDtos?.map((data, i) => {
+            const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+            return (
             <SwiperSlide key={i}>
               <div className="flex justify-center items-center h-[400px]">
-                <img
-                src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${data?.fileUrl}`}
+                {isVideo ? (
+                  <video
+                  src={`${BUCKET_URL}${data.fileUrl}`}
+                  controls
+                  className="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                  />
+                ) : (
+                  <img
+                src={`${BUCKET_URL}${data.fileUrl}`}
                 alt={data.fileName}
                 className="w-full h-auto max-h-[500px] object-cover rounded-lg"
                 />
+                )}
+                
               </div>
             </SwiperSlide>
-          ))}
+            )
+          })}
         </Swiper>
-      ) : (
+         ) : (
         <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
           <p className="text-gray-400">이미지가 없습니다</p>
         </div>

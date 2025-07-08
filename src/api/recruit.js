@@ -92,16 +92,23 @@ export async function getRecruitDetail(recruitId) {
             console.log("Token preview:", token.substring(0, 20) + "...");
         }
 
-        const response = await client.get(`/api/v1/recruit/${recruitId}`, {
+        const url = `/api/v1/recruit/${recruitId}`;
+     
+
+        const response = await client.get(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         });
         
+        console.log("API Response:", response);
         return response;
     } catch (error) {
         console.error('Recruit Detail API 오류 발생:', error);
+        console.error('Error response:', error.response);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
         
         if (error.response?.status === 403) {
             console.error('403 Forbidden - 권한이 없습니다.');
@@ -153,7 +160,11 @@ export async function updateRecruit(recruitId, data) {
 
 // S3 업로드 함수
 export const uploadToS3 = async (url, file) => {
-  return axios.put(url, file, {});
+  return axios.put(url, file , {
+    headers: {
+    "Content-Type": "application/octet-stream", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+  },
+});
 };
 
 // 공고문 미디어 정보 저장 함수 (피드와 동일한 형식)
@@ -181,7 +192,12 @@ export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
             console.log("Token preview:", token.substring(0, 20) + "...");
         }
 
-        const response = await client.get('/api/v1/recruit/my', {
+        const url = '/api/v1/recruit/my';
+        console.log("Calling API:", url);
+        console.log("Base URL:", import.meta.env.VITE_BASE_URL);
+        console.log("Full URL:", import.meta.env.VITE_BASE_URL + url);
+
+        const response = await client.get(url, {
             params: {
                 page: pageable.page,
                 size: pageable.size,
@@ -192,9 +208,13 @@ export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
             }
         });
         
+        console.log("API Response:", response);
         return response;
     } catch (error) {
         console.error('내 공고문 조회 API 오류 발생:', error);
+        console.error('Error response:', error.response);
+        console.error('Error status:', error.response?.status);
+        console.error('Error data:', error.response?.data);
         
         if (error.response?.status === 403) {
             console.error('403 Forbidden - 권한이 없습니다.');

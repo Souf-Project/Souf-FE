@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserStore } from '../../store/userStore';
 import { getApplicantsByRecruitId } from '../../api/application';
-import { getMyRecruits } from '../../api/recruit';
+import { getMyRecruits, getRecruitDetail } from '../../api/recruit';
 import firstCategoryData from '../../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
 import StudentInfoBlock from '../studentInfoBlock';
+import StateBlock from "./stateBlock";
+
 
 export default function CompanyApplicants({ recruitId }) {
   const params = useParams();
@@ -68,6 +70,24 @@ export default function CompanyApplicants({ recruitId }) {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}.${month}.${day}<br>${hours}:${minutes}`;
+  };
+
+  const handleRecruitDetailClick = async (recruitId) => {
+    try {
+      const response = await getRecruitDetail(recruitId);
+      console.log('API Response:', response);
+      console.log('Response data:', response.data);
+      
+      // API 응답 구조에 따라 데이터 전달
+      const stateData = response.data?.result ? response.data : { recruitDetail: response.data };
+      
+      navigate(`/recruitDetails/${recruitId}`, { state: stateData });
+      console.log('공고문 상세 조회 성공:', stateData);
+    } catch (error) {
+      console.error('공고문 상세 조회 실패:', error);
+      // 에러가 발생해도 기본 데이터로 이동
+      navigate(`/recruitDetails/${recruitId}`);
+    }
   };
 
   // 작성한 공고문 리스트 조회
@@ -150,12 +170,30 @@ export default function CompanyApplicants({ recruitId }) {
 
   const selectedRecruit = recruits.find(recruit => recruit.recruitId === selectedRecruitId);
 
+    // 상태별 개수 계산
+    const recruitingCount = recruits.filter(recruit => recruit.status === "모집 중").length;
+    const closedCount = recruits.filter(recruit => recruit.status === "마감").length;
+
+    
   return (
     <div>
       {!selectedRecruitId ? (
         // 공고문 리스트 보기
         <div>
-          <h2 className="text-2xl font-bold mb-6">지원자 리스트를 확인할 공고문을 선택하세요</h2>
+          <div className="flex justify-between items-center mb-6">
+          {/* 모바일 타이틀 */}
+          <div className="lg:hidden text-2xl font-bold">
+          <h2 className="">지원자 리스트를 확인할</h2>
+          <h2 className="">공고문을 선택하세요</h2>
+          </div>
+          
+          {/* PC 타이틀 */}
+          <h2 className="hidden lg:block text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
+          <div className="flex gap-5">
+            <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
+            <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
+          </div>
+          </div>
           {recruits.length > 0 ? (
             <div className="border rounded-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
@@ -228,7 +266,7 @@ export default function CompanyApplicants({ recruitId }) {
           
           {selectedRecruit && (
             <div className="bg-gray-50 p-4 rounded-lg mb-6 flex justify-between items-center">
-              <span className="text-lg font-semibold mb-2">{selectedRecruit.title}</span>
+              <span className="text-lg font-semibold mb-2 underline cursor-pointer" onClick={() => handleRecruitDetailClick(selectedRecruit.recruitId)}>{selectedRecruit.title} 🔍</span>
               <span className="text-gray-600"></span>
               <span className="text-gray-600">지원자 수: {applicants.length}명</span>
             </div>

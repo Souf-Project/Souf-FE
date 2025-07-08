@@ -234,7 +234,7 @@ export default function Home() {
 
       {/* 인기 공고문 섹션 */}
       <div className="relative mt-16">
-        <div className="relative flex flex-col max-w-6xl mx-auto px-6 py-16 overflow-x-hidden">
+        <div className="relative flex flex-col lg:max-w-6xl max-w-2xl mx-auto px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>
@@ -244,14 +244,14 @@ export default function Home() {
 
       {/* 인기 피드 섹션 */}
       <div className="relative">
-        <div className="relative items-center max-w-full md:max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div className="relative items-center  lg:max-w-6xl max-w-2xl mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 피드 구경하러 가기
           </h2>
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
               {feedData?.result?.content?.map((profile, index) => (
                 <PopularFeed
                   key={index}
@@ -358,7 +358,7 @@ export default function Home() {
                     </div>
                   )}
                   
-                  <div className="flex flex-col gap-1 text-sm text-gray-500">
+                  <div className="hidden lg:block flex flex-col gap-1 text-sm text-gray-500">
                     <span>시상금: {competition.시상규모}</span>
                     <span>
                       접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}
@@ -373,6 +373,7 @@ export default function Home() {
                     <span className="text-xs text-blue-600 font-medium">
                       자세히 보기 →
                     </span>
+                   
                   </div>
                 </div>
               </div>

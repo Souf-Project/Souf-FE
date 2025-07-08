@@ -11,7 +11,7 @@ export default function RecruitUpload() {
   const navigate = useNavigate();
   const location = useLocation();
   // 나중에 닉네임으로 바꾸기
-  const { username } = UserStore();
+  const { nickname } = UserStore();
   
   // 수정 모드 확인
   const isEditMode = location.state?.isEditMode || false;
@@ -56,7 +56,7 @@ export default function RecruitUpload() {
         deadlineHour: dateTime.hour,
         deadlineMinute: dateTime.minute,
         deadlinePeriod: dateTime.period,
-        companyName: editData.nickname || username || '',
+        companyName: editData.nickname || nickname || '',
         minPayment: parsePayment(editData.minPayment),
         maxPayment: parsePayment(editData.maxPayment),
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
@@ -98,7 +98,7 @@ export default function RecruitUpload() {
         deadlineHour: '01',
         deadlineMinute: '00',
         deadlinePeriod: 'AM',
-        companyName: username || '',
+        companyName: nickname || '',
         minPayment: '',
         maxPayment: '',
         isregionIrrelevant: false,
@@ -308,11 +308,9 @@ export default function RecruitUpload() {
       let response;
       
       if (isEditMode) {
-        // 수정 모드: updateRecruit API 사용
         const recruitId = editData.recruitId || editData.id;
         response = await updateRecruit(recruitId, formDataToSend);
-        
-        // 수정 모드에서도 파일 업로드 처리
+
         if (formData.files.length > 0 && response.data?.result?.dtoList) {
           try {
             const { recruitId: updatedRecruitId, dtoList } = response.data.result;
@@ -342,18 +340,24 @@ export default function RecruitUpload() {
                 })
               )
             );
+            alert('공고가 성공적으로 수정되었습니다.');
           } catch (error) {
             console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
             alert('파일 업로드 중 오류가 발생했습니다.');
           }
         }
         
-        alert('공고가 성공적으로 수정되었습니다.');
+      
       } else {
         // 새 공고 작성 모드: uploadRecruit API 사용
         response = await uploadRecruit(formDataToSend);
         const { recruitId, dtoList } = response.data.result;
         
+        console.log("📦 dtoList:", dtoList);
+dtoList.forEach((dto, i) => {
+  console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
+});
+
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
         if (formData.files.length > 0 && dtoList) {
           try {
@@ -382,12 +386,13 @@ export default function RecruitUpload() {
                 })
               )
             );
+            alert('공고가 성공적으로 등록되었습니다.');
           } catch (error) {
             console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
             alert('파일 업로드 중 오류가 발생했습니다.');
           }
         }
-        alert('공고가 성공적으로 등록되었습니다.');
+        
       }
       
       navigate('/recruit?category=1');
@@ -490,7 +495,7 @@ export default function RecruitUpload() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-            공고문 제목
+            제목
           </label>
           <input
             type="text"
@@ -678,11 +683,8 @@ export default function RecruitUpload() {
                 onChange={handleChange}
                 className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
               >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i * 5} value={(i * 5).toString().padStart(2, '0')}>
-                    {(i * 5).toString().padStart(2, '0')}
-                  </option>
-                ))}
+                <option value="00">00</option>
+                <option value="30">30</option>
               </select>
               
             </div>
@@ -723,7 +725,7 @@ export default function RecruitUpload() {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleFirstCategory}
             isEditing={!isEditMode}
           />
@@ -731,7 +733,7 @@ export default function RecruitUpload() {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleSecondCategory}
             isEditing={!isEditMode}
           />
@@ -739,7 +741,7 @@ export default function RecruitUpload() {
             title="카테고리 선택"
               content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleThirdCategory}
             isEditing={!isEditMode}
           />
@@ -748,7 +750,7 @@ export default function RecruitUpload() {
 
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-            공고문 내용
+            내용
           </label>
           <textarea
             name="content"
