@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import buildingData from '../assets/competitionData/건축_건설_인테리어.json';
 import marketingData from '../assets/competitionData/광고_마케팅.json';
+import { getContests } from '../api/contest';
 
 export default function ContestDetail() {
     const { id, category } = useParams();
@@ -13,6 +14,7 @@ export default function ContestDetail() {
         detailImages: {}
     });
 
+    /*
     useEffect(() => {
         // 카테고리에 따라 데이터 선택
         let data;
@@ -55,6 +57,51 @@ export default function ContestDetail() {
         }
         setLoading(false);
     }, [id, category]);
+    */
+
+    useEffect(() => {
+    const loadContest = async () => {
+        try {
+            const data = await getContests();
+            console.log(data);
+            // category와 id에 맞는 contest 찾기
+            //item.category === category
+            const found = data?.data?.[parseInt(id)];
+
+
+            if (!found) throw new Error('해당 공모전 없음');
+
+            setContest(found);
+
+            // 이미지 로딩 초기화
+            const detailImageStates = {};
+            if (found.상세내용_이미지) {
+                found.상세내용_이미지.forEach((_, index) => {
+                    detailImageStates[index] = true;
+                });
+            }
+
+            setImageLoadingStates({
+                thumbnail: true,
+                detailImages: detailImageStates
+            });
+
+            setTimeout(() => {
+                setImageLoadingStates({
+                    thumbnail: false,
+                    detailImages: {}
+                });
+            }, 1000);
+        } catch (err) {
+            console.error('공모전 상세 불러오기 실패:', err);
+            setContest(null);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    loadContest();
+}, [id, category]);
 
     const handleBack = () => {
         navigate(`/contests`);

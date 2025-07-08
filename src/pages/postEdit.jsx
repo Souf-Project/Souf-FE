@@ -2,7 +2,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
+// PostEdit.js
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import Button from "../components/button";
+import PostInput from "../components/postInput";
 import PostInput from "../components/postInput";
 import ImageUpload from "../components/post/imageUpload";
 import CategorySelectBox from "../components/categorySelectBox";
@@ -274,6 +279,11 @@ export default function PostEdit() {
         />
 
         <div className="flex flex-row px-52 gap-6">
+          <Button btnText="수정 완료" onClick={handleSubmit} />
+          <button
+            className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border"
+            onClick={() => navigate(-1)}
+          >
           <Button btnText="수정 완료" onClick={handleSubmit} />
           <button
             className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border"

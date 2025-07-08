@@ -19,6 +19,8 @@ import RecruitUpload from "../pages/recruitUpload";
 import Chat from "../pages/chat";
 import Contests from "../pages/contests";
 import ContestDetail from "../pages/contestDetail";
+import Contests from "../pages/contests";
+import ContestDetail from "../pages/contestDetail";
 import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 

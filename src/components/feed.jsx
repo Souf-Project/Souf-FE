@@ -25,6 +25,13 @@ export default function Feed({ feedData }) {
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const {memberId} = UserStore();
   const maxLength = 100;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [worksData, setWorksData] = useState([]);
+  const [mediaData, setMediaData] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const {memberId} = UserStore();
+  const maxLength = 100;
   const [pageable, setPageable] = useState({
     page: 1,
     size: 10,
@@ -52,7 +59,51 @@ export default function Feed({ feedData }) {
     console.log(feedData);
      setWorksData(feedData);
      setMediaData(feedData?.mediaResDtos);
+     setWorksData(feedData);
+     setMediaData(feedData?.mediaResDtos);
   }, []);
+  
+  const clickHandler = (profileId) => {
+    navigate(`/profileDetail/${profileId}`);
+  };
+
+  //삭제하기
+  const handleDeleteClick = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+      try {
+        await deleteFeed(Number(feedData?.feedId));
+        setShowDeleteModal(false);
+        setShowCompleteModal(true);
+      } catch (err) {
+        console.log("실패함");
+      }
+    };
+  
+    const handleDeleteCancel = () => {
+      setShowDeleteModal(false);
+    };
+  
+    const handleCompleteConfirm = () => {
+      setShowCompleteModal(false);
+      navigate("/");
+    };
+
+
+    // 더보기쪽 함수
+    const handlerFeedContent = (length, data) => {
+      if(isExpanded){
+        return data;
+      }
+      if(data.length > length){
+        return data.slice(0, length) + "...";
+      }
+      return data;
+    }
+
+     const toggleExpand = () => setIsExpanded((prev) => !prev);
   
   const clickHandler = (profileId) => {
     navigate(`/profileDetail/${profileId}`);
@@ -99,7 +150,10 @@ export default function Feed({ feedData }) {
     <div
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
+      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
+      <UpdateOption id={feedData.memberId} memberId={memberId}
+      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       <UpdateOption id={feedData.memberId} memberId={memberId}
       worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       <div className="flex justify-between items-start mb-4">
@@ -111,6 +165,10 @@ export default function Feed({ feedData }) {
         </p>
       </div>
 
+      <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
+      onClick={() => clickHandler(feedData?.memberId)}>
+         <img
+            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${feedData?.profileUrl}`}
       <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
       onClick={() => clickHandler(feedData?.memberId)}>
          <img
@@ -164,6 +222,33 @@ export default function Feed({ feedData }) {
     </div>
 
       <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-4">
+        {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
+        <span
+          onClick={toggleExpand}
+          className="ml-2 text-gray-500 cursor-pointer font-light text-sm"
+        >
+          {feedData?.content.length <= maxLength ? "" : isExpanded ? "접기" : "더보기"}
+        </span>
+      </p>
+      {showDeleteModal && (
+        <AlertModal
+          type="warning"
+          title="게시물을 삭제하시겠습니까?"
+          description="삭제 후 되돌릴 수 없습니다."
+          TrueBtnText="삭제"
+          FalseBtnText="취소"
+          onClickTrue={handleDeleteConfirm}
+          onClickFalse={handleDeleteCancel}
+        />
+      )}
+       {showCompleteModal && (
+              <AlertModal
+                type="simple"
+                title="게시물이 삭제되었습니다."
+                TrueBtnText="확인"
+                onClickTrue={handleCompleteConfirm}
+              />
+            )}
         {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
         <span
           onClick={toggleExpand}

@@ -81,6 +81,7 @@ export const getFeedDetail = async (memberId,feedId) => {
 };
 
 
+
 export const getMemberFeed = async (memberId) => {
   try {
     const response = await client.get(`/api/v1/feed/${memberId}`);
@@ -90,7 +91,6 @@ export const getMemberFeed = async (memberId) => {
     throw error;
   }
 };
-
 
 export async function updateFeed(feedId, data) {
   try {
@@ -111,5 +111,6 @@ export async function deleteFeed(feedId) {
     throw error;
   }
 }
+
 
 

@@ -53,6 +53,14 @@ export default function PostUpload() {
     }));
   }, [selectedFiles]); */
 
+  /*
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      originalFileNames: selectedFiles?.map((file) => file.name),
+    }));
+  }, [selectedFiles]); */
+
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -187,7 +195,7 @@ export default function PostUpload() {
         alert("업로드 중 오류가 발생했습니다.");
       }
     },
-  });
+  }); 
 
   const handleInputChange = (name, e) => {
     const { value } = e.target;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import buildingData from '../assets/competitionData/건축_건설_인테리어.json';
 import marketingData from '../assets/competitionData/광고_마케팅.json';
+import { getContests } from '../api/contest';
 
 export default function Contests() {
     const [activeTab, setActiveTab] = useState('building');
@@ -9,6 +10,20 @@ export default function Contests() {
     const [imageLoadingStates, setImageLoadingStates] = useState({});
     const navigate = useNavigate();
 
+      useEffect(() => {
+    const fetchContests = async () => {
+      try {
+        const data = await getContests(); // type은 기본 "rendering"
+        console.log("데이터 확인용 :", data);
+        setContests(data.data);
+      } catch (err) {
+        console.error("❌ 에러 발생:", err);
+       
+      }
+    };
+
+    fetchContests();
+  }, []);
     useEffect(() => {
         // 탭이 변경될 때마다 해당하는 데이터를 로드
         let data;
@@ -23,7 +38,7 @@ export default function Contests() {
             default:
                 data = buildingData;
         }
-        setContests(data);
+        //setContests(data);
         
         // 새로운 이미지들에 대해 로딩 상태 초기화
         const newLoadingStates = {};
@@ -58,7 +73,7 @@ export default function Contests() {
 
     // 이미지 URL 생성 함수
     const getImageUrl = (imagePath) => {
-        console.log('getImageUrl called with:', imagePath);
+        //console.log('getImageUrl called with:', imagePath);
         
         if (!imagePath) return null;
         
@@ -206,7 +221,7 @@ export default function Contests() {
 
             {/* 공모전 목록 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {contests.map((contest, index) => (
+                {contests?.map((contest, index) => (
                     <div
                         key={index}
                         className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
