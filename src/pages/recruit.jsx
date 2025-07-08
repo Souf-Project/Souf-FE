@@ -285,10 +285,6 @@ export default function Recruit() {
                         : `${recruit.minPayment} ~ ${recruit.maxPayment}`
                       : recruit.minPayment || recruit.maxPayment || "금액 협의";
 
-                  const secondCategories = recruit.categoryDtoList 
-                    ? recruit.categoryDtoList.map((cat) => cat.secondCategory) 
-                    : [];
-
                   return (
                     <RecruitBlock
                       key={recruit.recruitId}
@@ -301,7 +297,7 @@ export default function Recruit() {
                       maxPayment={recruit.maxPayment}
                       cityName={recruit.cityName}
                       cityDetailName={recruit.cityDetailName}
-                      secondCategory={secondCategories}
+                      secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
                     />
                   );
