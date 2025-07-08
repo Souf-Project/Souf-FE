@@ -58,6 +58,7 @@ export async function postEmailVerify(email, code, purpose) {
         email:email,
         code:code,
         purpose:purpose
+
       }
     );
     console.log("✅ 응답 성공:", response);
@@ -103,3 +104,14 @@ export async function postStudentVerify(originalEmail, acKrEmail) {
   );
   return response;
 }
+
+
+/* 회원 탈퇴 */
+
+export async function deleteMemberWithdraw(password) {
+  const response = await client.delete("/api/v1/auth/withdraw", {
+    data: { password },
+  });
+  return response;
+}
+ 
