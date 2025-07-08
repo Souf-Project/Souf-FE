@@ -24,7 +24,7 @@ export default function Recruit() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
+  const pageSize = 12;
 
 
 
@@ -64,21 +64,20 @@ export default function Recruit() {
         secondCategory,
         thirdCategory,
         recruitSearchReqDto: searchParams,
-        pageable: {
-          page: currentPage,
-          size: pageSize,
-          sort: ["createdAt,desc"],
-        },
+        page: currentPage,
+        size: pageSize,
+        sort: ["createdAt,desc"],
+       
       });
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log('API Response recruits:', recruits);
         setFilteredRecruits(recruits);
 
         const totalElements =
           response.data.result?.page?.totalElements || recruits.length;
-        setTotalPages(Math.ceil(totalElements / pageSize));
+        const totalPagesData = response.data.result?.page?.totalPages;
+        setTotalPages(totalPagesData);
       } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
@@ -102,11 +101,9 @@ export default function Recruit() {
         firstCategory,
         secondCategory,
         thirdCategory,
-        pageable: {
-          page: currentPage,
+        page: currentPage,
           size: pageSize,
           sort: ["createdAt,desc"],
-        },
       });
 
       if (response.data) {
