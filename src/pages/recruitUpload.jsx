@@ -495,7 +495,7 @@ dtoList.forEach((dto, i) => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-            공고문 제목
+            제목
           </label>
           <input
             type="text"
@@ -725,7 +725,7 @@ dtoList.forEach((dto, i) => {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleFirstCategory}
             isEditing={!isEditMode}
           />
@@ -733,7 +733,7 @@ dtoList.forEach((dto, i) => {
             title="카테고리 선택"
             content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleSecondCategory}
             isEditing={!isEditMode}
           />
@@ -741,7 +741,7 @@ dtoList.forEach((dto, i) => {
             title="카테고리 선택"
               content=""
             defaultValue={formData.categoryDtos}
-            type="join"
+            width='w-full'
             onChange={handleThirdCategory}
             isEditing={!isEditMode}
           />
@@ -750,7 +750,7 @@ dtoList.forEach((dto, i) => {
 
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-            공고문 내용
+            내용
           </label>
           <textarea
             name="content"

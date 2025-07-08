@@ -12,19 +12,51 @@ import {
 } from "../../api/member";
 import CategorySelectBox from "../categorySelectBox";
 import AlertModal from "../alertModal";
+import { filterEmptyCategories } from "../../utils/filterEmptyCategories";
+import { useSignupMutations } from "../../hooks/join/join";
+import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
 
 export default function Step1() {
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
 
-  const [checkResult, setCheckResult] = useState(null);
+  const [verificationCheck, setVerificationCheck] = useState("");
+  const [approveText,setApproveText] = useState("");
+
+  const [checkResult, setCheckResult] = useState(undefined);
   const [nicknameModal, setNicknameModal] = useState(false);
   const [emailModal, setEmailModal] = useState(false);
+  const [successModal,setSuccessModal] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categories, setCategories] = useState([]);
   const [nickname, setNickname] = useState("");
   const [isNameConfirm, setIsNameConfirm] = useState(undefined);
+  const [errors, setErrors] = useState({
+    username: false,
+    nickname: false,
+    email: false,
+    password: false,
+    passwordCheck: false,
+  });
+  const navigate = useNavigate();
+
+  const validateForm = () => {
+    
+  const newErrors = {
+    username: !formData.username.trim(),
+    nickname: !formData.nickname.trim() && checkResult,
+    email: !formData.email.trim(),
+    password: !formData.password.trim(),
+    passwordCheck: !formData.passwordCheck.trim() && formData.password !== !formData.passwordCheck.trim(),
+  };
+
+  setErrors(newErrors);
+
+  const hasError = Object.values(newErrors).some(Boolean);
+    return !hasError;
+  };
+
 
   const [formData, setFormData] = useState({
     username: "",
@@ -51,10 +83,10 @@ export default function Step1() {
     ],
   });
 
+  /*
   const emailVerificationMutation = useMutation({
     mutationFn: (email) => postEmailVerification(email),
     onSuccess: (response) => {
-      console.log(response?.data?.message);
       setModalTitle("인증번호 발송");
       setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
       setEmailModal(true);
@@ -110,18 +142,7 @@ export default function Step1() {
 
   const postSignUpMutation = useMutation({
     mutationFn: () => {
-      const cleanedCategories = formData.categoryDtos
-        .map((category) => {
-          const cleaned = {};
-          if (category.firstCategory !== null)
-            cleaned.firstCategory = category.firstCategory;
-          if (category.secondCategory !== null)
-            cleaned.secondCategory = category.secondCategory;
-          if (category.thirdCategory !== null)
-            cleaned.thirdCategory = category.thirdCategory;
-          return Object.keys(cleaned).length > 0 ? cleaned : null;
-        })
-        .filter(Boolean); // null 제거
+      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
 
       // 선택된 카테고리 수 검증
       if (cleanedCategories.length === 0) {
@@ -143,14 +164,16 @@ export default function Step1() {
       return postSignUp(finalData);
     },
     onSuccess: (response) => {
-      console.log(response);
+      setSuccessModal(true);
+      //navigate("/");
+      //console.log(response);
     },
     onError: (error) => {
       setApproveText("서버 오류로 인증에 실패했습니다.");
       console.log(error);
       setEmailVerification(false);
     },
-  });
+  });*/
 
   const handleCategoryChange = (index) => (categoryData) => {
     setFormData((prev) => {
@@ -164,19 +187,118 @@ export default function Step1() {
     });
   };
 
+  // const handleInputChange = (name, e) => {
+  //   const { value } = e.target;
+  //   if (value === "") {
+  //     setIsNameConfirm(true);
+  //   }
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+  //   console.log(formData);
+  // };
+
   const handleInputChange = (name, e) => {
-    const { value } = e.target;
-    if (value === "") {
-      setIsNameConfirm(true);
+  const { value } = e.target;
+
+  setFormData((prev) => {
+    const updatedForm = { ...prev, [name]: value };
+
+    const newErrors = { ...errors };
+
+    if (name === "password") {
+      newErrors.password = !isValidPassword(value);
+      // password가 바뀌면 passwordCheck도 다시 비교해야 함
+      newErrors.passwordCheck = !isPasswordMatch(value, updatedForm.passwordCheck);
+    } else if (name === "passwordCheck") {
+      newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
     }
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    console.log(formData);
-  };
+
+    setErrors(newErrors);
+    return updatedForm;
+  });
+};
 
   //  const nickNameVerification = useMutation({})
+
+
+  //따로 뺀 부분
+
+    const {
+      emailVerificationMutation,
+      checkNickname,
+      emailVerify,
+      signUp,
+    } = useSignupMutations({
+      onEmailSuccess: (res) => {
+        setModalTitle("인증번호 발송");
+        setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
+        setEmailModal(true);
+      },
+      onEmailError: (err) => {
+        if (err.response?.data?.code === 400) {
+          setModalTitle("중복된 이메일");
+          setDescription(err.response?.data?.message);
+        } else {
+          setModalTitle("인증번호 발송 오류");
+          setDescription("올바르지 않은 이메일 형식입니다.");
+        }
+        setEmailModal(true);
+      },
+      onNicknameChecked: (res) => {
+        console.log(res.data.result);
+        setCheckResult(res.result);
+        setNicknameModal(res.result);
+      },
+      onEmailVerifySuccess: (res, { email }) => {
+        if (res.result === true) {
+          updateUserData("email", email);
+          setApproveText("인증번호가 확인되었습니다.");
+          setEmailVerification(true);
+          setVerificationCheck(true);
+
+        } else {
+          setApproveText("인증번호가 일치하지 않습니다.");
+          setEmailVerification(false);
+          setVerificationCheck(false);
+        }
+      },
+      onEmailVerifyError: () => {
+        setApproveText("서버 오류로 인증에 실패했습니다.");
+        setEmailVerification(false);
+      },
+      onSignUpSuccess: () => {
+        setSuccessModal(true);
+      },
+      onSignUpError: (err) => {
+        console.log(err);
+        setApproveText("서버 오류로 인증에 실패했습니다.");
+        setEmailVerification(false);
+      },
+    });
+
+  const handleSignup = () => {
+    const isValid = validateForm();
+        if (!isValid) return;
+    const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+    if (cleanedCategories.length === 0) {
+      alert("최소 1개 이상의 카테고리를 선택해주세요.");
+      return;
+    }
+    if (cleanedCategories.length > 3) {
+      alert("최대 3개까지 선택 가능합니다.");
+      return;
+    }
+
+    const finalData = {
+      ...formData,
+      categoryDtos: cleanedCategories,
+    };
+
+    signUp.mutate(finalData);
+
+  }
 
   return (
     <div className="w-full rounded-[30px] border-[1px] py-20 px-52 flex flex-col items-center justify-center">
@@ -187,6 +309,7 @@ export default function Step1() {
         onChange={(e) => handleInputChange("username", e)}
         disapproveText="이름을 입력해주세요."
         essentialText="이름을 입력해주세요."
+        isValidateTrigger={errors.username}
       />
       <ButtonInput
         name="nickname"
@@ -198,7 +321,11 @@ export default function Step1() {
         title="닉네임"
         btnText="중복확인"
         essentialText="닉네임을 입력해주세요."
-        onClick={() => checkNickname(nickname)}
+        onClick={() => checkNickname.mutate(nickname)}
+        isValidateTrigger={errors.nickname}
+        isConfirmed={checkResult}
+        approveText="사용 가능한 닉네임입니다."
+        disapproveText="이미 가입된 닉네임입니다."
       />
       <ButtonInput
         name="email"
@@ -211,38 +338,46 @@ export default function Step1() {
         btnText="인증요청"
         essentialText="이메일을 입력해주세요."
         onClick={() => emailVerificationMutation.mutate(email)}
+        isValidateTrigger={errors.email}
       />
 
-<ButtonInput
-  value={verification}
-  onChange={(e) => setVerification(e.target.value)}
-  title="이메일 인증"
-  btnText="인증확인"
-  onClick={() =>
-    emailNumberVerificationMutation.mutate({
-      email: formData.email,
-      verification,
-    })
-  }
-/>
+    <ButtonInput
+      value={verification}
+      onChange={(e) => setVerification(e.target.value)}
+      title="이메일 인증"
+      btnText="인증확인"
+      onClick={() =>
+        emailVerify.mutate({
+          email: formData.email,
+          verification,
+        })
+      }
+      isConfirmed={verificationCheck}
+      approveText={approveText}
+    />
 
       <Input
         title="비밀번호"
         type="password"
         name="password"
+        essentialText="비밀번호를 입력해주세요."
+        subtitle="영문자, 숫자, 특수문자 모두 포함 / 8자~20자"
         value={formData.password}
         onChange={(e) => handleInputChange("password", e)}
+        isValidateTrigger={errors.password}
       />
       <Input
         title="비밀번호 확인"
         type="password"
         name="passwordCheck"
+        essentialText="비밀번호 확인을 입력해주세요."
         value={formData.passwordCheck}
         onChange={(e) => handleInputChange("passwordCheck", e)}
+        isValidateTrigger={errors.passwordCheck}
       />
       <div className="w-full relative mb-8 flex flex-col gap-3">
         <div className="text-black text-2xl font-regular mb-2">
-          관심분야 <span className="text-gray-500 text-sm">(선택)</span>
+          관심분야 <span className="text-gray-500 text-sm">(최소 1개 이상 선택)</span>
         </div>
         {formData?.categoryDtos?.map((category, index) => (
           <CategorySelectBox
@@ -268,7 +403,7 @@ export default function Step1() {
         )}
       </div>
 
-      <Button btnText="회원가입" onClick={() => postSignUpMutation.mutate()} />
+      <Button btnText="회원가입" onClick={handleSignup} />
       {nicknameModal && (
         <AlertModal
           type={checkResult ? "success" : "warning"}
@@ -288,6 +423,14 @@ export default function Step1() {
           description={description}
           TrueBtnText="확인"
           onClickTrue={() => setEmailModal(false)}
+        />
+      )}
+      {successModal && (
+        <AlertModal
+          type="success"
+          title="회원가입이 완료되었습니다."
+          TrueBtnText="확인"
+          onClickTrue={() => navigate("/login")}
         />
       )}
     </div>

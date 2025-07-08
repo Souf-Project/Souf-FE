@@ -12,14 +12,15 @@ import PwdFind from "../pages/pwdFind";
 import StudentProfileList from "../pages/studentProfileList";
 import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
-import CompanyMyPage from "../pages/companyMyPage";
 import CompanyApplicants from "../components/companyMyPage/companyApplicants";
 import PostEdit from "../pages/postEdit";
 import PostUpload from "../pages/postUpload";
 import RecruitUpload from "../pages/recruitUpload";
 import Chat from "../pages/chat";
-import Competitions from "../pages/competitions";
+import Contests from "../pages/contests";
+import ContestDetail from "../pages/contestDetail";
 import Search from "../pages/search";
+import Withdraw from "../pages/withdraw";
 
 function AppRouter() {
   const location = useLocation();
@@ -44,13 +45,14 @@ function AppRouter() {
             path="/profileDetail/:id/post/:worksId"
             element={<PostDetail />}
           />
-          <Route path="/companyMyPage" element={<CompanyMyPage />} />
           <Route path="/postEdit" element={<PostEdit />} />
           <Route path="/postUpload" element={<PostUpload />} />
           <Route path="/recruitUpload" element={<RecruitUpload />} />
           <Route path="/chat" element={<Chat />} />
-          <Route path="/competitions" element={<Competitions />} />
-          <Route path="/search" element={<Search/>}/>
+          <Route path="/contests" element={<Contests />} />
+          <Route path="/contests/:category/:id" element={<ContestDetail />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/withdraw" element={<Withdraw/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

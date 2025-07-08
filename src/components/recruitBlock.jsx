@@ -29,6 +29,18 @@ export default function RecruitBlock({
   categoryDtoList,
 }) {
   const navigate = useNavigate();
+  console.log('secondCategory:', secondCategory);
+  
+  const getSecondCategoryNames = (secondCategoryIds) => {
+    if (!secondCategoryIds || !Array.isArray(secondCategoryIds)) return [];
+    
+    return secondCategoryIds.map(categoryId => {
+      const category = secondCategoryData.second_category.find(
+        (cat) => cat.second_category_id === categoryId
+      );
+      return category ? category.name : '';
+    }).filter(name => name !== '');
+  };
 
   const getCategoryName = (categoryId) => {
     if (!categoryId) return '';
@@ -161,17 +173,27 @@ export default function RecruitBlock({
         <h2 className="text-3xl font-semibold text-gray-800">{title}</h2>
         <div className="flex flex-col text-2xl font-medium text-gray-500">
           {(() => {
-            const categories = getCategoryNames(categoryDtoList);
-            // console.log('Rendering categories:', categories);
-            return categories.map((category, index) => (
-              <div key={index} className="mb-1">
-                <span>{category.first}</span>
-                <span className="mx-2">&gt;</span>
-                <span>{category.second}</span>
-                <span className="mx-2">&gt;</span>
-                <span>{category.third}</span>
-              </div>
-            ));
+            // categoryDtoList가 있으면 기존 방식 사용, 없으면 secondCategory 사용
+            if (categoryDtoList && categoryDtoList.length > 0) {
+              const categories = getCategoryNames(categoryDtoList);
+              return categories.map((category, index) => (
+                <div key={index} className="mb-1">
+                  <span>{category.first}</span>
+                  <span className="mx-2">&gt;</span>
+                  <span>{category.second}</span>
+                  <span className="mx-2">&gt;</span>
+                  <span>{category.third}</span>
+                </div>
+              ));
+            } else if (secondCategory && Array.isArray(secondCategory)) {
+              const categoryNames = getSecondCategoryNames(secondCategory);
+              return categoryNames.map((categoryName, index) => (
+                <div key={index} className="mb-1">
+                  <span>{categoryName}</span>
+                </div>
+              ));
+            }
+            return null;
           })()}
         </div>
       </div>

@@ -228,14 +228,14 @@ export default function Recruit() {
   }
 
   return (
-    <div className="pt-12 px-6 w-4/5">
+    <div className="pt-12 md:px-6 md:w-4/5 px-2 w-full">
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           <div className="flex">
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
-                className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
+                className={`px-6 py-3 rounded-lg md:font-extrabold font-bold transition-colors duration-200 relative group ${
                   activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
                 onClick={() => setActiveTab(tab)}
@@ -267,14 +267,14 @@ export default function Recruit() {
         </div>
       </div>
 
-      <div className="flex flex-row">
+      <div className="flex flex-col lg:flex-row">
         <CategoryMenu
           secondCategories={filteredSecondCategories}
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
         />
         {activeTab === "recruit" ? (
-          <div className="w-3/4 mx-auto">
+          <div className="w-full lg:w-3/4 mx-auto">
             {filteredRecruits.length > 0 ? (
               <>
                 {filteredRecruits.map((recruit) => {
@@ -284,10 +284,6 @@ export default function Recruit() {
                         ? recruit.minPayment
                         : `${recruit.minPayment} ~ ${recruit.maxPayment}`
                       : recruit.minPayment || recruit.maxPayment || "금액 협의";
-
-                  const secondCategories = recruit.categoryDtoList 
-                    ? recruit.categoryDtoList.map((cat) => cat.secondCategory) 
-                    : [];
 
                   return (
                     <RecruitBlock
@@ -301,7 +297,7 @@ export default function Recruit() {
                       maxPayment={recruit.maxPayment}
                       cityName={recruit.cityName}
                       cityDetailName={recruit.cityDetailName}
-                      secondCategory={secondCategories}
+                      secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
                     />
                   );
@@ -321,11 +317,11 @@ export default function Recruit() {
             )}
           </div>
         ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm p-6 w-3/4 mx-auto">
+          <div className="bg-white rounded-lg shadow-sm p-6 w-full lg:w-3/4 mx-auto">
             <StudentProfileList />
           </div>
         ) : (
-          <div className="w-3/4 mx-auto">
+          <div className="w-full lg:w-3/4 mx-auto">
             <StudentFeedList />
           </div>
         )}

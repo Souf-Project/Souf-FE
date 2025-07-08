@@ -11,8 +11,10 @@ export default function Input({
   onValidChange = () => {},
   isValidateTrigger = false,
   isConfirmed = undefined,
+  subtitle = "",
+  value="", 
 }) {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(value);
   const [message, setMessage] = useState("");
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
@@ -30,6 +32,9 @@ export default function Input({
 
   // 버튼 클릭으로 isConfirmed가 변경될 때
   useEffect(() => {
+
+    console.log("isconfiremd", isConfirmed);
+
     if (isConfirmed !== undefined) {
       if (isEmpty) {
         setMessage(essentialText);
@@ -76,7 +81,8 @@ export default function Input({
   return (
     <div className="w-full relative mb-8">
       {title && (
-        <div className="text-black text-2xl font-regular mb-2">{title}</div>
+        <div className="text-black text-2xl font-regular mb-2">{title}
+         {subtitle !== "" && <span className="text-gray-500 text-sm"> ({subtitle})</span>}</div>
       )}
 
       <input

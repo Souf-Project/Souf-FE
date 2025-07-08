@@ -18,6 +18,11 @@ export default function StudentFeedList() {
     size: 12,
   };
 
+  const onFeedClick = (worksId) => {
+    console.log(id + "안녕 " + worksId);
+    navigate(`/profileDetail/${id}/post/${worksId}`);
+  };
+
   const {
     data: feedData,
     isLoading,

@@ -51,7 +51,7 @@ export default function PwdFind({}) {
       postEmailVerify(email, verification , "RESET"),
     onSuccess: (response) => {
       console.log(response);
-      if (response.data.result === true) {
+      if (response.result === true) {
         setApproveText("인증번호가 확인되었습니다.");
         setIsConfirmed(true);
       } else {
@@ -143,7 +143,7 @@ export default function PwdFind({}) {
               title={modalTitle2}
               description={description2}
               TrueBtnText="확인"
-              onClickTrue={() => setEmailModal(false)}
+              onClickTrue={() => navigate("/login")}
             />
           )}
 
