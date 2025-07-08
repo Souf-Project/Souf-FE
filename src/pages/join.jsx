@@ -8,13 +8,12 @@ import Step2 from "../components/join/step2";
 
 export default function Join({}) {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  //const [step, setStep] = useState(1);
   return (
     <div className="flex items-center justify-center my-20 ">
       <div className="w-[1000px]">
-        <div className="font-semibold text-[36px] w-2/3 mx-auto lg:text-[60px] mb-6 lg:mb-0">회원 가입</div>
-        {step === 1 && <Step1 />}
-        {step === 2 && <Step2 />}
+        <div className="font-semibold text-[60px]">회원 가입</div>
+        <Step1 />
       </div>
     </div>
   );

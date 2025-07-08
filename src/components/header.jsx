@@ -276,7 +276,7 @@ export default function Header() {
               <span className="mx-2 font-thin">|</span>
               <button
                 className="bg-white w-20"
-                onClick={() => handleNavigation("/register")}
+                onClick={() => handleNavigation("/join")}
               >
                 회원가입
               </button>

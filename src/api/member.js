@@ -57,7 +57,8 @@ export async function postEmailVerify(email, code, purpose) {
       {
         email:email,
         code:code,
-        purpose:purpose,
+        purpose:purpose
+
       }
     );
     console.log("✅ 응답 성공:", response);
