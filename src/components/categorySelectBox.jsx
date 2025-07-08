@@ -13,7 +13,8 @@ export default function CategorySelectBox({
   },
   type = "mypage",
   onChange,
-  isEditing = false
+  isEditing = false,
+  width ="",
 }) {
   const [selectedValue, setSelectedValue] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -162,7 +163,7 @@ export default function CategorySelectBox({
   };
 
   return (
-    <div className={`relative ${type === "join" && "w-full"}`}>
+    <div className={`relative ${type === "join" && "w-full"} ${width}`}>
       <div
         className={`flex items-center rounded-md border overflow-hidden ${
           isEditing ? 'cursor-pointer bg-white hover:bg-[#F0F0F0]' : 'cursor-not-allowed bg-[#F7F7F7]'

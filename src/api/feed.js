@@ -16,30 +16,6 @@ export const getPopularFeed = async (pageable) => {
   }
 };
 
-/*
-{
-  "topic": "봄 프로젝트 1회차",
-  "content": "오늘 작업 내용...",
-  "tags": "[봄, 산책, 나들이, 어린이 대공원]('#'는 빼고 보내주세요!",
-  "originalFileNames": "[fileName.jpg, dog.jpg..]",
-  "categoryDtos": [
-    {
-      "firstCategory": 1,
-      "secondCategory": 1,
-      "thirdCategory": 1
-    },
-    {
-      "firstCategory": 1,
-      "secondCategory": 1,
-      "thirdCategory": 2
-    },
-    {
-      "firstCategory": 1,
-      "secondCategory": 1,
-      "thirdCategory": 4
-    }
-  ]
-} */
 
 export const postFeed = async (data) => {
   try {
@@ -53,8 +29,13 @@ export const postFeed = async (data) => {
 };
 
 export const uploadToS3 = async (url, file) => {
-  return axios.put(url, file, {});
+  return axios.put(url, file, {
+    headers: {
+      "Content-Type": "application/octet-stream", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+    },
+  });
 };
+
 // headers: { "Content-Type": file.type },
 
 export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
@@ -67,7 +48,7 @@ export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
     });
     return response.data;
   } catch (error) {
-    console.error("인기 피드 조회 에러:", error);
+    console.error("피드 이미지 조회 에러:", error);
     throw error;
   }
 };
@@ -87,3 +68,48 @@ export const getFeed = async (firstCategory, pageable) => {
     throw error;
   }
 };
+
+
+export const getFeedDetail = async (memberId,feedId) => {
+  try {
+    const response = await client.get(`/api/v1/feed/${memberId}/${feedId}`);
+    return response.data;
+  } catch (error) {
+    console.error("피드 상세 조회 에러:", error);
+    throw error;
+  }
+};
+
+
+export const getMemberFeed = async (memberId) => {
+  try {
+    const response = await client.get(`/api/v1/feed/${memberId}`);
+    return response.data;
+  } catch (error) {
+    console.error("특정 학생 피드 조회 에러:", error);
+    throw error;
+  }
+};
+
+
+export async function updateFeed(feedId, data) {
+  try {
+    const response = await client.patch(`/api/v1/feed/${feedId}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("피드 수정 에러", error);
+    throw error;
+  }
+}
+
+export async function deleteFeed(feedId) {
+  try {
+    const response = await client.delete(`/api/v1/feed/${feedId}`);
+    return response.data;
+  } catch (error) {
+    console.error("피드 삭제 에러", error);
+    throw error;
+  }
+}
+
+

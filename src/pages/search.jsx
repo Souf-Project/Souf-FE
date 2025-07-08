@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import StudentProfileList from "./studentProfileList";
@@ -17,6 +18,71 @@ export default function Search() {
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           <div className="flex">
+=======
+import { useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { getRecruit } from '../api/recruit';
+import StudentProfileList from './studentProfileList';
+import StudentFeedList from './studentFeedList';
+import RecruitBlock from '../components/recruitBlock';
+import Loading from '../components/loading';
+import SearchBar from '../components/SearchBar';
+
+const useQuery = () => new URLSearchParams(useLocation().search);
+
+export default function Search(){
+  const query = useQuery();
+  const keyword = query.get('q') || '';
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("recruit");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  
+  useEffect(() => {
+    const fetchResults = async () => {
+      setLoading(true);
+
+      
+      try {
+        if (activeTab === 'recruit') {
+          const res = await getRecruit({
+            firstCategory: 0,
+            secondCategory: 0,
+            thirdCategory: 0,
+            pageable: {
+              page: 0,
+              size: 10,
+              sort: ['createdAt,desc'],
+            },
+          });
+
+          const raw = res.data?.result?.content || [];
+          const filtered = raw.filter((item) =>
+            item.title?.toLowerCase().includes(keyword.toLowerCase())
+          );
+          setResults(filtered);
+        } else {
+          // profile 또는 feed는 전체를 보여주거나 정적 렌더링
+          setResults([]);
+        }
+      } catch (err) {
+        console.error('검색 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+  }, [activeTab, keyword]);
+  
+  
+
+  return (
+    <div className="flex flex-col justify-center items-center pt-12 px-6 w-4/5">
+        <div className="flex justify-between items-center mx-auto py-8 gap-4 w-full">
+            <div className='flex'>
+>>>>>>> origin/develop
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
@@ -39,6 +105,7 @@ export default function Search() {
                 ></span>
               </button>
             ))}
+<<<<<<< HEAD
           </div>
         </div>
       </div>
@@ -88,3 +155,50 @@ export default function Search() {
     </div>
     )
 }
+=======
+            
+            </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="검색어를 입력하세요"
+              width='w-[60%]'
+            />
+        </div>
+
+      {loading ? (
+        <div className='w-full'><Loading/></div>    
+      ) : activeTab === 'recruit' ? (
+        results.length > 0 ? (
+          <ul className="space-y-4">
+            {results.map((recruit) => (
+              <li key={recruit.recruitId}>
+                <RecruitBlock
+                  id={recruit.recruitId}
+                  title={recruit.title}
+                  content={recruit.content}
+                  deadLine={recruit.deadline}
+                  payment={recruit.minPayment}
+                  cityName={recruit.cityName}
+                  cityDetailName={recruit.cityDetailName}
+                  secondCategory={recruit.categoryDtoList?.map((c) => c.secondCategory)}
+                  categoryDtoList={recruit.categoryDtoList}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>검색 결과가 없습니다.</p>
+        )
+      ) : activeTab === 'profile' ? (
+        <StudentProfileList />
+      ) : (
+        <StudentFeedList />
+      )}
+    
+    
+      </div>
+  );
+};
+
+>>>>>>> origin/develop
