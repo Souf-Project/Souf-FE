@@ -234,10 +234,18 @@ export default function RecruitDetail() {
           {categoryNames.map((category, index) => (
             <div key={index} className="mb-1">
               <span>{category.first}</span>
-              <span className="mx-2">&gt;</span>
-              <span>{category.second}</span>
-              <span className="mx-2">&gt;</span>
-              <span className="font-medium text-black">{category.third}</span>
+              {category.second && (
+                <>
+                  <span className="mx-2">&gt;</span>
+                  <span>{category.second}</span>
+                </>
+              )}
+              {category.third && (
+                <>
+                  <span className="mx-2">&gt;</span>
+                  <span className="font-medium text-black">{category.third}</span>
+                </>
+              )}
             </div>
           ))}
         </div>

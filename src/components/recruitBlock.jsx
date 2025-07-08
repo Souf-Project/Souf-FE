@@ -29,7 +29,6 @@ export default function RecruitBlock({
   categoryDtoList,
 }) {
   const navigate = useNavigate();
-  console.log('secondCategory:', secondCategory);
   
   const getSecondCategoryNames = (secondCategoryIds) => {
     if (!secondCategoryIds || !Array.isArray(secondCategoryIds)) return [];
