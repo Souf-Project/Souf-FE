@@ -1,24 +1,3 @@
-<<<<<<< HEAD
-import { useState } from "react";
-import { useParams } from "react-router-dom";
-import StudentProfileList from "./studentProfileList";
-import StudentFeedList from "./studentFeedList";
-import Pagination from "../components/pagination";
-import RecruitBlock from "../components/recruitBlock";
-import CategoryMenu from "../components/categoryMenu";
-
-export default function Search() {
-      const { keyword } = useParams();
-      const [activeTab, setActiveTab] = useState("recruit");
-      console.log(keyword);
-
-
-    return (
-       <div className="pt-16 px-6 w-4/5">
-      <div className="flex justify-between items-center mb-8 w-full">
-        <div className="flex items-center gap-4">
-          <div className="flex">
-=======
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getRecruit } from '../api/recruit';
@@ -82,7 +61,6 @@ export default function Search(){
     <div className="flex flex-col justify-center items-center pt-12 px-6 w-4/5">
         <div className="flex justify-between items-center mx-auto py-8 gap-4 w-full">
             <div className='flex'>
->>>>>>> origin/develop
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
@@ -105,57 +83,6 @@ export default function Search(){
                 ></span>
               </button>
             ))}
-<<<<<<< HEAD
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-row">
-        {activeTab === "recruit" ? (
-          <div className="w-3/4 mx-auto">
-            {/* {filteredRecruits.length > 0 ? (
-              <>
-                {filteredRecruits.map((recruit) => (
-                  <RecruitBlock
-                    key={recruit.recruitId}
-                    id={recruit.recruitId}
-                    title={recruit.title}
-                    content={recruit.content}
-                    deadLine={recruit.deadLine}
-                    payment={recruit.payment}
-                    recruitCount={recruit.recruitCount}
-                    region={recruit.region}
-                    secondCategory={recruit.secondCategory}
-                  />
-                ))}
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              </>
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-gray-500">
-                  선택한 카테고리의 공고가 없습니다.
-                </p>
-              </div>
-            )} */}
-          </div>
-        ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm p-6 w-3/4 mx-auto">
-            <StudentProfileList />
-          </div>
-        ) : (
-          <div className="w-3/4 mx-auto">
-            <StudentFeedList />
-          </div>
-        )}
-      </div>
-    </div>
-    )
-}
-=======
             
             </div>
             <SearchBar
@@ -195,10 +122,7 @@ export default function Search(){
       ) : (
         <StudentFeedList />
       )}
-    
-    
       </div>
   );
 };
 
->>>>>>> origin/develop
