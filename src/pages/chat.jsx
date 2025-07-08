@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
+import SouFLogo from "../assets/images/SouFLogo.png";
 
 
 export default function Chat() {
@@ -62,7 +63,7 @@ export default function Chat() {
                   <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
                       }`}>
                     <img
-                      src={`${VITE_S3_BUCKET_URL}${chat.opponentProfileImageUrl}`}
+                      src={`${chat.opponentProfileImageUrl ? `${VITE_S3_BUCKET_URL}${chat.opponentProfileImageUrl}` : SouFLogo}`}
                       className="w-10 h-10 rounded-[100%]"
                     />
                     <div
@@ -72,7 +73,7 @@ export default function Chat() {
                     >
                       <div className="flex justify-between items-center mb-2 w-full">
                         <span className="font-semibold">{chat.opponentNickname}</span>
-                        <span className="text-sm text-gray-500">{getFormattedDate(chat.lastMessageTime)}</span>
+                        <span className="text-sm text-gray-500">{chat.lastMessageTime ? getFormattedDate(chat.lastMessageTime) : ""}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <p className="text-gray-600 truncate">{chat.lastMessage}</p>

@@ -17,7 +17,6 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     const { nickname } = UserStore();
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
-  const [pendingMessages, setPendingMessages] = useState([]);
   const [showButtonList, setShowButtonList] = useState(false);
   const scrollRef = useRef(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
@@ -41,22 +40,15 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   });
 
    // 기존 메시지와 실시간 메시지를 합쳐서 표시
-  const allMessages = [...(chatMessages || []), ...realtimeMessages, ...pendingMessages];
+  const allMessages = [...(chatMessages || []), ...realtimeMessages];
 
   // console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
+    if (!roomId || !nickname) return;
+
     connectChatSocket(roomId, (incomingMessage) => {
       console.log("실시간 메시지 수신:", incomingMessage);
-
-      // 내가 보낸 메시지가 서버에서 돌아온 경우, pending에서 제거
-      // 실시간 구현하다가 내가 보낸 메세지 수신시 두번씩 보이는 에러 있었음 ㅠ 
-      if (incomingMessage.sender === nickname) {
-        setPendingMessages((prev) => 
-          prev.filter(msg => msg.content !== incomingMessage.content)
-        );
-      }
-
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
     });
 
@@ -80,19 +72,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
       content: newMessage,
     };
 
-    // 임시로 pending에 추가 (즉시 화면에 표시!)
-    const tempMessage = {
-      sender: nickname,
-      content: newMessage,
-      timestamp: new Date().toISOString(),
-      isPending: true
-    };
-
-    setPendingMessages((prev) => [...prev, tempMessage]);
-
     sendChatMessage(messageObj);
-    // console.log("메시지 전송:", messageObj);
-
     setNewMessage("");
   };
 
@@ -131,27 +111,45 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
 
   {/* 채팅 메시지 영역 */}
   <div className="flex-1 p-4 overflow-y-auto">
-    <div className="text-center text-gray-500 text-sm mb-4">
-      {new Date().toLocaleDateString()}
-    </div>
     {allMessages?.map((chat, idx) => {
       const isMyMessage = chat.sender === nickname;
+      
+      // 현재 메시지의 날짜
+      const currentMessageDate = chat.createdTime 
+        ? new Date(chat.createdTime).toLocaleDateString()
+        : new Date().toLocaleDateString();
+      
+      // 이전 메시지의 날짜 (첫 번째 메시지가 아닌 경우)
+      const previousMessageDate = idx > 0 && allMessages[idx - 1]?.createdTime
+        ? new Date(allMessages[idx - 1].createdTime).toLocaleDateString()
+        : null;
+      
+      // 날짜가 바뀌었는지 확인
+      const shouldShowDate = idx === 0 || currentMessageDate !== previousMessageDate;
 
-      return isMyMessage ? (
-        <SenderMessage 
-          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
-          content={chat.content} 
-          isPending={chat.isPending}
-          createdTime={chat.createdTime}
-
-        />
-      ) : (
-        <ReceiverMessage 
-          key={`${chat.sender}-${idx}-${chat.timestamp || idx}`} 
-          content={chat.content} 
-          createdTime={chat.createdTime}
-          opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
-        />
+      return (
+        <div key={`${chat.sender}-${idx}-${chat.timestamp || idx}`}>
+          {/* 날짜 표시 */}
+          {shouldShowDate && (
+            <div className="text-center text-gray-500 text-sm mb-4 mt-4">
+              {currentMessageDate}
+            </div>
+          )}
+          
+          {/* 메시지 */}
+          {isMyMessage ? (
+            <SenderMessage 
+              content={chat.content} 
+              createdTime={chat.createdTime}
+            />
+          ) : (
+            <ReceiverMessage 
+              content={chat.content} 
+              createdTime={chat.createdTime}
+              opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
+            />
+          )}
+        </div>
       );
     })}
     <div ref={scrollRef} />

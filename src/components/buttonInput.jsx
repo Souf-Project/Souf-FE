@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Input from '../components/input';
 
 export default function ButtonInput({
@@ -13,8 +14,14 @@ export default function ButtonInput({
     onValidChange = () => {},
     isValidateTrigger = false,
     isConfirmed = undefined,
+    value=""
 }) {
+            useEffect(() => {
+            console.log("버튼 인풋에서", isConfirmed);
+          }, [isConfirmed]);
     return (
+
+        
         <div className="flex flex-col gap-2 w-full items-center">
             <div className="w-full flex gap-3 items-center">
                 <div className="flex-1">
@@ -28,6 +35,7 @@ export default function ButtonInput({
                         approveText={approveText}
                         disapproveText={disapproveText}
                         onValidChange={onValidChange}
+                        value={value}
                     />
                 </div>
                 {btnText && (
