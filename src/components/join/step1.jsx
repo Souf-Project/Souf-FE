@@ -262,10 +262,9 @@ export default function Step1() {
         }
       },
       onEmailVerifySuccess: (res, { email }) => {
-        const code = res.code;
         const result = res.result;
 
-        if (code === 200) {
+        if (result === true) {
           setEmailVerification(true);
           setVerificationCheck(true);
          
