@@ -1,4 +1,4 @@
-export default function SenderMessage({ content, createdTime, isPending = false, type = "TALK" }) {
+export default function SenderMessage({ content, createdTime, isPending = false, type = "TALK", onImageClick }) {
   const formatTime = (timeString) => {
     if (!timeString) return '';
     const date = new Date(timeString);
@@ -26,7 +26,8 @@ export default function SenderMessage({ content, createdTime, isPending = false,
           <img 
             src={S3_BUCKET_URL + content} 
             alt="채팅 이미지" 
-            className="max-w-full h-auto rounded"
+            className="max-w-full h-auto rounded cursor-pointer transition-opacity"
+            onClick={() => onImageClick && onImageClick(S3_BUCKET_URL + content)}
             onError={(e) => {
               console.error("이미지 로드 실패:", content);
               e.target.style.display = 'none';

@@ -15,6 +15,7 @@ import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
 import chatImgIcon from "../../assets/images/chatImgIcon.png"
 import { uploadToS3 } from "../../api/feed";
+import ImageModal from "./ImageModal";
 
 
 export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
@@ -28,6 +29,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   const [showDegreeModal, setShowDegreeModal] = useState(false);
   const fileInputRef = useRef(null);
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -209,6 +211,10 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowButtonList(false);
   };
 
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  };
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
@@ -241,6 +247,14 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         <Checkout />
       </div>
     </div>
+  )}
+
+  {/* 이미지 모달 */}
+  {selectedImage && (
+    <ImageModal 
+      imageUrl={selectedImage} 
+      onClose={() => setSelectedImage(null)} 
+    />
   )}
 
   {/* 채팅 메시지 영역 */}
@@ -276,13 +290,15 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
               content={chat.content} 
               createdTime={chat.createdTime}
               type={chat.type}
+              onImageClick={handleImageClick}
             />
           ) : (
             <ReceiverMessage 
               content={chat.content} 
               createdTime={chat.createdTime}
-              opponentProfileImageUrl={S3_BUCKET_URL + opponentProfileImageUrl}
+              opponentProfileImageUrl={opponentProfileImageUrl}
               type={chat.type}
+              onImageClick={handleImageClick}
             />
           )}
         </div>
@@ -323,13 +339,13 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     {/* 버튼 리스트 */}
     {showButtonList && (
       <div className="mt-10 mb-8 flex gap-4">
-        <Checkout />
+        {/* <Checkout />
         <button 
           className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
           onClick={handleButton1Click}
         >
           토스
-        </button>
+        </button> */}
         <button 
           className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
           onClick={handleImgButtonClick}

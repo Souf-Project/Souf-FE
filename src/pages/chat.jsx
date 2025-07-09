@@ -15,6 +15,21 @@ export default function Chat() {
   const [searchQuery, setSearchQuery] = useState("");
   // const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
+  // 이미지 URL인지 확인하는 함수
+  const isImageMessage = (message) => {
+    if (!message) return false;
+    
+    // 이미지 파일 확장자 확인
+    const imageExtensions = ['.jpg', '.jpeg', '.png'];
+    const hasImageExtension = imageExtensions.some(ext => message.toLowerCase().includes(ext));
+    
+    // HTTP URL이면서 이미지 관련 키워드 확인
+    const isHttpUrl = message.startsWith('http://') || message.startsWith('https://');
+    const hasImageKeyword = message.includes('image') || message.includes('img') || message.includes('photo');
+    
+    return hasImageExtension || (isHttpUrl && hasImageKeyword);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Search query:", searchQuery);
@@ -76,7 +91,9 @@ export default function Chat() {
                         <span className="text-sm text-gray-500">{chat.lastMessageTime ? getFormattedDate(chat.lastMessageTime) : ""}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <p className="text-gray-600 truncate">{chat.lastMessage}</p>
+                        <p className="text-gray-600 truncate">
+                          {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : chat.lastMessage}
+                        </p>
                         {chat.unreadCount > 0 && (
                           <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
                             {chat.unreadCount}
