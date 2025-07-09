@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  publish-tave-wave-project:
+  publish-souf-project:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
