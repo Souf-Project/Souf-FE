@@ -57,6 +57,7 @@ export default function RecruitDetail() {
   const [isApplySuccessModalOpen, setIsApplySuccessModalOpen] = useState(false);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
   const [isCloseSuccessModalOpen, setIsCloseSuccessModalOpen] = useState(false);
+  const [isAlreadyClosedModalOpen, setIsAlreadyClosedModalOpen] = useState(false);
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
 
@@ -126,8 +127,18 @@ export default function RecruitDetail() {
 
   // 지원 마감 버튼 핸들러
   const handleDelete = (id) => {
-    setIsCloseModalOpen(true);
-    setShowMenu(false);
+    // 공고문 상태 확인
+    const isRecruitable = recruitDetail?.recruitable ?? displayData?.recruitable ?? true;
+    
+    if (!isRecruitable) {
+      // 이미 마감된 경우
+      setIsAlreadyClosedModalOpen(true);
+      setShowMenu(false);
+    } else {
+      // 마감 가능한 경우
+      setIsCloseModalOpen(true);
+      setShowMenu(false);
+    }
   };
 
   const handleCloseRecruit = async () => {
@@ -377,6 +388,17 @@ export default function RecruitDetail() {
           setIsCloseSuccessModalOpen(false);
           navigate('/recruit?category=1');
         }}
+      />
+    )}
+    {isAlreadyClosedModalOpen && (
+      <AlertModal
+        type="warning"
+        isOpen={isAlreadyClosedModalOpen}
+        onClose={() => setIsAlreadyClosedModalOpen(false)}
+        title="이미 마감된 공고"
+        description="이미 마감된 공고입니다."
+        TrueBtnText="확인"
+        onClickTrue={() => setIsAlreadyClosedModalOpen(false)}
       />
     )}
 
