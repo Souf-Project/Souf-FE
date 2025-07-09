@@ -7,6 +7,7 @@ import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import AlertModal from '../components/alertModal';
 import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
+import { closeRecruit } from '../api/recruit';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -54,7 +55,8 @@ export default function RecruitDetail() {
   const { username, memberId } = UserStore();
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isApplySuccessModalOpen, setIsApplySuccessModalOpen] = useState(false);
-
+  const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+  const [isCloseSuccessModalOpen, setIsCloseSuccessModalOpen] = useState(false);
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
 
@@ -122,13 +124,20 @@ export default function RecruitDetail() {
     setShowMenu(false);
   };
 
-  // 삭제 버튼 핸들러
-  const handleDelete = () => {
-    if (window.confirm('해당 공고를 지원 마감 상태로 바꾸시겠습니까?')) {
-      // TODO: 삭제 API 호출
-      console.log('삭제 버튼 클릭');
-      setShowMenu(false);
-      navigate('/recruit?category=1');
+  // 지원 마감 버튼 핸들러
+  const handleDelete = (id) => {
+    setIsCloseModalOpen(true);
+    setShowMenu(false);
+  };
+
+  const handleCloseRecruit = async () => {
+    try {
+      await closeRecruit(id, memberId);
+      setIsCloseModalOpen(false);
+      setIsCloseSuccessModalOpen(true);
+    } catch (error) {
+      console.error('지원 마감 실패:', error);
+      alert('지원 마감 처리 중 오류가 발생했습니다.');
     }
   };
 
@@ -217,7 +226,7 @@ export default function RecruitDetail() {
                     수정
                   </button>
                   <button
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(id)}
                     className="w-full px-4 py-2 text-left hover:bg-gray-50 text-red-600 rounded-b-lg"
                   >
                     지원 마감
@@ -338,6 +347,36 @@ export default function RecruitDetail() {
         description="지원이 완료되었습니다."
          TrueBtnText = "확인"
          onClickTrue={() => setIsApplySuccessModalOpen(false)}
+      />
+    )}
+    {isCloseModalOpen && (
+      <AlertModal
+        type="warning"
+        isOpen={isCloseModalOpen}
+        onClose={() => setIsCloseModalOpen(false)}
+        title="지원 마감"
+        description="해당 공고문을 지원 마감 상태로 바꾸시겠습니까? "
+        FalseBtnText = "취소"
+        TrueBtnText = "지원 마감"
+        onClickFalse={() => setIsCloseModalOpen(false)}
+        onClickTrue={handleCloseRecruit}
+      />
+    )}
+    {isCloseSuccessModalOpen && (
+      <AlertModal
+        type="success"
+        isOpen={isCloseSuccessModalOpen}
+        onClose={() => {
+          setIsCloseSuccessModalOpen(false);
+          navigate('/recruit?category=1');
+        }}
+        title="지원 마감 완료"
+        description="지원 마감이 완료되었습니다."
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          setIsCloseSuccessModalOpen(false);
+          navigate('/recruit?category=1');
+        }}
       />
     )}
 
