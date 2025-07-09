@@ -3,7 +3,7 @@ import backArrow from "../../assets/images/backArrow.svg";
 import starOn from "../../assets/images/starOn.svg";
 import starOff from "../../assets/images/starOff.svg";
 
-import BasicImg4 from "../../assets/images/BasicprofileImg4.png";
+import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProfileDetail } from "../../api/profile";
