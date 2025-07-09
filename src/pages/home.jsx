@@ -11,10 +11,9 @@ import PopularFeed from "../components/home/popularFeed";
 import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
-import buildingData from "../assets/competitionData/건축_건설_인테리어.json";
-import marketingData from "../assets/competitionData/광고_마케팅.json";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
+import { getContests } from "../api/contest";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,13 +21,14 @@ export default function Home() {
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
 
+  /*
   useEffect(() => {
     // 여러 카테고리에서 상위 공모전들을 가져와서 섞기
     const allCompetitions = [
       ...buildingData.slice(0, 1),
       ...marketingData.slice(0, 1)
     ];
-    setCompetitions(allCompetitions);
+    //setCompetitions(allCompetitions);
     
     // 이미지 로딩 상태 초기화
     const newLoadingStates = {};
@@ -43,7 +43,7 @@ export default function Home() {
     setTimeout(() => {
       setImageLoadingStates({});
     }, 1000);
-  }, []);
+  }, []);*/
 
 
   const categories = [
@@ -159,6 +159,42 @@ export default function Home() {
     navigate(`/recruit?category=${encoded}`);
   };
 
+
+   useEffect(() => {
+    const pageable = {
+        page: 0,
+        size: 12,
+    };
+    const fetchContests = async () => {
+      try {
+        const res = await getContests(pageable); // API에서 전체 데이터 가져옴
+        const all = res?.data || [];
+
+        // 무작위 3개 추출
+        const shuffled = all.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 3);
+
+        setCompetitions(selected);
+
+        // 이미지 로딩 상태 초기화
+        const loadingStates = {};
+        selected.forEach((_, index) => {
+          loadingStates[index] = true;
+        });
+        setImageLoadingStates(loadingStates);
+
+        // 1초 후 로딩 상태 제거
+        setTimeout(() => {
+          setImageLoadingStates({});
+        }, 1000);
+
+      } catch (err) {
+        console.error("공모전 불러오기 실패:", err);
+      }
+    };
+
+    fetchContests();
+  }, []);
   return (
     <div className="relative">
       {/* 배경 이미지 섹션 */}
@@ -234,7 +270,7 @@ export default function Home() {
 
       {/* 인기 공고문 섹션 */}
       <div className="relative mt-16">
-        <div className="relative flex flex-col max-w-6xl mx-auto px-6 py-16 overflow-x-hidden">
+        <div className="relative flex flex-col lg:max-w-6xl max-w-2xl mx-auto px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>
@@ -244,14 +280,14 @@ export default function Home() {
 
       {/* 인기 피드 섹션 */}
       <div className="relative">
-        <div className="relative items-center max-w-full md:max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div className="relative items-center  lg:max-w-6xl max-w-2xl mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 피드 구경하러 가기
           </h2>
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
               {feedData?.result?.content?.map((profile, index) => (
                 <PopularFeed
                   key={index}
@@ -279,22 +315,14 @@ export default function Home() {
         <div className="grid grid-cols-3 gap-6">
           {competitions.map((competition, index) => {
             // 카테고리 결정 (building, marketing 중 하나)
-            let category = 'building';
-            if (buildingData.includes(competition)) {
-              category = 'building';
-            } else if (marketingData.includes(competition)) {
-              category = 'marketing';
-            }
             
             // 해당 카테고리에서의 인덱스 찾기
-            const categoryData = category === 'building' ? buildingData : marketingData;
-            const contestIndex = categoryData.indexOf(competition);
             
             return (
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${category}/${contestIndex}`)}
+                onClick={() => navigate(`/contests/${category}/${index}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
@@ -358,7 +386,7 @@ export default function Home() {
                     </div>
                   )}
                   
-                  <div className="flex flex-col gap-1 text-sm text-gray-500">
+                  <div className="hidden lg:block flex flex-col gap-1 text-sm text-gray-500">
                     <span>시상금: {competition.시상규모}</span>
                     <span>
                       접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}
@@ -373,6 +401,7 @@ export default function Home() {
                     <span className="text-xs text-blue-600 font-medium">
                       자세히 보기 →
                     </span>
+                   
                   </div>
                 </div>
               </div>
