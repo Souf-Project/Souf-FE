@@ -153,7 +153,7 @@ export default function Home() {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
-
+  
   const handleCategoryClick = (category) => {
     const encoded = encodeURIComponent(category);
     navigate(`/recruit?category=${encoded}`);

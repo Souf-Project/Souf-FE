@@ -12,10 +12,9 @@ export const calculateDday = (deadline) => {
   const deadlineDate = new Date(deadline);
   const timeDiff = deadlineDate - today;
   const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-
   if (dayDiff <= 0) {
-    return "마감";
+    return "모집 마감";
   } else {
-    return `D-${dayDiff}`;
+    return `모집 마감 D-${dayDiff}`;
   }
 };
