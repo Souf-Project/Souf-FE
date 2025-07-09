@@ -72,22 +72,7 @@ export default function Recruit() {
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log('=== 검색 결과 ===');
-        console.log('검색된 리쿠르트:', recruits);
-        console.log('검색 쿼리:', searchQuery);
-        console.log('검색 타입:', searchType);
-        
-        // 날짜 계산 디버깅
-        recruits.forEach((recruit, index) => {
-          console.log(`=== 리쿠르트 ${index + 1} 날짜 정보 ===`);
-          console.log('제목:', recruit.title);
-          console.log('deadLine:', recruit.deadLine);
-          console.log('recruitable:', recruit.recruitable);
-          console.log('========================');
-        });
-        
-        console.log('================');
-        
+       
         setFilteredRecruits(recruits);
 
         const totalElements =
