@@ -2,12 +2,45 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import buildingData from '../assets/competitionData/건축_건설_인테리어.json';
 import marketingData from '../assets/competitionData/광고_마케팅.json';
+import { getContests } from '../api/contest';
+import Pagination from '../components/pagination';
 
 export default function Contests() {
-    const [activeTab, setActiveTab] = useState('building');
+    const [activeTab, setActiveTab] = useState("rendering");
     const [contests, setContests] = useState([]);
     const [imageLoadingStates, setImageLoadingStates] = useState({});
+    //const [type, setType] = useState("rendering");
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
+    const pageSize = 12;
+
     const navigate = useNavigate();
+
+    const pageable = {
+        page: currentPage,
+        size: pageSize,
+    };
+
+      useEffect(() => {
+    const fetchContests = async () => {
+      try {
+        const data = await getContests({ ...pageable, type: activeTab });
+        console.log("데이터 확인용 :", data);
+        setContests(data.data);
+        setTotalPages(Math.ceil(data?.total/data?.pageSize));
+      } catch (err) {
+        console.error("❌ 에러 발생:", err);
+       
+      }
+    };
+
+    fetchContests();
+  }, [activeTab,currentPage]);
+
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
     useEffect(() => {
         // 탭이 변경될 때마다 해당하는 데이터를 로드
@@ -23,7 +56,7 @@ export default function Contests() {
             default:
                 data = buildingData;
         }
-        setContests(data);
+        //setContests(data);
         
         // 새로운 이미지들에 대해 로딩 상태 초기화
         const newLoadingStates = {};
@@ -47,10 +80,10 @@ export default function Contests() {
     const getTabTitle = (tab) => {
         switch(tab) {
             case 'building':
-                return '건축·건설·인테리어';
+                return '모집중';
            
             case 'marketing':
-                return '광고·마케팅';
+                return '마감';
             default:
                 return '건축·건설·인테리어';
         }
@@ -58,7 +91,7 @@ export default function Contests() {
 
     // 이미지 URL 생성 함수
     const getImageUrl = (imagePath) => {
-        console.log('getImageUrl called with:', imagePath);
+        //console.log('getImageUrl called with:', imagePath);
         
         if (!imagePath) return null;
         
@@ -114,14 +147,14 @@ export default function Contests() {
             // 파일명만 추출 (594792.jpg)
             const parts = imagePath.split('\\');
             const fileName = parts[parts.length - 1];
-            console.log('Extracted fileName from thumbnails:', fileName);
+            //console.log('Extracted fileName from thumbnails:', fileName);
             
             if (!fileName) return null;
             
             // 확장자 제거 (594792)
             const imageId = fileName.replace(/\.(jpg|png|jpeg)$/i, '');
             const fallbackUrl = `https://media-cdn.linkareer.com//se2editor/image/${imageId}`;
-            console.log('Generated fallback URL:', fallbackUrl);
+            //console.log('Generated fallback URL:', fallbackUrl);
             
             return fallbackUrl;
         }
@@ -132,7 +165,7 @@ export default function Contests() {
         
         const imageId = fileName.replace(/\.(jpg|png|jpeg)$/i, '');
         const fallbackUrl = `https://media-cdn.linkareer.com//se2editor/image/${imageId}`;
-        console.log('Generated fallback URL:', fallbackUrl);
+        //console.log('Generated fallback URL:', fallbackUrl);
         
         return fallbackUrl;
     };
@@ -176,37 +209,37 @@ export default function Contests() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto px-6 py-16">
+        <div className="max-w-6xl mx-auto px-6 py-16 w-full">
             <h1 className="text-3xl font-bold mb-8">공모전 정보</h1>
             
             {/* 탭 메뉴 */}
             <div className="flex space-x-4 mb-8">
                 <button
-                    onClick={() => setActiveTab('building')}
+                    onClick={() => setActiveTab('rendering')}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                        activeTab === 'building'
+                        activeTab === 'rendering'
                             ? 'bg-yellow-point text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                 >
-                    건축·건설·인테리어
+                    모집중
                 </button>
                
                 <button
-                    onClick={() => setActiveTab('marketing')}
+                    onClick={() => setActiveTab('closed')}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors duration-200 ${
-                        activeTab === 'marketing'
+                        activeTab === 'closed'
                             ? 'bg-yellow-point text-white'
                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                     }`}
                 >
-                    광고·마케팅
+                    모집 마감
                 </button>
             </div>
 
             {/* 공모전 목록 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {contests.map((contest, index) => (
+                {contests?.map((contest, index) => (
                     <div
                         key={index}
                         className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
@@ -285,7 +318,22 @@ export default function Contests() {
                         </div>
                     </div>
                 ))}
+                
             </div>
+            {contests.length !== 0 && (
+                            <div className="w-full mt-12">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+            )}
+          {contests.length === 0 && (
+            <div className="w-full text-center text-gray-500 text-lg my-16">
+                {activeTab === 'closed' ? '모집 마감된 공모전이 없습니다.' : '모집중인 공모전이 없습니다.'}
+            </div>
+            )}
         </div>
     );
 } 

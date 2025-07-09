@@ -11,10 +11,9 @@ import PopularFeed from "../components/home/popularFeed";
 import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
-import buildingData from "../assets/competitionData/건축_건설_인테리어.json";
-import marketingData from "../assets/competitionData/광고_마케팅.json";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
+import { getContests } from "../api/contest";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,13 +21,14 @@ export default function Home() {
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
 
+  /*
   useEffect(() => {
     // 여러 카테고리에서 상위 공모전들을 가져와서 섞기
     const allCompetitions = [
       ...buildingData.slice(0, 1),
       ...marketingData.slice(0, 1)
     ];
-    setCompetitions(allCompetitions);
+    //setCompetitions(allCompetitions);
     
     // 이미지 로딩 상태 초기화
     const newLoadingStates = {};
@@ -43,16 +43,16 @@ export default function Home() {
     setTimeout(() => {
       setImageLoadingStates({});
     }, 1000);
-  }, []);
+  }, []);*/
+
 
   const categories = [
     "순수미술",
     "공예",
     "음악",
     "사진",
-    "디지털 콘텐츠"
+    "디지털 콘텐츠",
   ]
-
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
     console.log('getImageUrl called with:', imagePath);
@@ -159,6 +159,42 @@ export default function Home() {
     navigate(`/recruit?category=${encoded}`);
   };
 
+
+   useEffect(() => {
+    const pageable = {
+        page: 0,
+        size: 12,
+    };
+    const fetchContests = async () => {
+      try {
+        const res = await getContests(pageable); // API에서 전체 데이터 가져옴
+        const all = res?.data || [];
+
+        // 무작위 3개 추출
+        const shuffled = all.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 3);
+
+        setCompetitions(selected);
+
+        // 이미지 로딩 상태 초기화
+        const loadingStates = {};
+        selected.forEach((_, index) => {
+          loadingStates[index] = true;
+        });
+        setImageLoadingStates(loadingStates);
+
+        // 1초 후 로딩 상태 제거
+        setTimeout(() => {
+          setImageLoadingStates({});
+        }, 1000);
+
+      } catch (err) {
+        console.error("공모전 불러오기 실패:", err);
+      }
+    };
+
+    fetchContests();
+  }, []);
   return (
     <div className="relative">
       {/* 배경 이미지 섹션 */}
@@ -279,22 +315,14 @@ export default function Home() {
         <div className="grid grid-cols-3 gap-6">
           {competitions.map((competition, index) => {
             // 카테고리 결정 (building, marketing 중 하나)
-            let category = 'building';
-            if (buildingData.includes(competition)) {
-              category = 'building';
-            } else if (marketingData.includes(competition)) {
-              category = 'marketing';
-            }
             
             // 해당 카테고리에서의 인덱스 찾기
-            const categoryData = category === 'building' ? buildingData : marketingData;
-            const contestIndex = categoryData.indexOf(competition);
             
             return (
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${category}/${contestIndex}`)}
+                onClick={() => navigate(`/contests/${category}/${index}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
