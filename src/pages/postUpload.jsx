@@ -96,6 +96,8 @@ export default function PostUpload() {
         alert("내용을 입력해주세요.");
         return;
       }
+      const hasNewMedia = imageFiles.length > 0 || newVideo;
+    const hasExistingMedia = videoFiles.length > 0;
 
       if (!hasNewMedia && !hasExistingMedia) {
         alert("이미지 또는 영상을 1개 이상 첨부해주세요.");
@@ -195,7 +197,7 @@ export default function PostUpload() {
         alert("업로드 중 오류가 발생했습니다.");
       }
     },
-  }); 
+  });
 
   const handleInputChange = (name, e) => {
     const { value } = e.target;

@@ -53,7 +53,7 @@ export default function Profile({
       </div>
       <div className="grid grid-cols-3 justify-center gap-2">
         {userWorks?.map((data) => (
-          <img src={data} />
+          <img key={i} src={data} />
         ))}
       </div>
       </div>

@@ -19,19 +19,21 @@ export const getPopularRecruit = async (pageable) => {
 export async function getRecruit(params = {}) {
     try {
         const {
-            firstCategory = 1,
-            secondCategory = 1,
-            thirdCategory = 1,
-            recruitSearchReqDto = {},
-            pageable = { page: 0, size: 10, sort: "createdAt,desc" }
-        } = params;        
+      firstCategory = 1,
+      secondCategory = 1,
+      thirdCategory = 1,
+      recruitSearchReqDto = {},
+      page = 0,
+      size = 10,
+      sort,
+    } = params;   
 
         const queryParams = {
             firstCategory,
             ...(secondCategory ? { secondCategory } : {}),
             ...(thirdCategory ? { thirdCategory } : {}),
-            'pageable.page': pageable.page,
-            'pageable.size': pageable.size
+            'page': page,
+            'size': size
         };
 
         console.log("Query params:", queryParams);
@@ -43,8 +45,8 @@ export async function getRecruit(params = {}) {
             queryParams['recruitSearchReqDto.content'] = recruitSearchReqDto.content;
         }
 
-        if (pageable.sort && pageable.sort.length > 0) {
-            queryParams['pageable.sort'] = pageable.sort.join(',');
+        if (sort && sort.length > 0) {
+            queryParams['sort'] = sort?.join(',');
         }
 
         // 토큰 확인
@@ -162,7 +164,7 @@ export async function updateRecruit(recruitId, data) {
 export const uploadToS3 = async (url, file) => {
   return axios.put(url, file , {
     headers: {
-    "Content-Type": "application/octet-stream", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+        "Content-Type": file.type,  // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
   },
 });
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePopularRecruit } from "../../hooks/usePopularRecruit";
-import { getFirstCategoryId } from "../../utils/getCategoryById";
+import { getFirstCategoryId, getFirstCategoryNameById } from "../../utils/getCategoryById";
 import { calculateDday } from "../../utils/getDate";
 import { useNavigate } from "react-router-dom";
 
@@ -36,7 +36,7 @@ export default function Carousel() {
     return <div>로딩중</div>;
   }
   return (
-    <div className="h-40 relative overflow-hidden">
+    <div className="h-44 relative overflow-hidden">
       <div
         className="flex transition-transform duration-500 ease-in-out"
         style={{
@@ -46,19 +46,20 @@ export default function Carousel() {
         {recruitData?.map((recruit) => (
           <div
             key={recruit.recruitId}
-            className="md:w-1/3 w-32 h-40 px-1 flex-shrink-0 box-border"
+            className="md:w-1/3 w-32 h-44 px-1 flex-shrink-0 box-border"
+            onClick={() => navigate(`/recruitDetails/${recruit?.recruitId}`)}
           >
             <div
-              className="h-full bg-white p-6 rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer"
+              className="h-full bg-[#F3F3F3] p-6 rounded-xl  hover:border-yellow-point transition-colors duration-200 cursor-pointer"
               
             >
               <h3 className="text-xl font-bold">{recruit.title}</h3>
               <p className="text-gray-500 mb-2">
-                {getFirstCategoryId(recruit.firstCategory)}
+                {getFirstCategoryNameById(recruit.firstCategory)}
               </p>
               <p className="mb-4 text-md">{recruit.content}</p>
               <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span>{calculateDday(recruit.deadLine)}</span>
+                <span>{calculateDday(recruit?.deadLine)}</span>
               </div>
             </div>
           </div>

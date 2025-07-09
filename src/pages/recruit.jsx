@@ -5,7 +5,6 @@ import StudentProfileList from "./studentProfileList";
 import SearchBar from "../components/SearchBar";
 import SearchDropdown from "../components/SearchDropdown";
 import { getRecruit } from "../api/recruit";
-import Feed from "../components/feed";
 import CategoryMenu from "../components/categoryMenu";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
 import ThirdCategory from "../assets/categoryIndex/third_category.json";
@@ -23,11 +22,9 @@ export default function Recruit() {
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [firstId, setFirstId] = useState("");
-  const [secondCategories, setSecondCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
+  const pageSize = 12;
 
 
 
@@ -67,21 +64,20 @@ export default function Recruit() {
         secondCategory,
         thirdCategory,
         recruitSearchReqDto: searchParams,
-        pageable: {
-          page: currentPage,
-          size: pageSize,
-          sort: ["createdAt,desc"],
-        },
+        page: currentPage,
+        size: pageSize,
+        sort: ["createdAt,desc"],
+       
       });
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log('API Response recruits:', recruits);
         setFilteredRecruits(recruits);
 
         const totalElements =
           response.data.result?.page?.totalElements || recruits.length;
-        setTotalPages(Math.ceil(totalElements / pageSize));
+        const totalPagesData = response.data.result?.page?.totalPages;
+        setTotalPages(totalPagesData);
       } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
@@ -105,11 +101,9 @@ export default function Recruit() {
         firstCategory,
         secondCategory,
         thirdCategory,
-        pageable: {
-          page: currentPage,
+        page: currentPage,
           size: pageSize,
           sort: ["createdAt,desc"],
-        },
       });
 
       if (response.data) {

@@ -243,17 +243,11 @@ export default function ContestDetail() {
 
             {/* 썸네일 이미지와 기본 정보 섹션 */}
             <div className="bg-white rounded-xl shadow-md p-8 mb-8">
-                <div 
-                    className="grid gap-8 contest-detail-layout"
-                    style={{
-                        gridTemplateColumns: 'var(--thumbnail-width, 40%) var(--info-width, 60%)',
-                        display: 'grid'
-                    }}
-                >
+                <div className="grid gap-8 lg:grid-cols-[40%_60%] grid-cols-1">
                     {/* 썸네일 이미지 */}
                     {contest.썸네일 && (
                         <div>
-                            <div className="relative h-64 lg:h-full rounded-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                            <div className="relative lg:h-full rounded-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
                                 {/* 로딩 스켈레톤 */}
                                 {imageLoadingStates.thumbnail && (
                                     <div className="absolute inset-0 bg-gray-200 animate-pulse">

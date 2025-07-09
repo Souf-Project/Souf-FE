@@ -181,7 +181,14 @@ export default function CompanyApplicants({ recruitId }) {
         // 공고문 리스트 보기
         <div>
           <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
+          {/* 모바일 타이틀 */}
+          <div className="lg:hidden text-2xl font-bold">
+          <h2 className="">지원자 리스트를 확인할</h2>
+          <h2 className="">공고문을 선택하세요</h2>
+          </div>
+          
+          {/* PC 타이틀 */}
+          <h2 className="hidden lg:block text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
           <div className="flex gap-5">
             <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
             <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
