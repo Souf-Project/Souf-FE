@@ -13,7 +13,7 @@ export default function Chat() {
   const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+  // const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -63,7 +63,7 @@ export default function Chat() {
                   <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
                       }`}>
                     <img
-                      src={`${chat.opponentProfileImageUrl ? `${VITE_S3_BUCKET_URL}${chat.opponentProfileImageUrl}` : SouFLogo}`}
+                      src={`${chat.opponentProfileImageUrl ? `${chat.opponentProfileImageUrl}` : SouFLogo}`}
                       className="w-10 h-10 rounded-[100%]"
                     />
                     <div
