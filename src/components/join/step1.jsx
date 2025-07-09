@@ -19,7 +19,6 @@ import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
 export default function Step1() {
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
-
   const [verificationCheck, setVerificationCheck] = useState(undefined);
   const [emailVerification, setEmailVerification] = useState(undefined);
   const [approveText,setApproveText] = useState("");
@@ -308,9 +307,8 @@ export default function Step1() {
       ...formData,
       categoryDtos: cleanedCategories,
     };
-
-    // 회원가입 API 호출
     signUp.mutate(finalData);
+
   }
 
   return (

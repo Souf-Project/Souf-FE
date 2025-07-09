@@ -53,6 +53,14 @@ export default function PostUpload() {
     }));
   }, [selectedFiles]); */
 
+  /*
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      originalFileNames: selectedFiles?.map((file) => file.name),
+    }));
+  }, [selectedFiles]); */
+
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
