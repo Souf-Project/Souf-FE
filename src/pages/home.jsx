@@ -6,7 +6,7 @@ import cate2Img from "../assets/images/cate2Img.svg";
 import cate3Img from "../assets/images/cate3Img.svg";
 import cate4Img from "../assets/images/cate4Img.svg";
 import cate5Img from "../assets/images/cate5Img.svg";
-import Background from "../assets/images/background.png";
+import Background from "../assets/images/Background.png";
 import PopularFeed from "../components/home/popularFeed";
 import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
