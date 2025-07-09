@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import searchIco from "../assets/images/searchIco.svg";
+import searchIco from "../assets/images/SearchIco.svg";
 import cate1Img from "../assets/images/cate1Img.svg";
 import cate2Img from "../assets/images/cate2Img.svg";
 import cate3Img from "../assets/images/cate3Img.svg";
