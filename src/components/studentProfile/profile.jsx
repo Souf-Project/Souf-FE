@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import sendIco from "../../assets/images/sendIco.svg";
-import BasicImg1 from "../../assets/images/BasicprofileImg1.png";
-import BasicImg2 from "../../assets/images/BasicprofileImg2.png";
-import BasicImg3 from "../../assets/images/BasicprofileImg3.png";
-import BasicImg4 from "../../assets/images/BasicprofileImg4.png";
+import BasicImg1 from "../../assets/images/BasicProfileImg1.png";
+import BasicImg2 from "../../assets/images/BasicProfileImg2.png";
+import BasicImg3 from "../../assets/images/BasicProfileImg3.png";
+import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
 import { postChatrooms } from "../../api/chat";
 
 export default function Profile({
