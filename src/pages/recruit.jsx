@@ -1,173 +1,325 @@
-import { useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import RecruitBlock from '../components/recruitBlock';
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
+import RecruitBlock from "../components/recruitBlock";
+import StudentProfileList from "./studentProfileList";
+import SearchBar from "../components/SearchBar";
+import SearchDropdown from "../components/SearchDropdown";
+import { getRecruit } from "../api/recruit";
+import CategoryMenu from "../components/categoryMenu";
+import SecondCategory from "../assets/categoryIndex/second_category.json";
+import ThirdCategory from "../assets/categoryIndex/third_category.json";
+import Pagination from "../components/pagination";
+import StudentFeedList from "./studentFeedList";
 
 export default function Recruit() {
   const location = useLocation();
-  const [selectedCategory, setSelectedCategory] = useState("전체");
-  const [activeTab, setActiveTab] = useState('recruit'); // 'recruit' 또는 'profile'
+  const navigate = useNavigate();
+
+  const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
+  const [activeTab, setActiveTab] = useState("recruit");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
-  
-  // URL에서 카테고리 파라미터 가져오기
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchType, setSearchType] = useState("title");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 12;
+
+
+
   const searchParams = new URLSearchParams(location.search);
-  const categoryParam = searchParams.get('category');
+  const categoryParam = searchParams.get("category");
 
-  const sampleRecruits = [
-    {
-      id: 1,
-      title: "로고 디자인 프로젝트",
-      categoryMain: "디지털 콘텐츠 & 그래픽 디자인",
-      categoryMiddle: "브랜드 디자인",
-      categorySmall: "로고 디자인",
-      content: "신규 사업을 위한 로고 디자인을 의뢰합니다. 미니멀하고 현대적인 디자인을 선호하며, 기업의 가치를 잘 표현할 수 있는 디자인을 찾고 있습니다. 포트폴리오와 함께 지원해주시기 바랍니다.",
-      applicants: 12,
-      minPrice: 300000,
-      maxPrice: 500000,
-      preferMajor: true,
-      location: "서울",
-      deadline: "2025-05-30"
-    },
-    {
-      id: 2,
-      title: "웹사이트 일러스트레이션 작업",
-      categoryMain: "순수미술 & 일러스트",
-      categoryMiddle: "일러스트·캐릭터 디자인",
-      categorySmall: "2D 캐릭터",
-      content: "회사 웹사이트 리뉴얼을 위한 일러스트레이션 작업을 의뢰합니다. 약 5-7개의 일러스트가 필요하며, 각 페이지의 콘셉트에 맞는 작업물이 필요합니다. 밝고 친근한 스타일을 원합니다.",
-      applicants: 8,
-      minPrice: 500000,
-      maxPrice: 1000000,
-      preferMajor: false,
-      location: "지역무관",
-      deadline: "2023-12-15"
-    },
-    {
-      id: 3,
-      title: "제품 소개 영상 제작",
-      categoryMain: "사진 & 영상 & 영화",
-      categoryMiddle: "영상",
-      categorySmall: "광고·홍보 영상",
-      content: "신제품 출시에 맞춰 30초 분량의 소개 영상이 필요합니다. 제품의 주요 기능과 특징을 효과적으로 보여줄 수 있는 영상을 원합니다. 기획부터 편집까지 전 과정을 맡아주실 수 있는 분을 찾습니다.",
-      applicants: 5,
-      minPrice: 1000000,
-      maxPrice: 2000000,
-      preferMajor: true,
-      location: "원격",
-      deadline: "2025-11-30"
-    },
-    {
-      id: 4,
-      title: "도자기 작품 의뢰",
-      categoryMain: "공예 & 제작",
-      categoryMiddle: "조형 예술",
-      categorySmall: "도예·도자기",
-      content: "카페에서 사용할 독특한 디자인의 머그컵과 접시 세트를 제작해주실 분을 찾고 있습니다. 카페의 분위기에 어울리는 자연스럽고 따뜻한 느낌의 디자인을 원합니다.",
-      applicants: 3,
-      minPrice: 800000,
-      maxPrice: 1500000,
-      preferMajor: true,
-      location: "부산",
-      deadline: "2025-04-15"
-    },
-    {
-      id: 5,
-      title: "음악 페스티벌 테마곡 작곡",
-      categoryMain: "음악 & 음향",
-      categoryMiddle: "음향",
-      categorySmall: "기타 음향·음악",
-      content: "지역 음악 페스티벌의 테마곡을 작곡해주실 분을 찾습니다. 밝고 활기찬 분위기의 곡으로, 페스티벌의 정체성을 잘 표현할 수 있는 작품을 원합니다.",
-      applicants: 7,
-      minPrice: 700000,
-      maxPrice: 1200000,
-      preferMajor: false,
-      location: "대전",
-      deadline: "2025-03-20"
+  // CategoryMenu에 전달할 데이터 준비
+  const allSecondCategories = SecondCategory.second_category;
+  const allThirdCategories = ThirdCategory;
+
+  // 선택된 대분류에 따라 중분류와 소분류 필터링
+  const getFilteredCategories = () => {
+    const selectedFirstCategory = selectedCategory[0];
+
+    // 선택된 대분류에 해당하는 중분류만 필터링
+    const filteredSecondCategories = allSecondCategories.filter(
+      (second) => second.first_category_id === selectedFirstCategory
+    );
+
+    return {
+      filteredSecondCategories,
+      thirdCategories: allThirdCategories,
+    };
+  };
+
+  const { filteredSecondCategories, thirdCategories } = getFilteredCategories();
+
+  const fetchRecruits = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
+
+      const response = await getRecruit({
+        firstCategory,
+        secondCategory,
+        thirdCategory,
+        recruitSearchReqDto: searchParams,
+        page: currentPage,
+        size: pageSize,
+        sort: ["createdAt,desc"],
+       
+      });
+
+      if (response.data) {
+        const recruits = response.data.result?.content || [];
+        setFilteredRecruits(recruits);
+
+        const totalElements =
+          response.data.result?.page?.totalElements || recruits.length;
+        const totalPagesData = response.data.result?.page?.totalPages;
+        setTotalPages(totalPagesData);
+      } else {
+        setFilteredRecruits([]);
+        setError("데이터를 불러오는데 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("Error fetching recruits:", err);
+      setError("서버 연결에 실패했습니다.");
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [selectedCategory, currentPage, pageSize]);
 
-  // 카테고리에 따라 공고 필터링
+  const performSearch = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
+
+      const response = await getRecruit({
+        firstCategory,
+        secondCategory,
+        thirdCategory,
+        page: currentPage,
+          size: pageSize,
+          sort: ["createdAt,desc"],
+      });
+
+      if (response.data) {
+        let recruits = response.data.result?.content || [];
+
+        // 프론트엔드에서 검색 필터링 적용
+        if (searchQuery.trim() !== "") {
+          recruits = recruits.filter((recruit) => {
+            if (searchType === "title") {
+              return recruit.title
+                ?.toLowerCase()
+                .includes(searchQuery.toLowerCase());
+            } else if (searchType === "titleContent") {
+              return (
+                recruit.title
+                  ?.toLowerCase()
+                  .includes(searchQuery.toLowerCase()) ||
+                recruit.content
+                  ?.toLowerCase()
+                  .includes(searchQuery.toLowerCase())
+              );
+            } else if (searchType === "category") {
+              // 카테고리 이름으로 검색
+              const categoryNames =
+                recruit.secondCategory?.map((catId) => {
+                  const category = allSecondCategories.find(
+                    (cat) => cat.second_category_id === catId
+                  );
+                  return category?.name || "";
+                }) || [];
+
+              return categoryNames.some((name) =>
+                name.toLowerCase().includes(searchQuery.toLowerCase())
+              );
+            }
+            return true;
+          });
+        }
+
+        setFilteredRecruits(recruits);
+
+        const totalElements =
+          response.data.result?.page?.totalElements || recruits.length;
+        setTotalPages(Math.ceil(totalElements / pageSize));
+      } else {
+        setFilteredRecruits([]);
+        setError("데이터를 불러오는데 실패했습니다.");
+      }
+    } catch (err) {
+      console.error("Error fetching recruits:", err);
+      setError("서버 연결에 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    selectedCategory,
+    searchQuery,
+    searchType,
+    currentPage,
+    pageSize,
+    allSecondCategories,
+  ]);
+
   useEffect(() => {
     if (categoryParam) {
-      setSelectedCategory(decodeURIComponent(categoryParam));
-      const filtered = sampleRecruits.filter(recruit => 
-        recruit.categoryMain === decodeURIComponent(categoryParam)
-      );
-      setFilteredRecruits(filtered);
+      const categoryArr = categoryParam.split(",").map(Number);
+      setSelectedCategory([
+        categoryArr[0] || 0,
+        categoryArr[1] || 0,
+        categoryArr[2] || 0,
+      ]);
     } else {
-      setSelectedCategory("전체");
-      setFilteredRecruits(sampleRecruits);
+      setSelectedCategory([0, 0, 0]);
     }
   }, [categoryParam]);
 
-  return (
-    <div className="pt-24 px-6">
-      <div className="flex justify-center gap-4 mb-8">
-        <button
-          className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-            activeTab === 'recruit'
-              ? 'text-yellow-point'
-              : 'text-gray-700'
-          }`}
-          onClick={() => setActiveTab('recruit')}
-        >
-          <span>기업 공고문</span>
-          <span 
-            className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-              activeTab === 'recruit' 
-                ? 'w-3/4' 
-                : 'w-0 group-hover:w-3/4'
-            }`}
-          ></span>
-        </button>
-        <button
-          className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-            activeTab === 'profile'
-              ? 'text-yellow-point'
-              : 'text-gray-700'
-          }`}
-          onClick={() => setActiveTab('profile')}
-        >
-          <span>대학생 프로필</span>
-          <span 
-            className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-              activeTab === 'profile' 
-                ? 'w-3/4' 
-                : 'w-0 group-hover:w-3/4'
-            }`}
-          ></span>
-        </button>
+  // 카테고리나 페이지 변경 시에만 실행
+  useEffect(() => {
+    fetchRecruits();
+  }, [selectedCategory, currentPage, fetchRecruits]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(0); // 검색 시 첫 페이지로 이동
+    performSearch();
+  };
+
+  const handleSearchTypeChange = (type) => {
+    setSearchType(type);
+    setCurrentPage(0); // 검색 타입 변경 시 첫 페이지로 이동
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
+    setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
+    setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-point"></div>
       </div>
-      {activeTab === 'recruit' ? (
-        <div className="max-w-4xl mx-auto">
-          {filteredRecruits.length > 0 ? (
-            filteredRecruits.map(recruit => (
-              <RecruitBlock
-                key={recruit.id}
-                id={recruit.id}
-                title={recruit.title}
-                categoryMain={recruit.categoryMain}
-                categoryMiddle={recruit.categoryMiddle}
-                categorySmall={recruit.categorySmall}
-                content={recruit.content}
-                applicants={recruit.applicants}
-                minPrice={recruit.minPrice}
-                maxPrice={recruit.maxPrice}
-                preferMajor={recruit.preferMajor}
-                location={recruit.location}
-                deadline={recruit.deadline}
-              />
-            ))
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
-            </div>
-          )}
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-12 md:px-6 md:w-4/5 px-2 w-full">
+      <div className="flex justify-between items-center mb-8 w-full">
+        <div className="flex items-center gap-4">
+          <div className="flex">
+            {["recruit", "profile", "feed"].map((tab) => (
+              <button
+                key={tab}
+                className={`px-6 py-3 rounded-lg md:font-extrabold font-bold transition-colors duration-200 relative group ${
+                  activeTab === tab ? "text-yellow-point" : "text-gray-700"
+                }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                <span>
+                  {tab === "recruit"
+                    ? "기업 공고문"
+                    : tab === "profile"
+                    ? "대학생 프로필"
+                    : "대학생 피드"}
+                </span>
+                <span
+                  className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                    activeTab === tab ? "w-3/4" : "w-0 group-hover:w-3/4"
+                  }`}
+                ></span>
+              </button>
+            ))}
+          </div>
         </div>
-      ) : (
-        <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
-          
+        <div className="flex items-center gap-4">
+          <SearchDropdown onSelect={handleSearchTypeChange} />
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onSubmit={handleSearch}
+            placeholder="검색어를 입력하세요"
+          />
         </div>
-      )}
+      </div>
+
+      <div className="flex flex-col lg:flex-row">
+        <CategoryMenu
+          secondCategories={filteredSecondCategories}
+          thirdCategories={thirdCategories}
+          onSelect={handleCategorySelect}
+        />
+        {activeTab === "recruit" ? (
+          <div className="w-full lg:w-3/4 mx-auto">
+            {filteredRecruits.length > 0 ? (
+              <>
+                {filteredRecruits.map((recruit) => {
+                  const paymentString =
+                    recruit.minPayment && recruit.maxPayment
+                      ? recruit.minPayment === recruit.maxPayment
+                        ? recruit.minPayment
+                        : `${recruit.minPayment} ~ ${recruit.maxPayment}`
+                      : recruit.minPayment || recruit.maxPayment || "금액 협의";
+
+                  return (
+                    <RecruitBlock
+                      key={recruit.recruitId}
+                      id={recruit.recruitId}
+                      title={recruit.title}
+                      content={recruit.content}
+                      deadLine={recruit.deadline}
+                      payment={paymentString}
+                      minPayment={recruit.minPayment}
+                      maxPayment={recruit.maxPayment}
+                      cityName={recruit.cityName}
+                      cityDetailName={recruit.cityDetailName}
+                      secondCategory={recruit.secondCategory}
+                      categoryDtoList={recruit.categoryDtoList}
+                    />
+                  );
+                })}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </>
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-gray-500">
+                  선택한 카테고리의 공고가 없습니다.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : activeTab === "profile" ? (
+          <div className="bg-white rounded-lg shadow-sm p-6 w-full lg:w-3/4 mx-auto">
+            <StudentProfileList />
+          </div>
+        ) : (
+          <div className="w-full lg:w-3/4 mx-auto">
+            <StudentFeedList />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

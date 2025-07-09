@@ -1,0 +1,25 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
+const PopularFeed = ({ url, context, username }) => {
+  const navigate = useNavigate();
+  //http://localhost:5174/profileDetail/1/post/7
+  //navigate(`/profileDetail/${}/post/${}`)
+  return (
+    <div className="w-[180px]" onClick={() => navigate(`/profileDetail/1/post/2`)}>
+      <img
+        src={`${BUCKET_URL}${url}`}
+        alt={`${username} 이미지`}
+        className="md:w-full h-auto object-cover rounded-md"
+      />
+      <div className="flex justify-between mt-2 px-1">
+        <span className="text-gray-400 text-sm">{context}</span>
+        <span className="font-semibold text-sm">{username}</span>
+      </div>
+    </div>
+  );
+};
+
+export default PopularFeed;

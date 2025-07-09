@@ -1,0 +1,392 @@
+import { useQuery } from "@tanstack/react-query";
+import { getChatRooms, postChatImage, postChatImageUpload } from "../../api/chat";
+import ReceiverMessage from "./ReceiverMessage";
+import SenderMessage from "./senderMessage";
+import { UserStore } from "../../store/userStore";
+import { useRef, useState,useEffect } from "react";
+import {
+  connectChatSocket,
+  disconnectChatSocket,
+  sendChatMessage,
+} from "../../api/chatSocket";
+import plusIco from "../../assets/images/plusIco.svg"
+import AlertModal from "../alertModal";
+import DegreeModal from "../degreeModal";
+import Checkout from "../pay/checkout";
+import chatImgIcon from "../../assets/images/chatImgIcon.png"
+import { uploadToS3 } from "../../api/feed";
+import ImageModal from "./ImageModal";
+
+
+export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
+    const { nickname } = UserStore();
+  const [newMessage, setNewMessage] = useState("");
+  const [realtimeMessages, setRealtimeMessages] = useState([]);
+  const [showButtonList, setShowButtonList] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+  const scrollRef = useRef(null);
+  const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showDegreeModal, setShowDegreeModal] = useState(false);
+  const fileInputRef = useRef(null);
+  const [pendingImageUpload, setPendingImageUpload] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
+      const {
+    data: chatMessages,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["chatRoom", roomId],
+    queryFn: async () => {
+      const data = await getChatRooms(roomId);
+      
+      console.log("채팅 조회:", data);
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
+   // 기존 메시지와 실시간 메시지를 합쳐서 표시
+  const allMessages = [...(chatMessages || []), ...realtimeMessages];
+
+  // console.log("모든 메시지:", allMessages);
+
+  useEffect(() => {
+    if (!roomId || !nickname) return;
+
+    console.log("채팅 소켓 연결 시작:", { roomId, nickname });
+
+    connectChatSocket(roomId, (incomingMessage) => {
+      console.log("실시간 메시지 수신:", incomingMessage);
+      console.log("현재 pendingImageUpload 상태:", pendingImageUpload);
+      setRealtimeMessages((prev) => [...prev, incomingMessage]);
+      
+      // 이미지 메시지이고 대기 중인 업로드가 있는 경우 postChatImageUpload 호출
+      if (incomingMessage.type === "IMAGE" && pendingImageUpload) {
+        console.log("이미지 메시지 감지, chatId:", incomingMessage.chatId);
+        console.log("대기 중인 업로드 정보:", pendingImageUpload);
+        handleImageUploadComplete(incomingMessage.chatId, pendingImageUpload);
+      } else {
+        console.log("조건 불일치 - type:", incomingMessage.type, "pendingImageUpload:", !!pendingImageUpload);
+      }
+    });
+
+    return () => {
+      console.log("채팅 소켓 연결 해제");
+      disconnectChatSocket();
+    };
+  }, [roomId, nickname, pendingImageUpload]);
+
+  // 스크롤 자동 내리기
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [allMessages]);
+
+  const handleSend = () => {
+    if (!newMessage.trim()) return;
+
+    const messageObj = {
+      roomId,
+      sender: nickname,
+      type: "TALK",
+      content: newMessage,
+    };
+
+    console.log("메시지 전송 시도:", messageObj);
+    
+    const success = sendChatMessage(messageObj);
+    if (success) {
+      setNewMessage("");
+      console.log("메시지 전송 완료");
+    } else {
+      console.error("메시지 전송 실패");
+      // 사용자에게 알림을 줄 수 있습니다
+    }
+  };
+
+  const handlePlusClick = () => {
+    setShowButtonList(!showButtonList);
+  };
+
+  const handleButton1Click = () => {
+    console.log("버튼 1 클릭");
+    setShowCheckout(true);
+    setShowButtonList(false);
+  };
+
+  const handleDegreeModalClick = () => {
+    setShowAlertModal(false);
+    setShowDegreeModal(true);
+    setShowButtonList(false);
+  };
+
+  // 이미지 업로드 처리 함수
+  const handleImageUpload = async (file) => {
+    try {
+      console.log("이미지 업로드 시작:", file.name);
+      
+      // 1. 백엔드에 파일 업로드 요청하여 presigned URL 받기
+      const uploadResponse = await postChatImage([file.name]);
+      console.log("업로드 응답:", uploadResponse);
+      
+      if (!uploadResponse || uploadResponse.length === 0) {
+        throw new Error("업로드 URL을 받지 못했습니다.");
+      }
+      
+      const uploadInfo = uploadResponse[0];
+      
+      // 2. S3에 파일 업로드
+      await uploadToS3(uploadInfo.presignedUrl, file);
+      console.log("S3 업로드 완료");
+      
+      // 3. 업로드된 이미지를 채팅 메시지로 전송
+      const imageMessage = {
+        roomId,
+        sender: nickname,
+        type: "IMAGE",
+        content: uploadInfo.fileUrl,
+      };
+      
+      console.log("이미지 메시지 전송 시도:", imageMessage);
+      const success = sendChatMessage(imageMessage);
+      
+      if (success) {
+        console.log("이미지 메시지 전송 완료");
+        
+        // 4. 대기 상태 설정 - WebSocket 응답에서 chatId를 받으면 postChatImageUpload 호출
+        setPendingImageUpload({
+          fileUrl: uploadInfo.fileUrl,
+          fileName: file.name,
+          fileType: file.type.split("/")[1].toUpperCase(),
+        });
+      } else {
+        console.error("이미지 메시지 전송 실패");
+      }
+      
+    } catch (error) {
+      console.error("이미지 업로드 에러:", error);
+      alert("이미지 업로드에 실패했습니다.");
+    }
+  };
+
+  // 파일 선택 처리
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleImageUpload(file);
+    }
+    // 파일 입력 초기화
+    event.target.value = '';
+  };
+
+  const handleImgButtonClick = () => {
+    setShowButtonList(false);
+    fileInputRef.current?.click();
+  };
+
+  // 이미지 업로드 완료 처리
+  const handleImageUploadComplete = async (chatId, uploadInfo) => {
+    try {
+      console.log("handleImageUploadComplete 시작 - chatId:", chatId);
+      console.log("업로드 정보:", uploadInfo);
+      
+      await postChatImageUpload({
+        chatId: chatId,
+        fileUrl: [uploadInfo.fileUrl],
+        fileName: [uploadInfo.fileName],
+        fileType: [uploadInfo.fileType],
+      });
+      console.log("postChatImageUpload 완료, chatId:", chatId);
+      setPendingImageUpload(null); // 대기 상태 해제
+    } catch (error) {
+      console.error("postChatImageUpload 에러:", error);
+    }
+  };
+
+  const handleButton3Click = () => {
+    console.log("버튼 3 클릭");
+    setShowAlertModal(true);
+    setShowButtonList(false);
+  };
+
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
+  };
+
+  return (
+   <div className="h-full flex flex-col">
+  {/* 채팅 헤더 */}
+  <div className="p-4 border-b border-gray-200">
+    <h2 className="font-semibold">{chatNickname}</h2>
+  </div>
+
+  {/* 숨겨진 파일 입력 */}
+  <input
+    type="file"
+    ref={fileInputRef}
+    onChange={handleFileSelect}
+    accept="image/*"
+    style={{ display: 'none' }}
+  />
+
+  {/* Checkout 모달 */}
+  {showCheckout && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">결제</h2>
+          <button 
+            onClick={() => setShowCheckout(false)}
+            className="text-gray-500 hover:text-gray-700 text-xl"
+          >
+            ×
+          </button>
+        </div>
+        <Checkout />
+      </div>
+    </div>
+  )}
+
+  {/* 이미지 모달 */}
+  {selectedImage && (
+    <ImageModal 
+      imageUrl={selectedImage} 
+      onClose={() => setSelectedImage(null)} 
+    />
+  )}
+
+  {/* 채팅 메시지 영역 */}
+  <div className="flex-1 p-4 overflow-y-auto">
+    {allMessages?.map((chat, idx) => {
+      const isMyMessage = chat.sender === nickname;
+      
+      // 현재 메시지의 날짜
+      const currentMessageDate = chat.createdTime 
+        ? new Date(chat.createdTime).toLocaleDateString()
+        : new Date().toLocaleDateString();
+      
+      // 이전 메시지의 날짜 (첫 번째 메시지가 아닌 경우)
+      const previousMessageDate = idx > 0 && allMessages[idx - 1]?.createdTime
+        ? new Date(allMessages[idx - 1].createdTime).toLocaleDateString()
+        : null;
+      
+      // 날짜가 바뀌었는지 확인
+      const shouldShowDate = idx === 0 || currentMessageDate !== previousMessageDate;
+
+      return (
+        <div key={`${chat.sender}-${idx}-${chat.timestamp || idx}`}>
+          {/* 날짜 표시 */}
+          {shouldShowDate && (
+            <div className="text-center text-gray-500 text-sm mb-4 mt-4">
+              {currentMessageDate}
+            </div>
+          )}
+          
+          {/* 메시지 */}
+          {isMyMessage ? (
+            <SenderMessage 
+              content={chat.content} 
+              createdTime={chat.createdTime}
+              type={chat.type}
+              onImageClick={handleImageClick}
+            />
+          ) : (
+            <ReceiverMessage 
+              content={chat.content} 
+              createdTime={chat.createdTime}
+              opponentProfileImageUrl={opponentProfileImageUrl}
+              type={chat.type}
+              onImageClick={handleImageClick}
+            />
+          )}
+        </div>
+      );
+    })}
+    <div ref={scrollRef} />
+  </div>
+
+  {/* 메시지 입력 영역 */}
+  <div className="p-4 border-t border-gray-200">
+    <div className="flex gap-4">
+      <button 
+        className="bg-gray-200 px-4 py-2 rounded-lg font-bold "
+        onClick={handlePlusClick}
+      >
+        <img 
+          src={plusIco} 
+          alt="plus" 
+          className={`w-4 h-4 transition-transform duration-200 ${showButtonList ? 'rotate-45' : 'rotate-0'}`} 
+        />
+      </button>
+      <input
+        type="text"
+        placeholder="메시지를 입력하세요"
+        className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
+        value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+      />
+      <button 
+        className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+        onClick={handleSend}
+      >
+        전송
+      </button>
+    </div>
+    
+    {/* 버튼 리스트 */}
+    {showButtonList && (
+      <div className="mt-10 mb-8 flex gap-4">
+        {/* <Checkout />
+        <button 
+          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
+          onClick={handleButton1Click}
+        >
+          토스
+        </button> */}
+        <button 
+          className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          onClick={handleImgButtonClick}
+        >
+          <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
+        </button>
+        <button 
+          className="bg-yellow-300 text-white px-6 py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200"
+          onClick={handleButton3Click}
+        >
+          SouF 온도 남기기 
+        </button>
+      </div>
+    )}
+    {showAlertModal && (
+      <AlertModal
+        type="simple"
+        title="SouF 온도 남기기"
+        description={`SouF 온도를 남기시겠습니까?\n온도를 남기시면 거래가 자동으로 완료 처리됩니다.`}
+        onClickTrue={() => handleDegreeModalClick()}
+        onClickFalse={() => setShowAlertModal(false)}
+        FalseBtnText="취소"
+        TrueBtnText="확인"
+      />
+    )}
+    {showDegreeModal && (
+      <DegreeModal
+        title="SouF 온도 평가"
+        description="이번 거래에 대한 만족도를 평가해주세요"
+        bottomText="별점을 선택해주세요"
+        FalseBtnText="취소"
+        TrueBtnText="확인"
+        onClickFalse={() => setShowDegreeModal(false)}
+        onClickTrue={() => {
+          console.log("온도 평가 확인");
+          setShowDegreeModal(false);
+        }}
+      />
+    )}
+  </div>
+</div>
+
+  );
+}

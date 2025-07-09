@@ -1,0 +1,62 @@
+import { useState } from "react";
+import Profile from "../components/studentProfile/profile";
+import Pagination from "../components/pagination";
+import { useQuery } from "@tanstack/react-query";
+import { getProfile } from "../api/profile";
+
+export default function StudentProfileList() {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 6;
+
+  const searchParams = new URLSearchParams(location.search);
+  const categoryParam = searchParams.get("category");
+
+  const pageable = {
+    page: currentPage,
+    size: pageSize,
+  };
+
+  const {
+    data: feedData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["profile", categoryParam, currentPage], // currentPage가 변경될 때마다 refetch
+    queryFn: async () => {
+      const data = await getProfile(categoryParam, pageable);
+      setTotalPages(data.result.page.totalPages); // 페이지 수 갱신
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const userData = feedData?.result?.content || [];
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
+        {userData.map((data) => (
+          <Profile
+            key={data.id}
+            memberId={data.memberId}
+            profileImg={data.profileImgUrl}
+            temperature={data.temperature}
+            userName={data.nickname}
+            userDetail={data.userDetail}
+            userWorks={data.userWorks}
+          />
+        ))}
+      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
+    </div>
+  );
+}
