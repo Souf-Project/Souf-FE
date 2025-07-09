@@ -72,6 +72,22 @@ export default function Recruit() {
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
+        console.log('=== 검색 결과 ===');
+        console.log('검색된 리쿠르트:', recruits);
+        console.log('검색 쿼리:', searchQuery);
+        console.log('검색 타입:', searchType);
+        
+        // 날짜 계산 디버깅
+        recruits.forEach((recruit, index) => {
+          console.log(`=== 리쿠르트 ${index + 1} 날짜 정보 ===`);
+          console.log('제목:', recruit.title);
+          console.log('deadLine:', recruit.deadLine);
+          console.log('recruitable:', recruit.recruitable);
+          console.log('========================');
+        });
+        
+        console.log('================');
+        
         setFilteredRecruits(recruits);
 
         const totalElements =
@@ -79,6 +95,7 @@ export default function Recruit() {
         const totalPagesData = response.data.result?.page?.totalPages;
         setTotalPages(totalPagesData);
       } else {
+        console.log('검색 실패: 응답 데이터 없음');
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
@@ -198,6 +215,8 @@ export default function Recruit() {
 
           if (response.data) {
             const recruits = response.data.result?.content || [];
+            
+           
             setFilteredRecruits(recruits);
 
             const totalElements =
@@ -205,11 +224,12 @@ export default function Recruit() {
             const totalPagesData = response.data.result?.page?.totalPages;
             setTotalPages(totalPagesData);
           } else {
+            console.log('리쿠르트 조회 실패: 응답 데이터 없음');
             setFilteredRecruits([]);
             setError("데이터를 불러오는데 실패했습니다.");
           }
         } catch (err) {
-          console.error("Error fetching recruits:", err);
+          console.error("리쿠르트 조회 중 에러 발생:", err);
           setError("서버 연결에 실패했습니다.");
         } finally {
           setLoading(false);
@@ -332,7 +352,8 @@ export default function Recruit() {
                       id={recruit.recruitId}
                       title={recruit.title}
                       content={recruit.content}
-                      deadLine={recruit.deadline}
+                      deadLine={recruit.deadLine}
+                      recruitable = {recruit.recruitable}
                       payment={paymentString}
                       minPayment={recruit.minPayment}
                       maxPayment={recruit.maxPayment}

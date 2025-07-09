@@ -85,7 +85,7 @@ export default function Carousel() {
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
                       <span className="text-sm font-medium text-red-500">
-                        {calculateDday(recruit?.deadLine)}
+                        {calculateDday(recruit?.deadLine, recruit?.recruitable)}
                       </span>
                     </div>
                     <div className="text-xs text-gray-400 transition-colors duration-200">
