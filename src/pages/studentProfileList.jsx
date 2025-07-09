@@ -1,59 +1,46 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Profile from "../components/studentProfile/profile";
 import Pagination from "../components/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "../api/profile";
 
-
 export default function StudentProfileList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [displayedProfiles, setDisplayedProfiles] = useState([]);
-  const [userData,setUserData] = useState([]); 
   const pageSize = 6;
 
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
 
-  
-
-  //여기나중에 currentPage로 바꾸기
   const pageable = {
-    page: 0,
-    size: 1000,
+    page: currentPage,
+    size: pageSize,
   };
+
   const {
     data: feedData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["profile", pageable],
+    queryKey: ["profile", categoryParam, currentPage], // currentPage가 변경될 때마다 refetch
     queryFn: async () => {
       const data = await getProfile(categoryParam, pageable);
-      console.log("getProfile 결과:", data);
-      console.log("g카테고리:", categoryParam);
-      setUserData(data.result.content);
+      setTotalPages(data.result.page.totalPages); // 페이지 수 갱신
       return data;
     },
     keepPreviousData: true,
   });
 
-  useEffect(() => {
-    setTotalPages(Math.ceil(userData.length / pageSize));
-
-    const startIndex = currentPage * pageSize;
-    const endIndex = startIndex + pageSize;
-    setDisplayedProfiles(userData.slice(startIndex, endIndex));
-  }, [currentPage, userData.length]);
-
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
 
+  const userData = feedData?.result?.content || [];
+
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
-        {displayedProfiles && displayedProfiles.map((data) => (
+        {userData.map((data) => (
           <Profile
             key={data.id}
             memberId={data.memberId}

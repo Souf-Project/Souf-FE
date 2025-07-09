@@ -122,8 +122,6 @@ export default function Search(){
       ) : (
         <StudentFeedList />
       )}
-    
-    
       </div>
   );
 };

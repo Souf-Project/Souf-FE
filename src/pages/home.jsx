@@ -155,8 +155,8 @@ export default function Home() {
   };
   
   const handleCategoryClick = (category) => {
-    const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${encoded}`);
+    //const encoded = encodeURIComponent(category);
+    navigate(`/recruit?category=${category}`);
   };
 
 
@@ -249,7 +249,7 @@ export default function Home() {
                 return (
                   <button
                     key={category}
-                    onClick={() => handleCategoryClick(category)}
+                    onClick={() => handleCategoryClick(index + 1)}
                     className="flex flex-col items-center gap-2 w-40"
                   >
                     <img
