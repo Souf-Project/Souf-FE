@@ -10,7 +10,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
-import SouFLogo from "../assets/images/SouFLogo.png";
+import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -114,7 +114,7 @@ export default function Feed({ feedData }) {
       <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
       onClick={() => clickHandler(feedData?.memberId)}>
          <img
-            src={feedData?.profileUrl ? `${BUCKET_URL}${feedData?.profileUrl}` : SouFLogo}
+            src={feedData?.profileUrl ? `${BUCKET_URL}${feedData?.profileUrl}` : BasicProfileImg}
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
