@@ -72,6 +72,7 @@ export default function Recruit() {
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
+       
         setFilteredRecruits(recruits);
 
         const totalElements =
@@ -79,6 +80,7 @@ export default function Recruit() {
         const totalPagesData = response.data.result?.page?.totalPages;
         setTotalPages(totalPagesData);
       } else {
+        console.log('검색 실패: 응답 데이터 없음');
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
@@ -170,20 +172,70 @@ export default function Recruit() {
   useEffect(() => {
     if (categoryParam) {
       const categoryArr = categoryParam.split(",").map(Number);
-      setSelectedCategory([
+      const newSelectedCategory = [
         categoryArr[0] || 0,
         categoryArr[1] || 0,
         categoryArr[2] || 0,
-      ]);
+      ];
+      setSelectedCategory(newSelectedCategory);
+      
+      // URL 파라미터가 변경되면 즉시 데이터를 가져오기
+      const fetchDataWithNewCategory = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+
+          const [firstCategory, secondCategory, thirdCategory] = newSelectedCategory;
+
+          const response = await getRecruit({
+            firstCategory,
+            secondCategory,
+            thirdCategory,
+            recruitSearchReqDto: searchParams,
+            page: 0,
+            size: pageSize,
+            sort: ["createdAt,desc"],
+          });
+
+          if (response.data) {
+            const recruits = response.data.result?.content || [];
+            
+           
+            setFilteredRecruits(recruits);
+
+            const totalElements =
+              response.data.result?.page?.totalElements || recruits.length;
+            const totalPagesData = response.data.result?.page?.totalPages;
+            setTotalPages(totalPagesData);
+          } else {
+            console.log('리쿠르트 조회 실패: 응답 데이터 없음');
+            setFilteredRecruits([]);
+            setError("데이터를 불러오는데 실패했습니다.");
+          }
+        } catch (err) {
+          console.error("리쿠르트 조회 중 에러 발생:", err);
+          setError("서버 연결에 실패했습니다.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchDataWithNewCategory();
     } else {
       setSelectedCategory([0, 0, 0]);
+      // 기본 카테고리로 데이터 가져오기
+      fetchRecruits();
     }
   }, [categoryParam]);
 
-  // 카테고리나 페이지 변경 시에만 실행
+  // selectedCategory나 currentPage가 변경될 때만 실행 (URL 파라미터 변경 제외)
   useEffect(() => {
-    fetchRecruits();
-  }, [selectedCategory, currentPage, fetchRecruits]);
+    // URL 파라미터로 인한 변경이 아닌 경우에만 실행
+    if (!categoryParam || categoryParam === selectedCategory.join(',')) {
+      fetchRecruits();
+    }
+  }, [selectedCategory, currentPage, fetchRecruits, categoryParam]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -285,7 +337,8 @@ export default function Recruit() {
                       id={recruit.recruitId}
                       title={recruit.title}
                       content={recruit.content}
-                      deadLine={recruit.deadline}
+                      deadLine={recruit.deadLine}
+                      recruitable = {recruit.recruitable}
                       payment={paymentString}
                       minPayment={recruit.minPayment}
                       maxPayment={recruit.maxPayment}
