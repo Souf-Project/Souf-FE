@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { getRecruitDetail } from '../api/recruit';
+import AlertModal from './alertModal';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return 0;
@@ -29,6 +30,7 @@ export default function RecruitBlock({
   secondCategory,
   categoryDtoList,
 }) {
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   
   const getSecondCategoryNames = (secondCategoryIds) => {
@@ -143,7 +145,11 @@ export default function RecruitBlock({
       });
     } catch (error) {
       console.error('Error fetching recruit detail:', error);
-
+      
+      // 403 에러인 경우 로그인 모달 표시
+      if (error.response?.status === 403) {
+        setShowLoginModal(true);
+      }
     }
   };
 
@@ -192,6 +198,21 @@ export default function RecruitBlock({
         </div>
        
       </div>
+      
+      {showLoginModal && (
+        <AlertModal
+        type="simple"
+        title="로그인이 필요합니다"
+        description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+        TrueBtnText="로그인하러 가기"
+        FalseBtnText="취소"
+        onClickTrue={() => {
+          setShowLoginModal(false);
+          navigate("/login");
+        }}
+        onClickFalse={() => setShowLoginModal(false)}
+      />
+      )}
     </div>
   );
 }
