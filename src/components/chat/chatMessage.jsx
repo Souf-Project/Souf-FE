@@ -123,22 +123,12 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowDegreeModal(true);
     setShowButtonList(false);
   };
-
-  const guessMimeType = (file) => {
-    const extension = file.name.split('.').pop()?.toLowerCase();
-  
-    const mimeMap = {
-      hwp: "application/haansofthwp",
-    };
-  
-    return mimeMap[extension] || "application/octet-stream"; // fallback
-  };
   
 
   const handleFileUpload = async (file) => {
     try {
      
-        console.log("파일 업로드 시작:", file.name, (file.type || guessMimeType(file)));
+        console.log("파일 업로드 시작:", file.name, file.type);
 
       const uploadResponse = await postChatImage([file.name]);
       if (!uploadResponse || uploadResponse.length === 0) {
@@ -152,7 +142,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     
       await uploadToS3(uploadInfo.presignedUrl, file);
       console.log("S3 업로드 완료");
-      let fileType = file.type || guessMimeType(file);
+      let fileType = file.type;
       // const fileType = file.type;
 
       const isImage = fileType.startsWith("image/");
