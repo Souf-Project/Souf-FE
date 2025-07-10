@@ -311,7 +311,7 @@ export default function Recruit() {
             )}
           </div>
         ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm p-6 w-full lg:w-3/4 mx-auto">
+          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto">
             <StudentProfileList />
           </div>
         ) : (

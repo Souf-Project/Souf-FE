@@ -39,24 +39,34 @@ export default function StudentProfileList() {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
-        {userData.map((data) => (
-          <Profile
-            key={data.id}
-            memberId={data.memberId}
-            profileImg={data.profileImgUrl}
-            temperature={data.temperature}
-            userName={data.nickname}
-            userDetail={data.userDetail}
-            userWorks={data.userWorks}
+      {userData && userData.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
+            {userData.map((data) => (
+              <Profile
+                key={data.id}
+                memberId={data.memberId}
+                profileImg={data.profileImgUrl}
+                temperature={data.temperature}
+                userName={data.nickname}
+                userDetail={data.userDetail}
+                userWorks={data.userWorks}
+              />
+            ))}
+          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
           />
-        ))}
-      </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+        </>
+      ) : (
+        <div className="text-center py-10">
+          <p className="text-gray-500 text-lg">
+            선택한 카테고리의 대학생 프로필이 없습니다.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
