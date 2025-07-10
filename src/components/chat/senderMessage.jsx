@@ -33,6 +33,19 @@ export default function SenderMessage({ content, createdTime, isPending = false,
               e.target.style.display = 'none';
             }}
           />
+        ) : type === "VIDEO" ? (
+          <video 
+            src={content.startsWith('http') ? content : S3_BUCKET_URL + content} 
+            controls
+            className="max-w-full h-auto rounded"
+            onError={(e) => {
+              console.error("동영상 로드 실패:", content);
+              e.target.style.display = 'none';
+            }}
+          >
+            <source src={content.startsWith('http') ? content : S3_BUCKET_URL + content} type="video/mp4" />
+            브라우저가 동영상을 지원하지 않습니다.
+          </video>
         ) : type === "FILE" ? (
           <div 
             className="flex items-center gap-2 p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200 transition-colors"
@@ -44,7 +57,7 @@ export default function SenderMessage({ content, createdTime, isPending = false,
             <span className="text-sm text-gray-700 truncate">{content.split('/').pop()}</span>
           </div>
         ) : (
-          <p className="text-sm">{content}</p>
+        <p className="text-sm">{content}</p>
         )}
       </div>
     </div>

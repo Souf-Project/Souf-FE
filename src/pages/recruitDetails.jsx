@@ -256,14 +256,14 @@ export default function RecruitDetail() {
               <span>{category.first}</span>
               {category.second && (
                 <>
-                  <span className="mx-2">&gt;</span>
-                  <span>{category.second}</span>
+              <span className="mx-2">&gt;</span>
+              <span>{category.second}</span>
                 </>
               )}
               {category.third && (
                 <>
-                  <span className="mx-2">&gt;</span>
-                  <span className="font-medium text-black">{category.third}</span>
+              <span className="mx-2">&gt;</span>
+              <span className="font-medium text-black">{category.third}</span>
                 </>
               )}
             </div>
