@@ -236,3 +236,19 @@ export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
     }
 }
 
+export async function closeRecruit(recruitId, memberId) {
+    try {
+        const response = await client.patch(`/api/v1/recruit/closure/${recruitId}`, {
+            memberId: memberId
+        }, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Recruit 지원 마감 API 오류 발생:', error);
+        throw error;
+    }
+}
