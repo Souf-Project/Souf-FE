@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfileDetail } from "../../api/profile";
 import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
 import { UserStore } from "../../store/userStore";
+import AlertModal from "../alertModal";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -17,6 +18,7 @@ export default function ProfileDetail({}) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [userData, setUserData] = useState([]);
   const [userWorks, setUserWorks] = useState([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const fromMemberId = UserStore.getState().memberId;
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -36,6 +38,12 @@ export default function ProfileDetail({}) {
         return data;
       },
       keepPreviousData: true,
+      onError: (error) => {
+        // 403 에러인 경우 로그인 모달 표시
+        if (error.response?.status === 403) {
+          setShowLoginModal(true);
+        }
+      },
     });
 
     const handleFavorite = async () => {
@@ -159,6 +167,21 @@ export default function ProfileDetail({}) {
           ))}
         </div>
       </div>
+      
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+     />
+      )}
     </div>
   );
 }
