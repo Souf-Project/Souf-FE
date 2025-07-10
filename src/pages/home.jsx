@@ -146,7 +146,7 @@ export default function Home() {
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-  // console.log(feedData);
+ 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -298,6 +298,8 @@ export default function Home() {
                   url={profile.mediaResDto?.fileUrl}
                   context={profile.categoryName}
                   username={profile.nickname}
+                  feedId={profile.feedId}
+                  memberId={profile.memberId}
                 />
               ))}
             </div>

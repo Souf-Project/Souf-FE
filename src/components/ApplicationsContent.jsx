@@ -6,6 +6,7 @@ import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import AlertModal from './alertModal';
+import Loading from './loading';
 
 export default function ApplicationsContent() {
   const navigate = useNavigate();
@@ -118,11 +119,7 @@ export default function ApplicationsContent() {
   }
 
   if (loading) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">지원 내역을 불러오는 중...</p>
-      </div>
-    );
+    return <Loading text="지원 내역을 불러오는 중..." />;
   }
 
   if (error) {

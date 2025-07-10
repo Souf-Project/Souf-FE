@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
 import { UserStore } from '../store/userStore';
 import { useNavigate } from 'react-router-dom';
+import Loading from './loading';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -202,11 +203,7 @@ export default function ProfileEditContent() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-point"></div>
-      </div>
-    );
+    return <Loading text="프로필 정보를 불러오는 중..." />;
   }
 
   if (!formData) {
