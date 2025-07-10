@@ -34,7 +34,7 @@ export const connectChatSocket = (roomId, onMessage) => {
       Authorization: `Bearer ${accessToken}`,
     },
     debug: (str) => {
-      console.log("STOMP Debug:", str);
+      // console.log("STOMP Debug:", str);
     },
     onConnect: () => {
       console.log("✅ WebSocket 연결 성공");

@@ -1,6 +1,14 @@
 import axios from "axios";
 import client from "./client";
 
+// 동영상 업로드 API
+export const postChatVideo = async (video) => {
+  const response = await client.post(`/api/v1/chat/video-upload`, {
+    originalFileNames: video,
+  });
+  return response.data;
+};
+
 export const postVideoSignedUrl = async ({ uploadId , partNumber , fileName}) => {
   try {
     const response = await client.post("/api/v1/upload/upload-signed-url", {

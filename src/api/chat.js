@@ -52,6 +52,8 @@ export const postChatImage = async (image) => {
   return response.data;
 };
 
+
+
 export const uploadToS3 = async (url, file) => {
   return axios.put(url, file, {
     headers: {
