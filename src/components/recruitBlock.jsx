@@ -144,21 +144,6 @@ export default function RecruitBlock({
     } catch (error) {
       console.error('Error fetching recruit detail:', error);
 
-      navigate(`/recruitDetails/${id}`, {
-        state: {
-          title,
-          content,
-          cityName,
-          cityDetailName,
-          minPrice,
-          maxPrice,
-          deadline: deadLine,
-          location: cityName,
-          preferMajor: false,
-          id,
-          categoryDtoList,
-        }
-      });
     }
   };
 
@@ -169,7 +154,8 @@ export default function RecruitBlock({
     >
       <div className="flex items-center gap-2 mb-4">
         <div className={getDdayStyle(deadLine, recruitable)}>{calculateDday(deadLine, recruitable)}</div>
-        <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName}</div>
+        <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName + " " + cityDetailName}</div>
+       
       </div>
       <div className="flex flex-col justify-between items-start mb-4">
         <h2 className="text-3xl font-semibold text-gray-800">{title}</h2>
