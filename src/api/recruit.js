@@ -19,19 +19,21 @@ export const getPopularRecruit = async (pageable) => {
 export async function getRecruit(params = {}) {
     try {
         const {
-            firstCategory = 1,
-            secondCategory = 1,
-            thirdCategory = 1,
-            recruitSearchReqDto = {},
-            pageable = { page: 0, size: 10, sort: "createdAt,desc" }
-        } = params;        
+      firstCategory = 1,
+      secondCategory = 1,
+      thirdCategory = 1,
+      recruitSearchReqDto = {},
+      page = 0,
+      size = 10,
+      sort,
+    } = params;   
 
         const queryParams = {
             firstCategory,
             ...(secondCategory ? { secondCategory } : {}),
             ...(thirdCategory ? { thirdCategory } : {}),
-            'pageable.page': pageable.page,
-            'pageable.size': pageable.size
+            'page': page,
+            'size': size
         };
 
         console.log("Query params:", queryParams);
@@ -43,8 +45,8 @@ export async function getRecruit(params = {}) {
             queryParams['recruitSearchReqDto.content'] = recruitSearchReqDto.content;
         }
 
-        if (pageable.sort && pageable.sort.length > 0) {
-            queryParams['pageable.sort'] = pageable.sort.join(',');
+        if (sort && sort.length > 0) {
+            queryParams['sort'] = sort?.join(',');
         }
 
         // 토큰 확인
@@ -234,3 +236,19 @@ export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
     }
 }
 
+export async function closeRecruit(recruitId, memberId) {
+    try {
+        const response = await client.patch(`/api/v1/recruit/closure/${recruitId}`, {
+            memberId: memberId
+        }, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Recruit 지원 마감 API 오류 발생:', error);
+        throw error;
+    }
+}

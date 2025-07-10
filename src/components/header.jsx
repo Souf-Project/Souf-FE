@@ -222,6 +222,13 @@ export default function Header() {
         {memberId ? (
           // 로그인 상태
           <div className="flex items-center gap-x-4">
+            {roleType === "MEMBER" && 
+            <button
+              className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg"
+              onClick={() => handleNavigation("/verifyStudent")}
+            >
+              대학생 인증
+            </button>}
             <button className="p-2" onClick={() => handleNavigation("/chat")}>
               <img src={ChatIcon} alt="chat" className="w-6 h-6" />
             </button>

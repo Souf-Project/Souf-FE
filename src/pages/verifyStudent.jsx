@@ -6,6 +6,7 @@ import Input from "../components/input";
 import AlertModal from "../components/alertModal";
 import VerrifyImg from "../assets/images/verifyImg.svg";
 import { postStudentVerify, postEmailVerify } from "../api/member"; // API 함수 임포트
+import { UserStore } from "../store/userStore";
 
 export default function VerifyStudent() {
   const navigate = useNavigate();
@@ -25,13 +26,15 @@ export default function VerifyStudent() {
   const [modalTitle, setModalTitle] = useState("");
   const [modalDescription, setModalDescription] = useState("");
 
+  const { roleType, memberId, nickname, setUser } = UserStore();
+
   // 1) 대학생 이메일 인증 요청 mutation
   const studentVerifyMutation = useMutation({
     mutationFn: () => postStudentVerify(originalEmail, acKrEmail),
     onSuccess: () => {
       setModalTitle("인증번호 발송");
       setModalDescription(
-        "입력하신 이메일로 인증번호가 발송되었습니다. 이메일을 확인해주세요."
+        `입력하신 이메일로 인증번호가 발송되었습니다.\n이메일을 확인해주세요.`
       );
       setModalOpen(true);
     },
@@ -51,13 +54,23 @@ export default function VerifyStudent() {
     mutationFn: () => postEmailVerify(acKrEmail, code, "MODIFY"),
     onSuccess: (response) => {
       // 서버에서 result가 true일 경우 인증 완료 처리
-      if (response.data.result === true) {
+      console.log(response);
+      if (response?.result === true) {
+        setUser({
+          memberId,
+          nickname,
+          roleType: "STUDENT",
+        });
+        setModalTitle("학생 전환 완료");
+        setModalDescription(`학생 안중이 완료되었습니다. \n 본인의 피드를 작성하실 수 있습니다.`);
+        setIsValidateTrigger(false);
         setModalOpen(true);
+        setIsConfirmed(false);
       }
-      setIsValidateTrigger(true);
+      //setIsValidateTrigger(true);
     },
     onError: () => {
-      setIsConfirmed(false);
+      setIsConfirmed(true);
       setIsValidateTrigger(true);
     },
   });
@@ -86,7 +99,7 @@ export default function VerifyStudent() {
     if (!code) {
       setModalTitle("입력 오류");
       setModalDescription("인증번호를 입력해주세요.");
-      setModalOpen(true);
+      //setModalOpen(true);
       return;
     }
     emailVerifyMutation.mutate();
@@ -165,7 +178,11 @@ export default function VerifyStudent() {
           title={modalTitle}
           description={modalDescription}
           TrueBtnText="확인"
-          onClickTrue={() => {setModalOpen(false); navigate("/");}}
+          onClickTrue={() => {setModalOpen(false);
+            if (modalTitle === "학생 전환 완료") {
+              navigate("/");
+            }
+          }}
         />
       )}
     </div>

@@ -31,17 +31,17 @@ export default function AlertModal({
         <div className="text-[15px] font-medium mb-2 text-black text-center whitespace-pre-line">
           {bottomText}
         </div>
-        <div className=" w-full px-1 flex justify-center gap-8"> 
+        <div className="w-full px-1 flex justify-center gap-8"> 
           {FalseBtnText && (
             <button
-              className="w-full py-3 px-5 bg-[#C9C9C9] rounded-[10px] font-semibold text-base"
+              className="w-full py-3 px-5 bg-[#C9C9C9] rounded-[10px] font-semibold text-base whitespace-nowrap"
               onClick={onClickFalse}
             >
               {FalseBtnText}
             </button>
           )}
           <button
-            className="w-full py-3 px-5 bg-[#FFE58F] rounded-[10px] font-semibold text-base"
+            className="w-full py-3 px-5 bg-yellow-main rounded-[10px] font-semibold text-base whitespace-nowrap"
             onClick={onClickTrue}
           >
             {TrueBtnText}

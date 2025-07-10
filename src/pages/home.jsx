@@ -153,10 +153,10 @@ export default function Home() {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
-
+  
   const handleCategoryClick = (category) => {
-    const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${encoded}`);
+    //const encoded = encodeURIComponent(category);
+    navigate(`/recruit?category=${category}`);
   };
 
 
@@ -197,6 +197,9 @@ export default function Home() {
   }, []);
   return (
     <div className="relative">
+      {/* Sticky 박스*/}
+      {/* <div className="fixed top-20 left-4 w-40 h-32 bg-white rounded-xl shadow-md border border-gray-100 z-30">박스</div> */}
+      
       {/* 배경 이미지 섹션 */}
       <div className="relative h-[600px] w-screen">
         <img
@@ -205,8 +208,8 @@ export default function Home() {
           className="absolute z-[-1] inset-0 w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
-
-        <div className="relative text-center pt-48">
+      
+        <div className="relative text-center pt-36">
           <h1 className="text-3xl font-semibold mb-4 text-black">
             필요한 일을, 필요한 사람에게
           </h1>
@@ -249,7 +252,7 @@ export default function Home() {
                 return (
                   <button
                     key={category}
-                    onClick={() => handleCategoryClick(category)}
+                    onClick={() => handleCategoryClick(index + 1)}
                     className="flex flex-col items-center gap-2 w-40"
                   >
                     <img
@@ -266,6 +269,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+       
       </div>
 
       {/* 인기 공고문 섹션 */}
