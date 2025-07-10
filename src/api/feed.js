@@ -28,6 +28,7 @@ export const postFeed = async (data) => {
   }
 };
 
+//image/jpeg
 export const uploadToS3 = async (url, file) => {
   return axios.put(url, file, {
     headers: {
@@ -37,6 +38,7 @@ export const uploadToS3 = async (url, file) => {
 };
 
 // headers: { "Content-Type": file.type },
+
 
 export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
   try {
@@ -81,7 +83,6 @@ export const getFeedDetail = async (memberId,feedId) => {
 };
 
 
-
 export const getMemberFeed = async (memberId) => {
   try {
     const response = await client.get(`/api/v1/feed/${memberId}`);
@@ -91,6 +92,7 @@ export const getMemberFeed = async (memberId) => {
     throw error;
   }
 };
+
 
 export async function updateFeed(feedId, data) {
   try {
@@ -111,6 +113,5 @@ export async function deleteFeed(feedId) {
     throw error;
   }
 }
-
 
 
