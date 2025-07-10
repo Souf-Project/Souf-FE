@@ -14,7 +14,6 @@ import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
-const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
 export default function Feed({ feedData }) {
   const navigate = useNavigate();
