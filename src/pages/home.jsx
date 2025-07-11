@@ -210,35 +210,36 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
       
         <div className="relative text-center pt-36">
-          <h1 className="text-3xl font-semibold mb-4 text-black">
+        <h1 className="text-2xl lg:text-3xl font-semibold mb-4 text-black">
             필요한 일을, 필요한 사람에게
           </h1>
-          <h2 className="text-7xl font-bold text-black mb-12">
+          <h2 className="text-4xl lg:text-7xl font-bold text-black mb-12">
             지금 바로 SouF!
           </h2>
 
           {/* 검색창 */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+          <form onSubmit={handleSearch} className="lg:max-w-2xl mx-auto">
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="원하는 일을 검색해보세요"
-                className="w-full px-6 py-3 text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+                className="w-3/4 lg:w-full px-6 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
               />
               <button
                 type="submit"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                className="absolute right-20 lg:right-4 top-1/2 transform -translate-y-1/2"
               >
-                <img src={searchIco} alt="search" className="w-6 h-6" />
+                <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
               </button>
             </div>
           </form>
+
         </div>
 
         {/* 카테고리 섹션 */}
-        <div className="absolute bottom-[-100px] left-0 right-0 py-8">
+        <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
             <div className="flex justify-center gap-8">
               {categories.map((category, index) => {
@@ -316,7 +317,7 @@ export default function Home() {
             더보기
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {competitions.map((competition, index) => {
             // 카테고리 결정 (building, marketing 중 하나)
             
@@ -373,8 +374,8 @@ export default function Home() {
                 )}
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
-                  <p className="text-gray-600 mb-2">주최: {competition.주최}</p>
+                  <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
+                  <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
                   
                   {/* 공모분야 태그 */}
                   {competition.공모분야 && competition.공모분야.length > 0 && (
@@ -382,7 +383,7 @@ export default function Home() {
                       {competition.공모분야.slice(0, 2).map((field, fieldIndex) => (
                         <span
                           key={fieldIndex}
-                          className="px-2 py-1 bg-yellow-point text-white text-xs rounded-full"
+                          className="px-2 py-1 bg-yellow-point text-white text-[12px] lg:text-xs rounded-full"
                         >
                           {field}
                         </span>
