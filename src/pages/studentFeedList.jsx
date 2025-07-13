@@ -19,7 +19,7 @@ export default function StudentFeedList() {
   };
 
   const onFeedClick = (worksId) => {
-    console.log(id + "안녕 " + worksId);
+
     navigate(`/profileDetail/${id}/post/${worksId}`);
   };
 

@@ -116,7 +116,7 @@ export default function Feed({ feedData }) {
       <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
       onClick={() => clickHandler(feedData?.memberId)}>
          <img
-            src={feedData?.profileUrl ? `${BUCKET_URL}${feedData?.profileUrl}` : BasicProfileImg}
+            src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
