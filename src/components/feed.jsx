@@ -62,7 +62,7 @@ export default function Feed({ feedData, onFeedClick }) {
       onFeedClick(null, profileId);
     } else {
       // 기존 로직 (직접 네비게이션)
-      navigate(`/profileDetail/${profileId}`);
+    navigate(`/profileDetail/${profileId}`);
     }
   };
 
@@ -211,8 +211,8 @@ export default function Feed({ feedData, onFeedClick }) {
             navigate("/login");
           }}
           onClickFalse={() => setShowLoginModal(false)}
-        />
-      )}
+              />
+            )}
     </div>
   );
 }

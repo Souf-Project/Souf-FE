@@ -77,7 +77,7 @@ export default function PostDetail() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+}, []);
 
 const handleDeleteClick = () => {
     setShowDeleteModal(true);
@@ -127,39 +127,39 @@ const handleDeleteClick = () => {
         
         
         <div className="flex w-full">
-          <div className="flex w-[65%] h-full">
-            <Swiper
-              pagination={{
-                dynamicBullets: true,
-              }}
-              modules={[Pagination]}
-              className="rounded-lg"
-            >
-              {mediaData?.map((data, i) => {
-                const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+         <div className="flex w-[65%] h-full">
+    <Swiper
+      pagination={{
+        dynamicBullets: true,
+      }}
+      modules={[Pagination]}
+      className="rounded-lg"
+    >
+      {mediaData?.map((data, i) => {
+  const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
 
-                return (
-                  <SwiperSlide key={i} className="flex justify-center items-center">
+  return (
+    <SwiperSlide key={i} className="flex justify-center items-center">
                     <div className="flex justify-center items-center h-auto w-full">
-                      {isVideo ? (
-                        <video
-                          src={`${BUCKET_URL}${data.fileUrl}`}
-                          controls
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      ) : (
-                        <img
-                          src={`${BUCKET_URL}${data.fileUrl}`}
-                          alt={data.fileName}
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      )}
-                    </div>
-                  </SwiperSlide>
-                );
-              })}
-            </Swiper>
-          </div>
+        {isVideo ? (
+          <video
+            src={`${BUCKET_URL}${data.fileUrl}`}
+            controls
+            className="w-full h-full object-cover rounded-lg"
+          />
+        ) : (
+          <img
+            src={`${BUCKET_URL}${data.fileUrl}`}
+            alt={data.fileName}
+            className="w-full h-full object-cover rounded-lg"
+          />
+        )}
+      </div>
+    </SwiperSlide>
+      );
+    })}
+    </Swiper>
+  </div>
           
           <div className="w-full max-w-[35%] h-full pl-6 relative ">
             {/* 사용자 프로필 정보 */}
@@ -216,17 +216,17 @@ const handleDeleteClick = () => {
                 <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-10">
                   <button
                     onClick={() => navigate("/postEdit", {
-                      state: {
-                        worksData,
-                        mediaData
-                      }
-                    })}
+                              state: {
+                              worksData,
+                              mediaData
+                            }
+                          })}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
                   >
                     수정하기
                   </button>
                   <button
-                    onClick={handleDeleteClick}
+                     onClick={handleDeleteClick}
                     className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
                   >
                     삭제하기
@@ -238,15 +238,15 @@ const handleDeleteClick = () => {
         </div>
             
             
-            <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
+          <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
               <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3">
-                {worksData.topic}
-              </div>
+            {worksData.topic}
+            </div>
               <div className="flex flex-col justify-between text-sm text-gray-600 h-full border-t border-gray-300 pt-6">
-                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
-                  {worksData.content}
-                </p>
-                <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
+              <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
+                {worksData.content}
+              </p>
+              <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
               </div>
             </div>
           </div>
@@ -284,7 +284,7 @@ const handleDeleteClick = () => {
          navigate("/login");
        }}
        onClickFalse={() => setShowLoginModal(false)}
-     />
+        />
       )}
     </div>
   );
