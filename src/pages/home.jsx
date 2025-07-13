@@ -293,14 +293,19 @@ export default function Home() {
             <div className="text-center py-8">로딩중...</div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
-              {feedData?.result?.content?.map((profile, index) => (
-                <PopularFeed
-                  key={index}
-                  url={profile.mediaResDto?.fileUrl}
-                  context={profile.categoryName}
-                  username={profile.nickname}
-                />
-              ))}
+              {feedData?.result?.content?.map((profile, index) => {
+               
+                return (
+                  <PopularFeed
+                    key={index}
+                    url={profile.mediaResDto?.fileUrl}
+                    context={profile.categoryName}
+                    username={profile.nickname}
+                    memberId={profile.memberId}
+                    feedId={profile.feedId}
+                  />
+                );
+              })}
             </div>
           )}
         </div>

@@ -130,8 +130,10 @@ export default function ProfileDetail({}) {
 
         <div className="flex gap-12 mb-6 pl-6">
           <img 
-            src={userData?.profileUrl ? S3_BUCKET_URL + userData.profileUrl : BasicImg4} 
-            className="rounded-full w-1/4" 
+            src={userData?.profileImageUrl || BasicImg4} 
+            className="rounded-full w-1/4 object-cover" 
+            alt="프로필 이미지"
+            
           />
           <div className="flex flex-col gap-2 mt-4 w-full">
             <div className="flex items-center ">
@@ -161,7 +163,7 @@ export default function ProfileDetail({}) {
           {userWorks?.map((data) => (
             <img
               src={S3_BUCKET_URL + data.mediaResDto?.fileUrl}
-              className="w-full"
+              className="w-full h-64 object-cover rounded-lg"
               onClick={() => onWorkClick(data.feedId)}
             />
           ))}

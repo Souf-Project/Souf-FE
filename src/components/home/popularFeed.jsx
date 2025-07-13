@@ -3,12 +3,20 @@ import { useNavigate } from "react-router-dom";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
-const PopularFeed = ({ url, context, username }) => {
+const PopularFeed = ({ url, context, username, memberId, feedId }) => {
   const navigate = useNavigate();
-  //http://localhost:5174/profileDetail/1/post/7
-  //navigate(`/profileDetail/${}/post/${}`)
+  
+  const handleClick = () => {
+    
+    if (memberId && feedId) {
+      navigate(`/profileDetail/${memberId}/post/${feedId}`);
+    } else {
+      console.error("memberId 또는 feedId가 없습니다:", { memberId, feedId });
+    }
+  };
+  
   return (
-    <div className="w-[180px] h-[200px] lg:w-64 lg:h-64" onClick={() => navigate(`/profileDetail/1/post/2`)}>
+    <div className="w-[180px] h-[200px] lg:w-64 lg:h-64 cursor-pointer" onClick={handleClick}>
       <img
         src={`${BUCKET_URL}${url}`}
         alt={`${username} 이미지`}

@@ -11,6 +11,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
+import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -36,6 +37,13 @@ export default function PostDetail() {
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
       console.log("feedDetail 결과:", data.result.mediaResDtos);
+      console.log("게시글 작성자 정보:", {
+        memberId: data.result.memberId,
+        nickname: data.result.nickname,
+        categoryName: data.result.categoryName,
+        profileImageUrl: data.result.profileImageUrl,
+        전체데이터: data.result
+      });
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);
       return data;
@@ -124,7 +132,7 @@ const handleDeleteClick = () => {
 
                 return (
                   <SwiperSlide key={i} className="flex justify-center items-center">
-                    <div className="flex justify-center items-center h-[400px] w-full">
+                    <div className="flex justify-center items-center h-auto w-full">
                       {isVideo ? (
                         <video
                           src={`${BUCKET_URL}${data.fileUrl}`}
@@ -145,57 +153,66 @@ const handleDeleteClick = () => {
             </Swiper>
           </div>
           
-          <div className="w-full max-w-[35%] h-full pl-6 relative">
+          <div className="w-full max-w-[35%] h-full pl-6 relative ">
             {/* 사용자 프로필 정보 */}
-        <div className="flex items-center mb-4 w-full">
+        <div className="flex items-center justify-between mb-4 w-full">
+          {/* 프로필 사진과 닉네임 (왼쪽) */}
           <div 
             className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate(`/student-profile/${id}`)}
+            onClick={() => navigate(`/profileDetail/${id}`)}
           >
             <img
-              src={worksData.profileImageUrl ? `${worksData.profileImageUrl}` : "/src/assets/images/BasicProfileImg1.png"}
+              src={worksData.profileImageUrl || "/src/assets/images/BasicProfileImg1.png"}
               alt="프로필 이미지"
               className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+              onError={(e) => {
+                e.target.src = "/src/assets/images/BasicProfileImg1.png";
+              }}
+              onLoad={() => {
+                console.log("프로필 이미지 로드 성공:", worksData.profileImageUrl);
+              }}
             />
             <div className="flex flex-col">
               <span className="font-semibold text-lg text-gray-800">{worksData.nickname}</span>
               <span className="text-sm text-gray-500">{worksData.categoryName}</span>
             </div>
           </div>
-        </div>
-            {/* 본인일 경우에만 */}
-            {Number(id) === memberId && (
-              <div className="flex justify-end" ref={optionsRef}>
-                <button
-                  onClick={() => setShowOptions((prev) => !prev)}
-                  className="text-xl px-2 py-1 rounded hover:bg-gray-100"
-                >
-                  ⋯
-                </button>
+          
+          {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
+          {Number(id) === memberId && (
+            <div ref={optionsRef}>
+              <button
+                onClick={() => setShowOptions((prev) => !prev)}
+                className="text-xl px-2 py-1 rounded hover:bg-gray-100"
+              >
+                ⋯
+              </button>
 
-                {showOptions && (
-                  <div className="absolute left-[250px] mt-2 w-28 bg-white border rounded shadow-lg z-10">
-                    <button
-                      onClick={() => navigate("/postEdit", {
-                        state: {
-                          worksData,
-                          mediaData
-                        }
-                      })}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                    >
-                      수정하기
-                    </button>
-                    <button
-                      onClick={handleDeleteClick}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
-                    >
-                      삭제하기
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+              {showOptions && (
+                <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-10">
+                  <button
+                    onClick={() => navigate("/postEdit", {
+                      state: {
+                        worksData,
+                        mediaData
+                      }
+                    })}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                  >
+                    수정하기
+                  </button>
+                  <button
+                    onClick={handleDeleteClick}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
+                  >
+                    삭제하기
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+            
             
             <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
               <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3">
