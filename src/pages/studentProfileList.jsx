@@ -36,6 +36,7 @@ export default function StudentProfileList() {
   };
 
   const userData = feedData?.result?.content || [];
+  // console.log("userData", userData);
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
@@ -46,7 +47,7 @@ export default function StudentProfileList() {
               <Profile
                 key={data.id}
                 memberId={data.memberId}
-                profileImg={data.profileImgUrl}
+                profileImageUrl={data.profileImageUrl}
                 temperature={data.temperature}
                 userName={data.nickname}
                 userDetail={data.userDetail}

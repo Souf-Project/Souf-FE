@@ -28,6 +28,7 @@ export default function PostDetail() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showProfileSkeleton, setShowProfileSkeleton] = useState(true);
 
     const {
     data: feedData,
@@ -68,6 +69,15 @@ export default function PostDetail() {
     document.removeEventListener("mousedown", handleClickOutside);
   };
 }, []);
+
+  // 1초 후 스켈레톤 애니메이션 숨기기
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowProfileSkeleton(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
 const handleDeleteClick = () => {
     setShowDeleteModal(true);
@@ -165,12 +175,17 @@ const handleDeleteClick = () => {
                 alt="프로필 이미지"
                 className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
                 onError={(e) => {
-                  e.target.src = "/src/assets/images/BasicProfileImg1.png";
+                  e.target.src = BasicProfileImg1;
                 }}
-                
               />
-            ) : (
+            ) : showProfileSkeleton ? (
               <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
+            ) : (
+              <img
+                src={BasicProfileImg1}
+                alt="기본 프로필 이미지"
+                className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+              />
             )}
             <div className="flex flex-col">
               {worksData.nickname ? (

@@ -11,19 +11,34 @@ import AlertModal from "../alertModal";
 
 export default function Profile({
   memberId,
-  profileImg,
+  profileImageUrl,
   temperature,
   userName,
   userDetail,
   userWorks,
 }) {
+  // console.log("profileImageUrl", profileImageUrl);
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
 
   const handleChat = async (memberId) => {
-    const response = await postChatrooms(memberId);
-    console.log(response);
+    if (!currentMemberId) {
+      setShowLoginModal(true);
+      return;
+    }
+    
+    try {
+      const response = await postChatrooms(memberId);
+
+      // 채팅방 생성 후 해당 채팅방으로 이동
+      if (response.roomId) {
+        navigate(`/chat`);
+      } else {
+      }
+    } catch (error) {
+      console.error("채팅방 생성 실패:", error);
+    }
   };
   
   // 기본 이미지를 랜덤으로 선택하는 함수
@@ -48,7 +63,7 @@ export default function Profile({
       <img className="absolute top-4 right-4 w-11 z-10" src={sendIco} onClick={() => handleChat(memberId)} />
       <div onClick={() => clickHandler(memberId)}>
       <img 
-        src={profileImg || getRandomDefaultImage()} 
+        src={profileImageUrl || getRandomDefaultImage()} 
         className="rounded-full" 
         alt={userName || "프로필 이미지"}
         onError={(e) => {

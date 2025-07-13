@@ -51,7 +51,7 @@ export default function ProfileDetail({}) {
     useEffect(() => {
       const timer = setTimeout(() => {
         setShowIntroSkeleton(false);
-      }, 3000);
+      }, 1000);
 
       return () => clearTimeout(timer);
     }, []);
@@ -115,7 +115,7 @@ export default function ProfileDetail({}) {
     // 애니메이션 완료 후 상태 초기화
     setTimeout(() => {
       setIsAnimating(false);
-    }, 300);
+    }, 200);
   };
 
   const onWorkClick = (worksId) => {
@@ -141,6 +141,9 @@ export default function ProfileDetail({}) {
             src={userData?.profileImageUrl || BasicImg4} 
             className="rounded-full w-1/4 object-cover" 
             alt="프로필 이미지"
+            onError={(e) => {
+              e.target.src = BasicImg4;
+            }}
           />
           
           <div className="flex flex-col gap-2 mt-4 w-full">
