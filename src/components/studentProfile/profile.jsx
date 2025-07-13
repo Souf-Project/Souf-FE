@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import sendIco from "../../assets/images/sendIco.svg";
 import BasicImg1 from "../../assets/images/BasicProfileImg1.png";
 import BasicImg2 from "../../assets/images/BasicProfileImg2.png";
 import BasicImg3 from "../../assets/images/BasicProfileImg3.png";
 import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
 import { postChatrooms } from "../../api/chat";
+import { UserStore } from "../../store/userStore";
+import AlertModal from "../alertModal";
 
 export default function Profile({
   memberId,
@@ -15,6 +18,8 @@ export default function Profile({
   userWorks,
 }) {
   const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { memberId: currentMemberId } = UserStore();
 
   const handleChat = async (memberId) => {
     const response = await postChatrooms(memberId);
@@ -29,6 +34,10 @@ export default function Profile({
   };
 
   const clickHandler = (memberId) => {
+    if (!currentMemberId) {
+      setShowLoginModal(true);
+      return;
+    }
     navigate(`/profileDetail/${memberId}`);
   };
 
@@ -57,6 +66,21 @@ export default function Profile({
         ))}
       </div>
       </div>
+      
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }
