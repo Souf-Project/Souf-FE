@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getChatRooms, postChatImage, postChatImageUpload } from "../../api/chat";
+import { postChatVideo, postVideoSignedUrl, postVideoUpload, uploadToS3Video } from "../../api/video";
 import ReceiverMessage from "./ReceiverMessage";
 import SenderMessage from "./senderMessage";
 import { UserStore } from "../../store/userStore";
@@ -10,10 +11,11 @@ import {
   sendChatMessage,
 } from "../../api/chatSocket";
 import plusIco from "../../assets/images/plusIco.svg"
-import AlertModal from "../alertModal";
+import AlertModal from "../AlertModal";
 import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
 import chatImgIcon from "../../assets/images/chatImgIcon.png"
+import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
 
@@ -28,6 +30,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
   const fileInputRef = useRef(null);
+  const videoInputRef = useRef(null);
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -42,7 +45,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     queryFn: async () => {
       const data = await getChatRooms(roomId);
       
-      console.log("채팅 조회:", data);
+      
       return data;
     },
     keepPreviousData: true,
@@ -55,21 +58,18 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
 
   useEffect(() => {
     if (!roomId || !nickname) return;
-
-    console.log("채팅 소켓 연결 시작:", { roomId, nickname });
-
-    connectChatSocket(roomId, (incomingMessage) => {
-      console.log("실시간 메시지 수신:", incomingMessage);
-      console.log("현재 pendingImageUpload 상태:", pendingImageUpload);
+  
+        connectChatSocket(roomId, (incomingMessage) => {
+    
       setRealtimeMessages((prev) => [...prev, incomingMessage]);
+  
+      const isFileOrImage = ["IMAGE", "FILE"].includes(incomingMessage.type);
       
-      // 이미지 메시지이고 대기 중인 업로드가 있는 경우 postChatImageUpload 호출
-      if (incomingMessage.type === "IMAGE" && pendingImageUpload) {
-        console.log("이미지 메시지 감지, chatId:", incomingMessage.chatId);
-        console.log("대기 중인 업로드 정보:", pendingImageUpload);
-        handleImageUploadComplete(incomingMessage.chatId, pendingImageUpload);
+      if (isFileOrImage && pendingImageUpload) {
+      
+        handleFileUploadComplete(incomingMessage.chatId, pendingImageUpload);
       } else {
-        console.log("조건 불일치 - type:", incomingMessage.type, "pendingImageUpload:", !!pendingImageUpload);
+      
       }
     });
 
@@ -78,6 +78,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
       disconnectChatSocket();
     };
   }, [roomId, nickname, pendingImageUpload]);
+  
 
   // 스크롤 자동 내리기
   useEffect(() => {
@@ -94,15 +95,15 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
       content: newMessage,
     };
 
-    console.log("메시지 전송 시도:", messageObj);
+   
     
     const success = sendChatMessage(messageObj);
     if (success) {
-      setNewMessage("");
+    setNewMessage("");
       console.log("메시지 전송 완료");
     } else {
       console.error("메시지 전송 실패");
-      // 사용자에게 알림을 줄 수 있습니다
+      
     }
   };
 
@@ -121,76 +122,176 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setShowDegreeModal(true);
     setShowButtonList(false);
   };
+  
 
-  // 이미지 업로드 처리 함수
-  const handleImageUpload = async (file) => {
+  const handleFileUpload = async (file) => {
     try {
-      console.log("이미지 업로드 시작:", file.name);
-      
-      // 1. 백엔드에 파일 업로드 요청하여 presigned URL 받기
+     
+     
       const uploadResponse = await postChatImage([file.name]);
-      console.log("업로드 응답:", uploadResponse);
-      
       if (!uploadResponse || uploadResponse.length === 0) {
         throw new Error("업로드 URL을 받지 못했습니다.");
       }
-      
+  
       const uploadInfo = uploadResponse[0];
-      
-      // 2. S3에 파일 업로드
+
+      // let contentType = file.type;
+    
+    
       await uploadToS3(uploadInfo.presignedUrl, file);
-      console.log("S3 업로드 완료");
-      
-      // 3. 업로드된 이미지를 채팅 메시지로 전송
-      const imageMessage = {
+     
+      let fileType = file.type;
+      // const fileType = file.type;
+
+      const isImage = fileType.startsWith("image/");
+      const isVideo = fileType.startsWith("video/");
+      const messageType = isImage ? "IMAGE" : isVideo ? "VIDEO" : "FILE";
+      const fileMessage = {
         roomId,
         sender: nickname,
-        type: "IMAGE",
+        type: messageType,
         content: uploadInfo.fileUrl,
       };
-      
-      console.log("이미지 메시지 전송 시도:", imageMessage);
-      const success = sendChatMessage(imageMessage);
-      
+     
+      const success = sendChatMessage(fileMessage);
       if (success) {
-        console.log("이미지 메시지 전송 완료");
-        
-        // 4. 대기 상태 설정 - WebSocket 응답에서 chatId를 받으면 postChatImageUpload 호출
+       
         setPendingImageUpload({
           fileUrl: uploadInfo.fileUrl,
           fileName: file.name,
           fileType: file.type.split("/")[1].toUpperCase(),
         });
       } else {
-        console.error("이미지 메시지 전송 실패");
+        console.error("파일 메시지 전송 실패");
       }
-      
     } catch (error) {
-      console.error("이미지 업로드 에러:", error);
-      alert("이미지 업로드에 실패했습니다.");
+      console.error("파일 업로드 에러:", error);
+      alert("파일 업로드에 실패했습니다.");
     }
   };
-
-  // 파일 선택 처리
+  
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
-      handleImageUpload(file);
+      handleFileUpload(file);
     }
-    // 파일 입력 초기화
     event.target.value = '';
   };
 
+  const handleVideoSelect = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // 동영상 파일 크기 제한 (100MB)
+      const maxSize = 100 * 1024 * 1024; // 100MB
+      if (file.size > maxSize) {
+        alert("동영상 파일 크기는 100MB 이하여야 합니다.");
+        return;
+      }
+      
+      try {
+       
+        // 1. /api/v1/chat/video-upload 호출
+        const videoUploadResponse = await postChatVideo([file.name]);
+        
+        // videoUploadResponse에서 uploadId 추출
+        const uploadId = videoUploadResponse.uploadId;
+        const responseFileName = videoUploadResponse.fileName;
+       
+        if (!uploadId) {
+          throw new Error("uploadId를 받지 못했습니다.");
+        }
+        
+        // 2. 멀티파트 업로드 로직 (postUpload와 동일)
+        const chunkSize = 10 * 1024 * 1024; // 10MB 청크
+        const chunkCount = Math.ceil(file.size / chunkSize);
+        let getSignedUrlRes = "";
+        let multiUploadArray = [];
+        
+        for (let uploadCount = 1; uploadCount <= chunkCount; uploadCount++) {
+        
+          const start = (uploadCount - 1) * chunkSize;
+          const end = uploadCount * chunkSize;
+          const fileBlob =
+            uploadCount < chunkCount
+              ? file.slice(start, end)
+              : file.slice(start);
+
+          const signedUrlRes = await postVideoSignedUrl({
+            uploadId: uploadId,
+            partNumber: uploadCount,
+            fileName: responseFileName,
+          });
+
+          const presignedUrl = signedUrlRes?.result?.presignedUrl;
+          const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
+
+          const etag = uploadChunk.headers.get("ETag")?.replace(/"/g, "");
+          multiUploadArray.push({
+            awsETag: etag,
+            partNumber: uploadCount,
+          });
+
+          // 마지막 part만 URL 저장
+          if (uploadCount === chunkCount) {
+            getSignedUrlRes = signedUrlRes;
+          }
+        }
+        
+        // 3. /api/v1/upload/complete-video-upload로 완료하기
+        try {
+          const completeVideoData = {
+            uploadId: uploadId,
+            fileName: responseFileName,
+            parts: multiUploadArray
+          };
+        
+          await postVideoUpload(completeVideoData);
+          
+          // 4. 동영상 업로드 완료 후 실제 동영상 URL을 받아서 채팅 메시지로 전송
+          const videoMessage = {
+            roomId,
+            sender: nickname,
+            type: "VIDEO",
+            content: getSignedUrlRes?.result?.fileUrl, // presigned URL이 아닌 실제 동영상 URL 사용
+          };
+          
+          const success = sendChatMessage(videoMessage);
+          if (success) {
+            console.log("동영상 메시지 전송 완료");
+          } else {
+            console.error("동영상 메시지 전송 실패");
+          }
+        
+        } catch (completeError) {
+          console.error("complete-video-upload 에러:", completeError);
+        }
+        
+      } catch (error) {
+        console.error("동영상 업로드 에러:", error);
+        alert("동영상 업로드에 실패했습니다.");
+      }
+    }
+    event.target.value = '';
+  };
+  
   const handleImgButtonClick = () => {
     setShowButtonList(false);
     fileInputRef.current?.click();
   };
 
+  const handleVideoButtonClick = () => {
+    setShowButtonList(false);
+    videoInputRef.current?.click();
+  };
+
+  const handleFileButtonClick = () => {
+    setShowButtonList(false);
+  };
+
   // 이미지 업로드 완료 처리
-  const handleImageUploadComplete = async (chatId, uploadInfo) => {
+  const handleFileUploadComplete = async (chatId, uploadInfo) => {
     try {
-      console.log("handleImageUploadComplete 시작 - chatId:", chatId);
-      console.log("업로드 정보:", uploadInfo);
+     
       
       await postChatImageUpload({
         chatId: chatId,
@@ -198,7 +299,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         fileName: [uploadInfo.fileName],
         fileType: [uploadInfo.fileType],
       });
-      console.log("postChatImageUpload 완료, chatId:", chatId);
+     
       setPendingImageUpload(null); // 대기 상태 해제
     } catch (error) {
       console.error("postChatImageUpload 에러:", error);
@@ -215,6 +316,18 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     setSelectedImage(imageUrl);
   };
 
+  const handleFileClick = (fileUrl) => {
+    // 파일 다운로드
+    const link = document.createElement('a');
+    link.href = fileUrl;
+    link.download = fileUrl.split('/').pop();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  
+
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
@@ -227,7 +340,16 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
     type="file"
     ref={fileInputRef}
     onChange={handleFileSelect}
-    accept="image/*"
+    accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.hwp,.zip"
+    style={{ display: 'none' }}
+  />
+
+  {/* 숨겨진 동영상 입력 */}
+  <input
+    type="file"
+    ref={videoInputRef}
+    onChange={handleVideoSelect}
+    accept="video/*"
     style={{ display: 'none' }}
   />
 
@@ -261,7 +383,7 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
   <div className="flex-1 p-4 overflow-y-auto">
     {allMessages?.map((chat, idx) => {
       const isMyMessage = chat.sender === nickname;
-      
+
       // 현재 메시지의 날짜
       const currentMessageDate = chat.createdTime 
         ? new Date(chat.createdTime).toLocaleDateString()
@@ -286,20 +408,22 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
           
           {/* 메시지 */}
           {isMyMessage ? (
-            <SenderMessage 
-              content={chat.content} 
-              createdTime={chat.createdTime}
+        <SenderMessage 
+          content={chat.content} 
+          createdTime={chat.createdTime}
               type={chat.type}
               onImageClick={handleImageClick}
-            />
-          ) : (
-            <ReceiverMessage 
-              content={chat.content} 
-              createdTime={chat.createdTime}
+              onFileClick={handleFileClick}
+        />
+      ) : (
+        <ReceiverMessage 
+          content={chat.content} 
+          createdTime={chat.createdTime}
               opponentProfileImageUrl={opponentProfileImageUrl}
               type={chat.type}
               onImageClick={handleImageClick}
-            />
+              onFileClick={handleFileClick}
+        />
           )}
         </div>
       );
@@ -350,8 +474,20 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
           className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
           onClick={handleImgButtonClick}
         >
-          <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
+          <img src={chatImgIcon} alt="파일 첨부" className="w-6 h-6" />
         </button>
+        <button 
+          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
+          onClick={handleVideoButtonClick}
+        >
+          <img src={chatVideoIcon} alt="동영상" className="w-6 h-6" />
+        </button>
+        {/* <button 
+          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          onClick={handleFileButtonClick}
+        >
+          <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
+        </button> */}
         <button 
           className="bg-yellow-300 text-white px-6 py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200"
           onClick={handleButton3Click}
