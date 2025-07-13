@@ -10,6 +10,7 @@ import { getProfileDetail } from "../../api/profile";
 import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
+import Loading from "../loading";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -31,7 +32,7 @@ export default function ProfileDetail({}) {
       queryKey: ["profileDetail"],
       queryFn: async () => {
         const data = await getProfileDetail(id);
-        console.log("사람 디테일:", data);
+       
         setUserData(data.result.memberResDto);
         setUserWorks(data.result.feedSimpleResDtoPage.content)
         
@@ -116,6 +117,10 @@ export default function ProfileDetail({}) {
 
 
 
+  if (isLoading) {
+    return <Loading text="프로필 정보를 불러오는 중..." />;
+  }
+
   return (
     <div className="flex flex-col pt-24 px-4 max-w-4xl w-full ">
       <button
@@ -129,33 +134,56 @@ export default function ProfileDetail({}) {
         
 
         <div className="flex gap-12 mb-6 pl-6">
-          <img 
-            src={userData?.profileImageUrl || BasicImg4} 
-            className="rounded-full w-1/4 object-cover" 
-            alt="프로필 이미지"
-            
-          />
+          {/* 프로필 이미지 */}
+          {userData?.profileImageUrl ? (
+            <img 
+              src={userData.profileImageUrl} 
+              className="rounded-full w-1/4 object-cover" 
+              alt="프로필 이미지"
+            />
+          ) : (
+            <div className="rounded-full w-1/4 bg-gray-200 animate-pulse"></div>
+          )}
+          
           <div className="flex flex-col gap-2 mt-4 w-full">
-            <div className="flex items-center ">
-            <div className="font-semibold text-[23px]">{userData?.nickname}</div>
-            {UserStore.getState().memberId !== userData?.id && (
-              <button
-                className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
-                  isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
-                } hover:scale-110 `}
-                onClick={handleFavorite}
-              >
-                <img 
-                  src={star ? starOn : starOff} 
-                  alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
-                  className="w-8 h-8"
-                />
-              </button>
-            )}
+            <div className="flex items-center">
+              {/* 닉네임 */}
+              {userData?.nickname ? (
+                <div className="font-semibold text-[23px]">{userData.nickname}</div>
+              ) : (
+                <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+              )}
+              
+              {/* 즐겨찾기 버튼 - 본인이 아닐 때만 */}
+              {UserStore.getState().memberId !== userData?.id && (
+                <button
+                  className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
+                    isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
+                  } hover:scale-110 `}
+                  onClick={handleFavorite}
+                >
+                  <img 
+                    src={star ? starOn : starOff} 
+                    alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                    className="w-8 h-8"
+                  />
+                </button>
+              )}
             </div>
            
-            <div className="text-[#5B5B5B]">{userData?.intro}</div>
-             <div className="text-[#5B5B5B]">{userData?.personalUrl}</div>
+            {/* 자기소개 */}
+            {userData?.intro ? (
+              <div className="text-[#5B5B5B]">{userData.intro}</div>
+            ) : (
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+            )}
+            
+            {/* 개인 URL */}
+            {userData?.personalUrl ? (
+              <div className="text-[#5B5B5B]">{userData.personalUrl}</div>
+            ) : (
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+            )}
           </div>
         </div>
         <hr className="border-t border-gray-200 my-6" />

@@ -12,6 +12,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
 import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
+import Loading from "../loading";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -36,14 +37,7 @@ export default function PostDetail() {
     queryKey: ["feedDetail"],
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
-      console.log("feedDetail 결과:", data.result.mediaResDtos);
-      console.log("게시글 작성자 정보:", {
-        memberId: data.result.memberId,
-        nickname: data.result.nickname,
-        categoryName: data.result.categoryName,
-        profileImageUrl: data.result.profileImageUrl,
-        전체데이터: data.result
-      });
+    
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);
       return data;
@@ -97,6 +91,10 @@ const handleDeleteClick = () => {
     setShowCompleteModal(false);
     navigate("/");
   };
+
+  if (isLoading) {
+    return <Loading text="게시글을 불러오는 중..." />;
+  }
 
   return (
     <div className="flex flex-col py-16 px-4 max-w-4xl w-full mx-auto">
@@ -161,20 +159,31 @@ const handleDeleteClick = () => {
             className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => navigate(`/profileDetail/${id}`)}
           >
-            <img
-              src={worksData.profileImageUrl || "/src/assets/images/BasicProfileImg1.png"}
-              alt="프로필 이미지"
-              className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
-              onError={(e) => {
-                e.target.src = "/src/assets/images/BasicProfileImg1.png";
-              }}
-              onLoad={() => {
-                console.log("프로필 이미지 로드 성공:", worksData.profileImageUrl);
-              }}
-            />
+            {worksData.profileImageUrl ? (
+              <img
+                src={worksData.profileImageUrl}
+                alt="프로필 이미지"
+                className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+                onError={(e) => {
+                  e.target.src = "/src/assets/images/BasicProfileImg1.png";
+                }}
+                
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
+            )}
             <div className="flex flex-col">
-              <span className="font-semibold text-lg text-gray-800">{worksData.nickname}</span>
-              <span className="text-sm text-gray-500">{worksData.categoryName}</span>
+              {worksData.nickname ? (
+                <>
+                  <span className="font-semibold text-lg text-gray-800">{worksData.nickname}</span>
+                  <span className="text-sm text-gray-500">{worksData.categoryName}</span>
+                </>
+              ) : (
+                <>
+                  <div className="h-6 bg-gray-200 rounded animate-pulse mb-1 w-24"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+                </>
+              )}
             </div>
           </div>
           
