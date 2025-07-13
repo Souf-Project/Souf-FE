@@ -104,19 +104,9 @@ export default function ContestDetail() {
 }, [id, category]);
 
     const handleBack = () => {
-        navigate(`/contests`);
+        navigate(-1);
     };
 
-    const getCategoryTitle = (cat) => {
-        switch(cat) {
-            case 'building':
-                return '건축·건설·인테리어';
-            case 'marketing':
-                return '광고·마케팅';
-            default:
-                return '건축·건설·인테리어';
-        }
-    };
 
     // 이미지 URL 생성 함수
     const getImageUrl = (imagePath) => {
@@ -238,7 +228,7 @@ export default function ContestDetail() {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                {getCategoryTitle(category)} 목록으로
+                뒤로가기
             </button>
 
             {/* 썸네일 이미지와 기본 정보 섹션 */}

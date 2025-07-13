@@ -324,7 +324,7 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {competitions.map((competition, index) => {
-            console.log("competition", competition);
+            // console.log("competition", competition);
             return (
               <div
                 key={index}
