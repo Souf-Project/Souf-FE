@@ -11,7 +11,7 @@ import {
   sendChatMessage,
 } from "../../api/chatSocket";
 import plusIco from "../../assets/images/plusIco.svg"
-import AlertModal from "../AlertModal";
+import AlertModal from "../alertModal";
 import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
 import chatImgIcon from "../../assets/images/chatImgIcon.png"
