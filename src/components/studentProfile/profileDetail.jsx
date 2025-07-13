@@ -10,7 +10,6 @@ import { getProfileDetail } from "../../api/profile";
 import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
-import Loading from "../loading";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -20,6 +19,7 @@ export default function ProfileDetail({}) {
   const [userData, setUserData] = useState([]);
   const [userWorks, setUserWorks] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showIntroSkeleton, setShowIntroSkeleton] = useState(true);
   const fromMemberId = UserStore.getState().memberId;
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -47,6 +47,15 @@ export default function ProfileDetail({}) {
       },
     });
 
+    // 3초 후 스켈레톤 애니메이션 숨기기
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setShowIntroSkeleton(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }, []);
+
     const handleFavorite = async () => {
 
       if (!fromMemberId || !userData.id) {
@@ -57,10 +66,10 @@ export default function ProfileDetail({}) {
       try {
         if (!star) {
           const data = await postFavorite(fromMemberId, userData.id);
-          console.log("즐겨찾기 생성:", data);
+        
         } else {
           const data = await deleteFavorite(fromMemberId, userData.id);
-          console.log("즐겨찾기 삭제:", data);
+        
         }
         
         // API 호출 성공 후 UI 상태 변경
@@ -76,16 +85,14 @@ export default function ProfileDetail({}) {
         if (fromMemberId && userData.id && fromMemberId !== userData.id) {
           try {
             const response = await getFavorite(fromMemberId, 0, 100);
-            console.log("즐겨찾기 목록:", response);
-            
-            // 응답에서 해당 사용자가 즐겨찾기 목록에 있는지 확인
+         
             const favoriteList = response.result?.content || [];
             
             
             const favoriteIds = favoriteList.map(favorite => favorite.id);
            
             const isFavorited = favoriteIds.includes(userData.id);
-            console.log("즐겨찾기 상태:", isFavorited);
+         
             setStar(isFavorited);
           } catch (error) {
             console.error("즐겨찾기 상태 확인 에러:", error);
@@ -116,11 +123,6 @@ export default function ProfileDetail({}) {
   };
 
 
-
-  if (isLoading) {
-    return <Loading text="프로필 정보를 불러오는 중..." />;
-  }
-
   return (
     <div className="flex flex-col pt-24 px-4 max-w-4xl w-full ">
       <button
@@ -135,15 +137,11 @@ export default function ProfileDetail({}) {
 
         <div className="flex gap-12 mb-6 pl-6">
           {/* 프로필 이미지 */}
-          {userData?.profileImageUrl ? (
-            <img 
-              src={userData.profileImageUrl} 
-              className="rounded-full w-1/4 object-cover" 
-              alt="프로필 이미지"
-            />
-          ) : (
-            <div className="rounded-full w-1/4 bg-gray-200 animate-pulse"></div>
-          )}
+          <img 
+            src={userData?.profileImageUrl || BasicImg4} 
+            className="rounded-full w-1/4 object-cover" 
+            alt="프로필 이미지"
+          />
           
           <div className="flex flex-col gap-2 mt-4 w-full">
             <div className="flex items-center">
@@ -174,28 +172,39 @@ export default function ProfileDetail({}) {
             {/* 자기소개 */}
             {userData?.intro ? (
               <div className="text-[#5B5B5B]">{userData.intro}</div>
-            ) : (
+            ) : showIntroSkeleton ? (
               <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+            ) : (
+              <div className="text-[#5B5B5B] opacity-50"></div>
             )}
             
             {/* 개인 URL */}
             {userData?.personalUrl ? (
               <div className="text-[#5B5B5B]">{userData.personalUrl}</div>
+            ) : showIntroSkeleton ? (
+              <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
             ) : (
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+              <div className="text-[#5B5B5B] opacity-50"></div>
             )}
           </div>
         </div>
         <hr className="border-t border-gray-200 my-6" />
-        <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
-          {userWorks?.map((data) => (
-            <img
-              src={S3_BUCKET_URL + data.mediaResDto?.fileUrl}
-              className="w-full h-64 object-cover rounded-lg"
-              onClick={() => onWorkClick(data.feedId)}
-            />
-          ))}
-        </div>
+        {userWorks && userWorks.length > 0 ? (
+          <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
+            {userWorks.map((data) => (
+              <img
+                src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : BasicImg4}
+                className="w-full h-64 object-cover rounded-lg"
+                onClick={() => onWorkClick(data.feedId)}
+                alt="작품 이미지"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-gray-500 text-lg">등록된 피드가 없습니다.</div>
+          </div>
+        )}
       </div>
       
       {showLoginModal && (
