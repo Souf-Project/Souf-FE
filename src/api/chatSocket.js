@@ -23,7 +23,7 @@ export const connectChatSocket = (roomId, onMessage) => {
   
   const accessToken = localStorage.getItem("accessToken");
   
-  const socket = new WebSocket("ws://3.36.253.111:8080/ws");
+  const socket = new WebSocket("ws://api-souf.co.kr/ws");
   
   stompClient = new Client({
     webSocketFactory: () => socket,
