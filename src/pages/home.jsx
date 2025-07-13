@@ -170,9 +170,9 @@ export default function Home() {
         const res = await getContests(pageable); // API에서 전체 데이터 가져옴
         const all = res?.data || [];
 
-        // 무작위 3개 추출
+        // 무작위 4개 추출 (grid 컬럼 수에 맞춤)
         const shuffled = all.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 3);
+        const selected = shuffled.slice(0, 4);
 
         setCompetitions(selected);
 
@@ -274,8 +274,8 @@ export default function Home() {
       </div>
 
       {/* 인기 공고문 섹션 */}
-      <div className="relative mt-16">
-        <div className="relative flex flex-col lg:max-w-6xl max-w-2xl mx-auto px-6 py-16 overflow-x-hidden">
+      <div className="relative mt-16 px-6 lg:px-24 ">
+        <div className="relative flex flex-col  mx-auto px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>
@@ -284,8 +284,8 @@ export default function Home() {
       </div>
 
       {/* 인기 피드 섹션 */}
-      <div className="relative">
-        <div className="relative items-center  lg:max-w-6xl max-w-2xl mx-auto px-4 sm:px-6 py-16">
+      <div className="relative px-6 lg:px-24 ">
+        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 피드 구경하러 가기
           </h2>
@@ -307,7 +307,7 @@ export default function Home() {
       </div>
 
       {/* 공모전 정보 섹션 */}
-      <div className="relative max-w-6xl mx-auto px-6 py-16">
+      <div className="relative px-6 lg:px-24  mx-auto py-16">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
           <button
@@ -317,17 +317,13 @@ export default function Home() {
             더보기
           </button>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {competitions.map((competition, index) => {
-            // 카테고리 결정 (building, marketing 중 하나)
-            
-            // 해당 카테고리에서의 인덱스 찾기
-            
             return (
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${category}/${index}`)}
+                onClick={() => navigate(`/contests/${competition.categoryId || 1}/${competition.id || index}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
