@@ -374,7 +374,7 @@ export default function Step1() {
         type="password"
         name="password"
         essentialText="비밀번호를 입력해주세요."
-        subtitle="영문자, 숫자, 특수문자 모두 포함 / 8자~20자"
+        subtitle="영문자, 숫자, 특수문자(@,$,!,%,*,#,?,&) 포함 / 8자~20자"
         value={formData.password}
         onChange={(e) => handleInputChange("password", e)}
         isValidateTrigger={errors.password}

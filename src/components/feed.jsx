@@ -14,6 +14,7 @@ import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
+
 export default function Feed({ feedData }) {
   const navigate = useNavigate();
   const [feeds, setFeeds] = useState([]);
@@ -24,6 +25,7 @@ export default function Feed({ feedData }) {
   const [mediaData, setMediaData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const {memberId} = UserStore();
   const maxLength = 100;
   const [pageable, setPageable] = useState({
@@ -191,6 +193,20 @@ export default function Feed({ feedData }) {
                 onClickTrue={handleCompleteConfirm}
               />
             )}
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }

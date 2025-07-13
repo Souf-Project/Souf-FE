@@ -170,9 +170,9 @@ export default function Home() {
         const res = await getContests(pageable); // API에서 전체 데이터 가져옴
         const all = res?.data || [];
 
-        // 무작위 3개 추출
+        // 무작위 4개 추출 (grid 컬럼 수에 맞춤)
         const shuffled = all.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 3);
+        const selected = shuffled.slice(0, 4);
 
         setCompetitions(selected);
 
@@ -210,35 +210,36 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
       
         <div className="relative text-center pt-36">
-          <h1 className="text-3xl font-semibold mb-4 text-black">
+        <h1 className="text-2xl lg:text-3xl font-semibold mb-4 text-black">
             필요한 일을, 필요한 사람에게
           </h1>
-          <h2 className="text-7xl font-bold text-black mb-12">
+          <h2 className="text-4xl lg:text-7xl font-bold text-black mb-12">
             지금 바로 SouF!
           </h2>
 
           {/* 검색창 */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+          <form onSubmit={handleSearch} className="lg:max-w-2xl mx-auto">
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="원하는 일을 검색해보세요"
-                className="w-full px-6 py-3 text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+                className="w-3/4 lg:w-full px-6 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
               />
               <button
                 type="submit"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                className="absolute right-20 lg:right-4 top-1/2 transform -translate-y-1/2"
               >
-                <img src={searchIco} alt="search" className="w-6 h-6" />
+                <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
               </button>
             </div>
           </form>
+
         </div>
 
         {/* 카테고리 섹션 */}
-        <div className="absolute bottom-[-100px] left-0 right-0 py-8">
+        <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
             <div className="flex justify-center gap-8">
               {categories.map((category, index) => {
@@ -273,8 +274,8 @@ export default function Home() {
       </div>
 
       {/* 인기 공고문 섹션 */}
-      <div className="relative mt-16">
-        <div className="relative flex flex-col lg:max-w-6xl max-w-2xl mx-auto px-6 py-16 overflow-x-hidden">
+      <div className="relative mt-16 px-6 lg:px-24 ">
+        <div className="relative flex flex-col  mx-auto px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>
@@ -283,8 +284,8 @@ export default function Home() {
       </div>
 
       {/* 인기 피드 섹션 */}
-      <div className="relative">
-        <div className="relative items-center  lg:max-w-6xl max-w-2xl mx-auto px-4 sm:px-6 py-16">
+      <div className="relative px-6 lg:px-24 ">
+        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 피드 구경하러 가기
           </h2>
@@ -306,7 +307,7 @@ export default function Home() {
       </div>
 
       {/* 공모전 정보 섹션 */}
-      <div className="relative max-w-6xl mx-auto px-6 py-16">
+      <div className="relative px-6 lg:px-24  mx-auto py-16">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
           <button
@@ -316,17 +317,13 @@ export default function Home() {
             더보기
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {competitions.map((competition, index) => {
-            // 카테고리 결정 (building, marketing 중 하나)
-            
-            // 해당 카테고리에서의 인덱스 찾기
-            
             return (
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${category}/${index}`)}
+                onClick={() => navigate(`/contests/${competition.categoryId || 1}/${competition.id || index}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
@@ -373,8 +370,8 @@ export default function Home() {
                 )}
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
-                  <p className="text-gray-600 mb-2">주최: {competition.주최}</p>
+                  <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
+                  <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
                   
                   {/* 공모분야 태그 */}
                   {competition.공모분야 && competition.공모분야.length > 0 && (
@@ -382,7 +379,7 @@ export default function Home() {
                       {competition.공모분야.slice(0, 2).map((field, fieldIndex) => (
                         <span
                           key={fieldIndex}
-                          className="px-2 py-1 bg-yellow-point text-white text-xs rounded-full"
+                          className="px-2 py-1 bg-yellow-point text-white text-[12px] lg:text-xs rounded-full"
                         >
                           {field}
                         </span>
