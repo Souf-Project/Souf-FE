@@ -111,11 +111,17 @@ export default function Chat() {
               {selectedChat ? (
                 <ChatMessage
                   roomId={selectedChat}
-                  chatUsername={
+                  chatNickname={
                     chatList.find((chat) => chat.roomId === selectedChat)?.opponentNickname
                   }
                   opponentProfileImageUrl={
                     chatList.find((chat) => chat.roomId === selectedChat)?.opponentProfileImageUrl
+                  }
+                  opponentId={
+                    chatList.find((chat) => chat.roomId === selectedChat)?.opponentId
+                  }
+                  opponentRole={
+                    chatList.find((chat) => chat.roomId === selectedChat)?.opponentRole
                   }
                 />
               ) : (

@@ -20,7 +20,7 @@ import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
 
 
-export default function ChatMessage({ chatNickname,roomId, opponentProfileImageUrl }) {
+export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
     const { nickname } = UserStore();
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
@@ -419,10 +419,12 @@ export default function ChatMessage({ chatNickname,roomId, opponentProfileImageU
         <ReceiverMessage 
           content={chat.content} 
           createdTime={chat.createdTime}
-              opponentProfileImageUrl={opponentProfileImageUrl}
-              type={chat.type}
-              onImageClick={handleImageClick}
-              onFileClick={handleFileClick}
+          opponentProfileImageUrl={opponentProfileImageUrl}
+          type={chat.type}
+          onImageClick={handleImageClick}
+          onFileClick={handleFileClick}
+          opponentId={opponentId}
+          opponentRole={opponentRole}
         />
           )}
         </div>
