@@ -15,7 +15,7 @@ import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
 
-export default function Feed({ feedData }) {
+export default function Feed({ feedData, onFeedClick }) {
   const navigate = useNavigate();
   const [feeds, setFeeds] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,7 +57,13 @@ export default function Feed({ feedData }) {
   }, []);
   
   const clickHandler = (profileId) => {
-    navigate(`/profileDetail/${profileId}`);
+    if (onFeedClick) {
+      // onFeedClick이 전달된 경우 부모 컴포넌트에서 로그인 체크 처리
+      onFeedClick(null, profileId);
+    } else {
+      // 기존 로직 (직접 네비게이션)
+      navigate(`/profileDetail/${profileId}`);
+    }
   };
 
   //삭제하기

@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Profile from "../components/studentProfile/profile";
 import Pagination from "../components/pagination";
 import { getFeed } from "../api/feed";
 import { useQuery } from "@tanstack/react-query";
 import Feed from "../components/feed";
 import Loading from "../components/loading";
+import { UserStore } from "../store/userStore";
+import AlertModal from "../components/alertModal";
 
 export default function StudentFeedList() {
-  //const { data, error, isLoading, isFetching } = useFeed(firstCategory, pageable);
+  const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { memberId: currentMemberId } = UserStore();
 
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
@@ -18,9 +23,12 @@ export default function StudentFeedList() {
     size: 12,
   };
 
-  const onFeedClick = (worksId) => {
-
-    navigate(`/profileDetail/${id}/post/${worksId}`);
+  const onFeedClick = (worksId, memberId) => {
+    if (!currentMemberId) {
+      setShowLoginModal(true);
+      return;
+    }
+    navigate(`/profileDetail/${memberId}/post/${worksId}`);
   };
 
   const {
@@ -45,7 +53,7 @@ export default function StudentFeedList() {
     <div className="w-full flex flex-col items-center justify-center w-full">
       {feedData?.result?.content && feedData.result.content.length > 0 ? (
         feedData.result.content.map((data) => (
-        <Feed key={data.memberId} feedData={data} />
+        <Feed key={data.memberId} feedData={data} onFeedClick={onFeedClick} />
         ))
       ) : (
         <div className="text-center py-10">
@@ -53,6 +61,21 @@ export default function StudentFeedList() {
             선택한 카테고리의 피드가 없습니다.
           </p>
         </div>
+      )}
+      
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+        />
       )}
     </div>
   );
