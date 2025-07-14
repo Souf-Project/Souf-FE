@@ -28,16 +28,21 @@ export default function Login() {
       console.log("이름", result.nickname);
       console.log("멤버", result.roleType);
      
+      // UserStore에 사용자 정보와 토큰 저장
       UserStore.getState().setUser({
         memberId: result.memberId,
         nickname: result.nickname,
         roleType: result.roleType,
       });
-     
-      
 
+      UserStore.getState().setTokens({
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+      });
+
+      // localStorage에도 백업 저장
       localStorage.setItem("accessToken", result.accessToken);
-
+   
       navigate("/");
     },
 

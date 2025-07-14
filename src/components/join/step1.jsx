@@ -375,6 +375,7 @@ export default function Step1() {
         essentialText="이메일을 입력해주세요."
         onClick={() => emailVerificationMutation.mutate(email)}
         isValidateTrigger={errors.email}
+        isLoading={emailVerificationMutation.isPending}
       />
 
 <ButtonInput

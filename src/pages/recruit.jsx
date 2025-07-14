@@ -278,7 +278,7 @@ export default function Recruit() {
             {["recruit", "profile", "feed"].map((tab) => (
               <button
                 key={tab}
-                className={`px-6 py-3 rounded-lg md:font-extrabold font-bold transition-colors duration-200 relative group ${
+                className={`px-6 py-3 rounded-lg text-base md:text-2xl md:font-extrabold font-bold transition-colors duration-200 relative group ${
                   activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
                 onClick={() => setActiveTab(tab)}
