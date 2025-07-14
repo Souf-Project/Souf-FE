@@ -3,6 +3,7 @@ import Profile from "../components/studentProfile/profile";
 import Pagination from "../components/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "../api/profile";
+import Loading from "../components/loading";
 
 export default function StudentProfileList() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -36,6 +37,19 @@ export default function StudentProfileList() {
   };
 
   const userData = feedData?.result?.content || [];
+  // console.log("userData", userData);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-red-500">데이터를 불러오는데 실패했습니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
@@ -46,7 +60,7 @@ export default function StudentProfileList() {
               <Profile
                 key={data.id}
                 memberId={data.memberId}
-                profileImg={data.profileImgUrl}
+                profileImageUrl={data.profileImageUrl}
                 temperature={data.temperature}
                 userName={data.nickname}
                 userDetail={data.userDetail}

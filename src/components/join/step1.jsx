@@ -19,9 +19,12 @@ import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
 export default function Step1() {
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
+  const [verificationApproveText, setVerificationApproveText] = useState("");
   const [verificationCheck, setVerificationCheck] = useState(undefined);
+  
   const [emailVerification, setEmailVerification] = useState(undefined);
   const [approveText,setApproveText] = useState("");
+  
 
   const [checkResult, setCheckResult] = useState(undefined);
   const [nicknameModal, setNicknameModal] = useState(false);
@@ -32,6 +35,7 @@ export default function Step1() {
   const [categories, setCategories] = useState([]);
   const [nickname, setNickname] = useState("");
   const [isNameConfirm, setIsNameConfirm] = useState(undefined);
+  const [passwordValidation, setPasswordValidation] = useState(undefined);
   const [errors, setErrors] = useState({
     username: false,
     nickname: false,
@@ -42,20 +46,24 @@ export default function Step1() {
   const navigate = useNavigate();
 
   const validateForm = () => {
-    
-  const newErrors = {
-    username: !formData.username.trim(),
-    nickname: !formData.nickname.trim() && checkResult,
-    email: !formData.email.trim(),
-    password: !formData.password.trim(),
-    passwordCheck: !formData.passwordCheck.trim() && formData.password !== !formData.passwordCheck.trim(),
-  };
-
-  setErrors(newErrors);
-
-  const hasError = Object.values(newErrors).some(Boolean);
+    const isPasswordValid = isValidPassword(formData.password);
+    const isPasswordMatchValid = isPasswordMatch(formData.password, formData.passwordCheck);
+  
+    const newErrors = {
+      username: !formData.username.trim(),
+      nickname: !formData.nickname.trim() || !checkResult,
+      email: !formData.email.trim(),
+      password: !isPasswordValid,
+      passwordCheck: !isPasswordMatchValid,
+    };
+  
+    setErrors(newErrors);
+    setPasswordValidation(isPasswordValid);
+  
+    const hasError = Object.values(newErrors).some(Boolean);
     return !hasError;
   };
+  
 
 
   const [formData, setFormData] = useState({
@@ -200,25 +208,33 @@ export default function Step1() {
   // };
 
   const handleInputChange = (name, e) => {
-  const { value } = e.target;
+    const { value } = e.target;
 
-  setFormData((prev) => {
-    const updatedForm = { ...prev, [name]: value };
+    setFormData((prev) => {
+      const updatedForm = { ...prev, [name]: value };
 
-    const newErrors = { ...errors };
+      const newErrors = { ...errors };
 
-    if (name === "password") {
-      newErrors.password = !isValidPassword(value);
-      // password가 바뀌면 passwordCheck도 다시 비교해야 함
-      newErrors.passwordCheck = !isPasswordMatch(value, updatedForm.passwordCheck);
-    } else if (name === "passwordCheck") {
-      newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
-    }
+      if (name === "password") {
+        const isPasswordValid = isValidPassword(value);
+        newErrors.password = !isPasswordValid;
+        // password가 바뀌면 passwordCheck도 다시 비교해야 함
+        newErrors.passwordCheck = !isPasswordMatch(value, updatedForm.passwordCheck);
+        
+        // 비밀번호 유효성 검사 결과 저장
+        if (value.trim() !== "") {
+          setPasswordValidation(isPasswordValid);
+        } else {
+          setPasswordValidation(undefined);
+        }
+      } else if (name === "passwordCheck") {
+        newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
+      }
 
-    setErrors(newErrors);
-    return updatedForm;
-  });
-};
+      setErrors(newErrors);
+      return updatedForm;
+    });
+  };
 
   //  const nickNameVerification = useMutation({})
 
@@ -264,32 +280,42 @@ export default function Step1() {
         const result = res.result;
 
         if (result === true) {
+          setVerificationApproveText("인증번호가 확인되었습니다.");
           setEmailVerification(true);
           setVerificationCheck(true);
-         
         } else {
-         
+          setVerificationApproveText("인증번호가 일치하지 않습니다.");
           setEmailVerification(false);
           setVerificationCheck(false);
-          setApproveText("인증번호가 일치하지 않습니다.");
         }
       },
-      onEmailVerifyError: () => {
-        setApproveText("서버 오류로 인증에 실패했습니다.");
+      onEmailVerifyError: (err) => {
+        const serverMessage = err.response?.data?.message || "서버 오류로 인증에 실패했습니다.";
+        setVerificationApproveText(serverMessage);
         setEmailVerification(false);
+        setVerificationCheck(false);
       },
+      
       onSignUpSuccess: () => {
         console.log('회원가입 성공! 모달을 띄웁니다.');
         setSuccessModal(true);
       },
       onSignUpError: (err) => {
         console.log(err);
-        setApproveText("서버 오류로 인증에 실패했습니다.");
-        setEmailVerification(false);
+        
+        // 비밀번호 형식 에러 처리
+        if (err.response?.data?.message?.includes("비밀번호")) {
+          setPasswordValidation(false);
+          setErrors(prev => ({ ...prev, password: true }));
+        } else {
+          setApproveText("서버 오류로 인증에 실패했습니다.");
+          setEmailVerification(false);
+        }
       },
     });
 
   const handleSignup = () => {
+     
     const isValid = validateForm();
     if (!isValid) return;
     
@@ -308,7 +334,6 @@ export default function Step1() {
       categoryDtos: cleanedCategories,
     };
     signUp.mutate(finalData);
-
   }
 
   return (
@@ -350,24 +375,25 @@ export default function Step1() {
         essentialText="이메일을 입력해주세요."
         onClick={() => emailVerificationMutation.mutate(email)}
         isValidateTrigger={errors.email}
+        isLoading={emailVerificationMutation.isPending}
       />
 
-    <ButtonInput
-      value={verification}
-      onChange={(e) => setVerification(e.target.value)}
-      title="이메일 인증"
-      btnText="인증확인"
-      onClick={() => {
-        
-        emailVerify.mutate({
-          email: formData.email,
-          verification,
-        });
-      }}
-      isConfirmed={verificationCheck}
-      approveText="인증번호가 확인되었습니다."
-      disapproveText="인증번호가 일치하지 않습니다."
-    />
+<ButtonInput
+  value={verification}
+  onChange={(e) => setVerification(e.target.value)}
+  title="이메일 인증"
+  btnText="인증확인"
+  onClick={() => {
+    emailVerify.mutate({
+      email: formData.email,
+      verification,
+    });
+  }}
+  isConfirmed={verificationCheck}
+  approveText={verificationApproveText}
+  disapproveText={verificationApproveText}
+/>
+
 
       <Input
         title="비밀번호"
@@ -378,6 +404,9 @@ export default function Step1() {
         value={formData.password}
         onChange={(e) => handleInputChange("password", e)}
         isValidateTrigger={errors.password}
+        isConfirmed={passwordValidation}
+        approveText="올바른 비밀번호 형식입니다."
+        disapproveText="비밀번호 형식이 올바르지 않습니다."
       />
       <Input
         title="비밀번호 확인"

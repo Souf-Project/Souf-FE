@@ -8,6 +8,7 @@ import secondCategoryData from '../../assets/categoryIndex/second_category.json'
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
 import StudentInfoBlock from '../studentInfoBlock';
 import StateBlock from "./stateBlock";
+import Loading from '../loading';
 
 
 export default function CompanyApplicants({ recruitId }) {
@@ -153,11 +154,7 @@ export default function CompanyApplicants({ recruitId }) {
   }
 
   if (loading) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">데이터를 불러오는 중...</p>
-      </div>
-    );
+    return <Loading text="데이터를 불러오는 중..." />;
   }
 
   if (error) {

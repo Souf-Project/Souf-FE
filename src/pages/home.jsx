@@ -14,12 +14,14 @@ import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
 import { getContests } from "../api/contest";
+import { UserStore } from "../store/userStore";
 
 export default function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const { memberId, roleType } = UserStore();
 
   /*
   useEffect(() => {
@@ -146,7 +148,7 @@ export default function Home() {
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-  // console.log(feedData);
+ 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -197,8 +199,20 @@ export default function Home() {
   }, []);
   return (
     <div className="relative">
-      {/* Sticky 박스*/}
-      {/* <div className="fixed top-20 left-4 w-40 h-32 bg-white rounded-xl shadow-md border border-gray-100 z-30">박스</div> */}
+      {/* 플로팅 액션 버튼 */}
+      {memberId && (
+        <div className="fixed bottom-8 right-8 z-40">
+          <button
+            onClick={() => navigate(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")}
+            className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            {roleType === "MEMBER" ? "공고문 작성" : "피드 작성"}
+          </button>
+        </div>
+      )}
       
       {/* 배경 이미지 섹션 */}
       <div className="relative h-[600px] w-screen">
@@ -293,14 +307,18 @@ export default function Home() {
             <div className="text-center py-8">로딩중...</div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
+
               {feedData?.result?.content?.map((profile, index) => (
                 <PopularFeed
                   key={index}
                   url={profile.mediaResDto?.fileUrl}
                   context={profile.categoryName}
                   username={profile.nickname}
+                  feedId={profile.feedId}
+                  memberId={profile.memberId}
                 />
               ))}
+
             </div>
           )}
         </div>
@@ -319,11 +337,12 @@ export default function Home() {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {competitions.map((competition, index) => {
+            console.log("competition", competition);
             return (
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${competition.categoryId || 1}/${competition.id || index}`)}
+                onClick={() => navigate(`/contests/${competition.categoryID[0]}/${competition.contestID}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
