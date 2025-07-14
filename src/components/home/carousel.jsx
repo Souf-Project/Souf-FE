@@ -44,18 +44,18 @@ export default function Carousel() {
     <div className="relative">
       {/* 메인 캐러셀 컨테이너 */}
       <div className="h-64 relative overflow-hidden rounded-2xl from-gray-50 to-gray-100">
-        <div
+      <div
           className="flex transition-transform duration-700 ease-out h-full"
-          style={{
-            transform: `translateX(-${(100 / visibleCount) * currentIndex}%)`,
-          }}
-        >
+        style={{
+          transform: `translateX(-${(100 / visibleCount) * currentIndex}%)`,
+        }}
+      >
           {recruitData?.map((recruit, index) => (
-            <div
-              key={recruit.recruitId}
+          <div
+            key={recruit.recruitId}
               className="md:w-1/3 w-32 h-60 px-3 flex-shrink-0 box-border"
-              onClick={() => navigate(`/recruitDetails/${recruit?.recruitId}`)}
-            >
+            onClick={() => navigate(`/recruitDetails/${recruit?.recruitId}`)}
+          >
               <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group overflow-hidden border border-gray-100">
                 
 
@@ -87,7 +87,7 @@ export default function Carousel() {
                       <span className="text-sm font-medium text-red-500">
                         {calculateDday(recruit?.deadLine, recruit?.recruitable)}
                       </span>
-                    </div>
+              </div>
                     <div className="text-xs text-gray-400 transition-colors duration-200">
                       자세히 보기 →
                     </div>
@@ -95,31 +95,31 @@ export default function Carousel() {
                 </div>
 
                
-              </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
         {/* 네비게이션 버튼 */}
-        <button
-          onClick={handlePrev}
+      <button
+        onClick={handlePrev}
           className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
-          disabled={currentIndex === 0}
-        >
+        disabled={currentIndex === 0}
+      >
           <svg className="w-5 h-5 text-gray-600 group-hover:text-yellow-point transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-        </button>
+      </button>
 
-        <button
-          onClick={handleNext}
+      <button
+        onClick={handleNext}
           className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
-          disabled={currentIndex >= totalCount - visibleCount}
-        >
+        disabled={currentIndex >= totalCount - visibleCount}
+      >
           <svg className="w-5 h-5 text-gray-600 group-hover:text-yellow-point transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
-        </button>
+      </button>
       </div>
 
     </div>
