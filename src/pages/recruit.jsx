@@ -20,6 +20,7 @@ export default function Recruit() {
   const [activeTab, setActiveTab] = useState("recruit");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResult, setSearchResult] = useState("");
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -57,9 +58,8 @@ export default function Recruit() {
       setLoading(true);
       setError(null);
 
-
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
-      console.log("다시 패치되니?" , firstCategory, secondCategory, thirdCategory);
+    
       const response = await getRecruit({
         firstCategory,
         secondCategory,
@@ -241,6 +241,7 @@ useEffect(() => {
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(0); // 검색 시 첫 페이지로 이동
+    setSearchResult(searchQuery);
     performSearch();
   };
 
@@ -255,8 +256,8 @@ useEffect(() => {
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
-    console.log("카테고리 변경" , selectedCategory);
-        fetchRecruits();
+    //console.log("카테고리 변경" , selectedCategory);
+    fetchRecruits();
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
 
   };
@@ -306,7 +307,7 @@ useEffect(() => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <SearchDropdown onSelect={handleSearchTypeChange} />
+          {activeTab !== "profile" && <SearchDropdown onSelect={handleSearchTypeChange} />}
           <SearchBar
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -368,7 +369,7 @@ useEffect(() => {
           </div>
         ) : activeTab === "profile" ? (
           <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-            <StudentProfileList />
+            <StudentProfileList secondCategoryId={selectedCategory[1]} thirdCategoryId ={selectedCategory[2]} keyword={searchResult}/>
           </div>
         ) : (
           <div className="w-full lg:w-3/4 mx-auto">
