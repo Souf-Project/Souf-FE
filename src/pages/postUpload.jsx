@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import CategorySelectBox from "../components/categorySelectBox";
 import { useNavigate } from "react-router-dom";
 import AlertModal from "../components/alertModal";
+import { UserStore } from "../store/userStore";
 import {
   postVideoSignedUrl,
   postVideoUpload,
@@ -18,7 +19,9 @@ import { filterEmptyCategories } from "../utils/filterEmptyCategories";
 export default function PostUpload() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isModal, setIsModal] = useState(false);
+  const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
+  const { memberId } = UserStore();
   const [videoFiles, setVideoFiles] = useState([]);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -191,6 +194,8 @@ export default function PostUpload() {
           });
         }
 
+        // feedId를 저장하고 모달 표시
+        setUploadedFeedId(feedId);
         setIsModal(true);
       } catch (error) {
         console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
@@ -275,7 +280,7 @@ export default function PostUpload() {
             type="simple"
             title="게시글 작성이 완료되었습니다."
             TrueBtnText="확인"
-            onClickTrue={() => navigate("/recruit?category=1")}
+            onClickTrue={() => navigate(`/profileDetail/${memberId}/post/${uploadedFeedId}`)}
           />
         )}
       </div>
