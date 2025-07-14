@@ -57,6 +57,5 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
       )}
     </>
   );
-};
 
 export default PopularFeed;
