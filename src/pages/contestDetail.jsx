@@ -173,9 +173,6 @@ export default function ContestDetail() {
         ];
     };
 
-    if (loading) {
-        return <Loading />;
-    }
 
     if (!contest) {
         return (

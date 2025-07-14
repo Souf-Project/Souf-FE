@@ -14,7 +14,8 @@ export default function ButtonInput({
     onValidChange = () => {},
     isValidateTrigger = false,
     isConfirmed = undefined,
-    value=""
+    value="",
+    isLoading = false
 }) {
             useEffect(() => {
             console.log("버튼 인풋에서", isConfirmed);
@@ -41,9 +42,14 @@ export default function ButtonInput({
                 {btnText && (
                     <button
                         onClick={onClick}
-                        className="h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold bg-yellow-main"
+                        disabled={isLoading}
+                        className={`h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold ${
+                            isLoading 
+                                ? 'bg-gray-300 cursor-not-allowed' 
+                                : 'bg-yellow-main hover:bg-yellow-point transition-colors duration-200'
+                        }`}
                     >
-                        {btnText}
+                        {isLoading ? '전송 중...' : btnText}
                     </button>
                 )}
             </div>
