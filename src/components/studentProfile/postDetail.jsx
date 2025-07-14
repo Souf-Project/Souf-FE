@@ -161,7 +161,7 @@ const handleDeleteClick = () => {
     </Swiper>
   </div>
           
-          <div className="w-full max-w-[35%] h-full pl-6 relative ">
+          <div className="w-full max-w-[35%] h-full min-h-[240px] pl-6 relative ">
             {/* 사용자 프로필 정보 */}
         <div className="flex items-center justify-between mb-4 w-full">
           {/* 프로필 사진과 닉네임 (왼쪽) */}
@@ -239,15 +239,17 @@ const handleDeleteClick = () => {
             
             
           <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
-              <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3">
+              <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3 ">
             {worksData.topic}
             </div>
-              <div className="flex flex-col justify-between text-sm text-gray-600 h-full border-t border-gray-300 pt-6">
+              <div className="flex flex-col justify-between text-sm text-gray-600 h-full w-full border-t border-gray-300 pt-6">
               <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
                 {worksData.content}
               </p>
-              <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
               </div>
+            </div>
+            <div className="absolute bottom-4 left-6">
+              <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
             </div>
           </div>
         </div>
