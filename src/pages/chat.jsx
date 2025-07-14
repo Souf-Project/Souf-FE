@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import ChatEmpty from "../components/chat/chatEmpty";
 import ChatMessage from "../components/chat/chatMessage";
@@ -14,6 +14,8 @@ export default function Chat() {
   const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [clickRoomId, setClickRoomId] = useState(-1);
+  //const [nowCount,setNowCount] = useState(fal);
   // const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   // 이미지 URL인지 확인하는 함수
@@ -52,10 +54,19 @@ export default function Chat() {
     keepPreviousData: true,
   });
 
-    const hadleChat = (roomId) => {
+    const handleChat = (roomId) => {
       setSelectedChat(roomId);
+      setChatList((prevList) =>
+      prevList.map((chat) =>
+        chat.roomId === roomId ? { ...chat, unreadCount: 0 } : chat
+      )
+  );
       patchChatRooms(roomId);
     }
+
+    // useEffect(() => {
+    //   chatData;
+    // } ,[selectedChat])
 
     if (isLoading) {
       return <Loading />;
@@ -86,8 +97,10 @@ export default function Chat() {
                 />
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
-                {chatData?.map((chat) => (
-                  <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
+                {chatList?.map((chat,i) => (
+                  <div
+                  key={i} 
+                  className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
                       }`}>
                     <img
                       src={`${chat.opponentProfileImageUrl ? `${chat.opponentProfileImageUrl}` : SouFLogo}`}
@@ -96,7 +109,7 @@ export default function Chat() {
                     <div
                       key={chat.roomId}
                       className="px-6 py-4 cursor-pointer w-full"
-                      onClick={() => setSelectedChat(chat.roomId)}
+                      onClick={() => handleChat(chat.roomId)}
                     >
                       <div className="flex justify-between items-center mb-2 w-full">
                         <span className="font-semibold">{chat.opponentNickname}</span>
