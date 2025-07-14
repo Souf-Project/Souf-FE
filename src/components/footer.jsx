@@ -27,7 +27,7 @@ export default function Footer() {
             className="flex items-center gap-2 transition-opacity"
           >
             <img src={iconMail} alt="Email" className="w-6 h-6" />
-            <span className="text-gray-500">Mail | Souf@gmail.com</span>
+            <span className="text-gray-500">Mail | souf-official@souf.co.kr</span>
           </a>
         </div>
       </div>
