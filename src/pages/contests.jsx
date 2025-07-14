@@ -25,7 +25,7 @@ export default function Contests() {
     const fetchContests = async () => {
       try {
         const data = await getContests({ ...pageable, type: activeTab });
-        console.log("데이터 확인용 :", data);
+        // console.log("데이터 확인용 :", data);
         setContests(data.data);
         setTotalPages(Math.ceil(data?.total/data?.pageSize));
       } catch (err) {
@@ -95,7 +95,6 @@ export default function Contests() {
             // 파일명만 추출 (594792.jpg)
             const parts = imagePath.split('\\');
             const fileName = parts[parts.length - 1];
-            console.log('Extracted fileName from thumbnails:', fileName);
             
             if (!fileName) return null;
             
@@ -110,7 +109,6 @@ export default function Contests() {
                 `https://linkareer.com/attachments/${imageId}`
             ];
             
-            console.log('Trying URL formats:', urlFormats);
             return urlFormats[0]; // 첫 번째 형식 반환
         }
         
@@ -120,14 +118,12 @@ export default function Contests() {
         
         const imageId = fileName.replace(/\.(jpg|png|jpeg)$/i, '');
         const finalUrl = `https://media-cdn.linkareer.com//se2editor/image/${imageId}`;
-        console.log('Generated other URL:', finalUrl);
-        
+       
         return finalUrl;
     };
 
     // 대체 이미지 URL 생성 함수
     const getFallbackImageUrl = (imagePath) => {
-        console.log('getFallbackImageUrl called with:', imagePath);
         
         if (!imagePath) return null;
         
