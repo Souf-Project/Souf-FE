@@ -77,3 +77,8 @@ export const postChatImageUpload = async ({ chatId, fileUrl, fileName, fileType 
     throw error;
   }
 };
+
+export const deleteChatRoom = async (roomId) => {
+  const response = await client.post(`/api/v1/chatrooms/${roomId}/exit`);
+  return response.data;
+};

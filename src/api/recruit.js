@@ -36,7 +36,7 @@ export async function getRecruit(params = {}) {
             'size': size
         };
 
-        console.log("Query params:", queryParams);
+        // console.log("Query params:", queryParams);
 
         if (recruitSearchReqDto.title?.trim()) {
             queryParams['recruitSearchReqDto.title'] = recruitSearchReqDto.title;

@@ -76,7 +76,7 @@ export default function Chat() {
           <div className="grid grid-cols-12 h-full">
             {/* 채팅 목록 */}
             <div className="col-span-4 bg-yellow-main h-full">
-              <div className="flex justify-between items-center p-4">
+              <div className="flex justify-between items-center mt-4 p-4">
                 <h1 className="text-2xl font-bold ">SouF 채팅</h1>
                 <SearchBar
                   value={searchQuery}
@@ -87,14 +87,20 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
                 {chatData?.map((chat) => (
-                  <div className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
-                      }`}>
+                  <div 
+                    key={chat.roomId}
+                    className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
+                      }`}
+                  >
                     <img
-                      src={`${chat.opponentProfileImageUrl ? `${chat.opponentProfileImageUrl}` : SouFLogo}`}
-                      className="w-10 h-10 rounded-[100%]"
+                      src={chat.opponentProfileImageUrl || SouFLogo}
+                      alt={chat.opponentNickname}
+                      className="w-10 h-10 rounded-[100%] object-cover"
+                      onError={(e) => {
+                        e.target.src = SouFLogo;
+                      }}
                     />
                     <div
-                      key={chat.roomId}
                       className="px-6 py-4 cursor-pointer w-full"
                       onClick={() => setSelectedChat(chat.roomId)}
                     >
