@@ -21,6 +21,7 @@ import Contests from "../pages/contests";
 import ContestDetail from "../pages/contestDetail";
 import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
+import ScrollToTop from "../components/scrollToTop";
 
 function AppRouter() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function AppRouter() {
 export default function Router() {
   return (
     <BrowserRouter>
+      <ScrollToTop/>
       <AppRouter />
     </BrowserRouter>
   );
