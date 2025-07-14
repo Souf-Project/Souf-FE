@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import buildingData from '../assets/competitionData/건축_건설_인테리어.json';
-import marketingData from '../assets/competitionData/광고_마케팅.json';
 import { getContests } from '../api/contest';
-import Loading from '../components/loading';
+
+import fullIcon from '../assets/images/fullIcon.svg';
+
 
 export default function ContestDetail() {
     const { id, category } = useParams();
@@ -14,51 +14,9 @@ export default function ContestDetail() {
         thumbnail: true,
         detailImages: {}
     });
+    const [showFullImage, setShowFullImage] = useState(false);
+    const [fullImageUrl, setFullImageUrl] = useState('');
 
-    /*
-    useEffect(() => {
-        // 카테고리에 따라 데이터 선택
-        let data;
-        switch(category) {
-            case 'building':
-                data = buildingData;
-                break;
-            case 'marketing':
-                data = marketingData;
-                break;
-            default:
-                data = buildingData;
-        }
-        
-        // ID에 해당하는 공모전 찾기
-        const foundContest = data[parseInt(id)];
-        
-        if (foundContest) {
-            setContest(foundContest);
-            
-            // 상세내용_이미지 로딩 상태 초기화
-            const detailImageStates = {};
-            if (foundContest.상세내용_이미지) {
-                foundContest.상세내용_이미지.forEach((_, index) => {
-                    detailImageStates[index] = true;
-                });
-            }
-            setImageLoadingStates({
-                thumbnail: true,
-                detailImages: detailImageStates
-            });
-            
-            // 1초 후에 모든 스켈레톤 숨기기
-            setTimeout(() => {
-                setImageLoadingStates({
-                    thumbnail: false,
-                    detailImages: {}
-                });
-            }, 1000);
-        }
-        setLoading(false);
-    }, [id, category]);
-    */
 
     useEffect(() => {
     const loadContest = async () => {
@@ -105,21 +63,40 @@ export default function ContestDetail() {
 }, [id, category]);
 
     const handleBack = () => {
-        navigate(`/contests`);
+        navigate(-1);
     };
 
-    const getCategoryTitle = (cat) => {
-        switch(cat) {
-            case 'building':
-                return '건축·건설·인테리어';
-            case 'marketing':
-                return '광고·마케팅';
-            default:
-                return '건축·건설·인테리어';
+    // 전체화면 이미지 모달 열기
+    const openFullImage = (imageUrl) => {
+        setFullImageUrl(imageUrl);
+        setShowFullImage(true);
+        document.body.style.overflow = 'hidden'; // 스크롤 방지
+    };
+
+    // 전체화면 이미지 모달 닫기
+    const closeFullImage = () => {
+        setShowFullImage(false);
+        setFullImageUrl('');
+        document.body.style.overflow = 'auto'; // 스크롤 복원
+    };
+
+    // ESC 키로 모달 닫기
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape') {
+                closeFullImage();
+            }
+        };
+
+        if (showFullImage) {
+            document.addEventListener('keydown', handleEscKey);
         }
-    };
 
-    // 이미지 URL 생성 함수
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [showFullImage]);
+
     const getImageUrl = (imagePath) => {
         if (!imagePath) return null;
         
@@ -146,7 +123,7 @@ export default function ContestDetail() {
             ];
             
             console.log('Trying URL formats for detail page:', urlFormats);
-            return urlFormats[0]; // 첫 번째 형식 반환
+            return urlFormats[0];
         }
         
         // 기타 경우
@@ -227,7 +204,7 @@ export default function ContestDetail() {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                {getCategoryTitle(category)} 목록으로
+                뒤로가기
             </button>
 
             {/* 썸네일 이미지와 기본 정보 섹션 */}
@@ -267,6 +244,12 @@ export default function ContestDetail() {
                                         }
                                     }}
                                 />
+                                <div 
+                                    className="absolute top-2 right-2 z-10 bg-white/50 rounded-md w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-white/70 transition-colors duration-200"
+                                    onClick={() => openFullImage(getImageUrl(contest.썸네일))}
+                                >
+                                    <img src={fullIcon} alt="fullIcon" className="w-8 h-8" />
+                                </div>
                                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center hidden z-20">
                                     <div className="text-center">
                                         <svg className="w-16 h-16 mx-auto mb-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -276,6 +259,7 @@ export default function ContestDetail() {
                                     </div>
                                 </div>
                             </div>
+                          
                         </div>
                     )}
 
@@ -374,7 +358,7 @@ export default function ContestDetail() {
                 {contest.상세내용_이미지 && contest.상세내용_이미지.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {contest.상세내용_이미지.map((image, index) => (
-                            <div key={index} className="relative rounded-lg overflow-hidden shadow-md bg-gradient-to-br from-yellow-50 to-yellow-100">
+                            <div key={index} className="relative rounded-lg overflow-hidden shadow-md bg-gradient-to-br from-yellow-50 to-yellow-100 group">
                                 {/* 로딩 스켈레톤 */}
                                 {imageLoadingStates.detailImages[index] && (
                                     <div className="absolute inset-0 bg-gray-200 animate-pulse">
@@ -405,6 +389,12 @@ export default function ContestDetail() {
                                         }
                                     }}
                                 />
+                                <div 
+                                    className="absolute top-2 right-2 z-10 bg-white/50 rounded-md w-8 h-8 flex items-center justify-center cursor-pointer hover:bg-white/70 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                                    onClick={() => openFullImage(getImageUrl(image))}
+                                >
+                                    <img src={fullIcon} alt="fullIcon" className="w-6 h-6" />
+                                </div>
                                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center hidden z-20">
                                     <div className="text-center">
                                         <svg className="w-8 h-8 mx-auto mb-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -418,6 +408,44 @@ export default function ContestDetail() {
                     </div>
                 )}
             </div>
+
+            {/* 전체화면 이미지 모달 */}
+            {showFullImage && (
+                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+                    <div className="relative max-w-full max-h-full">
+                        {/* 닫기 버튼 */}
+                        <button
+                            onClick={closeFullImage}
+                            className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-200"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        
+                        {/* 이미지 */}
+                        <img
+                            src={fullImageUrl}
+                            alt="전체화면 이미지"
+                            className="max-w-full max-h-full object-contain"
+                            onError={(e) => {
+                                console.log('Full image load failed:', fullImageUrl);
+                                e.target.style.display = 'none';
+                                // 에러 메시지 표시
+                                const errorDiv = document.createElement('div');
+                                errorDiv.className = 'text-white text-center p-8';
+                                errorDiv.innerHTML = `
+                                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <p class="text-lg">이미지를 불러올 수 없습니다</p>
+                                `;
+                                e.target.parentNode.appendChild(errorDiv);
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 } 

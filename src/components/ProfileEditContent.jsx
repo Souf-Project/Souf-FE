@@ -222,6 +222,7 @@ export default function ProfileEditContent() {
          <div className="absolute top-[40px] left-[225px]">
             <h1 className="text-4xl font-bold ">{formData.username}</h1>
         </div>
+        {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="ml-auto w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>}
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
           <div className="grid grid-cols-1 gap-6">
@@ -289,7 +290,7 @@ export default function ProfileEditContent() {
         
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">관심분야</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 ">
             {[0, 1, 2].map(index => (
               <CategorySelectBox 
                 key={index}
@@ -309,7 +310,7 @@ export default function ProfileEditContent() {
                 </button>
             </>
           ) : (
-            <button onClick={() => setIsEditing(true)} className="w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>
+           <></>
           )}
       </div>
       <div className='flex justify-end items-end'>

@@ -37,6 +37,7 @@ export default function StudentProfileList() {
   };
 
   const userData = feedData?.result?.content || [];
+  // console.log("userData", userData);
 
   if (isLoading) {
     return <Loading />;
@@ -59,7 +60,7 @@ export default function StudentProfileList() {
               <Profile
                 key={data.id}
                 memberId={data.memberId}
-                profileImg={data.profileImgUrl}
+                profileImageUrl={data.profileImageUrl}
                 temperature={data.temperature}
                 userName={data.nickname}
                 userDetail={data.userDetail}
