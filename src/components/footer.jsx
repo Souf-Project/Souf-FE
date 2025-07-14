@@ -4,11 +4,12 @@ import iconMail from '../assets/images/iconMail.svg';
 
 export default function Footer() {
   return (
-    <footer className="w-full z-50 bg-[#FBFBFB] border-t border-gray-200 mt-auto">
+    <footer className="w-full z-30 bg-[#FBFBFB] border-t border-gray-200 mt-auto">
       <div className="container mx-auto py-6 flex justify-between items-start">
         {/* 스프 소개 텍스트 더 추가 */}
         <div className="text-gray-500 font-medium self-start mt-1">
-          스프 기업 소개
+        SouF는 실무 경험이 부족한 대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플 랫폼입니다.<br/>
+         대학생들이 자유롭게 포트폴리오를 업로드하고, 기업은 이를 기반으로 원하는 인재와 프로젝트를 진행할 수 있도록 지원합니다.
         </div>
         <div className="flex flex-col gap-3">
           <a
