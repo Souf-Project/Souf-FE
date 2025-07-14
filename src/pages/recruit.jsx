@@ -10,6 +10,7 @@ import SecondCategory from "../assets/categoryIndex/second_category.json";
 import ThirdCategory from "../assets/categoryIndex/third_category.json";
 import Pagination from "../components/pagination";
 import StudentFeedList from "./studentFeedList";
+import Loading from "../components/loading";
 
 export default function Recruit() {
   const location = useLocation();
@@ -258,11 +259,7 @@ export default function Recruit() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-point"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

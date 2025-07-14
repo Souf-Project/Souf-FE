@@ -7,6 +7,7 @@ import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
 import SouFLogo from "../assets/images/SouFLogo.png";
+import Loading from "../components/loading";
 
 
 export default function Chat() {
@@ -54,9 +55,20 @@ export default function Chat() {
     const hadleChat = (roomId) => {
       setSelectedChat(roomId);
       patchChatRooms(roomId);
-
-
     }
+
+    if (isLoading) {
+      return <Loading />;
+    }
+
+    if (error) {
+      return (
+        <div className="flex justify-center items-center h-screen">
+          <div className="text-red-500">채팅 목록을 불러오는데 실패했습니다.</div>
+        </div>
+      );
+    }
+
   return (
     <div className="h-[calc(100vh-64px)] px-6 ">
       <div className="w-screen mx-auto h-full">

@@ -5,16 +5,19 @@ import AlertModal from "../alertModal";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
-const PopularFeed = ({ url, context, username, memberId, feedId }) => {
+const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId }) => {
   const navigate = useNavigate();
+  const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const { memberId: currentMemberId } = UserStore();
-  
+
   const handleClick = () => {
-    if (!currentMemberId) {
+    if (!memberId) {
       setShowLoginModal(true);
-      return;
+    } else {
+      navigate(`/profileDetail/${profileMemberId}/post/${feedId}`);
     }
+  };
+
     
     if (memberId && feedId) {
       navigate(`/profileDetail/${memberId}/post/${feedId}`);
@@ -23,6 +26,7 @@ const PopularFeed = ({ url, context, username, memberId, feedId }) => {
     }
   };
   
+
   return (
     <>
       <div className="w-[180px] h-[200px] lg:w-64 lg:h-64 cursor-pointer" onClick={handleClick}>
