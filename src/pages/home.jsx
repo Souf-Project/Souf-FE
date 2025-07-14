@@ -407,11 +407,11 @@ export default function Home() {
                   )}
                   
                   <div className="hidden lg:block flex flex-col gap-1 text-sm text-gray-500">
-                    <span>시상금: {competition.시상규모}</span>
-                    <span>
+                    <p>시상금: {competition.시상규모}</p>
+                    <p>
                       접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}
-                    </span>
-                    <span>참여대상: {competition.참여대상}</span>
+                    </p>
+                    <p>참여대상: {competition.참여대상}</p>
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">
