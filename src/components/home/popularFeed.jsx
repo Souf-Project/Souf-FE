@@ -9,7 +9,7 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
   const navigate = useNavigate();
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-// 피드 에러 수정
+
   const handleClick = () => {
     if (!memberId) {
       setShowLoginModal(true);
@@ -18,29 +18,20 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
     }
   };
 
-    
-    if (memberId && feedId) {
-      navigate(`/profileDetail/${memberId}/post/${feedId}`);
-    } else {
-      console.error("memberId 또는 feedId가 없습니다:", { memberId, feedId });
-    }
-  };
-  
-
   return (
     <>
       <div className="w-[180px] h-[200px] lg:w-64 lg:h-64 cursor-pointer" onClick={handleClick}>
-      <img
-        src={`${BUCKET_URL}${url}`}
-        alt={`${username} 이미지`}
+        <img
+          src={`${BUCKET_URL}${url}`}
+          alt={`${username} 이미지`}
           className="md:w-full h-auto object-cover rounded-md w-[180px] h-[200px] lg:w-64 lg:h-64"
-      />
-      <div className="flex justify-between mt-2 px-1">
-        <span className="text-gray-400 text-sm">{context}</span>
-        <span className="font-semibold text-sm">{username}</span>
+        />
+        <div className="flex justify-between mt-2 px-1">
+          <span className="text-gray-400 text-sm">{context}</span>
+          <span className="font-semibold text-sm">{username}</span>
+        </div>
       </div>
-    </div>
-      
+
       {showLoginModal && (
         <AlertModal
           type="simple"
@@ -57,5 +48,6 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
       )}
     </>
   );
+};
 
 export default PopularFeed;
