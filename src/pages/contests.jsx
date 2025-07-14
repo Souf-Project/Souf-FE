@@ -73,21 +73,10 @@ export default function Contests() {
         }, 1000);
     }, [activeTab]);
 
-    const handleContestClick = (index) => {
-        navigate(`/contests/${activeTab}/${index}`);
+    const handleContestClick = (contest) => {
+        navigate(`/contests/${contest.categoryID[0]}/${contest.contestID}`);
     };
 
-    const getTabTitle = (tab) => {
-        switch(tab) {
-            case 'building':
-                return '모집중';
-           
-            case 'marketing':
-                return '마감';
-            default:
-                return '건축·건설·인테리어';
-        }
-    };
 
     // 이미지 URL 생성 함수
     const getImageUrl = (imagePath) => {
@@ -97,7 +86,7 @@ export default function Contests() {
         
         // 이미 전체 URL인 경우 (상세내용_이미지)
         if (imagePath.startsWith('http')) {
-            console.log('Returning full URL:', imagePath);
+           
             return imagePath;
         }
         
@@ -243,7 +232,7 @@ export default function Contests() {
                     <div
                         key={index}
                         className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                        onClick={() => handleContestClick(index)}
+                        onClick={() => handleContestClick(contest)}
                     >
                         {/* 썸네일 이미지 */}
                         {contest.썸네일 && (
