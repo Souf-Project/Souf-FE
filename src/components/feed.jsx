@@ -107,8 +107,8 @@ export default function Feed({ feedData, onFeedClick }) {
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
-      <UpdateOption id={feedData.memberId} memberId={memberId}
-      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+     
+      
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-semibold leading-snug text-black">
           {feedData?.topic || "제목 없음"}
@@ -118,6 +118,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </p>
       </div>
 
+      <div className="flex justify-between items-center">
       <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
       onClick={() => clickHandler(feedData?.memberId)}>
          <img
@@ -128,6 +129,9 @@ export default function Feed({ feedData, onFeedClick }) {
         <h2 className="text-xl font-semibold leading-snug text-black">
           {feedData?.nickname || "학생" }
         </h2>
+      </div>
+      <UpdateOption id={feedData.memberId} memberId={memberId}
+      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       </div>
 
     <div className="flex justify-center w-full overflow-hidden rounded-md mb-4">
