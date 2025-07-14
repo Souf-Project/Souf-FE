@@ -1,4 +1,5 @@
 import client from "./client";
+import { UserStore } from "../store/userStore";
 
 /* 로그인 */
 export async function postLogin(email, password) {

@@ -24,11 +24,11 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect }) => {
   // PC 버전 카테고리 메뉴 (박스 형태)
   const DesktopCategoryMenu = () => (
     <div className="hidden lg:block w-60 h-[50%] border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto">
-      <h3 className="text-lg font-bold text-gray-800 mb-4">카테고리</h3>
+      <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-4">카테고리</h3>
       {secondCategories.map((second) => (
         <div key={second.second_category_id} className="mb-3">
           <div
-            className="cursor-pointer font-semibold text-sm flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors"
+            className="cursor-pointer font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors"
             onClick={() => toggleSecondCategory(second.second_category_id)}
           >
             <span className="text-gray-700">{second.name}</span>

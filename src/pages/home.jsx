@@ -342,7 +342,7 @@ export default function Home() {
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${competition.categoryId}/${competition.id || index}`)}
+                onClick={() => navigate(`/contests/${competition.categoryID[0]}/${competition.contestID}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (

@@ -22,25 +22,28 @@ export default function Login() {
     mutationFn: ({ email, password }) => postLogin(email, password),
     onSuccess: (response) => {
       console.log("onSuccess 응답:", response);
-
+  
       const result = response.data?.result;
-
+  
       console.log("이름", result.nickname);
       console.log("멤버", result.roleType);
-     
+  
+      // UserStore에 사용자 정보와 토큰 저장
       UserStore.getState().setUser({
         memberId: result.memberId,
         nickname: result.nickname,
         roleType: result.roleType,
       });
-     
-      
-
+  
+      // 여기! 문자열로만 전달
+      UserStore.getState().setAccessToken(result.accessToken);
+  
+      // localStorage에도 백업 저장
       localStorage.setItem("accessToken", result.accessToken);
-
+  
       navigate("/");
     },
-
+  
     onError: (error) => {
       console.error("로그인 실패:", error);
       setShowError(true);
