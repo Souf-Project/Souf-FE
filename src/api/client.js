@@ -44,16 +44,14 @@ export default client;
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 403) {
       if (error.response.data.message === "토큰 재발급이 필요합니다.") {
         const originalRequest = error.config;
         try {
-          const tokenResponse = await postRefreshToken(
-            sessionStorage.getItem("email")
-          );
+
           if (tokenResponse.status === 201) {
             const newAccessToken = tokenResponse.data.accessToken;
-            sessionStorage.setItem("access_token", newAccessToken);
+            localStorage.setItem("accessToken", newAccessToken);
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
             return client(originalRequest);
           }
