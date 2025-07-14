@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIco from "../assets/images/searchIco.svg";
-import cate1Img from "../assets/images/cate1Img.svg";
-import cate2Img from "../assets/images/cate2Img.svg";
-import cate3Img from "../assets/images/cate3Img.svg";
-import cate4Img from "../assets/images/cate4Img.svg";
-import cate5Img from "../assets/images/cate5Img.svg";
+import cate1Img from "../assets/images/cate1Img.png";
+import cate2Img from "../assets/images/cate2Img.png";
+import cate3Img from "../assets/images/cate3Img.png";
+import cate4Img from "../assets/images/cate4Img.png";
+import cate5Img from "../assets/images/cate5Img.png";
 import Background from "../assets/images/background.png";
 import PopularFeed from "../components/home/popularFeed";
 import { usePopularFeed } from "../hooks/usePopularFeed";
@@ -268,12 +268,12 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="flex flex-col items-center gap-2 w-40"
+                    className="flex flex-col items-center gap-2 w-40 "
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-20 h-20 mb-2"
+                      className="w-24 h-24 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
                     <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
                       {category}
