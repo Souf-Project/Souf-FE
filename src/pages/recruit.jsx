@@ -17,7 +17,7 @@ export default function Recruit() {
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
-  const [activeTab, setActiveTab] = useState("recruit");
+  const [activeTab, setActiveTab] = useState("feed");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
@@ -278,7 +278,7 @@ useEffect(() => {
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           <div className="flex">
-            {["recruit", "profile", "feed"].map((tab) => (
+            {["feed", "profile", "recruit"].map((tab) => (
               <button
                 key={tab}
                 className={`px-6 py-3 rounded-lg text-base md:text-2xl md:font-extrabold font-bold transition-colors duration-200 relative group ${
@@ -322,7 +322,15 @@ useEffect(() => {
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
         />
-        {activeTab === "recruit" ? (
+        {activeTab === "feed" ? (
+          <div className="w-full lg:w-3/4 mx-auto">
+            <StudentFeedList />
+          </div>
+        ) : activeTab === "profile" ? (
+          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
+            <StudentProfileList />
+          </div>
+        ) : (
           <div className="w-full lg:w-3/4 mx-auto">
             {filteredRecruits.length > 0 ? (
               <>
@@ -365,14 +373,6 @@ useEffect(() => {
                 </p>
               </div>
             )}
-          </div>
-        ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-            <StudentProfileList />
-          </div>
-        ) : (
-          <div className="w-full lg:w-3/4 mx-auto">
-            <StudentFeedList />
           </div>
         )}
       </div>
