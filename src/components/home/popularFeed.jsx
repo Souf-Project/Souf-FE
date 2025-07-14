@@ -9,7 +9,7 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
   const navigate = useNavigate();
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-
+// 피드 에러 수정
   const handleClick = () => {
     if (!memberId) {
       setShowLoginModal(true);
