@@ -44,7 +44,6 @@ export default function Recruit() {
     const filteredSecondCategories = allSecondCategories.filter(
       (second) => second.first_category_id === selectedFirstCategory
     );
-
     return {
       filteredSecondCategories,
       thirdCategories: allThirdCategories,
@@ -58,8 +57,9 @@ export default function Recruit() {
       setLoading(true);
       setError(null);
 
-      const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
 
+      const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
+      console.log("다시 패치되니?" , firstCategory, secondCategory, thirdCategory);
       const response = await getRecruit({
         firstCategory,
         secondCategory,
@@ -100,61 +100,40 @@ export default function Recruit() {
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
 
+       const recruitSearchReqDto = {};
+      if (searchQuery.trim() !== "") {
+        if (searchType === "title") {
+          recruitSearchReqDto.title = searchQuery.trim();
+
+        } else if (searchType === "titleContent") {
+
+          //recruitSearchReqDto.title = searchQuery.trim();
+          recruitSearchReqDto.content = searchQuery.trim();
+        }
+      }
+
       const response = await getRecruit({
         firstCategory,
         secondCategory,
         thirdCategory,
+        recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
         page: currentPage,
-          size: pageSize,
-          sort: ["createdAt,desc"],
+        size: pageSize,
+        sort: ["createdAt,desc"],
       });
 
       if (response.data) {
-        let recruits = response.data.result?.content || [];
-
-        // 프론트엔드에서 검색 필터링 적용
-        if (searchQuery.trim() !== "") {
-          recruits = recruits.filter((recruit) => {
-            if (searchType === "title") {
-              return recruit.title
-                ?.toLowerCase()
-                .includes(searchQuery.toLowerCase());
-            } else if (searchType === "titleContent") {
-              return (
-                recruit.title
-                  ?.toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                recruit.content
-                  ?.toLowerCase()
-                  .includes(searchQuery.toLowerCase())
-              );
-            } else if (searchType === "category") {
-              // 카테고리 이름으로 검색
-              const categoryNames =
-                recruit.secondCategory?.map((catId) => {
-                  const category = allSecondCategories.find(
-                    (cat) => cat.second_category_id === catId
-                  );
-                  return category?.name || "";
-                }) || [];
-
-              return categoryNames.some((name) =>
-                name.toLowerCase().includes(searchQuery.toLowerCase())
-              );
-            }
-            return true;
-          });
-        }
-
+        // 백엔드에서 필터링된 데이터
+        const recruits = response.data.result?.content || [];
         setFilteredRecruits(recruits);
 
-        const totalElements =
-          response.data.result?.page?.totalElements || recruits.length;
+        const totalElements = response.data.result?.page?.totalElements || 0;
         setTotalPages(Math.ceil(totalElements / pageSize));
       } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
+     
     } catch (err) {
       console.error("Error fetching recruits:", err);
       setError("서버 연결에 실패했습니다.");
@@ -168,10 +147,15 @@ export default function Recruit() {
     currentPage,
     pageSize,
     allSecondCategories,
+    categoryParam
   ]);
-
+useEffect(() => {
+  fetchRecruits();
+}, [selectedCategory, currentPage]);
+  /*
   useEffect(() => {
     if (categoryParam) {
+      
       const categoryArr = categoryParam.split(",").map(Number);
       const newSelectedCategory = [
         categoryArr[0] || 0,
@@ -179,6 +163,7 @@ export default function Recruit() {
         categoryArr[2] || 0,
       ];
       setSelectedCategory(newSelectedCategory);
+      
       
       // URL 파라미터가 변경되면 즉시 데이터를 가져오기
       const fetchDataWithNewCategory = async () => {
@@ -223,12 +208,27 @@ export default function Recruit() {
       };
 
       fetchDataWithNewCategory();
+       fetchRecruits();
     } else {
+      
       setSelectedCategory([0, 0, 0]);
       // 기본 카테고리로 데이터 가져오기
       fetchRecruits();
     }
-  }, [categoryParam]);
+  }, [categoryParam]);*/
+
+  useEffect(() => {
+  if (categoryParam) {
+    const categoryArr = categoryParam.split(",").map(Number);
+    setSelectedCategory([
+      categoryArr[0] || 0,
+      categoryArr[1] || 0,
+      categoryArr[2] || 0,
+    ]);
+  } else {
+    setSelectedCategory([0, 0, 0]);
+  }
+}, [categoryParam]);
 
   // selectedCategory나 currentPage가 변경될 때만 실행 (URL 파라미터 변경 제외)
   useEffect(() => {
@@ -255,7 +255,10 @@ export default function Recruit() {
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
+    console.log("카테고리 변경" , selectedCategory);
+        fetchRecruits();
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+
   };
 
   if (loading) {
@@ -281,7 +284,10 @@ export default function Recruit() {
                 className={`px-6 py-3 rounded-lg text-base md:text-2xl md:font-extrabold font-bold transition-colors duration-200 relative group ${
                   activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setSearchQuery("");
+                }}
               >
                 <span>
                   {tab === "recruit"
@@ -361,7 +367,7 @@ export default function Recruit() {
             )}
           </div>
         ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto">
+          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
             <StudentProfileList />
           </div>
         ) : (

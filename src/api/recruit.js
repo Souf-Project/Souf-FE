@@ -18,15 +18,16 @@ export const getPopularRecruit = async (pageable) => {
 
 export async function getRecruit(params = {}) {
     try {
-        const {
+    const {
       firstCategory = 1,
-      secondCategory = 1,
-      thirdCategory = 1,
+      secondCategory ,
+      thirdCategory,
       recruitSearchReqDto = {},
       page = 0,
       size = 10,
       sort,
     } = params;   
+    
 
         const queryParams = {
             firstCategory,
@@ -36,13 +37,12 @@ export async function getRecruit(params = {}) {
             'size': size
         };
 
-        // console.log("Query params:", queryParams);
 
         if (recruitSearchReqDto.title?.trim()) {
-            queryParams['recruitSearchReqDto.title'] = recruitSearchReqDto.title;
+            queryParams['title'] = recruitSearchReqDto.title;
         }
         if (recruitSearchReqDto.content?.trim()) {
-            queryParams['recruitSearchReqDto.content'] = recruitSearchReqDto.content;
+            queryParams['content'] = recruitSearchReqDto.content;
         }
 
         if (sort && sort.length > 0) {
