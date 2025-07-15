@@ -70,7 +70,8 @@ export default function Profile({
           e.target.src = getRandomDefaultImage();
         }}
       />
-      <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div>
+      {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
+      <div className="font-semibold text-[15px] mt-4">스프 온도 36.5도</div>
       <div className="flex flex-col justify-center">
         <div className="font-semibold text-2xl">{userName}</div>
         <div className="text-[#5B5B5B]">{userDetail}</div>
