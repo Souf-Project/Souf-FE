@@ -19,7 +19,7 @@ export default function UpdateOption({ id, memberId, worksData, mediaData, onDel
 
   if (Number(id) !== memberId) return null;
 
-  console.log("여기 데이터 " , worksData);
+  // console.log("여기 데이터 " , worksData);
 
   return (
     <div className="flex justify-end relative" ref={optionsRef}>

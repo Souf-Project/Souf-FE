@@ -1,9 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import sendIco from "../../assets/images/sendIco.svg";
-import BasicImg1 from "../../assets/images/BasicProfileImg1.png";
-import BasicImg2 from "../../assets/images/BasicProfileImg2.png";
-import BasicImg3 from "../../assets/images/BasicProfileImg3.png";
 import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
 import { postChatrooms } from "../../api/chat";
 import { UserStore } from "../../store/userStore";
@@ -41,11 +38,9 @@ export default function Profile({
     }
   };
   
-  // 기본 이미지를 랜덤으로 선택하는 함수
-  const getRandomDefaultImage = () => {
-    const defaultImages = [BasicImg1, BasicImg2, BasicImg3, BasicImg4];
-    const randomIndex = Math.floor(Math.random() * defaultImages.length);
-    return defaultImages[randomIndex];
+  // 기본 이미지
+  const getDefaultImage = () => {
+    return BasicImg4;
   };
 
   const clickHandler = (memberId) => {
@@ -63,11 +58,11 @@ export default function Profile({
       <img className="absolute top-4 right-4 w-11 z-10" src={sendIco} onClick={() => handleChat(memberId)} />
       <div onClick={() => clickHandler(memberId)}>
       <img 
-        src={profileImageUrl || getRandomDefaultImage()} 
+        src={profileImageUrl || getDefaultImage()} 
         className="rounded-full" 
         alt={userName || "프로필 이미지"}
         onError={(e) => {
-          e.target.src = getRandomDefaultImage();
+          e.target.src = getDefaultImage();
         }}
       />
       {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
