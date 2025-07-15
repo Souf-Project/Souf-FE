@@ -10,7 +10,8 @@ import AlertModal from "../../components/alertModal";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
-import { Pagination } from "swiper/modules";
+import "swiper/css/navigation";
+import { Pagination, Navigation } from "swiper/modules";
 import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
 import Loading from "../loading";
 
@@ -29,6 +30,7 @@ export default function PostDetail() {
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showProfileSkeleton, setShowProfileSkeleton] = useState(true);
+  const swiperRef = useRef(null);
 
     const {
     data: feedData,
@@ -127,13 +129,16 @@ const handleDeleteClick = () => {
         
         
         <div className="flex w-full">
-         <div className="flex w-[65%] h-full">
+         <div className="flex w-[65%] h-full relative">
     <Swiper
+      onSwiper={(swiper) => {
+        swiperRef.current = swiper;
+      }}
       pagination={{
         dynamicBullets: true,
       }}
       modules={[Pagination]}
-      className="rounded-lg"
+      className="rounded-lg relative"
     >
       {mediaData?.map((data, i) => {
   const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
@@ -159,6 +164,24 @@ const handleDeleteClick = () => {
       );
     })}
     </Swiper>
+    
+    {/* 커스텀 화살표 버튼 */}
+    <button 
+      onClick={() => swiperRef.current?.slidePrev()}
+      className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+    >
+      <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      </svg>
+    </button>
+    <button 
+      onClick={() => swiperRef.current?.slideNext()}
+      className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+    >
+      <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </button>
   </div>
           
           <div className="w-full max-w-[35%] h-full min-h-[240px] pl-6 relative ">
@@ -173,24 +196,24 @@ const handleDeleteClick = () => {
               <img
                 src={worksData.profileImageUrl}
                 alt="프로필 이미지"
-                className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+                className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200"
                 onError={(e) => {
                   e.target.src = BasicProfileImg1;
                 }}
               />
             ) : showProfileSkeleton ? (
-              <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
+              <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
             ) : (
               <img
                 src={BasicProfileImg1}
                 alt="기본 프로필 이미지"
-                className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+                className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200"
               />
             )}
             <div className="flex flex-col">
               {worksData.nickname ? (
                 <>
-                  <span className="font-semibold text-lg text-gray-800">{worksData.nickname}</span>
+                  <span className="font-semibold text-md text-gray-800">{worksData.nickname}</span>
                   <span className="text-sm text-gray-500">{worksData.categoryName}</span>
                 </>
               ) : (

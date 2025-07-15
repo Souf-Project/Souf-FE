@@ -316,77 +316,71 @@ useEffect(() => {
           />
         </div>
       </div>
-
       <div className="flex flex-col lg:flex-row">
-        <CategoryMenu
-          secondCategories={filteredSecondCategories}
-          thirdCategories={thirdCategories}
-          onSelect={handleCategorySelect}
+  <CategoryMenu
+    secondCategories={filteredSecondCategories}
+    thirdCategories={thirdCategories}
+    onSelect={handleCategorySelect}
+  />
+
+  <div className="w-full lg:w-3/4 mx-auto">
+    {activeTab === "feed" && (
+      <StudentFeedList />
+    )}
+
+    {activeTab === "profile" && (
+      <div className="bg-white rounded-lg shadow-sm mb-20">
+        <StudentProfileList
+          secondCategoryId={selectedCategory[1]}
+          thirdCategoryId={selectedCategory[2]}
+          keyword={searchResult}
         />
-        {activeTab === "feed" ? (
-          <div className="w-full lg:w-3/4 mx-auto">
-            <StudentFeedList />
-          </div>
-        ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-            <StudentProfileList />
-          </div>
-        ) : (
-          <div className="w-full lg:w-3/4 mx-auto">
-            {filteredRecruits.length > 0 ? (
-              <>
-                {filteredRecruits.map((recruit) => {
-                  const paymentString =
-                    recruit.minPayment && recruit.maxPayment
-                      ? recruit.minPayment === recruit.maxPayment
-                        ? recruit.minPayment
-                        : `${recruit.minPayment} ~ ${recruit.maxPayment}`
-                      : recruit.minPayment || recruit.maxPayment || "금액 협의";
-
-                  return (
-                    <RecruitBlock
-                      key={recruit.recruitId}
-                      id={recruit.recruitId}
-                      title={recruit.title}
-                      content={recruit.content}
-                      deadLine={recruit.deadLine}
-                      recruitable = {recruit.recruitable}
-                      payment={paymentString}
-                      minPayment={recruit.minPayment}
-                      maxPayment={recruit.maxPayment}
-                      cityName={recruit.cityName}
-                      cityDetailName={recruit.cityDetailName}
-                      secondCategory={recruit.secondCategory}
-                      categoryDtoList={recruit.categoryDtoList}
-                    />
-                  );
-                })}
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
-              </>
-            ) : (
-              <div className="text-center py-10">
-                <p className="text-gray-500">
-                  선택한 카테고리의 공고가 없습니다.
-                </p>
-              </div>
-            )}
-          </div>
-
-        ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-            <StudentProfileList secondCategoryId={selectedCategory[1]} thirdCategoryId ={selectedCategory[2]} keyword={searchResult}/>
-          </div>
-        ) : (
-          <div className="w-full lg:w-3/4 mx-auto">
-            <StudentFeedList />
-          </div>
-
-        )}
       </div>
-    </div>
-  );
-}
+    )}
+
+    {activeTab === "recruitment" && (
+      filteredRecruits.length > 0 ? (
+        <>
+          {filteredRecruits.map((recruit) => {
+            const paymentString =
+              recruit.minPayment && recruit.maxPayment
+                ? recruit.minPayment === recruit.maxPayment
+                  ? recruit.minPayment
+                  : `${recruit.minPayment} ~ ${recruit.maxPayment}`
+                : recruit.minPayment || recruit.maxPayment || "금액 협의";
+
+            return (
+              <RecruitBlock
+                key={recruit.recruitId}
+                id={recruit.recruitId}
+                title={recruit.title}
+                content={recruit.content}
+                deadLine={recruit.deadLine}
+                recruitable={recruit.recruitable}
+                payment={paymentString}
+                minPayment={recruit.minPayment}
+                maxPayment={recruit.maxPayment}
+                cityName={recruit.cityName}
+                cityDetailName={recruit.cityDetailName}
+                secondCategory={recruit.secondCategory}
+                categoryDtoList={recruit.categoryDtoList}
+              />
+            );
+          })}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      ) : (
+        <div className="text-center py-10">
+          <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
+        </div>
+      )
+    )}
+  </div>
+</div>
+</div>
+  )
+};

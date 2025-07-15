@@ -48,48 +48,6 @@ client.interceptors.request.use(
   }
 );
 
-// 응답 인터셉터 추가
-client.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-    
-    console.log("🚨 응답 인터셉터 - 에러 상태:", error.response?.status);
-    console.log("🚨 응답 인터셉터 - 에러 URL:", originalRequest.url);
-
-    // 403 에러이고, 재시도하지 않은 요청인 경우
-    if (error.response?.status === 403 && !originalRequest._retry) {
-      console.log("🔄 403 에러 감지 - 토큰 재발급 시도");
-      
-      // 응답 헤더에서 새로운 액세스 토큰 확인
-      const newAccessToken = error.response.headers['new-access-token'] || 
-                           error.response.headers['New-Access-Token'] ||
-                           error.response.headers['X-New-Access-Token'];
-      
-      console.log("🔍 헤더에서 새 토큰 확인:", newAccessToken ? "발견됨" : "없음");
-      
-      if (newAccessToken) {
-        console.log("✅ 새 토큰으로 갱신 중...");
-        
-        // 새로운 토큰으로 UserStore 업데이트
-        UserStore.getState().updateAccessToken(newAccessToken);
-        
-        // localStorage도 업데이트 (백업용)
-        localStorage.setItem("accessToken", newAccessToken);
-        
-        // 헤더 업데이트
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        
-        console.log("🔄 원래 요청 재시도");
-        // 원래 요청 재시도
-        return client(originalRequest);
-      } else {
-        console.log("❌ 헤더에 새 토큰이 없음");
-      }
-    }
-
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
