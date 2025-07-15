@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postApplicationReject } from "../api/application";
 import { useMutation } from "@tanstack/react-query";
-import AlertModal from "../components/AlertModal"; // 모달 컴포넌트
-
+import AlertModal from "./alertModal";
 export default function StudentInfoBlock({ studentInfo, type }) {
   const navigate = useNavigate();
   const user = studentInfo?.member || studentInfo;

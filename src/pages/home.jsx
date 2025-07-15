@@ -1,34 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIco from "../assets/images/searchIco.svg";
-import cate1Img from "../assets/images/cate1Img.svg";
-import cate2Img from "../assets/images/cate2Img.svg";
-import cate3Img from "../assets/images/cate3Img.svg";
-import cate4Img from "../assets/images/cate4Img.svg";
-import cate5Img from "../assets/images/cate5Img.svg";
+import cate1Img from "../assets/images/cate1Img.png";
+import cate2Img from "../assets/images/cate2Img.png";
+import cate3Img from "../assets/images/cate3Img.png";
+import cate4Img from "../assets/images/cate4Img.png";
+import cate5Img from "../assets/images/cate5Img.png";
 import Background from "../assets/images/background.png";
 import PopularFeed from "../components/home/popularFeed";
 import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
-import buildingData from "../assets/competitionData/건축_건설_인테리어.json";
-import marketingData from "../assets/competitionData/광고_마케팅.json";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
+import { getContests } from "../api/contest";
+import { UserStore } from "../store/userStore";
 
 export default function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const { memberId, roleType } = UserStore();
 
+  /*
   useEffect(() => {
     // 여러 카테고리에서 상위 공모전들을 가져와서 섞기
     const allCompetitions = [
       ...buildingData.slice(0, 1),
       ...marketingData.slice(0, 1)
     ];
-    setCompetitions(allCompetitions);
+    //setCompetitions(allCompetitions);
     
     // 이미지 로딩 상태 초기화
     const newLoadingStates = {};
@@ -43,25 +45,25 @@ export default function Home() {
     setTimeout(() => {
       setImageLoadingStates({});
     }, 1000);
-  }, []);
+  }, []);*/
+
 
   const categories = [
     "순수미술",
     "공예",
     "음악",
-    "사진",
+    "촬영 및 편집",
     "디지털 콘텐츠",
   ]
-
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
-    console.log('getImageUrl called with:', imagePath);
+    // console.log('getImageUrl called with:', imagePath);
     
     if (!imagePath) return null;
     
     // 이미 전체 URL인 경우 (상세내용_이미지)
     if (imagePath.startsWith('http')) {
-      console.log('Returning full URL:', imagePath);
+      // console.log('Returning full URL:', imagePath);
       return imagePath;
     }
     
@@ -70,7 +72,7 @@ export default function Home() {
       // 파일명만 추출 (594792.jpg)
       const parts = imagePath.split('\\');
       const fileName = parts[parts.length - 1];
-      console.log('Extracted fileName from thumbnails:', fileName);
+      // console.log('Extracted fileName from thumbnails:', fileName);
       
       if (!fileName) return null;
       
@@ -85,7 +87,7 @@ export default function Home() {
         `https://linkareer.com/attachments/${imageId}`
       ];
       
-      console.log('Trying URL formats:', urlFormats);
+      // console.log('Trying URL formats:', urlFormats);
       return urlFormats[0]; // 첫 번째 형식 반환
     }
     
@@ -95,7 +97,7 @@ export default function Home() {
     
     const imageId = fileName.replace(/\.(jpg|png|jpeg)$/i, '');
     const finalUrl = `https://media-cdn.linkareer.com//se2editor/image/${imageId}`;
-    console.log('Generated other URL:', finalUrl);
+    // console.log('Generated other URL:', finalUrl);
     
     return finalUrl;
   };
@@ -146,21 +148,72 @@ export default function Home() {
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-  console.log(feedData);
+ 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
   };
-
+  
   const handleCategoryClick = (category) => {
-    const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${encoded}`);
+    //const encoded = encodeURIComponent(category);
+    navigate(`/recruit?category=${category}`);
   };
 
+
+   useEffect(() => {
+    const pageable = {
+        page: 0,
+        size: 12,
+    };
+    const fetchContests = async () => {
+      try {
+        const res = await getContests(pageable); // API에서 전체 데이터 가져옴
+        const all = res?.data || [];
+
+        // 무작위 4개 추출 (grid 컬럼 수에 맞춤)
+        const shuffled = all.sort(() => 0.5 - Math.random());
+        const selected = shuffled.slice(0, 4);
+
+        setCompetitions(selected);
+
+        // 이미지 로딩 상태 초기화
+        const loadingStates = {};
+        selected.forEach((_, index) => {
+          loadingStates[index] = true;
+        });
+        setImageLoadingStates(loadingStates);
+
+        // 1초 후 로딩 상태 제거
+        setTimeout(() => {
+          setImageLoadingStates({});
+        }, 1000);
+
+      } catch (err) {
+        console.error("공모전 불러오기 실패:", err);
+      }
+    };
+
+    fetchContests();
+  }, []);
   return (
     <div className="relative">
+      {/* 플로팅 액션 버튼 */}
+      {memberId && (
+        <div className="fixed bottom-8 right-8 z-40">
+          <button
+            onClick={() => navigate(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")}
+            className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            {roleType === "MEMBER" ? "공고문 작성" : "피드 작성"}
+          </button>
+        </div>
+      )}
+      
       {/* 배경 이미지 섹션 */}
       <div className="relative h-[600px] w-screen">
         <img
@@ -169,37 +222,38 @@ export default function Home() {
           className="absolute z-[-1] inset-0 w-full h-full object-cover"
         />
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
-
-        <div className="relative text-center pt-48">
-          <h1 className="text-3xl font-semibold mb-4 text-black">
+      
+        <div className="relative text-center pt-36">
+        <h1 className="text-2xl lg:text-3xl font-semibold mb-4 text-black">
             필요한 일을, 필요한 사람에게
           </h1>
-          <h2 className="text-7xl font-bold text-black mb-12">
+          <h2 className="text-4xl lg:text-7xl font-bold text-black mb-12">
             지금 바로 SouF!
           </h2>
 
           {/* 검색창 */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+          <form onSubmit={handleSearch} className="lg:max-w-2xl mx-auto">
             <div className="relative">
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="원하는 일을 검색해보세요"
-                className="w-full px-6 py-3 text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+                className="w-3/4 lg:w-full px-6 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
               />
               <button
                 type="submit"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                className="absolute right-20 lg:right-4 top-1/2 transform -translate-y-1/2"
               >
-                <img src={searchIco} alt="search" className="w-6 h-6" />
+                <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
               </button>
             </div>
           </form>
+
         </div>
 
         {/* 카테고리 섹션 */}
-        <div className="absolute bottom-[-100px] left-0 right-0 py-8">
+        <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
             <div className="flex justify-center gap-8">
               {categories.map((category, index) => {
@@ -213,13 +267,13 @@ export default function Home() {
                 return (
                   <button
                     key={category}
-                    onClick={() => handleCategoryClick(category)}
-                    className="flex flex-col items-center gap-2 w-40"
+                    onClick={() => handleCategoryClick(index + 1)}
+                    className="flex flex-col items-center gap-2 w-40 "
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-20 h-20 mb-2"
+                      className="w-28 h-28 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
                     <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
                       {category}
@@ -230,11 +284,12 @@ export default function Home() {
             </div>
           </div>
         </div>
+       
       </div>
 
       {/* 인기 공고문 섹션 */}
-      <div className="relative mt-16">
-        <div className="relative flex flex-col max-w-6xl mx-auto px-6 py-16 overflow-x-hidden">
+      <div className="relative mt-16 px-6 lg:px-24 ">
+        <div className="relative flex flex-col  mx-auto px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 공고문 모집 보러가기
           </h2>
@@ -243,30 +298,34 @@ export default function Home() {
       </div>
 
       {/* 인기 피드 섹션 */}
-      <div className="relative">
-        <div className="relative items-center max-w-full md:max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <div className="relative px-6 lg:px-24 ">
+        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl font-bold mb-8">
             인기있는 피드 구경하러 가기
           </h2>
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
+
               {feedData?.result?.content?.map((profile, index) => (
                 <PopularFeed
                   key={index}
                   url={profile.mediaResDto?.fileUrl}
                   context={profile.categoryName}
                   username={profile.nickname}
+                  feedId={profile.feedId}
+                  memberId={profile.memberId}
                 />
               ))}
+
             </div>
           )}
         </div>
       </div>
 
       {/* 공모전 정보 섹션 */}
-      <div className="relative max-w-6xl mx-auto px-6 py-16">
+      <div className="relative px-6 lg:px-24  mx-auto py-16">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
           <button
@@ -276,25 +335,14 @@ export default function Home() {
             더보기
           </button>
         </div>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {competitions.map((competition, index) => {
-            // 카테고리 결정 (building, marketing 중 하나)
-            let category = 'building';
-            if (buildingData.includes(competition)) {
-              category = 'building';
-            } else if (marketingData.includes(competition)) {
-              category = 'marketing';
-            }
-            
-            // 해당 카테고리에서의 인덱스 찾기
-            const categoryData = category === 'building' ? buildingData : marketingData;
-            const contestIndex = categoryData.indexOf(competition);
-            
+            // console.log("competition", competition);
             return (
               <div
                 key={index}
                 className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
-                onClick={() => navigate(`/contests/${category}/${contestIndex}`)}
+                onClick={() => navigate(`/contests/${competition.categoryID[0]}/${competition.contestID}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
@@ -311,7 +359,7 @@ export default function Home() {
                       alt={competition.제목}
                       className="w-full h-full object-cover relative z-10"
                       onError={(e) => {
-                        console.log('Image load failed:', competition.썸네일);
+                        // console.log('Image load failed:', competition.썸네일);
                         
                         // 대체 URL 시도
                         const fallbackUrls = getFallbackUrls(competition.썸네일);
@@ -319,11 +367,11 @@ export default function Home() {
                         const nextIndex = currentIndex + 1;
                         
                         if (nextIndex < fallbackUrls.length) {
-                          console.log('Trying fallback URL:', fallbackUrls[nextIndex]);
+                          // console.log('Trying fallback URL:', fallbackUrls[nextIndex]);
                           e.target.src = fallbackUrls[nextIndex];
                         } else {
                           // 모든 URL 시도 실패 시 플레이스홀더 표시
-                          console.log('All URLs failed, showing placeholder');
+                          // console.log('All URLs failed, showing placeholder');
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
                         }
@@ -341,8 +389,8 @@ export default function Home() {
                 )}
                 
                 <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
-                  <p className="text-gray-600 mb-2">주최: {competition.주최}</p>
+                  <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
+                  <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
                   
                   {/* 공모분야 태그 */}
                   {competition.공모분야 && competition.공모분야.length > 0 && (
@@ -350,7 +398,7 @@ export default function Home() {
                       {competition.공모분야.slice(0, 2).map((field, fieldIndex) => (
                         <span
                           key={fieldIndex}
-                          className="px-2 py-1 bg-yellow-point text-white text-xs rounded-full"
+                          className="px-2 py-1 bg-yellow-point text-white text-[12px] lg:text-xs rounded-full"
                         >
                           {field}
                         </span>
@@ -358,12 +406,12 @@ export default function Home() {
                     </div>
                   )}
                   
-                  <div className="flex flex-col gap-1 text-sm text-gray-500">
-                    <span>시상금: {competition.시상규모}</span>
-                    <span>
+                  <div className="hidden lg:block flex flex-col gap-1 text-sm text-gray-500">
+                    <p>시상금: {competition.시상규모}</p>
+                    <p>
                       접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}
-                    </span>
-                    <span>참여대상: {competition.참여대상}</span>
+                    </p>
+                    <p>참여대상: {competition.참여대상}</p>
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">
@@ -373,6 +421,7 @@ export default function Home() {
                     <span className="text-xs text-blue-600 font-medium">
                       자세히 보기 →
                     </span>
+                   
                   </div>
                 </div>
               </div>

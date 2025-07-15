@@ -23,11 +23,14 @@ import MyFeed from '../components/myFeed';
 export default function MyPage() {
   // const navigate = useNavigate();
   const [activeSubmenu, setActiveSubmenu] = useState('profileEdit'); // 기본 서브메뉴
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 토글 상태
   const { roleType } = UserStore();
 
   // 서브메뉴 변경 핸들러
   const handleSubmenuChange = (submenu) => {
     setActiveSubmenu(submenu);
+    // 모바일에서 메뉴 클릭 시 사이드바 닫기
+    setIsSidebarOpen(false);
   };
 
   // 서브메뉴에 따른 컴포넌트 렌더링
@@ -123,8 +126,29 @@ export default function MyPage() {
   const menuItems = renderMenuItems();
 
   return (
-    <div className="min-h-screen flex pt-24 bg-yellow-main">
-      <div className="w-64 fixed z-10 left-0 top-16 bottom-0 bg-white p-6 z-10 overflow-y-auto">
+    <div className="min-h-screen w-screen px-4 lg:px-0 lg:w-full flex pt-24 bg-yellow-main">
+      {/* 모바일 메뉴 버튼 */}
+      <button
+        className="lg:hidden fixed top-20 left-4 z-20 p-2 bg-white rounded-lg shadow-md"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {/* 모바일 오버레이 */}
+      {isSidebarOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* 사이드바 */}
+      <div className={`w-64 fixed z-10 left-0 top-16 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
         
         <div className="mt-4">
           <ul className="ml-2 space-y-2">
@@ -152,7 +176,7 @@ export default function MyPage() {
       </div>
       
       {/* 컨텐츠 영역 (메인 컨텐츠) */}
-      <div className="ml-64 flex-1 p-10 w-screen">
+      <div className="lg:ml-64 flex-1 p-4 lg:p-10 w-full">
         <div className="max-w-4xl mx-auto">
           {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium  mb-4">프로필 수정</h3>}
           {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium  mb-4">개인정보 수정</h3>}

@@ -5,29 +5,28 @@ import StudentProfileList from "./studentProfileList";
 import SearchBar from "../components/SearchBar";
 import SearchDropdown from "../components/SearchDropdown";
 import { getRecruit } from "../api/recruit";
-import Feed from "../components/feed";
 import CategoryMenu from "../components/categoryMenu";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
 import ThirdCategory from "../assets/categoryIndex/third_category.json";
 import Pagination from "../components/pagination";
 import StudentFeedList from "./studentFeedList";
+import Loading from "../components/loading";
 
 export default function Recruit() {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
-  const [activeTab, setActiveTab] = useState("recruit");
+  const [activeTab, setActiveTab] = useState("feed");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResult, setSearchResult] = useState("");
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [firstId, setFirstId] = useState("");
-  const [secondCategories, setSecondCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const pageSize = 10;
+  const pageSize = 12;
 
 
 
@@ -46,7 +45,6 @@ export default function Recruit() {
     const filteredSecondCategories = allSecondCategories.filter(
       (second) => second.first_category_id === selectedFirstCategory
     );
-
     return {
       filteredSecondCategories,
       thirdCategories: allThirdCategories,
@@ -61,28 +59,29 @@ export default function Recruit() {
       setError(null);
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
-
+    
       const response = await getRecruit({
         firstCategory,
         secondCategory,
         thirdCategory,
         recruitSearchReqDto: searchParams,
-        pageable: {
-          page: currentPage,
-          size: pageSize,
-          sort: ["createdAt,desc"],
-        },
+        page: currentPage,
+        size: pageSize,
+        sort: ["createdAt,desc"],
+       
       });
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log('API Response recruits:', recruits);
+       
         setFilteredRecruits(recruits);
 
         const totalElements =
           response.data.result?.page?.totalElements || recruits.length;
-        setTotalPages(Math.ceil(totalElements / pageSize));
+        const totalPagesData = response.data.result?.page?.totalPages;
+        setTotalPages(totalPagesData);
       } else {
+        console.log('검색 실패: 응답 데이터 없음');
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
@@ -101,63 +100,40 @@ export default function Recruit() {
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
 
+       const recruitSearchReqDto = {};
+      if (searchQuery.trim() !== "") {
+        if (searchType === "title") {
+          recruitSearchReqDto.title = searchQuery.trim();
+
+        } else if (searchType === "titleContent") {
+
+          //recruitSearchReqDto.title = searchQuery.trim();
+          recruitSearchReqDto.content = searchQuery.trim();
+        }
+      }
+
       const response = await getRecruit({
         firstCategory,
         secondCategory,
         thirdCategory,
-        pageable: {
-          page: currentPage,
-          size: pageSize,
-          sort: ["createdAt,desc"],
-        },
+        recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
+        page: currentPage,
+        size: pageSize,
+        sort: ["createdAt,desc"],
       });
 
       if (response.data) {
-        let recruits = response.data.result?.content || [];
-
-        // 프론트엔드에서 검색 필터링 적용
-        if (searchQuery.trim() !== "") {
-          recruits = recruits.filter((recruit) => {
-            if (searchType === "title") {
-              return recruit.title
-                ?.toLowerCase()
-                .includes(searchQuery.toLowerCase());
-            } else if (searchType === "titleContent") {
-              return (
-                recruit.title
-                  ?.toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                recruit.content
-                  ?.toLowerCase()
-                  .includes(searchQuery.toLowerCase())
-              );
-            } else if (searchType === "category") {
-              // 카테고리 이름으로 검색
-              const categoryNames =
-                recruit.secondCategory?.map((catId) => {
-                  const category = allSecondCategories.find(
-                    (cat) => cat.second_category_id === catId
-                  );
-                  return category?.name || "";
-                }) || [];
-
-              return categoryNames.some((name) =>
-                name.toLowerCase().includes(searchQuery.toLowerCase())
-              );
-            }
-            return true;
-          });
-        }
-
+        // 백엔드에서 필터링된 데이터
+        const recruits = response.data.result?.content || [];
         setFilteredRecruits(recruits);
 
-        const totalElements =
-          response.data.result?.page?.totalElements || recruits.length;
+        const totalElements = response.data.result?.page?.totalElements || 0;
         setTotalPages(Math.ceil(totalElements / pageSize));
       } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
+     
     } catch (err) {
       console.error("Error fetching recruits:", err);
       setError("서버 연결에 실패했습니다.");
@@ -171,29 +147,101 @@ export default function Recruit() {
     currentPage,
     pageSize,
     allSecondCategories,
+    categoryParam
   ]);
-
+useEffect(() => {
+  fetchRecruits();
+}, [selectedCategory, currentPage]);
+  /*
   useEffect(() => {
     if (categoryParam) {
+      
       const categoryArr = categoryParam.split(",").map(Number);
-      setSelectedCategory([
+      const newSelectedCategory = [
         categoryArr[0] || 0,
         categoryArr[1] || 0,
         categoryArr[2] || 0,
-      ]);
-    } else {
-      setSelectedCategory([0, 0, 0]);
-    }
-  }, [categoryParam]);
+      ];
+      setSelectedCategory(newSelectedCategory);
+      
+      
+      // URL 파라미터가 변경되면 즉시 데이터를 가져오기
+      const fetchDataWithNewCategory = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
 
-  // 카테고리나 페이지 변경 시에만 실행
+          const [firstCategory, secondCategory, thirdCategory] = newSelectedCategory;
+
+          const response = await getRecruit({
+            firstCategory,
+            secondCategory,
+            thirdCategory,
+            recruitSearchReqDto: searchParams,
+            page: 0,
+            size: pageSize,
+            sort: ["createdAt,desc"],
+          });
+
+          if (response.data) {
+            const recruits = response.data.result?.content || [];
+            
+           
+            setFilteredRecruits(recruits);
+
+            const totalElements =
+              response.data.result?.page?.totalElements || recruits.length;
+            const totalPagesData = response.data.result?.page?.totalPages;
+            setTotalPages(totalPagesData);
+          } else {
+            console.log('리쿠르트 조회 실패: 응답 데이터 없음');
+            setFilteredRecruits([]);
+            setError("데이터를 불러오는데 실패했습니다.");
+          }
+        } catch (err) {
+          console.error("리쿠르트 조회 중 에러 발생:", err);
+          setError("서버 연결에 실패했습니다.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchDataWithNewCategory();
+       fetchRecruits();
+    } else {
+      
+      setSelectedCategory([0, 0, 0]);
+      // 기본 카테고리로 데이터 가져오기
+      fetchRecruits();
+    }
+  }, [categoryParam]);*/
+
   useEffect(() => {
-    fetchRecruits();
-  }, [selectedCategory, currentPage, fetchRecruits]);
+  if (categoryParam) {
+    const categoryArr = categoryParam.split(",").map(Number);
+    setSelectedCategory([
+      categoryArr[0] || 0,
+      categoryArr[1] || 0,
+      categoryArr[2] || 0,
+    ]);
+  } else {
+    setSelectedCategory([0, 0, 0]);
+  }
+}, [categoryParam]);
+
+  // selectedCategory나 currentPage가 변경될 때만 실행 (URL 파라미터 변경 제외)
+  useEffect(() => {
+    // URL 파라미터로 인한 변경이 아닌 경우에만 실행
+    if (!categoryParam || categoryParam === selectedCategory.join(',')) {
+      fetchRecruits();
+    }
+  }, [selectedCategory, currentPage, fetchRecruits, categoryParam]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(0); // 검색 시 첫 페이지로 이동
+    setSearchResult(searchQuery);
     performSearch();
   };
 
@@ -208,15 +256,14 @@ export default function Recruit() {
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
+    //console.log("카테고리 변경" , selectedCategory);
+    fetchRecruits();
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-point"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {
@@ -232,13 +279,16 @@ export default function Recruit() {
       <div className="flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           <div className="flex">
-            {["recruit", "profile", "feed"].map((tab) => (
+            {["feed", "profile", "recruit"].map((tab) => (
               <button
                 key={tab}
-                className={`px-6 py-3 rounded-lg md:font-extrabold font-bold transition-colors duration-200 relative group ${
+                className={`px-6 py-3 rounded-lg text-base md:text-2xl md:font-extrabold font-bold transition-colors duration-200 relative group ${
                   activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setSearchQuery("");
+                }}
               >
                 <span>
                   {tab === "recruit"
@@ -257,7 +307,7 @@ export default function Recruit() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <SearchDropdown onSelect={handleSearchTypeChange} />
+          {activeTab !== "profile" && <SearchDropdown onSelect={handleSearchTypeChange} />}
           <SearchBar
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -273,7 +323,15 @@ export default function Recruit() {
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
         />
-        {activeTab === "recruit" ? (
+        {activeTab === "feed" ? (
+          <div className="w-full lg:w-3/4 mx-auto">
+            <StudentFeedList />
+          </div>
+        ) : activeTab === "profile" ? (
+          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
+            <StudentProfileList />
+          </div>
+        ) : (
           <div className="w-full lg:w-3/4 mx-auto">
             {filteredRecruits.length > 0 ? (
               <>
@@ -285,23 +343,20 @@ export default function Recruit() {
                         : `${recruit.minPayment} ~ ${recruit.maxPayment}`
                       : recruit.minPayment || recruit.maxPayment || "금액 협의";
 
-                  const secondCategories = recruit.categoryDtoList 
-                    ? recruit.categoryDtoList.map((cat) => cat.secondCategory) 
-                    : [];
-
                   return (
                     <RecruitBlock
                       key={recruit.recruitId}
                       id={recruit.recruitId}
                       title={recruit.title}
                       content={recruit.content}
-                      deadLine={recruit.deadline}
+                      deadLine={recruit.deadLine}
+                      recruitable = {recruit.recruitable}
                       payment={paymentString}
                       minPayment={recruit.minPayment}
                       maxPayment={recruit.maxPayment}
                       cityName={recruit.cityName}
                       cityDetailName={recruit.cityDetailName}
-                      secondCategory={secondCategories}
+                      secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
                     />
                   );
@@ -320,14 +375,16 @@ export default function Recruit() {
               </div>
             )}
           </div>
+
         ) : activeTab === "profile" ? (
-          <div className="bg-white rounded-lg shadow-sm p-6 w-full lg:w-3/4 mx-auto">
-            <StudentProfileList />
+          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
+            <StudentProfileList secondCategoryId={selectedCategory[1]} thirdCategoryId ={selectedCategory[2]} keyword={searchResult}/>
           </div>
         ) : (
           <div className="w-full lg:w-3/4 mx-auto">
             <StudentFeedList />
           </div>
+
         )}
       </div>
     </div>

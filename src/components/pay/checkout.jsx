@@ -45,8 +45,8 @@ export default function Checkout() {
         orderName: '포인트 충전',
         customerName: '첫번째',
         customerEmail: 'test1@gmail.com',
-        successUrl: '백엔드api연결',
-        failUrl: '백엔드api연결',
+        successUrl: 'http://localhost:5173/chat',
+        failUrl: 'http://localhost:5173/chat',
       });
       console.log("결제 요청 완료");
     } catch (error) {

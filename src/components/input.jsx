@@ -30,19 +30,18 @@ export default function Input({
     }
   }, [isValidateTrigger, inputValue]);
 
-  // 버튼 클릭으로 isConfirmed가 변경될 때
   useEffect(() => {
-
-    console.log("isconfiremd", isConfirmed);
-
     if (isConfirmed !== undefined) {
-      if (isEmpty) {
-        setMessage(essentialText);
-      } else {
-        setMessage(isConfirmed ? approveText : disapproveText);
+      if (isConfirmed === true) {
+        if (!isEmpty) setMessage(approveText);
+      } else if (isConfirmed === false) {
+        if (!isEmpty) setMessage(disapproveText);
+        else setMessage(essentialText);
       }
     }
-  }, [isConfirmed]);
+  }, [isConfirmed, inputValue]);
+
+  
 
   const handleFocus = () => {
     setIsEdited(true);

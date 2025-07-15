@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { getRecruitDetail } from '../api/recruit';
+import AlertModal from './alertModal';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return 0;
@@ -20,6 +21,7 @@ export default function RecruitBlock({
   title,
   content,
   deadLine,
+  recruitable,
   payment,
   minPayment,
   maxPayment,
@@ -28,7 +30,20 @@ export default function RecruitBlock({
   secondCategory,
   categoryDtoList,
 }) {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const maxLength = 100;
   const navigate = useNavigate();
+  
+  const getSecondCategoryNames = (secondCategoryIds) => {
+    if (!secondCategoryIds || !Array.isArray(secondCategoryIds)) return [];
+    
+    return secondCategoryIds.map(categoryId => {
+      const category = secondCategoryData.second_category.find(
+        (cat) => cat.second_category_id === categoryId
+      );
+      return category ? category.name : '';
+    }).filter(name => name !== '');
+  };
 
   const getCategoryName = (categoryId) => {
     if (!categoryId) return '';
@@ -73,13 +88,19 @@ export default function RecruitBlock({
     return result;
   };
 
-  const calculateDday = (deadline) => {
+  const calculateDday = (deadline, recruitable) => {
+    // recruitable이 false이면 마감
+    if (recruitable === false) return "마감";
+    
+    // deadline이 없으면 마감
     if (!deadline) return "마감";
+    
     const today = new Date();
     const deadlineDate = new Date(deadline);
     const timeDiff = deadlineDate - today;
     const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
     
+    // deadline이 지났으면 마감
     if (dayDiff <= 0) {
       return "마감";
     } else {
@@ -87,14 +108,10 @@ export default function RecruitBlock({
     }
   };
 
-  const getDdayStyle = (deadline) => {
-    if (!deadline) return 'font-regular text-base bg-yellow-main text-gray-500 rounded-lg px-5 py-1';
-    const today = new Date();
-    const deadlineDate = new Date(deadline);
-    const timeDiff = deadlineDate - today;
-    const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+  const getDdayStyle = (deadline, recruitable) => {
+    const ddayText = calculateDday(deadline, recruitable);
     
-    if (dayDiff <= 0) {
+    if (ddayText === "마감") {
       return 'font-regular text-base bg-yellow-main text-gray-500 rounded-lg px-5 py-1';
     } else {
       return 'font-semibold text-base bg-yellow-point text-white rounded-lg px-5 py-1';
@@ -129,24 +146,22 @@ export default function RecruitBlock({
       });
     } catch (error) {
       console.error('Error fetching recruit detail:', error);
-
-      navigate(`/recruitDetails/${id}`, {
-        state: {
-          title,
-          content,
-          cityName,
-          cityDetailName,
-          minPrice,
-          maxPrice,
-          deadline: deadLine,
-          location: cityName,
-          preferMajor: false,
-          id,
-          categoryDtoList,
-        }
-      });
+      
+      // 403 에러인 경우 로그인 모달 표시
+      if (error.response?.status === 403) {
+        setShowLoginModal(true);
+      }
     }
   };
+
+  // 더보기쪽 함수
+    const handlerFeedContent = (length, data) => {
+      if(data.length > length){
+        return data.slice(0, length) + "...";
+      }
+      return data;
+    }
+
 
   return (
     <div
@@ -154,34 +169,63 @@ export default function RecruitBlock({
       className="w-full bg-white rounded-[30px] px-10 shadow-sm p-6 mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
       <div className="flex items-center gap-2 mb-4">
-        <div className={getDdayStyle(deadLine)}>{calculateDday(deadLine)}</div>
-        <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName}</div>
+        <div className={getDdayStyle(deadLine, recruitable)}>{calculateDday(deadLine, recruitable)}</div>
+        <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName + " " + cityDetailName}</div>
+       
       </div>
       <div className="flex flex-col justify-between items-start mb-4">
         <h2 className="text-3xl font-semibold text-gray-800">{title}</h2>
         <div className="flex flex-col text-2xl font-medium text-gray-500">
           {(() => {
-            const categories = getCategoryNames(categoryDtoList);
-            // console.log('Rendering categories:', categories);
-            return categories.map((category, index) => (
-              <div key={index} className="mb-1">
-                <span>{category.first}</span>
-                <span className="mx-2">&gt;</span>
-                <span>{category.second}</span>
-                <span className="mx-2">&gt;</span>
-                <span>{category.third}</span>
-              </div>
-            ));
+          
+            if (categoryDtoList && categoryDtoList.length > 0) {
+              const categories = getCategoryNames(categoryDtoList);
+              return categories.map((category, index) => (
+                <div key={index} className="mb-1">
+                  <span>{category.first}</span>
+                  <span className="mx-2">&gt;</span>
+                  <span>{category.second}</span>
+                  <span className="mx-2">&gt;</span>
+                  <span>{category.third}</span>
+                </div>
+              ));
+            } else if (secondCategory && Array.isArray(secondCategory)) {
+              const categoryNames = getSecondCategoryNames(secondCategory);
+              return categoryNames.map((categoryName, index) => (
+                <div key={index} className="mb-1">
+                  <span>{categoryName}</span>
+                </div>
+              ));
+            }
+            return null;
           })()}
         </div>
       </div>
-      <p className="text-lg font-regular text-gray-600 mb-4">{content}</p>
+      <p className="text-lg font-regular text-gray-600 mb-4">
+        {handlerFeedContent(maxLength,content) || "내용 없음"}
+      </p>
+
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <span className="text-2xl font-regular text-black ">{payment || '금액 협의'}</span>
+          <span className="text-2xl font-regular text-black ">{payment}</span>
         </div>
        
       </div>
+      
+      {showLoginModal && (
+        <AlertModal
+        type="simple"
+        title="로그인이 필요합니다"
+        description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+        TrueBtnText="로그인하러 가기"
+        FalseBtnText="취소"
+        onClickTrue={() => {
+          setShowLoginModal(false);
+          navigate("/login");
+        }}
+        onClickFalse={() => setShowLoginModal(false)}
+      />
+      )}
     </div>
   );
 }

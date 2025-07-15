@@ -44,3 +44,10 @@ export const getFirstCategoryNameById = (id) => {
   );
   return category ? category.name : null;
 };
+
+export const getSecondCategoryNameById = (id) => {
+  const category = SecondCategory.second_category.find(
+    (cat) => cat.second_category_id === id
+  );
+  return category ? category.name : null;
+};

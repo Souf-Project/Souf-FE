@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getFavorite } from '../api/favorite';
 import { UserStore } from '../store/userStore';
 import StudentInfoBlock from './studentInfoBlock';
+import Loading from './loading';
 
 export default function FavoritesContent() {
   const [favorites, setFavorites] = useState([]);
@@ -44,11 +45,7 @@ export default function FavoritesContent() {
 
   
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-point"></div>
-      </div>
-    );
+    return <Loading text="즐겨찾기를 불러오는 중..." />;
   }
 
   if (error) {

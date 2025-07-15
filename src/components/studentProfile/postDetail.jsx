@@ -11,6 +11,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Pagination } from "swiper/modules";
+import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
+import Loading from "../loading";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -25,6 +27,8 @@ export default function PostDetail() {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showProfileSkeleton, setShowProfileSkeleton] = useState(true);
 
     const {
     data: feedData,
@@ -34,12 +38,18 @@ export default function PostDetail() {
     queryKey: ["feedDetail"],
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
-      console.log("feedDetail 결과:", data.result.mediaResDtos);
+    
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);
       return data;
     },
     keepPreviousData: true,
+    onError: (error) => {
+      // 403 에러인 경우 로그인 모달 표시
+      if (error.response?.status === 403) {
+        setShowLoginModal(true);
+      }
+    },
   });
 
 
@@ -58,6 +68,15 @@ export default function PostDetail() {
   return () => {
     document.removeEventListener("mousedown", handleClickOutside);
   };
+}, []);
+
+  // 1초 후 스켈레톤 애니메이션 숨기기
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowProfileSkeleton(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
 }, []);
 
 const handleDeleteClick = () => {
@@ -83,6 +102,10 @@ const handleDeleteClick = () => {
     navigate("/");
   };
 
+  if (isLoading) {
+    return <Loading text="게시글을 불러오는 중..." />;
+  }
+
   return (
     <div className="flex flex-col py-16 px-4 max-w-4xl w-full mx-auto">
       <div className="flex justify-between">
@@ -100,7 +123,10 @@ const handleDeleteClick = () => {
             </div>
 
 
-      <div className="flex flex-row rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+      <div className="flex flex-col rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+        
+        
+        <div className="flex w-full">
          <div className="flex w-[65%] h-full">
     <Swiper
       pagination={{
@@ -114,7 +140,7 @@ const handleDeleteClick = () => {
 
   return (
     <SwiperSlide key={i} className="flex justify-center items-center">
-      <div className="flex justify-center items-center h-[400px] w-full">
+                    <div className="flex justify-center items-center h-auto w-full">
         {isVideo ? (
           <video
             src={`${BUCKET_URL}${data.fileUrl}`}
@@ -132,13 +158,53 @@ const handleDeleteClick = () => {
     </SwiperSlide>
       );
     })}
-
     </Swiper>
   </div>
-          <div className="w-full max-w-[35%] h-full pl-6 relative">
-            {/* 본인일 경우에만 */}
+          
+          <div className="w-full max-w-[35%] h-full min-h-[240px] pl-6 relative ">
+            {/* 사용자 프로필 정보 */}
+        <div className="flex items-center justify-between mb-4 w-full">
+          {/* 프로필 사진과 닉네임 (왼쪽) */}
+          <div 
+            className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate(`/profileDetail/${id}`)}
+          >
+            {worksData.profileImageUrl ? (
+              <img
+                src={worksData.profileImageUrl}
+                alt="프로필 이미지"
+                className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+                onError={(e) => {
+                  e.target.src = BasicProfileImg1;
+                }}
+              />
+            ) : showProfileSkeleton ? (
+              <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
+            ) : (
+              <img
+                src={BasicProfileImg1}
+                alt="기본 프로필 이미지"
+                className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+              />
+            )}
+            <div className="flex flex-col">
+              {worksData.nickname ? (
+                <>
+                  <span className="font-semibold text-lg text-gray-800">{worksData.nickname}</span>
+                  <span className="text-sm text-gray-500">{worksData.categoryName}</span>
+                </>
+              ) : (
+                <>
+                  <div className="h-6 bg-gray-200 rounded animate-pulse mb-1 w-24"></div>
+                  <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+                </>
+              )}
+            </div>
+          </div>
+          
+          {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
           {Number(id) === memberId && (
-            <div className="flex justify-end"  ref={optionsRef}>
+            <div ref={optionsRef}>
               <button
                 onClick={() => setShowOptions((prev) => !prev)}
                 className="text-xl px-2 py-1 rounded hover:bg-gray-100"
@@ -147,7 +213,7 @@ const handleDeleteClick = () => {
               </button>
 
               {showOptions && (
-                <div className="absolute left-[250px] mt-2 w-28 bg-white border rounded shadow-lg z-10">
+                <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-10">
                   <button
                     onClick={() => navigate("/postEdit", {
                               state: {
@@ -169,14 +235,20 @@ const handleDeleteClick = () => {
               )}
             </div>
           )}
+        </div>
+            
+            
           <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
-            <div className=" flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3">
+              <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3 ">
             {worksData.topic}
             </div>
-            <div className="flex flex-col justify-between text-sm text-gray-600  h-full border-t border-gray-300 pt-6 ">
+              <div className="flex flex-col justify-between text-sm text-gray-600 h-full w-full border-t border-gray-300 pt-6">
               <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
                 {worksData.content}
               </p>
+              </div>
+            </div>
+            <div className="absolute bottom-4 left-6">
               <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
             </div>
           </div>
@@ -199,6 +271,21 @@ const handleDeleteClick = () => {
           title="게시물이 삭제되었습니다."
           TrueBtnText="확인"
           onClickTrue={handleCompleteConfirm}
+        />
+      )}
+      
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
         />
       )}
     </div>

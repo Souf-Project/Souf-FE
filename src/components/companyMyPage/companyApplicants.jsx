@@ -8,6 +8,7 @@ import secondCategoryData from '../../assets/categoryIndex/second_category.json'
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
 import StudentInfoBlock from '../studentInfoBlock';
 import StateBlock from "./stateBlock";
+import Loading from '../loading';
 
 
 export default function CompanyApplicants({ recruitId }) {
@@ -153,11 +154,7 @@ export default function CompanyApplicants({ recruitId }) {
   }
 
   if (loading) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-gray-500">데이터를 불러오는 중...</p>
-      </div>
-    );
+    return <Loading text="데이터를 불러오는 중..." />;
   }
 
   if (error) {
@@ -181,7 +178,14 @@ export default function CompanyApplicants({ recruitId }) {
         // 공고문 리스트 보기
         <div>
           <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
+          {/* 모바일 타이틀 */}
+          <div className="lg:hidden text-2xl font-bold">
+          <h2 className="">지원자 리스트를 확인할</h2>
+          <h2 className="">공고문을 선택하세요</h2>
+          </div>
+          
+          {/* PC 타이틀 */}
+          <h2 className="hidden lg:block text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
           <div className="flex gap-5">
             <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
             <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />

@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
 import { UserStore } from '../store/userStore';
 import { useNavigate } from 'react-router-dom';
+import Loading from './loading';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -218,11 +219,7 @@ export default function ProfileEditContent() {
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-yellow-point"></div>
-      </div>
-    );
+    return <Loading text="프로필 정보를 불러오는 중..." />;
   }
 
   if (!formData) {
@@ -241,6 +238,7 @@ export default function ProfileEditContent() {
          <div className="absolute top-[40px] left-[225px]">
             <h1 className="text-4xl font-bold ">{formData.username}</h1>
         </div>
+        {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="ml-auto w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>}
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
           <div className="grid grid-cols-1 gap-6">
@@ -308,7 +306,7 @@ export default function ProfileEditContent() {
         
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">관심분야</h2>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 ">
             {[0, 1, 2].map(index => (
               <CategorySelectBox 
                 key={index}
@@ -328,7 +326,7 @@ export default function ProfileEditContent() {
                 </button>
             </>
           ) : (
-            <button onClick={() => setIsEditing(true)} className="w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>
+           <></>
           )}
       </div>
       <div className='flex justify-end items-end'>

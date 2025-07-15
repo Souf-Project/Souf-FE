@@ -19,9 +19,12 @@ import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
 export default function Step1() {
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
-
-  const [verificationCheck, setVerificationCheck] = useState("");
+  const [verificationApproveText, setVerificationApproveText] = useState("");
+  const [verificationCheck, setVerificationCheck] = useState(undefined);
+  
+  const [emailVerification, setEmailVerification] = useState(undefined);
   const [approveText,setApproveText] = useState("");
+  
 
   const [checkResult, setCheckResult] = useState(undefined);
   const [nicknameModal, setNicknameModal] = useState(false);
@@ -32,6 +35,9 @@ export default function Step1() {
   const [categories, setCategories] = useState([]);
   const [nickname, setNickname] = useState("");
   const [isNameConfirm, setIsNameConfirm] = useState(undefined);
+  const [passwordValidation, setPasswordValidation] = useState(undefined);
+  const [passwordCheckValidation, setpasswordCheckValidation] = useState(undefined);
+
   const [errors, setErrors] = useState({
     username: false,
     nickname: false,
@@ -42,20 +48,24 @@ export default function Step1() {
   const navigate = useNavigate();
 
   const validateForm = () => {
-    
-  const newErrors = {
-    username: !formData.username.trim(),
-    nickname: !formData.nickname.trim() && checkResult,
-    email: !formData.email.trim(),
-    password: !formData.password.trim(),
-    passwordCheck: !formData.passwordCheck.trim() && formData.password !== !formData.passwordCheck.trim(),
-  };
-
-  setErrors(newErrors);
-
-  const hasError = Object.values(newErrors).some(Boolean);
+    const isPasswordValid = isValidPassword(formData.password);
+    const isPasswordMatchValid = isPasswordMatch(formData.password, formData.passwordCheck);
+  
+    const newErrors = {
+      username: !formData.username.trim(),
+      nickname: !formData.nickname.trim() || !checkResult,
+      email: !formData.email.trim(),
+      password: !isPasswordValid,
+      passwordCheck: !isPasswordMatchValid,
+    };
+  
+    setErrors(newErrors);
+    setPasswordValidation(isPasswordValid);
+  
+    const hasError = Object.values(newErrors).some(Boolean);
     return !hasError;
   };
+  
 
 
   const [formData, setFormData] = useState({
@@ -200,25 +210,39 @@ export default function Step1() {
   // };
 
   const handleInputChange = (name, e) => {
-  const { value } = e.target;
+    const { value } = e.target;
 
-  setFormData((prev) => {
-    const updatedForm = { ...prev, [name]: value };
+    setFormData((prev) => {
+      const updatedForm = { ...prev, [name]: value };
 
-    const newErrors = { ...errors };
+      const newErrors = { ...errors };
 
-    if (name === "password") {
-      newErrors.password = !isValidPassword(value);
-      // password가 바뀌면 passwordCheck도 다시 비교해야 함
-      newErrors.passwordCheck = !isPasswordMatch(value, updatedForm.passwordCheck);
-    } else if (name === "passwordCheck") {
-      newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
-    }
+      if (name === "password") {
+        const isPasswordValid = isValidPassword(value);
+        newErrors.password = !isPasswordValid;
+        // password가 바뀌면 passwordCheck도 다시 비교해야 함
+        newErrors.passwordCheck = !isPasswordMatch(value, updatedForm.passwordCheck);
+        
+        // 비밀번호 유효성 검사 결과 저장
+        if (value.trim() !== "") {
+          setPasswordValidation(isPasswordValid);
+        } else {
+          setPasswordValidation(undefined);
+        }
+      } else if (name === "passwordCheck") {
+        newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
+        if(value.trim() !== ""){
+          setpasswordCheckValidation(isPasswordMatch(updatedForm.password, value));
+        }else{
+          setpasswordCheckValidation(undefined);
+        }
 
-    setErrors(newErrors);
-    return updatedForm;
-  });
-};
+      }
+
+      setErrors(newErrors);
+      return updatedForm;
+    });
+  };
 
   //  const nickNameVerification = useMutation({})
 
@@ -247,40 +271,62 @@ export default function Step1() {
         setEmailModal(true);
       },
       onNicknameChecked: (res) => {
-        console.log(res.data.result);
-        setCheckResult(res.result);
-        setNicknameModal(res.result);
+        const result = res.data.result;
+        setCheckResult(result);
+
+        if (result === true) {
+         
+          setNicknameModal(true);
+        } else if (result === false) {
+        
+          setNicknameModal(true);
+        } else {
+      
+        }
       },
       onEmailVerifySuccess: (res, { email }) => {
-        if (res.result === true) {
-          updateUserData("email", email);
-          setApproveText("인증번호가 확인되었습니다.");
+        const result = res.result;
+
+        if (result === true) {
+          setVerificationApproveText("인증번호가 확인되었습니다.");
           setEmailVerification(true);
           setVerificationCheck(true);
-
         } else {
-          setApproveText("인증번호가 일치하지 않습니다.");
+          setVerificationApproveText("인증번호가 일치하지 않습니다.");
           setEmailVerification(false);
           setVerificationCheck(false);
         }
       },
-      onEmailVerifyError: () => {
-        setApproveText("서버 오류로 인증에 실패했습니다.");
+      onEmailVerifyError: (err) => {
+        const serverMessage = err.response?.data?.message || "서버 오류로 인증에 실패했습니다.";
+        setVerificationApproveText(serverMessage);
         setEmailVerification(false);
+        setVerificationCheck(false);
       },
+      
       onSignUpSuccess: () => {
+        console.log('회원가입 성공! 모달을 띄웁니다.');
         setSuccessModal(true);
       },
       onSignUpError: (err) => {
         console.log(err);
-        setApproveText("서버 오류로 인증에 실패했습니다.");
-        setEmailVerification(false);
+        
+        // 비밀번호 형식 에러 처리
+        if (err.response?.data?.message?.includes("비밀번호")) {
+          setPasswordValidation(false);
+          setErrors(prev => ({ ...prev, password: true }));
+        } else {
+          setApproveText("서버 오류로 인증에 실패했습니다.");
+          setEmailVerification(false);
+        }
       },
     });
 
   const handleSignup = () => {
+     
     const isValid = validateForm();
-        if (!isValid) return;
+    if (!isValid) return;
+    
     const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
     if (cleanedCategories.length === 0) {
       alert("최소 1개 이상의 카테고리를 선택해주세요.");
@@ -295,13 +341,11 @@ export default function Step1() {
       ...formData,
       categoryDtos: cleanedCategories,
     };
-
     signUp.mutate(finalData);
-
   }
 
   return (
-    <div className="w-full rounded-[30px] border-[1px] py-20 px-52 flex flex-col items-center justify-center">
+    <div className="mx-auto w-2/3 lg:w-full rounded-[30px] border-[1px] py-20 px-16 lg:px-52 flex flex-col items-center justify-center">
       <Input
         title="이름"
         name="username"
@@ -339,41 +383,50 @@ export default function Step1() {
         essentialText="이메일을 입력해주세요."
         onClick={() => emailVerificationMutation.mutate(email)}
         isValidateTrigger={errors.email}
+        isLoading={emailVerificationMutation.isPending}
       />
 
-    <ButtonInput
-      value={verification}
-      onChange={(e) => setVerification(e.target.value)}
-      title="이메일 인증"
-      btnText="인증확인"
-      onClick={() =>
-        emailVerify.mutate({
-          email: formData.email,
-          verification,
-        })
-      }
-      isConfirmed={verificationCheck}
-      approveText={approveText}
-    />
+<ButtonInput
+  value={verification}
+  onChange={(e) => setVerification(e.target.value)}
+  title="이메일 인증"
+  btnText="인증확인"
+  onClick={() => {
+    emailVerify.mutate({
+      email: formData.email,
+      verification,
+    });
+  }}
+  isConfirmed={verificationCheck}
+  approveText={verificationApproveText}
+  disapproveText={verificationApproveText}
+/>
+
 
       <Input
         title="비밀번호"
         type="password"
         name="password"
         essentialText="비밀번호를 입력해주세요."
-        subtitle="영문자, 숫자, 특수문자 모두 포함 / 8자~20자"
+        subtitle="영문자, 숫자, 특수문자(@,$,!,%,*,#,?,&) 포함 / 8자~20자"
         value={formData.password}
         onChange={(e) => handleInputChange("password", e)}
         isValidateTrigger={errors.password}
+        isConfirmed={passwordValidation}
+        approveText="올바른 비밀번호 형식입니다."
+        disapproveText="비밀번호 형식이 올바르지 않습니다."
       />
       <Input
         title="비밀번호 확인"
         type="password"
         name="passwordCheck"
-        essentialText="비밀번호 확인을 입력해주세요."
+        essentialText="비밀번호 확인이 올바르지 않습니다."
         value={formData.passwordCheck}
+        isConfirmed={passwordCheckValidation}
         onChange={(e) => handleInputChange("passwordCheck", e)}
         isValidateTrigger={errors.passwordCheck}
+        approveText="비밀번호 확인이 완료되었습니다."
+        disapproveText="비밀번호 확인이 올바르지 않습니다."
       />
       <div className="w-full relative mb-8 flex flex-col gap-3">
         <div className="text-black text-2xl font-regular mb-2">

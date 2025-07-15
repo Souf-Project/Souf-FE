@@ -18,33 +18,35 @@ export const getPopularRecruit = async (pageable) => {
 
 export async function getRecruit(params = {}) {
     try {
-        const {
-            firstCategory = 1,
-            secondCategory = 1,
-            thirdCategory = 1,
-            recruitSearchReqDto = {},
-            pageable = { page: 0, size: 10, sort: "createdAt,desc" }
-        } = params;        
+    const {
+      firstCategory = 1,
+      secondCategory ,
+      thirdCategory,
+      recruitSearchReqDto = {},
+      page = 0,
+      size = 10,
+      sort,
+    } = params;   
+    
 
         const queryParams = {
             firstCategory,
             ...(secondCategory ? { secondCategory } : {}),
             ...(thirdCategory ? { thirdCategory } : {}),
-            'pageable.page': pageable.page,
-            'pageable.size': pageable.size
+            'page': page,
+            'size': size
         };
 
-        console.log("Query params:", queryParams);
 
         if (recruitSearchReqDto.title?.trim()) {
-            queryParams['recruitSearchReqDto.title'] = recruitSearchReqDto.title;
+            queryParams['title'] = recruitSearchReqDto.title;
         }
         if (recruitSearchReqDto.content?.trim()) {
-            queryParams['recruitSearchReqDto.content'] = recruitSearchReqDto.content;
+            queryParams['content'] = recruitSearchReqDto.content;
         }
 
-        if (pageable.sort && pageable.sort.length > 0) {
-            queryParams['pageable.sort'] = pageable.sort.join(',');
+        if (sort && sort.length > 0) {
+            queryParams['sort'] = sort?.join(',');
         }
 
         // 토큰 확인
@@ -160,7 +162,11 @@ export async function updateRecruit(recruitId, data) {
 
 // S3 업로드 함수
 export const uploadToS3 = async (url, file) => {
-  return axios.put(url, file, {});
+  return axios.put(url, file , {
+    headers: {
+        "Content-Type": file.type,  // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+  },
+});
 };
 
 // 공고문 미디어 정보 저장 함수 (피드와 동일한 형식)
@@ -230,3 +236,19 @@ export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
     }
 }
 
+export async function closeRecruit(recruitId, memberId) {
+    try {
+        const response = await client.patch(`/api/v1/recruit/closure/${recruitId}`, {
+            memberId: memberId
+        }, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Recruit 지원 마감 API 오류 발생:', error);
+        throw error;
+    }
+}

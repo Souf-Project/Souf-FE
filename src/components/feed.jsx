@@ -10,10 +10,12 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
+import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
-export default function Feed({ feedData }) {
+
+export default function Feed({ feedData, onFeedClick }) {
   const navigate = useNavigate();
   const [feeds, setFeeds] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,7 @@ export default function Feed({ feedData }) {
   const [mediaData, setMediaData] = useState([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const {memberId} = UserStore();
   const maxLength = 100;
   const [pageable, setPageable] = useState({
@@ -30,7 +33,6 @@ export default function Feed({ feedData }) {
     size: 10,
   });
   
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-48">
@@ -48,14 +50,19 @@ export default function Feed({ feedData }) {
   }
 
   useEffect(() => {
-    console.log("피드데이터");
-    console.log(feedData);
+
      setWorksData(feedData);
      setMediaData(feedData?.mediaResDtos);
   }, []);
   
   const clickHandler = (profileId) => {
+    if (onFeedClick) {
+      // onFeedClick이 전달된 경우 부모 컴포넌트에서 로그인 체크 처리
+      onFeedClick(null, profileId);
+    } else {
+      // 기존 로직 (직접 네비게이션)
     navigate(`/profileDetail/${profileId}`);
+    }
   };
 
   //삭제하기
@@ -100,8 +107,8 @@ export default function Feed({ feedData }) {
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
-      <UpdateOption id={feedData.memberId} memberId={memberId}
-      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+     
+      
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-semibold leading-snug text-black">
           {feedData?.topic || "제목 없음"}
@@ -111,16 +118,20 @@ export default function Feed({ feedData }) {
         </p>
       </div>
 
+      <div className="flex justify-between items-center">
       <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
       onClick={() => clickHandler(feedData?.memberId)}>
          <img
-            src={`https://iamsouf-bucket.s3.ap-northeast-2.amazonaws.com/${feedData?.profileUrl}`}
+            src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
         <h2 className="text-xl font-semibold leading-snug text-black">
           {feedData?.nickname || "학생" }
         </h2>
+      </div>
+      <UpdateOption id={feedData.memberId} memberId={memberId}
+      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       </div>
 
     <div className="flex justify-center w-full overflow-hidden rounded-md mb-4">
@@ -189,6 +200,20 @@ export default function Feed({ feedData }) {
                 title="게시물이 삭제되었습니다."
                 TrueBtnText="확인"
                 onClickTrue={handleCompleteConfirm}
+              />
+            )}
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
               />
             )}
     </div>
