@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { getChatRooms, postChatImage, postChatImageUpload } from "../../api/chat";
+import { getChatRooms, postChatImage, postChatImageUpload, deleteChatRoom } from "../../api/chat";
 import { postChatVideo, postVideoSignedUrl, postVideoUpload, uploadToS3Video } from "../../api/video";
 import ReceiverMessage from "./ReceiverMessage";
 import SenderMessage from "./senderMessage";
 import { UserStore } from "../../store/userStore";
 import { useRef, useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   connectChatSocket,
   disconnectChatSocket,
@@ -18,10 +19,13 @@ import chatImgIcon from "../../assets/images/chatImgIcon.png"
 import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
+import SouFLogo from "../../assets/images/SouFLogo.png";
+import outIcon from "../../assets/images/outIcon.svg";
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
     const { nickname } = UserStore();
+    const navigate = useNavigate();
   const [newMessage, setNewMessage] = useState("");
   const [realtimeMessages, setRealtimeMessages] = useState([]);
   const [showButtonList, setShowButtonList] = useState(false);
@@ -326,14 +330,47 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     document.body.removeChild(link);
   };
 
-  
+  const handleDeleteChatRoom = async (roomId) => {
+    try {
+      // 사용자 확인
+      const isConfirmed = window.confirm("정말로 이 채팅방을 나가시겠습니까?");
+      if (!isConfirmed) return;
+
+      console.log("채팅방 삭제 시작:", roomId);
+      await deleteChatRoom(roomId);
+      console.log("채팅방 삭제 완료");
+      
+      // 채팅 목록 페이지로 이동
+      navigate("/chat");
+    } catch (error) {
+      console.error("채팅방 삭제 실패:", error);
+      alert("채팅방 나가기에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   return (
    <div className="h-full flex flex-col">
   {/* 채팅 헤더 */}
-  <div className="p-4 border-b border-gray-200">
-    <h2 className="font-semibold">{chatNickname}</h2>
-  </div>
+  <div className="h-20 mt-4 p-4 border-b border-gray-200 flex items-center justify-between">
+    <div className="flex items-center gap-4">
+    <img 
+      src={opponentProfileImageUrl || SouFLogo} 
+      alt={chatNickname}
+      className="w-10 h-10 rounded-[100%] object-cover" 
+      onError={(e) => {
+        e.target.src = SouFLogo;
+      }}
+    />
+    <h2 className="font-semibold text-2xl">{chatNickname}</h2>
+    </div>
+   
+   
+      <button className="bg-red-600 rounded-md p-2 text-white flex items-center gap-2" onClick={() => handleDeleteChatRoom(roomId)}>
+      <img src={outIcon} alt="outIcon" className="w-4 h-4" />
+       나가기
+      </button>
+    </div>
+
 
   {/* 숨겨진 파일 입력 */}
   <input
