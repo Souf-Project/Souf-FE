@@ -20,11 +20,11 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
 
   return (
     <>
-      <div className="w-[180px] h-[200px] lg:w-64 lg:h-64 cursor-pointer" onClick={handleClick}>
+      <div className="w-[180px] h-[200px] lg:w-auto lg:h-full cursor-pointer" onClick={handleClick}>
         <img
           src={`${BUCKET_URL}${url}`}
           alt={`${username} 이미지`}
-          className="md:w-full h-auto object-cover rounded-md w-[180px] h-[200px] lg:w-64 lg:h-64"
+          className="md:w-auto h-full object-cover rounded-md w-[180px] h-[200px] lg:w-64 lg:h-80"
         />
         <div className="flex justify-between mt-2 px-1">
           <span className="text-gray-400 text-sm">{context}</span>
