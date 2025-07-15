@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import SouFLogo from "../../assets/images/SouFLogo.png";
 
 export default function ReceiverMessage({ content, createdTime, opponentProfileImageUrl, type = "TALK", onImageClick, onFileClick, opponentId, opponentRole }) {
   const navigate = useNavigate();
@@ -25,10 +26,13 @@ export default function ReceiverMessage({ content, createdTime, opponentProfileI
   return (
     <div className="flex items-start gap-2 mb-4">
       <img 
-        src={opponentProfileImageUrl} 
-        className={`w-10 h-10 rounded-full ${opponentRole === "STUDENT" ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+        src={opponentProfileImageUrl || SouFLogo} 
+        className={`w-10 h-10 rounded-full object-cover ${opponentRole === "STUDENT" ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
         onClick={handleProfileClick}
         alt="상대방 프로필"
+        onError={(e) => {
+          e.target.src = SouFLogo;
+        }}
       />
       <div className="flex gap-2 items-end">
         <div className="max-w-xs bg-gray-200 text-black px-4 py-2 rounded-lg rounded-bl-none shadow">
