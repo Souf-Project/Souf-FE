@@ -31,11 +31,11 @@ const processQueue = (error, token = null) => {
 client.interceptors.request.use(
   (config) => {
     const { accessToken } = UserStore.getState();
-    console.log("🔑 요청 인터셉터 - 현재 액세스 토큰:", accessToken);
+    // console.log("🔑 요청 인터셉터 - 현재 액세스 토큰:", accessToken);
     
     if (accessToken) {
       config.headers.set("Authorization", `Bearer ${accessToken}`);
-      console.log("✅ Authorization 헤더 설정됨:", `Bearer ${accessToken.substring(0, 20)}...`);
+      // console.log("✅ Authorization 헤더 설정됨:", `Bearer ${accessToken.substring(0, 20)}...`);
     } else {
       console.log("❌ 액세스 토큰이 없음");
     }
