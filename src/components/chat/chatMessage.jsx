@@ -20,6 +20,7 @@ import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/SouFLogo.png";
+import outIcon from "../../assets/images/outIcon.svg";
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
@@ -362,12 +363,14 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     />
     <h2 className="font-semibold text-2xl">{chatNickname}</h2>
     </div>
-    <div>
-      <button className="text-red-500 font-bold" onClick={() => handleDeleteChatRoom(roomId)}>
-        채팅 나가기
+   
+   
+      <button className="bg-red-600 rounded-md p-2 text-white flex items-center gap-2" onClick={() => handleDeleteChatRoom(roomId)}>
+      <img src={outIcon} alt="outIcon" className="w-4 h-4" />
+       나가기
       </button>
     </div>
-  </div>
+
 
   {/* 숨겨진 파일 입력 */}
   <input
