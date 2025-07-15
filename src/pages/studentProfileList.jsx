@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "../api/profile";
 import Loading from "../components/loading";
 
-export default function StudentProfileList() {
+export default function StudentProfileList({secondCategoryId, thirdCategoryId ,keyword }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const pageSize = 6;
@@ -18,14 +18,16 @@ export default function StudentProfileList() {
     size: pageSize,
   };
 
+  const firstCategory = categoryParam ? Number(categoryParam.split(",")[0]) : null;
+
   const {
     data: feedData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["profile", categoryParam, currentPage], // currentPage가 변경될 때마다 refetch
+    queryKey: ["profile", firstCategory, secondCategoryId, thirdCategoryId, keyword, currentPage],
     queryFn: async () => {
-      const data = await getProfile(categoryParam, pageable);
+      const data = await getProfile(firstCategory, secondCategoryId, thirdCategoryId, keyword, pageable);
       setTotalPages(data.result.page.totalPages); // 페이지 수 갱신
       return data;
     },

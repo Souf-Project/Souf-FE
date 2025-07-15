@@ -90,15 +90,30 @@ client.interceptors.response.use(
       }
     }
 
-    // 401 에러 처리 (토큰이 완전히 만료된 경우)
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log("🚨 401 에러 - 로그아웃 처리");
-      // UserStore에서 로그아웃
-      UserStore.getState().logout();
-      
-      if (window.location.pathname !== "/login") {
-        alert("로그인이 필요합니다.");
-        window.location.href = "/login";
+client.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 403) {
+      if (error.response.data.message === "토큰 재발급이 필요합니다.") {
+        const originalRequest = error.config;
+        try {
+
+          if (tokenResponse.status === 201) {
+            const newAccessToken = tokenResponse.data.accessToken;
+            localStorage.setItem("accessToken", newAccessToken);
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return client(originalRequest);
+          }
+        } catch (refreshError) {
+          if (axios.isAxiosError(refreshError)) {
+            UserStore.getState().logout();
+            if (window.location.pathname !== "/login") {
+              alert("로그인이 필요합니다.");
+              window.location.href = "/login";
+            }
+          return Promise.reject(refreshError);
+          }
+        }
       }
     }
 
