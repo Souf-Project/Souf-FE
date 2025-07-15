@@ -290,9 +290,12 @@ export default function Home() {
       {/* 인기 공고문 섹션 */}
       <div className="relative mt-16 px-6 lg:px-24 ">
         <div className="relative flex flex-col  mx-auto px-6 py-16 overflow-x-hidden">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-8 relative inline-block">
-            <span className="relative z-10">인기있는 공고문 모집 보러가기</span>
-            <div className="absolute bottom-1 left-0 right-0 h-3 w-40 bg-yellow-300 opacity-60 -z-10"></div>
+          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+            <span className="relative inline-block">
+              <span className="relative z-10">인기있는 공고문</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">모집 보러가기</span>
           </h2>
           <Carousel />
         </div>
@@ -301,9 +304,12 @@ export default function Home() {
       {/* 인기 피드 섹션 */}
       <div className="relative px-6 lg:px-24 ">
         <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-8 relative inline-block">
-            <span className="relative z-10">인기있는 피드 구경하러 가기</span>
-            <div className="absolute bottom-1 left-0 right-0 h-3 w-36 bg-yellow-300 opacity-60 -z-10"></div>
+          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+            <span className="relative inline-block">
+              <span className="relative z-10">인기있는 피드</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">구경하러 가기</span>
           </h2>
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
@@ -329,9 +335,12 @@ export default function Home() {
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-8 relative inline-block">
-            <span className="relative z-10">공모전 정보 모아보기</span>
-            <div className="absolute bottom-1 left-0 right-0 h-3 w-[136px] bg-yellow-300 opacity-60 -z-10"></div>
+          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+            <span className="relative inline-block">
+              <span className="relative z-10">공모전 정보</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">모아보기</span>
           </h2>
           <button
             onClick={() => navigate("/contests")}
