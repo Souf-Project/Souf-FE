@@ -20,7 +20,6 @@ export default function Recruit() {
   const [activeTab, setActiveTab] = useState("feed");
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResult, setSearchResult] = useState("");
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -32,6 +31,7 @@ export default function Recruit() {
 
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get("category");
+//공고문
 
   // CategoryMenu에 전달할 데이터 준비
   const allSecondCategories = SecondCategory.second_category;
@@ -58,8 +58,9 @@ export default function Recruit() {
       setLoading(true);
       setError(null);
 
+
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
-    
+      console.log("다시 패치되니?" , firstCategory, secondCategory, thirdCategory);
       const response = await getRecruit({
         firstCategory,
         secondCategory,
@@ -71,8 +72,11 @@ export default function Recruit() {
        
       });
 
+      console.log("API 응답:", response);
+      
       if (response.data) {
         const recruits = response.data.result?.content || [];
+        console.log("공고문 데이터:", recruits);
        
         setFilteredRecruits(recruits);
 
@@ -122,9 +126,12 @@ export default function Recruit() {
         sort: ["createdAt,desc"],
       });
 
+      console.log("검색 API 응답:", response);
+      
       if (response.data) {
         // 백엔드에서 필터링된 데이터
         const recruits = response.data.result?.content || [];
+        console.log("검색된 공고문 데이터:", recruits);
         setFilteredRecruits(recruits);
 
         const totalElements = response.data.result?.page?.totalElements || 0;
@@ -230,18 +237,15 @@ useEffect(() => {
   }
 }, [categoryParam]);
 
-  // selectedCategory나 currentPage가 변경될 때만 실행 (URL 파라미터 변경 제외)
+  // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
-    // URL 파라미터로 인한 변경이 아닌 경우에만 실행
-    if (!categoryParam || categoryParam === selectedCategory.join(',')) {
-      fetchRecruits();
-    }
-  }, [selectedCategory, currentPage, fetchRecruits, categoryParam]);
+    console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
+    fetchRecruits();
+  }, [selectedCategory, currentPage, fetchRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(0); // 검색 시 첫 페이지로 이동
-    setSearchResult(searchQuery);
     performSearch();
   };
 
@@ -255,11 +259,9 @@ useEffect(() => {
   };
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
+    console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
-    //console.log("카테고리 변경" , selectedCategory);
-    fetchRecruits();
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
-
   };
 
   if (loading) {
@@ -307,7 +309,7 @@ useEffect(() => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          {activeTab !== "profile" && <SearchDropdown onSelect={handleSearchTypeChange} />}
+          <SearchDropdown onSelect={handleSearchTypeChange} />
           <SearchBar
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -316,71 +318,67 @@ useEffect(() => {
           />
         </div>
       </div>
+
       <div className="flex flex-col lg:flex-row">
-  <CategoryMenu
-    secondCategories={filteredSecondCategories}
-    thirdCategories={thirdCategories}
-    onSelect={handleCategorySelect}
-  />
-
-  <div className="w-full lg:w-3/4 mx-auto">
-    {activeTab === "feed" && (
-      <StudentFeedList />
-    )}
-
-    {activeTab === "profile" && (
-      <div className="bg-white rounded-lg shadow-sm mb-20">
-        <StudentProfileList
-          secondCategoryId={selectedCategory[1]}
-          thirdCategoryId={selectedCategory[2]}
-          keyword={searchResult}
+        <CategoryMenu
+          secondCategories={filteredSecondCategories}
+          thirdCategories={thirdCategories}
+          onSelect={handleCategorySelect}
         />
+        {activeTab === "feed" ? (
+          <div className="w-full lg:w-3/4 mx-auto">
+            <StudentFeedList />
+          </div>
+        ) : activeTab === "profile" ? (
+          <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
+            <StudentProfileList />
+          </div>
+        ) : (
+          <div className="w-full lg:w-3/4 mx-auto">
+            {filteredRecruits.length > 0 ? (
+              <>
+                {filteredRecruits.map((recruit) => {
+                  const paymentString =
+                    recruit.minPayment && recruit.maxPayment
+                      ? recruit.minPayment === recruit.maxPayment
+                        ? recruit.minPayment
+                        : `${recruit.minPayment} ~ ${recruit.maxPayment}`
+                      : recruit.minPayment || recruit.maxPayment || "금액 협의";
+
+                  return (
+                    <RecruitBlock
+                      key={recruit.recruitId}
+                      id={recruit.recruitId}
+                      title={recruit.title}
+                      content={recruit.content}
+                      deadLine={recruit.deadLine}
+                      recruitable = {recruit.recruitable}
+                      payment={paymentString}
+                      minPayment={recruit.minPayment}
+                      maxPayment={recruit.maxPayment}
+                      cityName={recruit.cityName}
+                      cityDetailName={recruit.cityDetailName}
+                      secondCategory={recruit.secondCategory}
+                      categoryDtoList={recruit.categoryDtoList}
+                    />
+                  );
+                })}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </>
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-gray-500">
+                  선택한 카테고리의 공고가 없습니다.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    )}
-
-    {activeTab === "recruitment" && (
-      filteredRecruits.length > 0 ? (
-        <>
-          {filteredRecruits.map((recruit) => {
-            const paymentString =
-              recruit.minPayment && recruit.maxPayment
-                ? recruit.minPayment === recruit.maxPayment
-                  ? recruit.minPayment
-                  : `${recruit.minPayment} ~ ${recruit.maxPayment}`
-                : recruit.minPayment || recruit.maxPayment || "금액 협의";
-
-            return (
-              <RecruitBlock
-                key={recruit.recruitId}
-                id={recruit.recruitId}
-                title={recruit.title}
-                content={recruit.content}
-                deadLine={recruit.deadLine}
-                recruitable={recruit.recruitable}
-                payment={paymentString}
-                minPayment={recruit.minPayment}
-                maxPayment={recruit.maxPayment}
-                cityName={recruit.cityName}
-                cityDetailName={recruit.cityDetailName}
-                secondCategory={recruit.secondCategory}
-                categoryDtoList={recruit.categoryDtoList}
-              />
-            );
-          })}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-          />
-        </>
-      ) : (
-        <div className="text-center py-10">
-          <p className="text-gray-500">선택한 카테고리의 공고가 없습니다.</p>
-        </div>
-      )
-    )}
-  </div>
-</div>
-</div>
-  )
-};
+    </div>
+  );
+}
