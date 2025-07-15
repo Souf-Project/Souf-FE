@@ -273,7 +273,7 @@ export default function Home() {
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-24 h-24 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
+                      className="w-28 h-28 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
                     <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
                       {category}

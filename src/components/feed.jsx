@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { deleteFeed, getPopularFeed } from "../api/feed";
 import { getFeed } from "../api/feed";
 import { getFormattedDate } from "../utils/getDate";
@@ -8,6 +8,7 @@ import { Swiper,SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
@@ -27,6 +28,7 @@ export default function Feed({ feedData, onFeedClick }) {
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const {memberId} = UserStore();
+  const swiperRef = useRef(null);
   const maxLength = 100;
   const [pageable, setPageable] = useState({
     page: 1,
@@ -107,8 +109,6 @@ export default function Feed({ feedData, onFeedClick }) {
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
-      <UpdateOption id={feedData.memberId} memberId={memberId}
-      worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-semibold leading-snug text-black">
           {feedData?.topic || "제목 없음"}
@@ -117,59 +117,85 @@ export default function Feed({ feedData, onFeedClick }) {
           {getFormattedDate(feedData.lastModifiedTime)}
         </p>
       </div>
-
-      <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
-      onClick={() => clickHandler(feedData?.memberId)}>
-         <img
+      <div className="flex justify-between items-center">
+        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
+          onClick={() => clickHandler(feedData?.memberId)}>
+          <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
-        <h2 className="text-xl font-semibold leading-snug text-black">
-          {feedData?.nickname || "학생" }
-        </h2>
-      </div>
-
-    <div className="flex justify-center w-full overflow-hidden rounded-md mb-4">
-      {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
-        <Swiper
-          pagination={{
-            dynamicBullets: true,
-          }}
-          modules={[Pagination]}
-          className="rounded-lg w-full max-w-[800px]"
-        >
-          {feedData?.mediaResDtos?.map((data, i) => {
-            const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
-            return (
-            <SwiperSlide key={i}>
-              <div className="flex justify-center items-center h-[400px]">
-                {isVideo ? (
-                  <video
-                  src={`${BUCKET_URL}${data.fileUrl}`}
-                  controls
-                  className="w-full h-auto max-h-[500px] object-cover rounded-lg"
-                  />
-                ) : (
-                  <img
-                src={`${BUCKET_URL}${data.fileUrl}`}
-                alt={data.fileName}
-                className="w-full h-auto max-h-[500px] object-cover rounded-lg"
-                />
-                )}
-                
-              </div>
-            </SwiperSlide>
-            )
-          })}
-        </Swiper>
-         ) : (
-        <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-          <p className="text-gray-400">이미지가 없습니다</p>
+          <h2 className="text-xl font-semibold leading-snug text-black">
+            {feedData?.nickname || "학생" }
+          </h2>
         </div>
-      )}
-    </div>
-
+        <UpdateOption id={feedData.memberId} memberId={memberId}
+          worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+      </div>
+      <div className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative">
+        {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
+          <>
+            <Swiper
+              onSwiper={(swiper) => {
+                swiperRef.current = swiper;
+              }}
+              pagination={{
+                dynamicBullets: true,
+              }}
+              modules={[Pagination]}
+              className="rounded-lg w-full max-w-[800px]"
+            >
+              {feedData?.mediaResDtos?.map((data, i) => {
+                const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+                return (
+                  <SwiperSlide key={i}>
+                    <div className="flex justify-center items-center">
+                      {isVideo ? (
+                        <video
+                          src={`${BUCKET_URL}${data.fileUrl}`}
+                          controls
+                          className="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                        />
+                      ) : (
+                        <img
+                          src={`${BUCKET_URL}${data.fileUrl}`}
+                          alt={data.fileName}
+                          className="w-full object-cover rounded-lg"
+                        />
+                      )}
+                    </div>
+                  </SwiperSlide>
+                )
+              })}
+            </Swiper>
+            {/* 커스텀 화살표 버튼 - 이미지가 여러 장일 때만 표시 */}
+            {feedData?.mediaResDtos && feedData.mediaResDtos.length > 1 && (
+              <>
+                <button 
+                  onClick={() => swiperRef.current?.slidePrev()}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                >
+                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button 
+                  onClick={() => swiperRef.current?.slideNext()}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                >
+                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+            <p className="text-gray-400">이미지가 없습니다</p>
+          </div>
+        )}
+      </div>
       <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-4">
         {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
         <span
@@ -190,14 +216,14 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickFalse={handleDeleteCancel}
         />
       )}
-       {showCompleteModal && (
-              <AlertModal
-                type="simple"
-                title="게시물이 삭제되었습니다."
-                TrueBtnText="확인"
-                onClickTrue={handleCompleteConfirm}
-              />
-            )}
+      {showCompleteModal && (
+        <AlertModal
+          type="simple"
+          title="게시물이 삭제되었습니다."
+          TrueBtnText="확인"
+          onClickTrue={handleCompleteConfirm}
+        />
+      )}
       {showLoginModal && (
         <AlertModal
           type="simple"
@@ -210,8 +236,8 @@ export default function Feed({ feedData, onFeedClick }) {
             navigate("/login");
           }}
           onClickFalse={() => setShowLoginModal(false)}
-              />
-            )}
+        />
+      )}
     </div>
   );
 }
