@@ -21,12 +21,31 @@ export default function ContestDetail() {
     useEffect(() => {
     const loadContest = async () => {
         try {
-            const data = await getContests();
-            console.log(data);
-            // category와 id에 맞는 contest 찾기
-            //item.category === category
-            const found = data?.data?.[parseInt(id)];
+            const pageable = {
+                page: 0,
+                size: 100, // 충분히 큰 수로 설정하여 모든 공모전을 가져옴
+            };
+            
+            // 모집중과 모집 마감 공모전 모두 가져오기
+            const [renderingData, closedData] = await Promise.all([
+                getContests({ ...pageable, type: "rendering" }),
+                getContests({ ...pageable, type: "closed" })
+            ]);
+            
+            // 두 데이터 합치기
+            const allContests = [
+                ...(renderingData?.data || []),
+                ...(closedData?.data || [])
+            ];
+            
+            console.log('전체 공모전 데이터:', allContests);
+            console.log('찾고 있는 contestID:', id);
+            console.log('찾고 있는 category:', category);
+            
+            // contestID로 공모전 찾기
+            const found = allContests.find(contest => contest.contestID === id);
 
+            console.log('찾은 공모전:', found);
 
             if (!found) throw new Error('해당 공모전 없음');
 
@@ -173,9 +192,6 @@ export default function ContestDetail() {
         ];
     };
 
-    if (loading) {
-        return <Loading />;
-    }
 
     if (!contest) {
         return (
