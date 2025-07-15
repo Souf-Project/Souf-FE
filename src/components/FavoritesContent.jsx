@@ -65,7 +65,7 @@ export default function FavoritesContent() {
           아직 즐겨찾기한 학생 사용자가 없습니다.
         </div>
         <p className="text-gray-400">
-          관심 있는 공고를 즐겨찾기에 추가해보세요!
+          관심있는 학생 계정을 즐겨찾기에 추가해보세요!
         </p>
       </div>
     );

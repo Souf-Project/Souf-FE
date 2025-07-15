@@ -149,7 +149,7 @@ export default function Feed({ feedData, onFeedClick }) {
                 const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
                 return (
                   <SwiperSlide key={i}>
-                    <div className="flex justify-center items-center h-[400px]">
+                    <div className="flex justify-center items-center">
                       {isVideo ? (
                         <video
                           src={`${BUCKET_URL}${data.fileUrl}`}
@@ -160,7 +160,7 @@ export default function Feed({ feedData, onFeedClick }) {
                         <img
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           alt={data.fileName}
-                          className="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                          className="w-full object-cover rounded-lg"
                         />
                       )}
                     </div>
