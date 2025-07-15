@@ -57,7 +57,7 @@ client.interceptors.response.use(
     console.log("🚨 응답 인터셉터 - 에러 상태:", status);
     console.log("🚨 응답 인터셉터 - 에러 URL:", originalRequest?.url);
 
-    if (status === 403 && !originalRequest._retry) {
+    if ((status === 403 || status === 401) && !originalRequest._retry) {
       originalRequest._retry = true;
 
       // 1. 헤더에 새 토큰이 포함된 경우
