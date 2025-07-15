@@ -31,6 +31,7 @@ export default function RecruitBlock({
   categoryDtoList,
 }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const maxLength = 100;
   const navigate = useNavigate();
   
   const getSecondCategoryNames = (secondCategoryIds) => {
@@ -153,6 +154,15 @@ export default function RecruitBlock({
     }
   };
 
+  // 더보기쪽 함수
+    const handlerFeedContent = (length, data) => {
+      if(data.length > length){
+        return data.slice(0, length) + "...";
+      }
+      return data;
+    }
+
+
   return (
     <div
       onClick={handleClick}
@@ -191,7 +201,10 @@ export default function RecruitBlock({
           })()}
         </div>
       </div>
-      <p className="text-lg font-regular text-gray-600 mb-4">{content}</p>
+      <p className="text-lg font-regular text-gray-600 mb-4">
+        {handlerFeedContent(maxLength,content) || "내용 없음"}
+      </p>
+
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <span className="text-2xl font-regular text-black ">{payment}</span>

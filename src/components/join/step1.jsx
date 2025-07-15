@@ -36,6 +36,8 @@ export default function Step1() {
   const [nickname, setNickname] = useState("");
   const [isNameConfirm, setIsNameConfirm] = useState(undefined);
   const [passwordValidation, setPasswordValidation] = useState(undefined);
+  const [passwordCheckValidation, setpasswordCheckValidation] = useState(undefined);
+
   const [errors, setErrors] = useState({
     username: false,
     nickname: false,
@@ -229,6 +231,12 @@ export default function Step1() {
         }
       } else if (name === "passwordCheck") {
         newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
+        if(value.trim() !== ""){
+          setpasswordCheckValidation(isPasswordMatch(updatedForm.password, value));
+        }else{
+          setpasswordCheckValidation(undefined);
+        }
+
       }
 
       setErrors(newErrors);
@@ -412,10 +420,13 @@ export default function Step1() {
         title="비밀번호 확인"
         type="password"
         name="passwordCheck"
-        essentialText="비밀번호 확인을 입력해주세요."
+        essentialText="비밀번호 확인이 올바르지 않습니다."
         value={formData.passwordCheck}
+        isConfirmed={passwordCheckValidation}
         onChange={(e) => handleInputChange("passwordCheck", e)}
         isValidateTrigger={errors.passwordCheck}
+        approveText="비밀번호 확인이 완료되었습니다."
+        disapproveText="비밀번호 확인이 올바르지 않습니다."
       />
       <div className="w-full relative mb-8 flex flex-col gap-3">
         <div className="text-black text-2xl font-regular mb-2">

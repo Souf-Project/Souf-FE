@@ -28,7 +28,7 @@ export default function StudentFeedList() {
       setShowLoginModal(true);
       return;
     }
-    navigate(`/profileDetail/${memberId}/post/${worksId}`);
+    navigate(`/profileDetail/${memberId}`);
   };
 
   const {

@@ -50,8 +50,7 @@ export default function Feed({ feedData, onFeedClick }) {
   }
 
   useEffect(() => {
-    console.log("피드데이터");
-    console.log(feedData);
+
      setWorksData(feedData);
      setMediaData(feedData?.mediaResDtos);
   }, []);
