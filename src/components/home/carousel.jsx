@@ -45,7 +45,7 @@ export default function Carousel() {
       {/* 메인 캐러셀 컨테이너 */}
       <div className="h-64 relative overflow-hidden rounded-2xl from-gray-50 to-gray-100">
       <div
-          className="flex transition-transform duration-700 ease-out h-full"
+          className="flex transition-transform duration-700 ease-out h-full px-10"
         style={{
           transform: `translateX(-${(100 / visibleCount) * currentIndex}%)`,
         }}
@@ -103,7 +103,7 @@ export default function Carousel() {
         {/* 네비게이션 버튼 */}
       <button
         onClick={handlePrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
         disabled={currentIndex === 0}
       >
           <svg className="w-5 h-5 text-gray-600 group-hover:text-yellow-point transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,7 +113,7 @@ export default function Carousel() {
 
       <button
         onClick={handleNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed group"
         disabled={currentIndex >= totalCount - visibleCount}
       >
           <svg className="w-5 h-5 text-gray-600 group-hover:text-yellow-point transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">

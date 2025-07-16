@@ -255,7 +255,7 @@ export default function Home() {
         {/* 카테고리 섹션 */}
         <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
-            <div className="flex justify-center gap-8">
+            <div className="flex justify-center gap-8 px-4 mt-4">
               {categories.map((category, index) => {
                 const categoryImages = [
                   cate1Img,
@@ -268,12 +268,12 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="flex flex-col items-center gap-2 w-40 "
+                    className="flex flex-col items-center gap-2 w-28 lg:w-40 "
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-28 h-28 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
+                      className="w-20 h-20 lg:w-28 lg:h-28 object-cover mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
                     <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
                       {category}
@@ -355,7 +355,7 @@ export default function Home() {
             return (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                className="bg-white rounded-xl border border-gray-200 hover:shadow-lg duration-200 ease-out cursor-pointer shadow-sm hover:shadow-md"
                 onClick={() => navigate(`/contests/${competition.categoryID[0]}/${competition.contestID}`)}
               >
                 {/* 썸네일 이미지 */}
