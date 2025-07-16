@@ -233,7 +233,7 @@ export default function Home() {
           </h2>
 
           <form onSubmit={handleSearch} className="w-full flex justify-center">
-  <div className="relative w-1/2">
+  <div className="relative w-2/3">
     <input
       type="text"
       value={searchQuery}
@@ -258,7 +258,7 @@ export default function Home() {
         {/* 카테고리 섹션 */}
         <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
-            <div className="flex justify-center gap-8 px-4 mt-4">
+            <div className="flex justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 px-2 sm:px-4 mt-4 flex-wrap">
               {categories.map((category, index) => {
                 const categoryImages = [
                   cate1Img,
@@ -271,14 +271,14 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="flex flex-col items-center gap-2 w-28 lg:w-40 "
+                    className="flex flex-col items-center gap-1 sm:gap-2 min-w-0 flex-1 sm:flex-none sm:w-auto lg:w-40 px-1 sm:px-2"
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-20 h-20 lg:w-28 lg:h-28 object-cover mb-2 transform transition-transform duration-300 hover:-translate-y-2"
+                      className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 object-cover mb-1 sm:mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
-                    <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
+                    <span className="text-sm sm:text-base lg:text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center break-words">
                       {category}
                     </span>
                   </button>
@@ -332,18 +332,18 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
 
-              {feedData?.result?.content?.map((profile, index) => (
-                <PopularFeed
-                  key={index}
-                  url={profile.mediaResDto?.fileUrl}
-                  context={profile.categoryName}
-                  username={profile.nickname}
-                  feedId={profile.feedId}
-                  memberId={profile.memberId}
-                />
-              ))}
+            {feedData?.result?.content?.map((profile, index) => (
+              <PopularFeed
+                key={index}
+                url={profile.mediaResDto?.fileUrl}
+                context={profile.categoryName}
+                username={profile.nickname}
+                feedId={profile.feedId}
+                memberId={profile.memberId}
+              />
+            ))}
 
-            </div>
+          </div>
           )}
         </div>
       </div>
@@ -418,7 +418,7 @@ export default function Home() {
                   </div>
                 )}
                 
-                <div className="p-6">
+                <div className="p-2 lg:p-6">
                   <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
                   <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
                   
@@ -445,10 +445,10 @@ export default function Home() {
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">
-                    <span className="text-xs text-gray-400">
+                    <span className="hidden lg:block text-xs text-gray-400">
                       {competition.기업형태}
                     </span>
-                    <span className="text-xs text-blue-600 font-medium">
+                    <span className="text-xs text-blue-600 font-medium ml-auto">
                       자세히 보기 →
                     </span>
                    

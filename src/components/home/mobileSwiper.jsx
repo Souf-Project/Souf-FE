@@ -45,7 +45,7 @@ export default function MobileSwiper() {
               <div className="h-60 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 카드 내용 */}
                 <div className="px-6 pt-6 pb-3">
-                  <h3 className="text-2xl font-bold text-gray-800 line-clamp-2">
+                  <h3 className="text-xl font-bold text-gray-800 line-clamp-2">
                     {recruit.title}
                   </h3>
                 </div>
