@@ -82,9 +82,10 @@ export default function Login() {
           </p>
          
         </div>
-      <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-36 h-full">
-        <h2 className="text-3xl lg:text-6xl font-bold mb-10 mx-auto">로그인</h2>
-        <div className="w-[400px] space-y-6 bg-white p-6 lg:p-8 border rounded-xl shadow">
+        <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
+  <h2 className="text-3xl lg:text-6xl font-bold mb-10 mx-auto">로그인</h2>
+
+  <div className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow">
           <Input
             title="이메일"
             // isValidateTrigger={isValidateTrigger}
