@@ -28,7 +28,7 @@ export default function MobileSwiper() {
   }
 
   return (
-    <div className="relative w-screen px-4 mt-4 lg:hidden">
+    <div className="relative w-screen mt-4 lg:hidden">
       <Swiper
         slidesPerView={2} // 모바일 한 번에 1개 슬라이드
         spaceBetween={0}  // 슬라이드 간격
@@ -39,7 +39,7 @@ export default function MobileSwiper() {
         {recruitData.map((recruit) => (
           <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
             <div
-              className="w-84 box-border h-64 px-3 cursor-pointer"
+              className="w-84 box-border h-64 px-6 cursor-pointer"
               onClick={() => navigate(`/recruitDetails/${recruit.recruitId}`)}
             >
               <div className="h-60 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
