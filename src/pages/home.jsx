@@ -418,7 +418,7 @@ export default function Home() {
                   </div>
                 )}
                 
-                <div className="p-6">
+                <div className="p-2 lg:p-6">
                   <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
                   <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
                   
@@ -445,10 +445,10 @@ export default function Home() {
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">
-                    <span className="text-xs text-gray-400">
+                    <span className="hidden lg:block text-xs text-gray-400">
                       {competition.기업형태}
                     </span>
-                    <span className="text-xs text-blue-600 font-medium">
+                    <span className="text-xs text-blue-600 font-medium ml-auto">
                       자세히 보기 →
                     </span>
                    
