@@ -332,18 +332,18 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
 
-              {feedData?.result?.content?.map((profile, index) => (
-                <PopularFeed
-                  key={index}
-                  url={profile.mediaResDto?.fileUrl}
-                  context={profile.categoryName}
-                  username={profile.nickname}
-                  feedId={profile.feedId}
-                  memberId={profile.memberId}
-                />
-              ))}
+            {feedData?.result?.content?.map((profile, index) => (
+              <PopularFeed
+                key={index}
+                url={profile.mediaResDto?.fileUrl}
+                context={profile.categoryName}
+                username={profile.nickname}
+                feedId={profile.feedId}
+                memberId={profile.memberId}
+              />
+            ))}
 
-            </div>
+          </div>
           )}
         </div>
       </div>
