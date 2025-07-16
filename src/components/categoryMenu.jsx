@@ -74,53 +74,67 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect }) => {
     </div>
   );
 
-  // 모바일 버전 카테고리 메뉴 (가로 형태)
-  const MobileCategoryMenu = () => (
-    <div className="block lg:hidden w-full bg-white border-b border-gray-200 py-4">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex flex-wrap gap-8">
-          {secondCategories.map((second) => (
-            <div key={second.second_category_id} className="relative group">
-              <div className="cursor-pointer font-semibold text-gray-700 hover:text-yellow-point transition-colors py-2">
-                <span>{second.name}</span>
-                <svg
-                  className="inline-block w-4 h-4 ml-1 transition-transform group-hover:rotate-180"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
+  // 모바일 버전 카테고리 메뉴 (좌우 반반)
+  const MobileCategoryMenu = () => {
+    const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
 
-              {/* 드롭다운 메뉴 */}
-              <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-2 min-w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                {thirdCategories.third_category
-                  .filter(
-                    (third) =>
-                      third.second_category_id === second.second_category_id
-                  )
-                  .map((third) => (
-                    <div 
-                      key={third.third_category_id} 
-                      className="px-4 py-2 text-sm text-gray-600 hover:text-yellow-point hover:bg-yellow-50 cursor-pointer transition-colors"
-                      onClick={() => handleThirdCategoryClick(second, third)}
-                    >
-                      {third.name}
-                    </div>
-                  ))}
-              </div>
+    const handleSecondCategoryClick = (second) => {
+      setSelectedSecondCategory(second);
+    };
+
+    const getThirdCategories = () => {
+      if (!selectedSecondCategory) return [];
+      return thirdCategories.third_category.filter(
+        (third) => third.second_category_id === selectedSecondCategory.second_category_id
+      );
+    };
+
+    return (
+      <div className="block lg:hidden w-full bg-white border border-gray-200 rounded-lg">
+        <div className="flex h-64">
+          {/* 왼쪽: 중분류 */}
+          <div className="w-1/2 border-r border-gray-200 bg-gray-50">
+           
+            <div className="overflow-y-auto h-full">
+              {secondCategories.map((second) => (
+                <div
+                  key={second.second_category_id}
+                  className={`p-3 cursor-pointer transition-colors ${
+                    selectedSecondCategory?.second_category_id === second.second_category_id
+                      ? "bg-yellow-point text-white"
+                      : "hover:bg-gray-100 text-gray-700"
+                  }`}
+                  onClick={() => handleSecondCategoryClick(second)}
+                >
+                  <span className="text-sm font-medium">{second.name}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* 오른쪽: 소분류 */}
+          <div className="w-1/2">
+            
+            <div className="overflow-y-auto h-full">
+              {selectedSecondCategory ? (
+                getThirdCategories().map((third) => (
+                  <div
+                    key={third.third_category_id}
+                    className="p-3 cursor-pointer hover:bg-yellow-50 hover:text-yellow-point transition-colors text-gray-700"
+                    onClick={() => handleThirdCategoryClick(selectedSecondCategory, third)}
+                  >
+                    <span className="text-sm">{third.name}</span>
+                  </div>
+                ))
+              ) : (
+                <div/>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
