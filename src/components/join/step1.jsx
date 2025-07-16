@@ -343,9 +343,9 @@ export default function Step1() {
     };
     signUp.mutate(finalData);
   }
-
+//border-t-[1px] md:
   return (
-    <div className="mx-auto w-2/3 lg:w-full rounded-[30px] border-[1px] py-20 px-16 lg:px-52 flex flex-col items-center justify-center">
+    <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
       <Input
         title="이름"
         name="username"
@@ -429,7 +429,7 @@ export default function Step1() {
         disapproveText="비밀번호 확인이 올바르지 않습니다."
       />
       <div className="w-full relative mb-8 flex flex-col gap-3">
-        <div className="text-black text-2xl font-regular mb-2">
+        <div className="text-black text-lg md:text-2xl font-regular mb-2">
           관심분야 <span className="text-gray-500 text-sm">(최소 1개 이상 선택)</span>
         </div>
         {formData?.categoryDtos?.map((category, index) => (

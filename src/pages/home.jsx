@@ -13,6 +13,7 @@ import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
+import MobileSwiper from "../components/home/mobileSwiper";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
 
@@ -198,7 +199,7 @@ export default function Home() {
     fetchContests();
   }, []);
   return (
-    <div className="relative">
+    <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
       {memberId && (
         <div className="fixed bottom-8 right-8 z-40">
@@ -231,31 +232,33 @@ export default function Home() {
             지금 바로 SouF!
           </h2>
 
-          {/* 검색창 */}
-          <form onSubmit={handleSearch} className="lg:max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="원하는 일을 검색해보세요"
-                className="w-3/4 lg:w-full px-6 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-              />
-              <button
-                type="submit"
-                className="absolute right-20 lg:right-4 top-1/2 transform -translate-y-1/2"
-              >
-                <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
-              </button>
-            </div>
-          </form>
+          <form onSubmit={handleSearch} className="w-full flex justify-center">
+  <div className="relative w-1/2">
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="원하는 일을 검색해보세요"
+      className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]  mx-auto"
+      // pr-12 오른쪽 padding 추가 (버튼 공간 확보)
+    />
+    <button
+      type="submit"
+      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+      // right-3로 우측 끝에서 적당히 띄움
+    >
+      <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
+    </button>
+  </div>
+</form>
+
 
         </div>
 
         {/* 카테고리 섹션 */}
         <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
-            <div className="flex justify-center gap-8">
+            <div className="flex justify-center gap-8 px-4 mt-4">
               {categories.map((category, index) => {
                 const categoryImages = [
                   cate1Img,
@@ -268,12 +271,12 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="flex flex-col items-center gap-2 w-40 "
+                    className="flex flex-col items-center gap-2 w-28 lg:w-40 "
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-28 h-28 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
+                      className="w-20 h-20 lg:w-28 lg:h-28 object-cover mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
                     <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
                       {category}
@@ -287,17 +290,30 @@ export default function Home() {
        
       </div>
 
-      {/* 인기 공고문 섹션 */}
-      <div className="relative mt-16 px-6 lg:px-24 ">
-        <div className="relative flex flex-col  mx-auto px-6 py-16 overflow-x-hidden">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
-            <span className="relative inline-block">
-              <span className="relative z-10">인기있는 공고문</span>
+      {/* PC 버전 인기 공고문 섹션 : 캐러셀 슬라이드 */}
+      <div className="relative mt-16 px-4 lg:px-24 hidden lg:block">
+        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+          <h2 className="text-3xl font-bold mb-8 px-6">
+            <span className="relative inline-block ">
+              <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
             </span>
             <span className="ml-2">모집 보러가기</span>
           </h2>
           <Carousel />
+        </div>
+      </div>
+      {/* 모바일 버전 인기 공고문 섹션 : 스와이퍼 */}
+      <div className="relative mt-16 px-4 block lg:hidden">
+        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+          <h2 className="text-2xl  font-bold mb-8 px-6">
+            <span className="relative inline-block ">
+              <span className="relative z-10 ">인기있는 공고문</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">모집 보러가기</span>
+          </h2>
+          <MobileSwiper />
         </div>
       </div>
 
@@ -334,7 +350,7 @@ export default function Home() {
 
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center px-4 sm:px-6 ">
           <h2 className="text-2xl lg:text-3xl font-bold mb-8">
             <span className="relative inline-block">
               <span className="relative z-10">공모전 정보</span>
@@ -349,13 +365,13 @@ export default function Home() {
             더보기
           </button>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 lg:px-0">
           {competitions.map((competition, index) => {
             // console.log("competition", competition);
             return (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                className="bg-white rounded-xl border border-gray-200 hover:shadow-lg duration-200 ease-out cursor-pointer shadow-sm hover:shadow-md"
                 onClick={() => navigate(`/contests/${competition.categoryID[0]}/${competition.contestID}`)}
               >
                 {/* 썸네일 이미지 */}

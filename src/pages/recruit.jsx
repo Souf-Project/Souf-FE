@@ -66,14 +66,14 @@ export default function Recruit() {
         secondCategory,
         thirdCategory,
         recruitSearchReqDto: searchParams,
-        page: currentPage,
-        size: pageSize,
-        sort: ["createdAt,desc"],
+          page: currentPage,
+          size: pageSize,
+          sort: ["createdAt,desc"],
        
       });
 
       console.log("API 응답:", response);
-      
+
       if (response.data) {
         const recruits = response.data.result?.content || [];
         console.log("공고문 데이터:", recruits);
@@ -121,13 +121,13 @@ export default function Recruit() {
         secondCategory,
         thirdCategory,
         recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
-        page: currentPage,
-        size: pageSize,
-        sort: ["createdAt,desc"],
+          page: currentPage,
+          size: pageSize,
+          sort: ["createdAt,desc"],
       });
 
       console.log("검색 API 응답:", response);
-      
+
       if (response.data) {
         // 백엔드에서 필터링된 데이터
         const recruits = response.data.result?.content || [];
@@ -233,9 +233,9 @@ useEffect(() => {
       categoryArr[2] || 0,
     ]);
   } else {
-    setSelectedCategory([0, 0, 0]);
-  }
-}, [categoryParam]);
+      setSelectedCategory([0, 0, 0]);
+    }
+  }, [categoryParam]);
 
   // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {

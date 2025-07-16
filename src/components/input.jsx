@@ -80,13 +80,13 @@ export default function Input({
   return (
     <div className="w-full relative mb-8">
       {title && (
-        <div className="text-black text-2xl font-regular mb-2">{title}
-         {subtitle !== "" && <span className="text-gray-500 text-sm"> ({subtitle})</span>}</div>
+        <div className="text-black text-lg md:text-2xl font-regular mb-2">{title}
+         {subtitle !== "" && <span className="text-gray-500 text-xs sm:text-sm"> ({subtitle})</span>}</div>
       )}
 
       <input
         type={type}
-        className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
+        className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md md:text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
           isError ? "" : "focus:border-yellow-point"
         }`}
         placeholder={placeholder}
@@ -97,7 +97,7 @@ export default function Input({
 
       {message && (
         <p
-          className={`absolute left-0 top-full mt-1 text-sm font-medium ${
+          className={`absolute left-0 top-full mt-1 text-xs md:text-sm font-medium ${
             message === approveText ? "text-[#00AA58]" : "text-red-essential"
           }`}
         >

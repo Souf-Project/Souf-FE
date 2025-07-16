@@ -160,7 +160,7 @@ export default function Feed({ feedData, onFeedClick }) {
                         <img
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           alt={data.fileName}
-                          className="w-full object-cover rounded-lg"
+                          className="w-full h-auto max-h-[500px] object-cover rounded-lg aspect-[3/4]"
                         />
                       )}
                     </div>
