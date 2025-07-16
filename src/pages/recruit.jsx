@@ -25,6 +25,7 @@ export default function Recruit() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const pageSize = 12;
 
 
@@ -277,8 +278,78 @@ useEffect(() => {
   }
 
   return (
-    <div className="pt-12 md:px-6 md:w-4/5 px-2 w-full">
-      <div className="flex justify-between items-center mb-8 w-full">
+    <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full ">
+            {/* 모바일 탭  */}
+      <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
+        showMobileCategoryMenu 
+          ? "bg-white" 
+          : "bg-gradient-to-b from-white to-transparent"
+      }`}>
+   <div className="pt-20 ">
+    {/* 헤더 높이만큼 padding 줌  */}
+    <div className="flex justify-center items-center gap-3">
+      <div className="flex bg-gray-100/80 rounded-lg p-1">
+        {["feed", "profile", "recruit"].map((tab) => (
+          <button
+            key={tab}
+            className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
+              activeTab === tab
+                ? "bg-white text-yellow-point shadow-sm"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+            onClick={() => {
+              setActiveTab(tab);
+              setSearchQuery("");
+            }}
+          >
+            {tab === "recruit"
+              ? "기업 공고문"
+              : tab === "profile"
+              ? "대학생 프로필"
+              : "대학생 피드"}
+          </button>
+        ))}
+      </div>
+
+      {/* 카테고리 메뉴 버튼 */}
+      <button
+        onClick={() => setShowMobileCategoryMenu(!showMobileCategoryMenu)}
+        className="p-2 bg-gray-100/80 rounded-lg hover:bg-gray-200/80 transition-colors duration-200"
+      >
+        <svg
+          className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
+            showMobileCategoryMenu ? "rotate-180" : ""
+          }`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+    </div>
+
+    {/* 모바일 카테고리 메뉴 */}
+    {showMobileCategoryMenu && (
+      <div className="mt-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+        <CategoryMenu
+          secondCategories={filteredSecondCategories}
+          thirdCategories={thirdCategories}
+          onSelect={handleCategorySelect}
+        />
+      </div>
+    )}
+  </div>
+  </div>
+
+
+      {/* 데스크톱 탭과 검색창 */}
+      <div className="hidden lg:flex justify-between items-center mb-8 w-full">
         <div className="flex items-center gap-4">
           <div className="flex">
             {["feed", "profile", "recruit"].map((tab) => (
@@ -319,12 +390,16 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row">
-        <CategoryMenu
-          secondCategories={filteredSecondCategories}
-          thirdCategories={thirdCategories}
-          onSelect={handleCategorySelect}
-        />
+      <div className=" flex flex-col lg:flex-row">
+        
+        {/* 데스크톱 카테고리 메뉴 */}
+        <div className="hidden lg:block">
+          <CategoryMenu
+            secondCategories={filteredSecondCategories}
+            thirdCategories={thirdCategories}
+            onSelect={handleCategorySelect}
+          />
+        </div>
         {activeTab === "feed" ? (
           <div className="w-full lg:w-3/4 mx-auto">
             <StudentFeedList />
