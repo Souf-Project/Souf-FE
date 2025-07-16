@@ -304,7 +304,7 @@ export default function Home() {
         </div>
       </div>
       {/* 모바일 버전 인기 공고문 섹션 : 스와이퍼 */}
-      <div className="relative mt-16 px-4 block lg:hidden">
+      <div className="relative mt-16 block lg:hidden">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
           <h2 className="text-2xl  font-bold mb-8 px-6">
             <span className="relative inline-block ">
