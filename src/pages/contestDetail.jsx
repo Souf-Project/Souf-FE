@@ -46,11 +46,11 @@ export default function ContestDetail() {
             const found = allContests.find(contest => contest.contestID === id);
 
             console.log('찾은 공모전:', found);
-
+        
             if (!found) throw new Error('해당 공모전 없음');
 
             setContest(found);
-
+            
             // 이미지 로딩 초기화
             const detailImageStates = {};
             if (found.상세내용_이미지) {
@@ -63,7 +63,7 @@ export default function ContestDetail() {
                 thumbnail: true,
                 detailImages: detailImageStates
             });
-
+            
             setTimeout(() => {
                 setImageLoadingStates({
                     thumbnail: false,
@@ -79,7 +79,7 @@ export default function ContestDetail() {
     };
 
     loadContest();
-}, [id, category]);
+    }, [id, category]);
 
     const handleBack = () => {
         navigate(-1);
