@@ -16,12 +16,14 @@ import Carousel from "../components/home/carousel";
 import MobileSwiper from "../components/home/mobileSwiper";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
+import AlertModal from "../components/alertModal";
 
 export default function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
   /*
@@ -160,6 +162,14 @@ export default function Home() {
   const handleCategoryClick = (category) => {
     //const encoded = encodeURIComponent(category);
     navigate(`/recruit?category=${category}`);
+  };
+
+  const showLoginModalHandler = () => {
+    setShowLoginModal(true);
+  };
+
+  const closeLoginModalHandler = () => {
+    setShowLoginModal(false);
   };
 
 
@@ -376,7 +386,7 @@ export default function Home() {
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
-                  <div className="relative h-40 lg:h-80 rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <div className="relative h-40 lg:h-[420px] w-auto rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
                     {/* 로딩 스켈레톤 */}
                     {imageLoadingStates[index] && (
                       <div className="absolute inset-0 bg-gray-200 animate-pulse">
@@ -387,7 +397,7 @@ export default function Home() {
                     <img
                       src={getImageUrl(competition.썸네일)}
                       alt={competition.제목}
-                      className="w-full h-full object-cover relative z-10"
+                      className="w-full h-auto object-contain relative z-10"
                       onError={(e) => {
                         // console.log('Image load failed:', competition.썸네일);
                         
