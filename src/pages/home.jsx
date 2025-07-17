@@ -340,7 +340,7 @@ export default function Home() {
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
 
             {feedData?.result?.content?.map((profile, index) => (
               <PopularFeed
@@ -386,7 +386,7 @@ export default function Home() {
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
-                  <div className="relative h-40 lg:h-[420px] w-auto rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <div className="relative lg:h-[420px] w-auto rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
                     {/* 로딩 스켈레톤 */}
                     {imageLoadingStates[index] && (
                       <div className="absolute inset-0 bg-gray-200 animate-pulse">
