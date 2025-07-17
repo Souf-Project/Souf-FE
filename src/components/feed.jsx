@@ -110,10 +110,10 @@ export default function Feed({ feedData, onFeedClick }) {
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
       <div className="flex justify-between items-start mb-4">
-        <h2 className="text-xl font-semibold leading-snug text-black">
+        <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
           {feedData?.topic || "제목 없음"}
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-xs lg:text-sm text-gray-500">
           {getFormattedDate(feedData.lastModifiedTime)}
         </p>
       </div>
@@ -125,7 +125,7 @@ export default function Feed({ feedData, onFeedClick }) {
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
-          <h2 className="text-xl font-semibold leading-snug text-black">
+          <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
             {feedData?.nickname || "학생" }
           </h2>
         </div>
@@ -168,9 +168,9 @@ export default function Feed({ feedData, onFeedClick }) {
                 )
               })}
             </Swiper>
-            {/* 커스텀 화살표 버튼 - 이미지가 여러 장일 때만 표시 */}
+            {/* 화살표 버튼 */}
             {feedData?.mediaResDtos && feedData.mediaResDtos.length > 1 && (
-              <>
+              <div className="hidden lg:block">
                 <button 
                   onClick={() => swiperRef.current?.slidePrev()}
                   className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
@@ -187,7 +187,7 @@ export default function Feed({ feedData, onFeedClick }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
-              </>
+              </div>
             )}
           </>
         ) : (
