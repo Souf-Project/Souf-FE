@@ -57,7 +57,7 @@ export default function StudentProfileList({secondCategoryId, thirdCategoryId ,k
     <div className="w-full flex flex-col items-center justify-center">
       {userData && userData.length > 0 ? (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-[20px] w-full">
             {userData.map((data) => (
               <Profile
                 key={data.id}

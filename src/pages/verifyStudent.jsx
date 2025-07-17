@@ -111,9 +111,9 @@ export default function VerifyStudent() {
   };
 
   return (
-    <div className="w-screen h-screen flex">
-      {/* 왼쪽 설명 영역 */}
-      <div className="w-1/2 bg-[#FFE681] flex flex-col justify-center px-16 ">
+    <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-yellow-main">
+      {/* PC 버전 설명 영역 */}
+      <div className="hidden lg:block lg:w-1/2 my-auto bg-[#FFE681] flex flex-col px-16 justify-center">
         <div className="my-auto">
           <h1 className="text-6xl font-bold mb-6 mt-20">대학생 인증이란?</h1>
           <p className="text-xl font-regular leading-relaxed text-gray-800 mb-10">
@@ -130,11 +130,22 @@ export default function VerifyStudent() {
         </div>
       </div>
 
-      {/* 오른쪽 입력 영역 */}
-      <div className="w-1/2 bg-white flex flex-col justify-center items-center px-36">
-        <h2 className="text-6xl font-bold mb-10 mr-auto">대학생 인증하기</h2>
-        <div className="w-full space-y-6 bg-white p-8 border rounded-xl shadow">
-          {/* 원래 이메일 */}
+      {/* 모바일 버전 설명 */}
+      <div className="lg:hidden flex justify-center items-center mt-24 mb-8">
+        <h1 className="text-3xl font-bold">대학생 인증이란?</h1>
+        <span className="w-[2px] h-20 bg-black mx-4"></span>
+        <p className="text-xl font-bold leading-relaxed text-gray-800">
+          SouF는 대학생 인증 과정을 거칠 시
+          <br />
+          포트폴리오를 올리고, 
+          <br />
+          기업에게서 제안을 받아보실 수 있습니다.
+        </p>
+      </div>
+
+      <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
+        <h2 className="text-3xl lg:text-6xl font-bold mb-10 mx-auto">대학생 인증하기</h2>
+        <div className="w-full max-w-sm space-y-6 bg-white p-6 lg:p-8 border rounded-xl shadow">
           <Input
             title="계정 이메일"
             value={originalEmail}
@@ -153,7 +164,7 @@ export default function VerifyStudent() {
             essentialText="학교 이메일을 입력해주세요"
             disabled={studentVerifyMutation.isLoading}
           />
-          {/* 인증번호 입력 + 확인 버튼 */}
+
           <ButtonInput
             title="인증번호 확인"
             value={code}
@@ -171,7 +182,11 @@ export default function VerifyStudent() {
         </div>
       </div>
 
-      {/* 모달 */}
+
+      <div className="mt-10 lg:hidden flex justify-center">
+        <img src={VerrifyImg} className="w-1/2" />
+      </div>
+
       {modalOpen && (
         <AlertModal
           type="simple"

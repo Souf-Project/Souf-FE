@@ -3,21 +3,33 @@ import { usePopularRecruit } from "../../hooks/usePopularRecruit";
 import { getSecondCategoryNameById } from "../../utils/getCategoryById";
 import { calculateDday } from "../../utils/getDate";
 import { useNavigate } from "react-router-dom";
+import { UserStore } from "../../store/userStore";
+import AlertModal from "../alertModal";
 
-// Swiper 모듈 임포트
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 
 export default function MobileSwiper() {
   const [recruitData, setRecruitData] = useState([]);
   const navigate = useNavigate();
-
+  const { memberId } = UserStore();
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const pageable = { page: 0, size: 12 };
   const { data, isLoading } = usePopularRecruit(pageable);
 
+  
   useEffect(() => {
     setRecruitData(data?.result?.content || []);
   }, [data]);
+
+
+  const handleClick = (recruitId) => {
+    if (!memberId) {
+      setShowLoginModal(true);
+    } else {
+      navigate(`/recruitDetails/${recruit?.recruitId}`);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -40,8 +52,7 @@ export default function MobileSwiper() {
           <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
             <div
               className="w-84 box-border h-64 px-6 cursor-pointer"
-              onClick={() => navigate(`/recruitDetails/${recruit.recruitId}`)}
-            >
+              onClick={() => handleClick(recruit?.recruitId)}>
               <div className="h-60 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 카드 내용 */}
                 <div className="px-6 pt-6 pb-3">
@@ -65,6 +76,20 @@ export default function MobileSwiper() {
           </SwiperSlide>
         ))}
       </Swiper>
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 }

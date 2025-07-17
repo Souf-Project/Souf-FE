@@ -3,11 +3,15 @@ import { usePopularRecruit } from "../../hooks/usePopularRecruit";
 import { getFirstCategoryId, getSecondCategoryNameById } from "../../utils/getCategoryById";
 import { calculateDday } from "../../utils/getDate";
 import { useNavigate } from "react-router-dom";
+import { UserStore } from "../../store/userStore";
+import AlertModal from "../alertModal";
 
 export default function Carousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [recruitData, setRecruitData] = useState([]);
   const navigate = useNavigate();
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { memberId } = UserStore();
 
   const visibleCount = 3;
   const totalCount = 6;
@@ -30,6 +34,14 @@ export default function Carousel() {
   const handleNext = () => {
     if (currentIndex < recruitData ? recruitData.length : 100 - visibleCount)
       setCurrentIndex(currentIndex + 1);
+  };
+
+  const handleClick = (recruitId) => {
+    if (!memberId) {
+      setShowLoginModal(true);
+    } else {
+      navigate(`/recruitDetails/${recruit?.recruitId}`);
+    }
   };
 
   if (isLoading) {
@@ -66,10 +78,10 @@ export default function Carousel() {
         {recruitData?.map((recruit) => (
           <div
             key={recruit.recruitId}
-            className="lg:w-1/3 w-1/2  px-3 flex-shrink-0 box-border h-64"
-            onClick={() => navigate(`/recruitDetails/${recruit?.recruitId}`)}
+            className="lg:w-1/3 w-1/2  px-3 flex-shrink-0 box-border h-full"
+            onClick={() => handleClick(recruit?.recruitId)}
           >
-            <div className="h-60 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group overflow-hidden border border-gray-100">
+            <div className="h-full min-h-60 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group overflow-hidden border border-gray-100">
               {/* 카드 내용 */}
               <div className="px-6 pt-6 pb-3">
                 <h3 className="text-2xl font-bold text-gray-800 line-clamp-2">{recruit.title}</h3>
@@ -110,6 +122,20 @@ export default function Carousel() {
       </svg>
     </button>
   </div>
+  {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
 </div>
 
   );

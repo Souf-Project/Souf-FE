@@ -232,7 +232,7 @@ export default function Contests() {
                     >
                         {/* 썸네일 이미지 */}
                         {contest.썸네일 && (
-                            <div className="relative h-64 rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                            <div className="relative h-[440px] rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
                                 {/* 로딩 스켈레톤 */}
                                 {imageLoadingStates[index] && (
                                     <div className="absolute inset-0 bg-gray-200 animate-pulse z-50">
@@ -243,10 +243,10 @@ export default function Contests() {
                                 <img
                                     src={getImageUrl(contest.썸네일)}
                                     alt={contest.제목}
-                                    className="w-full h-full object-cover relative z-10"
+                                    className="w-full h-auto object-contain relative z-10"
                                     onError={(e) => {
                                         console.log('Image load failed:', contest.썸네일);
-                                        
+                                
                                         // 대체 URL 시도
                                         const fallbackUrls = getFallbackUrls(contest.썸네일);
                                         const currentIndex = fallbackUrls.indexOf(e.target.src);
