@@ -174,8 +174,8 @@ export default function RecruitBlock({
        
       </div>
       <div className="flex flex-col justify-between items-start mb-4">
-        <h2 className="text-3xl font-semibold text-gray-800">{title}</h2>
-        <div className="flex flex-col text-2xl font-medium text-gray-500">
+        <h2 className="text-xl lg:text-3xl font-semibold text-gray-800">{title}</h2>
+        <div className="flex flex-col text-base lg:text-2xl font-medium text-gray-500">
           {(() => {
           
             if (categoryDtoList && categoryDtoList.length > 0) {
@@ -201,13 +201,13 @@ export default function RecruitBlock({
           })()}
         </div>
       </div>
-      <p className="text-lg font-regular text-gray-600 mb-4">
+      <p className="text-base lg:text-lg font-regular text-gray-600 mb-4">
         {handlerFeedContent(maxLength,content) || "내용 없음"}
       </p>
 
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <span className="text-2xl font-regular text-black ">{payment}</span>
+          <span className="text-base lg:text-2xl font-regular text-black ">{payment}</span>
         </div>
        
       </div>
