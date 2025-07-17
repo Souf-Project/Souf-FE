@@ -386,7 +386,7 @@ export default function Home() {
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
-                  <div className="relative lg:h-[420px] w-auto rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <div className="relative lg:h-[540px] w-auto rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
                     {/* 로딩 스켈레톤 */}
                     {imageLoadingStates[index] && (
                       <div className="absolute inset-0 bg-gray-200 animate-pulse">
