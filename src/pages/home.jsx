@@ -14,6 +14,7 @@ import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
 import MobileSwiper from "../components/home/mobileSwiper";
+import GlassInfoBox from "../components/home/glassInfoBox";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
@@ -227,48 +228,46 @@ export default function Home() {
       
       {/* 배경 이미지 섹션 */}
       <div className="relative h-[600px] w-screen">
-        <img
+        {/* <img
           src={Background}
           alt="background"
           className="absolute z-[-1] inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div>
+        /> */}
+        {/* <div className="absolute -bottom-10 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div> */}
       
-        <div className="relative text-center pt-36">
-        <h1 className="text-2xl lg:text-3xl font-semibold mb-4 text-black">
-            필요한 일을, 필요한 사람에게
-          </h1>
-          <h2 className="text-4xl lg:text-7xl font-bold text-black mb-12">
-            지금 바로 SouF!
-          </h2>
+        <div className="relative flex justify-between items-start pt-36 px-8 lg:px-24 gap-8">
+          {/* 왼쪽: Glass 효과 박스 */}
+          <GlassInfoBox />
 
-          <form onSubmit={handleSearch} className="w-full flex justify-center">
-  <div className="relative w-2/3">
-    <input
-      type="text"
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      placeholder="원하는 일을 검색해보세요"
-      className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]  mx-auto"
-      // pr-12 오른쪽 padding 추가 (버튼 공간 확보)
-    />
-    <button
-      type="submit"
-      className="absolute right-3 top-1/2 transform -translate-y-1/2"
-      // right-3로 우측 끝에서 적당히 띄움
-    >
-      <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
-    </button>
-  </div>
-</form>
+          {/* 오른쪽: 타이틀과 검색, 카테고리 */}
+          <div className="flex-1 max-w-2xl">
+            <h1 className="text-xl lg:text-2xl font-semibold mb-4 text-black text-left">
+              필요한 일을, 필요한 사람에게
+            </h1>
+            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-12 text-left">
+              지금 바로 SouF!
+            </h2>
 
+            <form onSubmit={handleSearch} className="w-full mb-8">
+              <div className="relative w-full max-w-md">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="원하는 일을 검색해보세요"
+                  className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-blend-overlay bg-gradient-to-br from-white/50 to-white/5 rounded-full shadow-[0px_1.1966018676757812px_29.91504669189453px_0px_rgba(69,42,124,0.10)] outline outline-[3px] outline-offset-[-3px] outline-white/50 backdrop-blur-[47.86px] overflow-hidden"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                >
+                  <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
+                </button>
+              </div>
+            </form>
 
-        </div>
-
-        {/* 카테고리 섹션 */}
-        <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 px-2 sm:px-4 mt-4 flex-wrap">
+            {/* 카테고리 섹션 */}
+            <div className="flex flex-nowrap gap-2 sm:gap-4 md:gap-6 lg:gap-4 justify-center">
               {categories.map((category, index) => {
                 const categoryImages = [
                   cate1Img,
@@ -281,14 +280,14 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="flex flex-col items-center gap-1 sm:gap-2 min-w-0 flex-1 sm:flex-none sm:w-auto lg:w-40 px-1 sm:px-2"
+                    className="glass flex flex-col items-center gap-1 sm:gap-2 min-w-0 flex-1 sm:flex-none sm:w-auto lg:w-32 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl"
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 object-cover mb-1 sm:mb-2 transform transition-transform duration-300 hover:-translate-y-2"
+                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
                     />
-                    <span className="text-sm sm:text-base lg:text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center break-words">
+                    <span className="text-xs sm:text-sm lg:text-base font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center break-words">
                       {category}
                     </span>
                   </button>
@@ -297,6 +296,8 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+
        
       </div>
 

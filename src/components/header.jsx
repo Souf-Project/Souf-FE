@@ -173,7 +173,7 @@ useEffect(() => {
 
   // PC 버전 헤더
   const DesktopHeader = () => (
-    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 bg-white border-b border-grey-border">
+    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 glass">
       <div className="flex items-center gap-x-10">
         <div
           className="text-4xl font-bold text-black cursor-pointer"
@@ -284,14 +284,14 @@ useEffect(() => {
             </button>
             <div className="flex items-center text-xl font-semibold">
               <button
-                className="bg-white w-20"
+                className="w-20"
                 onClick={() => handleNavigation("/login")}
               >
                 로그인
               </button>
               <span className="mx-2 font-thin">|</span>
               <button
-                className="bg-white w-20"
+                className="w-20"
                 onClick={() => handleNavigation("/join")}
               >
                 회원가입

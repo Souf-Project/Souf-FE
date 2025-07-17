@@ -3,6 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  background: linear-gradient(135deg, #f7ecc7, #c8e8fa, #ffffff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+  height: 100vh;
+  min-height: 100vh;
+}
+
 :root {
   font-family: system-ui, Pretendard, sans-serif;
   line-height: 1.5;
@@ -18,12 +27,29 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+/* body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f7ecc7, #c8e8fa, #ffffff);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  background-attachment: fixed;
+  display: block !important;
+  flex-direction: unset !important;
+  align-items: unset !important;
+} */
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 h1 {
@@ -32,7 +58,7 @@ h1 {
 }
 
 input {
-  background: #fff;
+  background: transparent;
 }
 
 @media (prefers-color-scheme: light) {
