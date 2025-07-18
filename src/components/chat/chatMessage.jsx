@@ -350,8 +350,8 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
 
   return (
    <div className="h-full flex flex-col">
-  {/* 채팅 헤더 */}
-  <div className="h-20 mt-4 p-4 border-b border-gray-200 flex items-center justify-between">
+  {/* 채팅 헤더 - 데스크톱에서만 표시 */}
+  <div className="hidden lg:flex h-20 mt-4 p-4 border-b border-gray-200 items-center justify-between">
     <div className="flex items-center gap-4">
     <img 
       src={opponentProfileImageUrl || SouFLogo} 
@@ -370,6 +370,17 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
        나가기
       </button>
     </div>
+
+  {/* 모바일에서만 표시되는 나가기 버튼 */}
+  <div className="lg:hidden flex justify-end p-2">
+    <button 
+      className="bg-red-600 rounded-md p-2 text-white flex items-center gap-2 text-sm" 
+      onClick={() => handleDeleteChatRoom(roomId)}
+    >
+      <img src={outIcon} alt="outIcon" className="w-3 h-3" />
+      나가기
+    </button>
+  </div>
 
 
   {/* 숨겨진 파일 입력 */}
@@ -472,9 +483,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
 
   {/* 메시지 입력 영역 */}
   <div className="p-4 border-t border-gray-200">
-    <div className="flex gap-4">
+    <div className="flex gap-2 lg:gap-4">
       <button 
-        className="bg-gray-200 px-4 py-2 rounded-lg font-bold "
+        className="bg-gray-200 px-2 lg:px-4 py-2 rounded-lg font-bold"
         onClick={handlePlusClick}
       >
         <img 
@@ -486,13 +497,13 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       <input
         type="text"
         placeholder="메시지를 입력하세요"
-        className="flex-grow px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point"
+        className="flex-grow px-3 lg:px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point text-sm lg:text-base"
         value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
       <button 
-        className="bg-yellow-point text-white px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+        className="bg-yellow-point text-white px-4 lg:px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200 text-sm lg:text-base"
         onClick={handleSend}
       >
         전송
@@ -501,7 +512,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     
     {/* 버튼 리스트 */}
     {showButtonList && (
-      <div className="mt-10 mb-8 flex gap-4">
+      <div className="mt-6 lg:mt-10 mb-6 lg:mb-8 flex gap-2 lg:gap-4 flex-wrap">
         {/* <Checkout />
         <button 
           className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
@@ -510,16 +521,16 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           토스
         </button> */}
         <button 
-          className="bg-green-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          className="bg-green-500 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200 text-sm lg:text-base"
           onClick={handleImgButtonClick}
         >
-          <img src={chatImgIcon} alt="파일 첨부" className="w-6 h-6" />
+          <img src={chatImgIcon} alt="파일 첨부" className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
         <button 
-          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200"
+          className="bg-blue-500 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm lg:text-base"
           onClick={handleVideoButtonClick}
         >
-          <img src={chatVideoIcon} alt="동영상" className="w-6 h-6" />
+          <img src={chatVideoIcon} alt="동영상" className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
         {/* <button 
           className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
@@ -528,7 +539,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
         </button> */}
         <button 
-          className="bg-yellow-300 text-white px-6 py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200"
+          className="bg-yellow-300 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200 text-sm lg:text-base"
           onClick={handleButton3Click}
         >
           SouF 온도 남기기 
