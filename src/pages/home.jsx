@@ -13,8 +13,10 @@ import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import Carousel from "../components/home/carousel";
+import MobileSwiper from "../components/home/mobileSwiper";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
+import AlertModal from "../components/alertModal";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -24,6 +26,7 @@ export default function Home() {
   const [currentFeedPage, setCurrentFeedPage] = useState(1); // 현재 피드 페이지
   const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
   const { memberId, roleType } = UserStore();
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   /*
   useEffect(() => {
@@ -182,6 +185,14 @@ export default function Home() {
     navigate(`/recruit?category=${category}`);
   };
 
+  const showLoginModalHandler = () => {
+    setShowLoginModal(true);
+  };
+
+  const closeLoginModalHandler = () => {
+    setShowLoginModal(false);
+  };
+
 
    useEffect(() => {
     const pageable = {
@@ -219,7 +230,7 @@ export default function Home() {
     fetchContests();
   }, []);
   return (
-    <div className="relative">
+    <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
       {memberId && (
         <div className="fixed bottom-8 right-8 z-40">
@@ -252,31 +263,33 @@ export default function Home() {
             지금 바로 SouF!
           </h2>
 
-          {/* 검색창 */}
-          <form onSubmit={handleSearch} className="lg:max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="원하는 일을 검색해보세요"
-                className="w-3/4 lg:w-full px-6 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
-              />
-              <button
-                type="submit"
-                className="absolute right-20 lg:right-4 top-1/2 transform -translate-y-1/2"
-              >
-                <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
-              </button>
-            </div>
-          </form>
+          <form onSubmit={handleSearch} className="w-full flex justify-center">
+  <div className="relative w-2/3">
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="원하는 일을 검색해보세요"
+      className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]  mx-auto"
+      // pr-12 오른쪽 padding 추가 (버튼 공간 확보)
+    />
+    <button
+      type="submit"
+      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+      // right-3로 우측 끝에서 적당히 띄움
+    >
+      <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
+    </button>
+  </div>
+</form>
+
 
         </div>
 
         {/* 카테고리 섹션 */}
         <div className="absolute bottom-[-30px] lg:bottom-[-100px] left-0 right-0 py-8">
           <div className="max-w-5xl mx-auto">
-            <div className="flex justify-center gap-8">
+            <div className="flex justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 px-2 sm:px-4 mt-4 flex-wrap">
               {categories.map((category, index) => {
                 const categoryImages = [
                   cate1Img,
@@ -289,14 +302,14 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="flex flex-col items-center gap-2 w-40 "
+                    className="flex flex-col items-center gap-1 sm:gap-2 min-w-0 flex-1 sm:flex-none sm:w-auto lg:w-40 px-1 sm:px-2"
                   >
                     <img
                       src={categoryImages[index]}
                       alt={category}
-                      className="w-28 h-28 mb-2 transform transition-transform duration-300 hover:-translate-y-2"
+                      className="w-16 h-16 sm:w-20 sm:h-20 lg:w-28 lg:h-28 object-cover mb-1 sm:mb-2 transform transition-transform duration-300 hover:-translate-y-2"
                     />
-                    <span className="text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center">
+                    <span className="text-sm sm:text-base lg:text-lg font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center break-words">
                       {category}
                     </span>
                   </button>
@@ -308,21 +321,42 @@ export default function Home() {
        
       </div>
 
-      {/* 인기 공고문 섹션 */}
-      <div className="relative mt-16 px-6 lg:px-24 ">
-        <div className="relative flex flex-col  mx-auto px-6 py-16 overflow-x-hidden">
-          <h2 className="text-2xl font-bold mb-8">
-            인기있는 공고문 모집 보러가기
+      {/* PC 버전 인기 공고문 섹션 : 캐러셀 슬라이드 */}
+      <div className="relative mt-16 px-4 lg:px-24 hidden lg:block">
+        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+          <h2 className="text-3xl font-bold mb-8 px-6">
+            <span className="relative inline-block ">
+              <span className="relative z-10 ">인기있는 공고문</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">모집 보러가기</span>
           </h2>
           <Carousel />
+        </div>
+      </div>
+      {/* 모바일 버전 인기 공고문 섹션 : 스와이퍼 */}
+      <div className="relative mt-16 block lg:hidden">
+        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+          <h2 className="text-2xl  font-bold mb-8 px-6">
+            <span className="relative inline-block ">
+              <span className="relative z-10 ">인기있는 공고문</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">모집 보러가기</span>
+          </h2>
+          <MobileSwiper />
         </div>
       </div>
 
       {/* 인기 피드 섹션 */}
       <div className="relative px-6 lg:px-24 ">
         <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-          <h2 className="text-2xl font-bold mb-8">
-            인기있는 피드 구경하러 가기
+          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+            <span className="relative inline-block">
+              <span className="relative z-10">인기있는 피드</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">구경하러 가기</span>
           </h2>
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
@@ -378,8 +412,14 @@ export default function Home() {
 
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">공모전 정보 모아보기</h2>
+        <div className="flex justify-between items-center px-4 sm:px-6 ">
+          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+            <span className="relative inline-block">
+              <span className="relative z-10">공모전 정보</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">모아보기</span>
+          </h2>
           <button
             onClick={() => navigate("/contests")}
             className="px-4 py-2 bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-colors duration-200"
@@ -387,18 +427,18 @@ export default function Home() {
             더보기
           </button>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 lg:px-0">
           {competitions.map((competition, index) => {
             // console.log("competition", competition);
             return (
               <div
                 key={index}
-                className="bg-white rounded-xl border border-gray-200 hover:border-yellow-point transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                className="bg-white rounded-xl border border-gray-200 hover:shadow-lg duration-200 ease-out cursor-pointer shadow-sm hover:shadow-md"
                 onClick={() => navigate(`/contests/${competition.categoryID[0]}/${competition.contestID}`)}
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
-                  <div className="relative h-48 rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <div className="relative lg:h-[400px] w-auto rounded-t-xl overflow-hidden ">
                     {/* 로딩 스켈레톤 */}
                     {imageLoadingStates[index] && (
                       <div className="absolute inset-0 bg-gray-200 animate-pulse">
@@ -409,7 +449,7 @@ export default function Home() {
                     <img
                       src={getImageUrl(competition.썸네일)}
                       alt={competition.제목}
-                      className="w-full h-full object-cover relative z-10"
+                      className="w-full h-auto object-contain relative z-10"
                       onError={(e) => {
                         // console.log('Image load failed:', competition.썸네일);
                         
@@ -440,7 +480,7 @@ export default function Home() {
                   </div>
                 )}
                 
-                <div className="p-6">
+                <div className="p-2 lg:p-6">
                   <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
                   <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
                   
@@ -467,10 +507,10 @@ export default function Home() {
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">
-                    <span className="text-xs text-gray-400">
+                    <span className="hidden lg:block text-xs text-gray-400">
                       {competition.기업형태}
                     </span>
-                    <span className="text-xs text-blue-600 font-medium">
+                    <span className="text-xs text-blue-600 font-medium ml-auto">
                       자세히 보기 →
                     </span>
                    

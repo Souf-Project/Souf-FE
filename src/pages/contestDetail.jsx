@@ -46,11 +46,11 @@ export default function ContestDetail() {
             const found = allContests.find(contest => contest.contestID === id);
 
             console.log('찾은 공모전:', found);
-
+        
             if (!found) throw new Error('해당 공모전 없음');
 
             setContest(found);
-
+            
             // 이미지 로딩 초기화
             const detailImageStates = {};
             if (found.상세내용_이미지) {
@@ -63,7 +63,7 @@ export default function ContestDetail() {
                 thumbnail: true,
                 detailImages: detailImageStates
             });
-
+            
             setTimeout(() => {
                 setImageLoadingStates({
                     thumbnail: false,
@@ -79,7 +79,7 @@ export default function ContestDetail() {
     };
 
     loadContest();
-}, [id, category]);
+    }, [id, category]);
 
     const handleBack = () => {
         navigate(-1);
@@ -215,9 +215,9 @@ export default function ContestDetail() {
             {/* 뒤로가기 버튼 */}
             <button
                 onClick={handleBack}
-                className="flex items-center text-gray-600 hover:text-gray-800 mb-6 transition-colors duration-200"
+                className="flex items-center text-2xl text-gray-600 hover:text-gray-800 mb-6 transition-colors duration-200"
             >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 뒤로가기
@@ -427,38 +427,40 @@ export default function ContestDetail() {
 
             {/* 전체화면 이미지 모달 */}
             {showFullImage && (
-                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
-                    <div className="relative max-w-full max-h-full">
-                        {/* 닫기 버튼 */}
-                        <button
-                            onClick={closeFullImage}
-                            className="absolute top-4 right-4 z-10 bg-white/20 hover:bg-white/30 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-200"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                        
-                        {/* 이미지 */}
-                        <img
-                            src={fullImageUrl}
-                            alt="전체화면 이미지"
-                            className="max-w-full max-h-full object-contain"
-                            onError={(e) => {
-                                console.log('Full image load failed:', fullImageUrl);
-                                e.target.style.display = 'none';
-                                // 에러 메시지 표시
-                                const errorDiv = document.createElement('div');
-                                errorDiv.className = 'text-white text-center p-8';
-                                errorDiv.innerHTML = `
-                                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    <p class="text-lg">이미지를 불러올 수 없습니다</p>
-                                `;
-                                e.target.parentNode.appendChild(errorDiv);
-                            }}
-                        />
+                <div className="fixed inset-0 bg-black bg-opacity-90 z-50 overflow-auto">
+                    <div className="min-h-full flex items-center justify-center p-4">
+                        <div className="relative">
+                            {/* 닫기 버튼 */}
+                            <button
+                                onClick={closeFullImage}
+                                className="fixed top-4 right-4 z-10 bg-white/50 hover:bg-white/70 text-gray-500 rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-200"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                            
+                            {/* 이미지 */}
+                            <img
+                                src={fullImageUrl}
+                                alt="전체화면 이미지"
+                                className="max-w-full h-auto object-contain"
+                                onError={(e) => {
+                                    console.log('Full image load failed:', fullImageUrl);
+                                    e.target.style.display = 'none';
+                                    // 에러 메시지 표시
+                                    const errorDiv = document.createElement('div');
+                                    errorDiv.className = 'text-white text-center p-8';
+                                    errorDiv.innerHTML = `
+                                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="text-lg">이미지를 불러올 수 없습니다</p>
+                                    `;
+                                    e.target.parentNode.appendChild(errorDiv);
+                                }}
+                            />
+                        </div>
                     </div>
                 </div>
             )}

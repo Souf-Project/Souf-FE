@@ -47,31 +47,39 @@ client.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
 client.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 403) {
-      if (error.response.data.message === "토큰 재발급이 필요합니다.") {
-        const originalRequest = error.config;
-        try {
+    const originalRequest = error.config;
+    const status = error.response?.status;
+    const message = error.response?.data?.message;
 
-          if (tokenResponse.status === 201) {
-            const newAccessToken = tokenResponse.data.accessToken;
-            localStorage.setItem("accessToken", newAccessToken);
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            return client(originalRequest);
-          }
-        } catch (refreshError) {
-          if (axios.isAxiosError(refreshError)) {
-            UserStore.getState().logout();
-            if (window.location.pathname !== "/login") {
-              alert("로그인이 필요합니다.");
-              window.location.href = "/login";
-            }
-          return Promise.reject(refreshError);
-          }
-        }
+    console.log("🚨 응답 인터셉터 - 에러 상태:", status);
+    console.log("🚨 응답 인터셉터 - 에러 URL:", originalRequest?.url);
+
+    if ((status === 403 || status === 401) && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // 1. 헤더에 새 토큰이 포함된 경우
+      const newAccessToken =
+        error.response.headers['new-access-token'] ||
+        error.response.headers['New-Access-Token'] ||
+        error.response.headers['X-New-Access-Token'];
+
+      if (newAccessToken) {
+        console.log("✅ 응답 헤더에서 새 토큰 발견, 재시도");
+
+        UserStore.getState().updateAccessToken(newAccessToken);
+        localStorage.setItem("accessToken", newAccessToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return client(originalRequest);
+      }
+    }
+    // AlertModal이 있는 페이지는 에러 페이지로 이동하지 않고 모달이 뜨게
+    if (status === 403) {
+      if (!window.location.pathname.includes("/recruitDetails")) {
+        window.location.href = "/forbidden"; 
       }
     }
 

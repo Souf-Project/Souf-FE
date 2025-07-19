@@ -22,6 +22,7 @@ import ContestDetail from "../pages/contestDetail";
 import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
+import Forbidden from "../pages/forbidden";
 
 function AppRouter() {
   const location = useLocation();
@@ -54,6 +55,7 @@ function AppRouter() {
           <Route path="/contests/:category/:id" element={<ContestDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/withdraw" element={<Withdraw/>} />
+          <Route path="/forbidden" element={<Forbidden/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

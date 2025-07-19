@@ -17,6 +17,14 @@ export default function ProfileImageUpdate({
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // 파일 형식 검증
+      const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('PNG, JPG, JPEG 형식만 업로드 가능합니다.');
+        e.target.value = ''; // 파일 입력 초기화
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result);
@@ -65,7 +73,7 @@ export default function ProfileImageUpdate({
           disabled={!isEditing}
         />
         <p className="text-sm text-gray-500 mt-2">
-          PNG, JPG 형식만 업로드 가능합니다.<br/>
+          PNG, JPG, JPEG 형식만 업로드 가능합니다.<br/>
           (최대 800x800px)
         </p>
       </div>
