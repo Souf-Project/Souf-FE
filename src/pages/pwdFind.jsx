@@ -87,12 +87,12 @@ export default function PwdFind({}) {
   });
 
   return (
-    <div className="flex items-center justify-center my-20 ">
-      <div className="w-[1000px]">
-        <div className="font-semibold text-[60px] mt-12 mb-6">
+    <div className="flex items-center justify-center my-20 w-full">
+      <div className="w-full max-w-[1000px] px-4">
+        <div className="max-sm:pl-4 font-semibold text-3xl sm:text-[48px] md:text-[60px] mt-12 sm:mb-6">
           비밀번호 재설정
         </div>
-        <div className="w-full rounded-[30px] border-[1px] py-20 px-52 flex flex-col items-center justify-center">
+        <div className="w-full rounded-[30px] sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
           <ButtonInput
             value={email}
             onChange={(e) => setEmail(e.target.value)}

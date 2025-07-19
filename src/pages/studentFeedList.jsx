@@ -52,9 +52,11 @@ export default function StudentFeedList() {
   return (
     <div className="w-full flex flex-col items-center justify-center w-full">
       {feedData?.result?.content && feedData.result.content.length > 0 ? (
-        feedData.result.content.map((data) => (
-        <Feed key={data.memberId} feedData={data} onFeedClick={onFeedClick} />
-        ))
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
+          {feedData.result.content.map((data) => (
+            <Feed key={data.memberId} feedData={data} onFeedClick={onFeedClick} />
+          ))}
+        </div>
       ) : (
         <div className="text-center py-10">
           <p className="text-gray-500 text-lg">

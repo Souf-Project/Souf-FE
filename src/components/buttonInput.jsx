@@ -43,7 +43,7 @@ export default function ButtonInput({
                     <button
                         onClick={onClick}
                         disabled={isLoading}
-                        className={`h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold ${
+                        className={`h-[48px] md:h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-lg md:text-xl font-semibold ${
                             isLoading 
                                 ? 'bg-gray-300 cursor-not-allowed' 
                                 : 'bg-yellow-main hover:bg-yellow-point transition-colors duration-200'

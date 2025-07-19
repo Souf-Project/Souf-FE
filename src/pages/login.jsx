@@ -69,13 +69,11 @@ export default function Login() {
         </div>
       </div>
       {/* 모바일 버전 스프 설명 */}
-  <div className="lg:hidden flex justify-center items-center mt-36">
-          <h1 className="text-6xl font-bold">SouF</h1>
+  <div className="lg:hidden flex justify-center items-center mt-24 mb-8 ">
+          <h1 className="text-3xl font-bold">SouF</h1>
           <span className="w-[2px] h-20 bg-black mx-4"></span>
-          <div>
-            
-          </div>
-          <p className="text-2xl font-bold leading-relaxed text-gray-800">
+         
+          <p className="text-xl font-bold leading-relaxed text-gray-800">
             합리적인 비용으로
             <br />
             필요한 인재를 만나보세요!
@@ -84,9 +82,10 @@ export default function Login() {
           </p>
          
         </div>
-      <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-36 h-full">
-        <h2 className="text-4xl lg:text-6xl font-bold mb-10 mr-auto">로그인</h2>
-        <div className="w-full space-y-6 bg-white p-6 lg:p-8 border rounded-xl shadow">
+        <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
+  <h2 className="text-3xl lg:text-6xl font-bold mb-10 mx-auto">로그인</h2>
+
+  <div className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow">
           <Input
             title="이메일"
             // isValidateTrigger={isValidateTrigger}

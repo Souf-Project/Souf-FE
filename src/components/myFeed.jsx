@@ -36,8 +36,8 @@ export default function MyFeed() {
         <div className="flex gap-12 mb-6 pl-6">
           <img
             src={
-              userData?.profileUrl
-                ? S3_BUCKET_URL + userData.profileUrl
+              userData?.profileImageUrl
+                ? userData.profileImageUrl
                 : BasicImg4
             }
             className="rounded-full w-1/4"

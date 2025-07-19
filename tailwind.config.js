@@ -50,10 +50,16 @@ module.exports = {
     // },
   ],
   safelist: [
+    'max-h-[1000px]',
+  'max-h-0',
+  'opacity-100',
+  'opacity-0',
+  'pointer-events-none',
     'rotate-45',
     '-rotate-45',
     'translate-y-1.5',
     '-translate-y-1.5',
-    'opacity-0',
+    'scale-y-[1]',
+    'scale-y-0', 
   ],
 };

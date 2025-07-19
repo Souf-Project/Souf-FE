@@ -20,15 +20,20 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
 
   return (
     <>
-      <div className="w-[180px] h-[200px] lg:w-64 lg:h-64 cursor-pointer" onClick={handleClick}>
-        <img
-          src={`${BUCKET_URL}${url}`}
-          alt={`${username} 이미지`}
-          className="md:w-full h-auto object-cover rounded-md w-[180px] h-[200px] lg:w-64 lg:h-64"
-        />
-        <div className="flex justify-between mt-2 px-1">
-          <span className="text-gray-400 text-sm">{context}</span>
-          <span className="font-semibold text-sm">{username}</span>
+      <div
+        onClick={handleClick}
+        className="cursor-pointer w-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[250px] flex flex-col items-center"
+      >
+        <div className="w-full aspect-[3/4] rounded-md overflow-hidden">
+          <img
+            src={`${BUCKET_URL}${url}`}
+            alt={`${username} 이미지`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="flex justify-between items-center w-full mt-2 text-sm">
+          <span className="text-gray-400 truncate max-w-[70%]">{context}</span>
+          <span className="font-semibold truncate max-w-[30%] text-right">{username}</span>
         </div>
       </div>
 
