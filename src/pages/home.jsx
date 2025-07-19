@@ -21,6 +21,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const [currentFeedPage, setCurrentFeedPage] = useState(1); // 현재 피드 페이지
+  const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
   const { memberId, roleType } = UserStore();
 
   /*
@@ -143,11 +145,30 @@ export default function Home() {
 
   const pageable = {
     page: 0,
-    size: 12,
+    size: 18, // 총 18개를 한번에 가져옴
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
+  
+  // 현재 페이지에 해당하는 피드 데이터 계산
+  const getCurrentFeedData = () => {
+    if (!feedData?.result?.content) return [];
+    const endIndex = currentFeedPage * 6;
+    return feedData.result.content.slice(0, endIndex);
+  };
+
+  // 더보기 버튼 클릭 핸들러
+  const handleLoadMoreFeeds = () => {
+    if (currentFeedPage < 3) {
+      setIsLoadingMore(true);
+      // 약간의 지연을 주어 로딩 효과를 보여줌
+      setTimeout(() => {
+        setCurrentFeedPage(prev => prev + 1);
+        setIsLoadingMore(false);
+      }, 300);
+    }
+  };
  
   const handleSearch = (e) => {
     e.preventDefault();
@@ -306,20 +327,51 @@ export default function Home() {
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
-
-              {feedData?.result?.content?.map((profile, index) => (
-                <PopularFeed
-                  key={index}
-                  url={profile.mediaResDto?.fileUrl}
-                  context={profile.categoryName}
-                  username={profile.nickname}
-                  feedId={profile.feedId}
-                  memberId={profile.memberId}
-                />
-              ))}
-
-            </div>
+            <>
+              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
+                {getCurrentFeedData().map((profile, index) => (
+                  <PopularFeed
+                    key={`${profile.feedId}-${currentFeedPage}-${index}`}
+                    url={profile.mediaResDto?.fileUrl}
+                    context={profile.categoryName}
+                    username={profile.nickname}
+                    feedId={profile.feedId}
+                    memberId={profile.memberId}
+                  />
+                ))}
+              </div>
+              
+              {/* 더보기 버튼 */}
+              {currentFeedPage < 3 && feedData?.result?.content?.length > currentFeedPage * 6 && (
+                <div className="text-center mt-8">
+                  <button
+                    onClick={handleLoadMoreFeeds}
+                    disabled={isLoadingMore}
+                    className={`px-6 py-3 bg-yellow-point text-white rounded-lg transition-colors duration-200 font-semibold ${
+                      isLoadingMore 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'hover:bg-yellow-600'
+                    }`}
+                  >
+                    {isLoadingMore ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        로딩중...
+                      </div>
+                    ) : (
+                      `더보기`
+                    )}
+                  </button>
+                </div>
+              )}
+              
+              {/* 모든 피드를 로드했을 때 표시 */}
+              {currentFeedPage >= 3 && (
+                <div className="text-center mt-8">
+                  <p className="text-gray-500 text-sm">모든 인기 피드를 확인했습니다!</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
