@@ -25,8 +25,8 @@ export default function Home() {
   const [imageLoadingStates, setImageLoadingStates] = useState({});
   const [currentFeedPage, setCurrentFeedPage] = useState(1); // 현재 피드 페이지
   const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
-  const { memberId, roleType } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const { memberId, roleType } = UserStore();
 
   /*
   useEffect(() => {
@@ -406,6 +406,7 @@ export default function Home() {
                 </div>
               )}
             </>
+
           )}
         </div>
       </div>
