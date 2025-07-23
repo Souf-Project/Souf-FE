@@ -5,8 +5,10 @@ import { calculateDday } from "../../utils/getDate";
 import { useNavigate } from "react-router-dom";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
+import { getRecruitDetail } from "../../api/recruit";
 
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
 import "swiper/css";
 
 export default function MobileSwiper() {
@@ -15,19 +17,65 @@ export default function MobileSwiper() {
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const pageable = { page: 0, size: 12 };
-  const { data, isLoading } = usePopularRecruit(pageable);
 
+  const { data, isLoading } = usePopularRecruit(pageable);
+  useEffect(() => {
+    setRecruitData(data?.result?.content);
+    console.log(recruitData);
+  }, [data]);
   
   useEffect(() => {
     setRecruitData(data?.result?.content || []);
   }, [data]);
 
+  const parsePayment = (paymentString) => {
+    if (!paymentString || typeof paymentString !== 'string') return 0;
+    let numStr = paymentString.replace(/[^0-9.]/g, '');
+    let num = parseFloat(numStr);
+    if (paymentString.includes('만')) {
+      num *= 10000;
+    }
+    return isNaN(num) ? 0 : num;
+  };
 
-  const handleClick = (recruitId) => {
+  const handleClick = async (recruitId) => {
     if (!memberId) {
       setShowLoginModal(true);
     } else {
-      navigate(`/recruitDetails/${recruitId}`);
+      try {
+        const selectedRecruit = recruitData.find(recruit => recruit.recruitId === recruitId);
+        const minPrice = parsePayment(selectedRecruit?.minPayment);
+        const maxPrice = parsePayment(selectedRecruit?.maxPayment);
+        
+        const response = await getRecruitDetail(recruitId);
+        console.log('Recruit detail response:', response);
+        
+        const recruitDetail = response.data.result;
+        
+        navigate(`/recruitDetails/${recruitId}`, {
+          state: {
+            title: selectedRecruit?.title,
+            content: selectedRecruit?.content,
+            cityName: selectedRecruit?.cityName,
+            cityDetailName: selectedRecruit?.cityDetailName,
+            minPrice,
+            maxPrice,
+            deadline: selectedRecruit?.deadLine,
+            location: selectedRecruit?.cityName,
+            preferMajor: false, 
+            id: recruitId,
+            recruitDetail,
+            categoryDtoList: selectedRecruit?.categoryDtoList,
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching recruit detail:', error);
+        
+        // 403 에러인 경우 로그인 모달 표시
+        if (error.response?.status === 403) {
+          setShowLoginModal(true);
+        }
+      }
     }
   };
 
@@ -40,15 +88,19 @@ export default function MobileSwiper() {
   }
 
   return (
-    <div className="relative w-screen mt-4 lg:hidden">
+    <div className="relative w-screen mt-4 lg:px-24">
       <Swiper
-        slidesPerView={2} // 모바일 한 번에 1개 슬라이드
-        spaceBetween={0}  // 슬라이드 간격
-        // navigation, pagination 등 모바일에서는 뺄 거면 제외
-        loop={true} // 무한루프 필요하면 활성화
-        // speed={500} // 슬라이드 전환 속도(ms)
+        slidesPerView={2}
+        spaceBetween={0}
+        loop={true}
+        speed={700}
+        autoplay={{
+          delay:4000,
+          disableOnInteraction: false,
+        }}
+        modules={[Autoplay]}
       >
-        {recruitData.map((recruit) => (
+        {recruitData?.map((recruit) => (
           <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
             <div
               className="w-84 box-border h-64 px-6 cursor-pointer"
@@ -70,7 +122,17 @@ export default function MobileSwiper() {
                     {recruit.content}
                   </p>
                 </div>
-               
+                <div className="mt-4 px-6 hidden lg:block pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-red-500">
+                      {calculateDday(recruit?.deadLine, recruit?.recruitable)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">자세히 보기 →</div>
+                </div>
+              </div>
               </div>
             </div>
           </SwiperSlide>

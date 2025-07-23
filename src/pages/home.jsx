@@ -12,7 +12,6 @@ import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
-import Carousel from "../components/home/carousel";
 import MobileSwiper from "../components/home/mobileSwiper";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
@@ -247,7 +246,7 @@ export default function Home() {
       )}
       
       {/* 배경 이미지 섹션 */}
-      <div className="relative h-[600px] w-screen">
+      <div className="relative h-[600px] w-full  lg:-mx-8">
         <img
           src={Background}
           alt="background"
@@ -321,23 +320,10 @@ export default function Home() {
        
       </div>
 
-      {/* PC 버전 인기 공고문 섹션 : 캐러셀 슬라이드 */}
-      <div className="relative mt-16 px-4 lg:px-24 hidden lg:block">
+{/* 인기 공고문  */}
+      <div className="relative mt-16 px-">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-          <h2 className="text-3xl font-bold mb-8 px-6">
-            <span className="relative inline-block ">
-              <span className="relative z-10 ">인기있는 공고문</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">모집 보러가기</span>
-          </h2>
-          <Carousel />
-        </div>
-      </div>
-      {/* 모바일 버전 인기 공고문 섹션 : 스와이퍼 */}
-      <div className="relative mt-16 block lg:hidden">
-        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-          <h2 className="text-2xl  font-bold mb-8 px-6">
+        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
