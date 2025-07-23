@@ -95,7 +95,7 @@ export default function MobileSwiper() {
         loop={true}
         speed={700}
         autoplay={{
-          delay:10000,
+          delay:4000,
           disableOnInteraction: false,
         }}
         modules={[Autoplay]}
@@ -113,7 +113,7 @@ export default function MobileSwiper() {
                   </h3>
                 </div>
                 <div className="px-6 pb-4">
-                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
+                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-md font-semibold rounded-full">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
