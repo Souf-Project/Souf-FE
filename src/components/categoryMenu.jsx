@@ -22,57 +22,32 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect }) => {
   }
 
   // PC 버전 카테고리 메뉴 (박스 형태)
-  const DesktopCategoryMenu = () => (
-    <div className="hidden lg:block w-60 h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto">
-      <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-4">카테고리</h3>
-      {secondCategories.map((second) => (
-        <div key={second.second_category_id} className="mb-3">
-          <div
-            className="cursor-pointer font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded hover:bg-gray-50 transition-colors"
-            onClick={() => toggleSecondCategory(second.second_category_id)}
-          >
-            <span className="text-gray-700">{second.name}</span>
-            <svg
-              className={`w-4 h-4 transition-transform ${
-                openSecondCategory === second.second_category_id
-                  ? "rotate-180"
-                  : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
-
-          {openSecondCategory === second.second_category_id && (
-            <div className="ml-4 mt-2 border-l-2 border-gray-200 pl-3">
-              {thirdCategories.third_category
-                .filter(
-                  (third) =>
-                    third.second_category_id === second.second_category_id
-                )
-                .map((third) => (
-                  <div 
-                    key={third.third_category_id} 
-                    className="py-1 px-2 text-xs text-gray-600 hover:text-yellow-point hover:bg-yellow-50 rounded cursor-pointer transition-colors"
-                    onClick={() => handleThirdCategoryClick(second, third)}
-                  >
-                    {third.name}
-                  </div>
-                ))}
-            </div>
-          )}
+const DesktopCategoryMenu = () => (
+  <div className="hidden lg:block w-60 h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto">
+    <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-4">카테고리</h3>
+    {secondCategories.map((second) => (
+      <div key={second.second_category_id} className="mb-3">
+        <div className="font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded text-gray-700">
+          <span>{second.name}</span>
         </div>
-      ))}
-    </div>
-  );
+        <div className="ml-4 mt-2 border-l-2 border-gray-200 pl-3">
+          {thirdCategories.third_category
+            .filter(third => third.second_category_id === second.second_category_id)
+            .map((third) => (
+              <div 
+                key={third.third_category_id} 
+                className="py-1 px-2 text-xs text-gray-600 hover:text-yellow-point hover:bg-yellow-50 rounded cursor-pointer transition-colors"
+                onClick={() => handleThirdCategoryClick(second, third)}
+              >
+                {third.name}
+              </div>
+            ))}
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 
   // 모바일 버전 카테고리 메뉴 (좌우 반반)
   const MobileCategoryMenu = () => {
