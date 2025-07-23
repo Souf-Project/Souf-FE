@@ -81,7 +81,7 @@ export default function MobileSwiper() {
 
   if (isLoading) {
     return (
-      <div className="h-64 flex items-center justify-center">
+      <div className="h-80 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-point"></div>
       </div>
     );
@@ -103,17 +103,17 @@ export default function MobileSwiper() {
         {recruitData?.map((recruit) => (
           <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
             <div
-              className="w-84 box-border h-64 px-6 cursor-pointer"
+              className="w-84 box-border h-80 px-6 cursor-pointer"
               onClick={() => handleClick(recruit?.recruitId)}>
-              <div className="h-60 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+              <div className="h-64 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 카드 내용 */}
                 <div className="px-6 pt-6 pb-3">
-                  <h3 className="text-xl font-bold text-gray-800 line-clamp-2">
+                  <h3 className="text-2xl font-bold text-gray-800 line-clamp-2">
                     {recruit.title}
                   </h3>
                 </div>
                 <div className="px-6 pb-4">
-                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-xs font-semibold rounded-full">
+                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-md font-semibold rounded-full">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
