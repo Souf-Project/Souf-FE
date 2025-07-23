@@ -95,7 +95,7 @@ export default function MobileSwiper() {
         loop={true}
         speed={700}
         autoplay={{
-          delay: 5000,
+          delay:4000,
           disableOnInteraction: false,
         }}
         modules={[Autoplay]}
