@@ -40,7 +40,7 @@ export default function Carousel() {
     if (!memberId) {
       setShowLoginModal(true);
     } else {
-      navigate(`/recruitDetails/${recruit?.recruitId}`);
+      navigate(`/recruitDetails/${recruitId}`);
     }
   };
 
