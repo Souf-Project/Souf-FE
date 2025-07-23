@@ -322,7 +322,7 @@ export default function Home() {
       </div>
 
       {/* PC 버전 인기 공고문 섹션 : 캐러셀 슬라이드 */}
-      <div className="relative mt-16 px-4 lg:px-24 hidden lg:block">
+      {/* <div className="relative mt-16 px-4 lg:px-24 hidden lg:block">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
           <h2 className="text-3xl font-bold mb-8 px-6">
             <span className="relative inline-block ">
@@ -333,11 +333,11 @@ export default function Home() {
           </h2>
           <Carousel />
         </div>
-      </div>
+      </div> */}
       {/* 모바일 버전 인기 공고문 섹션 : 스와이퍼 */}
-      <div className="relative mt-16 block lg:hidden">
+      <div className="relative mt-16 px-6">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-          <h2 className="text-2xl  font-bold mb-8 px-6">
+        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
