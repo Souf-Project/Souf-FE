@@ -148,16 +148,21 @@ export default function Home() {
   const pageable = {
     page: 0,
     size: 18, // 총 18개를 한번에 가져옴
+    sort: ["createdAt,desc"]
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
   
+  console.log("🔍 home.jsx에서 feedData:", feedData);
+  console.log("🔍 home.jsx에서 feedLoading:", feedLoading);
+  
   // 현재 페이지에 해당하는 피드 데이터 계산
   const getCurrentFeedData = () => {
-    if (!feedData?.result?.content) return [];
+    console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
+    if (!feedData?.result) return [];
     const endIndex = currentFeedPage * 6;
-    return feedData.result.content.slice(0, endIndex);
+    return feedData.result.slice(0, endIndex);
   };
 
   // 더보기 버튼 클릭 핸들러
@@ -270,12 +275,10 @@ export default function Home() {
       onChange={(e) => setSearchQuery(e.target.value)}
       placeholder="원하는 일을 검색해보세요"
       className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]  mx-auto"
-      // pr-12 오른쪽 padding 추가 (버튼 공간 확보)
     />
     <button
       type="submit"
       className="absolute right-3 top-1/2 transform -translate-y-1/2"
-      // right-3로 우측 끝에서 적당히 띄움
     >
       <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
     </button>
@@ -362,7 +365,7 @@ export default function Home() {
               </div>
               
               {/* 더보기 버튼 */}
-              {currentFeedPage < 3 && feedData?.result?.content?.length > currentFeedPage * 6 && (
+              {currentFeedPage < 3 && feedData?.result?.length > currentFeedPage * 6 && (
                 <div className="text-center mt-8">
                   <button
                     onClick={handleLoadMoreFeeds}
