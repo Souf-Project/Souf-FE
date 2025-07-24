@@ -17,6 +17,9 @@ import GlassInfoBox from "../components/home/glassInfoBox";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
+import dayjs from "dayjs";
+import useCountUp from "../hooks/useCountUp";
+import AnimatedCount from "../components/AnimatedCount";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -27,30 +30,6 @@ export default function Home() {
   const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
-
-  /*
-  useEffect(() => {
-    // 여러 카테고리에서 상위 공모전들을 가져와서 섞기
-    const allCompetitions = [
-      ...buildingData.slice(0, 1),
-      ...marketingData.slice(0, 1)
-    ];
-    //setCompetitions(allCompetitions);
-    
-    // 이미지 로딩 상태 초기화
-    const newLoadingStates = {};
-    allCompetitions.forEach((competition, index) => {
-      if (competition.썸네일) {
-        newLoadingStates[index] = true;
-      }
-    });
-    setImageLoadingStates(newLoadingStates);
-    
-    // 0.2초 후에 모든 스켈레톤 숨기기
-    setTimeout(() => {
-      setImageLoadingStates({});
-    }, 1000);
-  }, []);*/
 
 
   const categories = [
@@ -230,9 +209,12 @@ export default function Home() {
     fetchContests();
   }, []);
 
+  const [viewCount, prevViewCount] = useCountUp(10000, 1200);
+  const [userCount, prevUserCount] = useCountUp(10000, 1200);
+  const [recruitCount, prevRecruitCount] = useCountUp(10000, 1200);
   
   return (
-    <div className="relative overflow-x-hidden">
+    <div className="relative overflow-x-hidden lg:max-w-[1920px] lg:mx-auto">
       {/* 플로팅 액션 버튼 */}
       {memberId && (
         <div className="fixed bottom-8 right-8 z-40">
@@ -248,36 +230,26 @@ export default function Home() {
         </div>
       )}
       
-      {/* 배경 이미지 섹션 */}
-      <div className="relative h-[600px] w-screen">
-        {/* <img
-          src={Background}
-          alt="background"
-          className="absolute z-[-1] inset-0 w-full h-full object-cover"
-        /> */}
-        {/* <div className="absolute -bottom-10 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-white"></div> */}
-      
-        <div className="relative flex justify-between items-start pt-36 px-8 lg:px-24 gap-8">
-          {/* 왼쪽: Glass 효과 박스 */}
-          <GlassInfoBox />
-
-          {/* 오른쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl">
-            <h1 className="text-xl lg:text-2xl font-semibold mb-4 text-black text-left">
+  
+        <div className="relative flex justify-between items-start pt-20 px-8 lg:pl-12 gap-8">
+          
+          {/* 왼쪽: 타이틀과 검색, 카테고리 */}
+          <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-52">
+            <h1 className="text-xl lg:text-5xl font-semibold mb-4 text-black text-left">
               필요한 일을, 필요한 사람에게
             </h1>
-            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-12 text-left">
+            <h2 className="text-2xl lg:text-8xl font-bold text-black mb-12 text-left">
               지금 바로 SouF!
             </h2>
 
-            <form onSubmit={handleSearch} className="w-full mb-8">
-              <div className="relative w-full max-w-md">
+            <form onSubmit={handleSearch} className="w-full lg:mt-20">
+              <div className="relative w-full max-w-2xl lg:max-w-3xl">
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="원하는 일을 검색해보세요"
-                  className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-blend-overlay bg-gradient-to-br from-white/50 to-white/5 rounded-full shadow-[0px_1.1966018676757812px_29.91504669189453px_0px_rgba(69,42,124,0.10)] outline outline-[3px] outline-offset-[-3px] outline-white/50 backdrop-blur-[47.86px] overflow-hidden"
+                  className="w-full px-6 pr-12 py-3 lg:py-5 text-md lg:text-2xl rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-blend-overlay bg-gradient-to-br from-white/50 to-white/5 rounded-full shadow-[0px_1.1966018676757812px_29.91504669189453px_0px_rgba(69,42,124,0.10)] outline outline-[3px] outline-offset-[-3px] outline-white/50 backdrop-blur-[47.86px] overflow-hidden"
                 />
                 <button
                   type="submit"
@@ -287,41 +259,40 @@ export default function Home() {
                 </button>
               </div>
             </form>
+            
 
-            {/* 카테고리 섹션 */}
-            <div className="flex flex-nowrap gap-2 sm:gap-4 md:gap-6 lg:gap-4 justify-center">
-              {categories.map((category, index) => {
-                const categoryImages = [
-                  cate1Img,
-                  cate2Img,
-                  cate3Img,
-                  cate4Img,
-                  cate5Img,
-                ];
-                return (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(index + 1)}
-                    className="glass flex flex-col items-center gap-1 sm:gap-2 min-w-0 flex-1 sm:flex-none sm:w-auto lg:w-32 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl"
-                  >
-                    <img
-                      src={categoryImages[index]}
-                      alt={category}
-                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
-                    />
-                    <span className="text-xs sm:text-sm lg:text-base font-semibold text-gray-700 hover:text-yellow-point transition-colors duration-200 text-center break-words">
-                      {category}
-                    </span>
-                  </button>
-                );
-              })}
+           
+          </div>
+          {/* 오른쪽: Glass 효과 박스 */}
+          <GlassInfoBox />
+
+        </div>
+        <div className="flex gap-10 justify-around items-center w-full bg-[#FFFBE5] h-52 mt-20 shadow-md">
+          <div className="flex flex-col justify-center gap-2">
+            <div className="lg:text-6xl text-4xl font-bold">{dayjs().format('YYYY.MM.DD')}</div>
+            <div className="flex gap-2">
+              <div className="lg:text-5xl text-3xl font-bold">오늘 스프 사이트 조회수: </div>
+              <div className="lg:text-5xl text-3xl font-bold">
+                <AnimatedCount value={viewCount} prevValue={prevViewCount} />
+              </div>
+            </div>
+           
+          </div>
+          <div className="flex flex-col justify-center gap-2">
+          <div className="flex gap-2">
+              <div className="lg:text-5xl text-3xl font-bold">대학생 프리랜서 가입자: </div>
+              <div className="lg:text-5xl text-3xl font-bold">
+                <AnimatedCount value={userCount} prevValue={prevUserCount} />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="lg:text-5xl text-3xl font-bold">등록된 기업 공고문: </div>
+              <div className="lg:text-5xl text-3xl font-bold">
+                <AnimatedCount value={recruitCount} prevValue={prevRecruitCount} />
+              </div>
             </div>
           </div>
         </div>
-
-
-       
-      </div>
 
 {/* 인기 공고문  */}
       <div className="relative mt-16 px-">
@@ -399,7 +370,60 @@ export default function Home() {
           )}
         </div>
       </div>
-'{/* 📌 공모전 정보 스키마 마크업 */}
+
+       {/* 카테고리 섹션 */}
+       <div className="relative px-6 lg:px-24 ">
+       <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
+       <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+            <span className="relative inline-block">
+              <span className="relative z-10">관심있는 주제 피드</span>
+              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
+            </span>
+            <span className="ml-2">더보기</span>
+          </h2>
+            <div className="flex flex-nowrap justify-between w-full lg:px-24 mt-20">
+              {categories.map((category, index) => {
+                const categoryImages = [
+                  cate1Img,
+                  cate2Img,
+                  cate3Img,
+                  cate4Img,
+                  cate5Img,
+                ];
+                return (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryClick(index + 1)}
+                    className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl"
+                  >
+                    <img
+                      src={categoryImages[index]}
+                      alt={category}
+                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
+                    />
+                    <span className="text-xs sm:text-sm lg:text-lg font-semibold text-gray-700 text-center break-words">
+                      {category}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            </div>
+            </div>
+{/* 광고 배너 div */}
+<div className="relative px-6 lg:px-24 ">
+  
+</div>
+
+{/* 추천 공고 (광고) */}
+<div className="relative px-6 lg:px-24 flex justify-between items-center">
+  <div>
+    <div>
+      외주 공고
+    </div>
+  </div>
+</div>
+'{/* 공모전 정보 스키마 */}
       {competitions.map((competition, index) => {
         const schema = {
           "@context": "https://schema.org",

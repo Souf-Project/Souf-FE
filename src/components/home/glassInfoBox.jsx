@@ -57,9 +57,9 @@ export default function GlassInfoBox() {
   };
 
   return (
-    <div className="hidden lg:block flex-shrink-0 relative">
+    <div className="hidden lg:block relative">
       {/* 박스들 */}
-      <div className="relative w-80 h-96">
+      <div className="relative w-[800px] h-[500px]">
         {boxes.map((box, index) => {
           const isActive = index === currentIndex;
           const isNext = index === (currentIndex + 1) % boxes.length;
