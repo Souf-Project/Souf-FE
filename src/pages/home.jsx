@@ -233,6 +233,8 @@ export default function Home() {
 
     fetchContests();
   }, []);
+
+  
   return (
     <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
@@ -399,7 +401,57 @@ export default function Home() {
           )}
         </div>
       </div>
+'{/* 📌 공모전 정보 스키마 마크업 */}
+      {competitions.map((competition, index) => {
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": competition.제목,
+          "startDate": competition.접수기간.시작일,
+          "endDate": competition.접수기간.마감일,
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": competition.온라인가능 ? "온라인" : "오프라인",
+            "address": competition.온라인가능
+              ? { "@type": "PostalAddress", "addressCountry": "KR" }
+              : {
+                  "@type": "PostalAddress",
+                  "streetAddress": competition.장소?.주소,
+                  "addressLocality": competition.장소?.시,
+                  "addressCountry": "KR"
+                }
+          },
+          "image": getImageUrl(competition.썸네일),
+          "description": `주최: ${competition.주최}, 대상: ${competition.참여대상}, 분야: ${competition.공모분야?.join(', ')}`,
+          "organizer": {
+            "@type": "Organization",
+            "name": competition.주최
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": `${window.location.origin}/contests/${competition.categoryID[0]}/${competition.contestID}`,
+            "price": competition.유료여부 ? competition.참가비 : "0",
+            "priceCurrency": "KRW",
+            "availability": "https://schema.org/InStock",
+            "validFrom": competition.접수기간.시작일
+          },
+          "eventCategory": competition.공모분야,
+          "audience": {
+            "@type": "EducationalAudience",
+            "educationalRole": competition.참여대상
+          }
+        };
 
+        return (
+          <script
+            key={`schema-${index}`}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+        );
+      })}'
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
         <div className="flex justify-between items-center px-4 sm:px-6 ">
@@ -471,29 +523,29 @@ export default function Home() {
                 )}
                 
                 <div className="p-2 lg:p-6">
-                  <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
-                  <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
+                  <h1 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h1>
+                  <h2 className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</h2>
                   
                   {/* 공모분야 태그 */}
                   {competition.공모분야 && competition.공모분야.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {competition.공모분야.slice(0, 2).map((field, fieldIndex) => (
-                        <span
+                        <h2
                           key={fieldIndex}
                           className="px-2 py-1 bg-yellow-point text-white text-[12px] lg:text-xs rounded-full"
                         >
                           {field}
-                        </span>
+                        </h2>
                       ))}
                     </div>
                   )}
                   
                   <div className="hidden lg:block flex flex-col gap-1 text-sm text-gray-500">
-                    <p>시상금: {competition.시상규모}</p>
-                    <p>
+                    <h3>시상금: {competition.시상규모}</h3>
+                    <h3>
                       접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}
-                    </p>
-                    <p>참여대상: {competition.참여대상}</p>
+                    </h3>
+                    <h3>참여대상: {competition.참여대상}</h3>
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">

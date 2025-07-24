@@ -9,21 +9,26 @@ export const UserStore = create(
       roleType: null,
       accessToken: null,
 
-      setUser: ({ memberId, nickname, roleType }) =>
-        set({ memberId, nickname, roleType }),
+      setUser: ({ memberId, nickname, roleType }) => {
+        set({ memberId, nickname, roleType });
+      },
 
-      setAccessToken: (accessToken) =>
-        set({ accessToken }),
+      setAccessToken: (accessToken) => {
+        set({ accessToken });
+      },
 
-      updateAccessToken: (accessToken) =>
-        set({ accessToken }),
+      updateAccessToken: (accessToken) => {
+        set({ accessToken });
+      },
 
-      clearUser: () => set({ 
-        memberId: null, 
-        nickname: null, 
-        roleType: null,
-        accessToken: null
-      }),
+      clearUser: () => {
+        set({ 
+          memberId: null, 
+          nickname: null, 
+          roleType: null,
+          accessToken: null
+        });
+      },
 
       // 토큰이 유효한지 확인
       isTokenValid: () => {
