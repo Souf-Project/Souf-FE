@@ -7,7 +7,7 @@ import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import AlertModal from '../components/alertModal';
 import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
-import { closeRecruit } from '../api/recruit';
+import { closeRecruit, getRecruitDetail } from '../api/recruit';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -71,6 +71,26 @@ export default function RecruitDetail() {
       console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
+
+
+  //여기서  추가함 나중에 바꿔야해 
+  useEffect(() => {
+  const fetchRecruitDetail = async () => {
+    try {
+      const response = await getRecruitDetail(id);
+      setRecruitDetail(response.data.result);
+    } catch (error) {
+      console.error('Error fetching recruit detail:', error);
+      if (error.response?.status === 403) {
+        alert("로그인이 필요합니다.");
+        navigate('/login');
+      }
+    }
+  };
+
+  fetchRecruitDetail();
+}, [id]);
+
 
   // 메뉴 외부 클릭 시 메뉴 닫기
   useEffect(() => {
@@ -152,6 +172,8 @@ export default function RecruitDetail() {
     }
   };
 
+      
+
   const handleApply = () => {
     console.log('지원 버튼 클릭');
     setIsApplyModalOpen(true);
@@ -183,15 +205,22 @@ export default function RecruitDetail() {
   };
 
   // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
-  const displayData = recruitDetail || recruitData;
-  const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
-  const categoryNames = getCategoryNames(categoryList);
+  // const displayData = recruitDetail || recruitData;
+  // const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
+  // const categoryNames = getCategoryNames(categoryList);
 
-  const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : (displayData?.minPrice || null);
-  const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : (displayData?.maxPrice || null);
+  // const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : (displayData?.minPrice || null);
+  // const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : (displayData?.maxPrice || null);
+
+  const displayData = recruitDetail;
+  const categoryList = recruitDetail?.categoryDtoList || [];
+  const categoryNames = getCategoryNames(categoryList);
+  const minPrice = parsePayment(recruitDetail?.minPayment);
+  const maxPrice = parsePayment(recruitDetail?.maxPayment);
+  const isAuthor = memberId === recruitDetail?.memberId;
 
   // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
-  const isAuthor = memberId === (recruitDetail?.memberId || displayData?.memberId);
+  //const isAuthor = memberId === (recruitDetail?.memberId || displayData?.memberId);
 
   // 데이터가 없으면 로딩 상태 표시
   if (!displayData) {
