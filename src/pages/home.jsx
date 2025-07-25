@@ -12,7 +12,6 @@ import { usePopularFeed } from "../hooks/usePopularFeed";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
-import Carousel from "../components/home/carousel";
 import MobileSwiper from "../components/home/mobileSwiper";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
@@ -23,6 +22,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const [currentFeedPage, setCurrentFeedPage] = useState(1); // 현재 피드 페이지
+  const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
@@ -146,11 +147,35 @@ export default function Home() {
 
   const pageable = {
     page: 0,
-    size: 12,
+    size: 18, // 총 18개를 한번에 가져옴
+    sort: ["createdAt,desc"]
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
+  
+  console.log("🔍 home.jsx에서 feedData:", feedData);
+  console.log("🔍 home.jsx에서 feedLoading:", feedLoading);
+  
+  // 현재 페이지에 해당하는 피드 데이터 계산
+  const getCurrentFeedData = () => {
+    console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
+    if (!feedData?.result) return [];
+    const endIndex = currentFeedPage * 6;
+    return feedData.result.slice(0, endIndex);
+  };
+
+  // 더보기 버튼 클릭 핸들러
+  const handleLoadMoreFeeds = () => {
+    if (currentFeedPage < 3) {
+      setIsLoadingMore(true);
+      // 약간의 지연을 주어 로딩 효과를 보여줌
+      setTimeout(() => {
+        setCurrentFeedPage(prev => prev + 1);
+        setIsLoadingMore(false);
+      }, 300);
+    }
+  };
  
   const handleSearch = (e) => {
     e.preventDefault();
@@ -208,6 +233,8 @@ export default function Home() {
 
     fetchContests();
   }, []);
+
+  
   return (
     <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
@@ -226,7 +253,7 @@ export default function Home() {
       )}
       
       {/* 배경 이미지 섹션 */}
-      <div className="relative h-[600px] w-screen">
+      <div className="relative h-[600px] w-full  lg:-mx-8">
         <img
           src={Background}
           alt="background"
@@ -250,12 +277,10 @@ export default function Home() {
       onChange={(e) => setSearchQuery(e.target.value)}
       placeholder="원하는 일을 검색해보세요"
       className="w-full px-6 pr-12 py-3 text-sm lg:text-lg rounded-full shadow-[0_4px_4px_rgba(0,0,0,0.25)]  mx-auto"
-      // pr-12 오른쪽 padding 추가 (버튼 공간 확보)
     />
     <button
       type="submit"
       className="absolute right-3 top-1/2 transform -translate-y-1/2"
-      // right-3로 우측 끝에서 적당히 띄움
     >
       <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
     </button>
@@ -300,23 +325,10 @@ export default function Home() {
        
       </div>
 
-      {/* PC 버전 인기 공고문 섹션 : 캐러셀 슬라이드 */}
-      <div className="relative mt-16 px-4 lg:px-24 hidden lg:block">
+{/* 인기 공고문  */}
+      <div className="relative mt-16 px-">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-          <h2 className="text-3xl font-bold mb-8 px-6">
-            <span className="relative inline-block ">
-              <span className="relative z-10 ">인기있는 공고문</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">모집 보러가기</span>
-          </h2>
-          <Carousel />
-        </div>
-      </div>
-      {/* 모바일 버전 인기 공고문 섹션 : 스와이퍼 */}
-      <div className="relative mt-16 block lg:hidden">
-        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-          <h2 className="text-2xl  font-bold mb-8 px-6">
+        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -340,24 +352,106 @@ export default function Home() {
           {feedLoading ? (
             <div className="text-center py-8">로딩중...</div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center">
+            <>
+              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
+                {getCurrentFeedData().map((profile, index) => (
+                  <PopularFeed
+                    key={`${profile.feedId}-${currentFeedPage}-${index}`}
+                    url={profile.mediaResDto?.fileUrl}
+                    context={profile.categoryName}
+                    username={profile.nickname}
+                    feedId={profile.feedId}
+                    memberId={profile.memberId}
+                  />
+                ))}
+              </div>
+              
+              {/* 더보기 버튼 */}
+              {currentFeedPage < 3 && feedData?.result?.length > currentFeedPage * 6 && (
+                <div className="text-center mt-8">
+                  <button
+                    onClick={handleLoadMoreFeeds}
+                    disabled={isLoadingMore}
+                    className={`px-6 py-3 bg-yellow-point text-white rounded-lg transition-colors duration-200 font-semibold ${
+                      isLoadingMore 
+                        ? 'opacity-50 cursor-not-allowed' 
+                        : 'hover:bg-yellow-600'
+                    }`}
+                  >
+                    {isLoadingMore ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        로딩중...
+                      </div>
+                    ) : (
+                      `더보기`
+                    )}
+                  </button>
+                </div>
+              )}
+              
+              {/* 모든 피드를 로드했을 때 표시 */}
+              {currentFeedPage >= 3 && (
+                <div className="text-center mt-8">
+                  <p className="text-gray-500 text-sm">모든 인기 피드를 확인했습니다!</p>
+                </div>
+              )}
+            </>
 
-            {feedData?.result?.content?.map((profile, index) => (
-              <PopularFeed
-                key={index}
-                url={profile.mediaResDto?.fileUrl}
-                context={profile.categoryName}
-                username={profile.nickname}
-                feedId={profile.feedId}
-                memberId={profile.memberId}
-              />
-            ))}
-
-          </div>
           )}
         </div>
       </div>
+'{/* 📌 공모전 정보 스키마 마크업 */}
+      {competitions.map((competition, index) => {
+        const schema = {
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": competition.제목,
+          "startDate": competition.접수기간.시작일,
+          "endDate": competition.접수기간.마감일,
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+          "location": {
+            "@type": "Place",
+            "name": competition.온라인가능 ? "온라인" : "오프라인",
+            "address": competition.온라인가능
+              ? { "@type": "PostalAddress", "addressCountry": "KR" }
+              : {
+                  "@type": "PostalAddress",
+                  "streetAddress": competition.장소?.주소,
+                  "addressLocality": competition.장소?.시,
+                  "addressCountry": "KR"
+                }
+          },
+          "image": getImageUrl(competition.썸네일),
+          "description": `주최: ${competition.주최}, 대상: ${competition.참여대상}, 분야: ${competition.공모분야?.join(', ')}`,
+          "organizer": {
+            "@type": "Organization",
+            "name": competition.주최
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": `${window.location.origin}/contests/${competition.categoryID[0]}/${competition.contestID}`,
+            "price": competition.유료여부 ? competition.참가비 : "0",
+            "priceCurrency": "KRW",
+            "availability": "https://schema.org/InStock",
+            "validFrom": competition.접수기간.시작일
+          },
+          "eventCategory": competition.공모분야,
+          "audience": {
+            "@type": "EducationalAudience",
+            "educationalRole": competition.참여대상
+          }
+        };
 
+        return (
+          <script
+            key={`schema-${index}`}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+        );
+      })}'
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
         <div className="flex justify-between items-center px-4 sm:px-6 ">
@@ -386,7 +480,7 @@ export default function Home() {
               >
                 {/* 썸네일 이미지 */}
                 {competition.썸네일 && (
-                  <div className="relative lg:h-[540px] w-auto rounded-t-xl overflow-hidden bg-gradient-to-br from-yellow-50 to-yellow-100">
+                  <div className="relative lg:h-[400px] w-auto rounded-t-xl overflow-hidden ">
                     {/* 로딩 스켈레톤 */}
                     {imageLoadingStates[index] && (
                       <div className="absolute inset-0 bg-gray-200 animate-pulse">
@@ -429,29 +523,29 @@ export default function Home() {
                 )}
                 
                 <div className="p-2 lg:p-6">
-                  <h3 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h3>
-                  <p className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</p>
+                  <h1 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h1>
+                  <h2 className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</h2>
                   
                   {/* 공모분야 태그 */}
                   {competition.공모분야 && competition.공모분야.length > 0 && (
                     <div className="flex flex-wrap gap-2 mb-3">
                       {competition.공모분야.slice(0, 2).map((field, fieldIndex) => (
-                        <span
+                        <h2
                           key={fieldIndex}
                           className="px-2 py-1 bg-yellow-point text-white text-[12px] lg:text-xs rounded-full"
                         >
                           {field}
-                        </span>
+                        </h2>
                       ))}
                     </div>
                   )}
                   
                   <div className="hidden lg:block flex flex-col gap-1 text-sm text-gray-500">
-                    <p>시상금: {competition.시상규모}</p>
-                    <p>
+                    <h3>시상금: {competition.시상규모}</h3>
+                    <h3>
                       접수기간: {competition.접수기간.시작일} ~ {competition.접수기간.마감일}
-                    </p>
-                    <p>참여대상: {competition.참여대상}</p>
+                    </h3>
+                    <h3>참여대상: {competition.참여대상}</h3>
                   </div>
                   
                   <div className="mt-4 flex justify-between items-center">

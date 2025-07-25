@@ -76,6 +76,12 @@ client.interceptors.response.use(
         return client(originalRequest);
       }
     }
+    // AlertModal이 있는 페이지는 에러 페이지로 이동하지 않고 모달이 뜨게
+    if (status === 403) {
+      if (!window.location.pathname.includes("/recruitDetails")) {
+        window.location.href = "/forbidden"; 
+      }
+    }
 
     // 네트워크 에러 처리
     if (error.code === "ERR_NETWORK") {
