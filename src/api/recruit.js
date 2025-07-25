@@ -6,7 +6,6 @@ export const getPopularRecruit = async (pageable) => {
     const response = await client.get("/api/v1/recruit/popular", {
       params: {
         page: pageable.page,
-        size: pageable.size,
       },
     });
     return response.data;

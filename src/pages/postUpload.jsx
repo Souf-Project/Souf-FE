@@ -22,6 +22,7 @@ export default function PostUpload() {
   const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const { memberId } = UserStore();
+
   const [videoFiles, setVideoFiles] = useState([]);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -99,8 +100,8 @@ export default function PostUpload() {
         alert("내용을 입력해주세요.");
         return;
       }
-      const hasNewMedia = imageFiles.length > 0 || newVideo;
-    const hasExistingMedia = videoFiles.length > 0;
+      const hasNewMedia = imageFiles.length > 0;
+      const hasExistingMedia = videoFiles.length > 0;
 
       if (!hasNewMedia && !hasExistingMedia) {
         alert("이미지 또는 영상을 1개 이상 첨부해주세요.");
@@ -202,6 +203,17 @@ export default function PostUpload() {
         alert("업로드 중 오류가 발생했습니다.");
       }
     },
+    onError: (error) => {
+      console.error("피드 업로드 에러:", error);
+      if (error.message === "카테고리 선택 필요" || 
+          error.message === "제목 입력 필요" || 
+          error.message === "내용 입력 필요" || 
+          error.message === "미디어 파일 필요") {
+        // validation 에러는 이미 alert로 표시됨
+        return;
+      }
+      alert("피드 업로드 중 오류가 발생했습니다.");
+    },
   });
 
   const handleInputChange = (name, e) => {
@@ -263,9 +275,21 @@ export default function PostUpload() {
         <div className="flex gap-4 items-center justify-center">
           <button
             onClick={() => mutate(formData)}
-            className="px-6 py-3 bg-yellow-main text-black rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+            disabled={isPending}
+            className={`px-6 py-3 rounded-lg font-bold transition-colors duration-200 ${
+              isPending
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                : 'bg-yellow-main text-black hover:bg-yellow-600'
+            }`}
           >
-            업로드
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                업로드 중...
+              </div>
+            ) : (
+              '업로드'
+            )}
           </button>
           <button
             type="button"

@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: system-ui, Pretendard, sans-serif;
+  font-family: 'Pretendard', system-ui , sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -19,6 +19,7 @@
 }
 
 body {
+  font-family: "Pretendard";
   margin: 0;
   display: flex;
   place-items: center;
@@ -41,3 +42,14 @@ input {
     background-color: #ffffff;
   }
 }
+
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/src/assets/fonts/PretendardVariable.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+
