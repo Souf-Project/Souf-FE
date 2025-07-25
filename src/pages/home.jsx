@@ -128,16 +128,21 @@ export default function Home() {
   const pageable = {
     page: 0,
     size: 18, // 총 18개를 한번에 가져옴
+    sort: ["createdAt,desc"]
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
   
+  console.log("🔍 home.jsx에서 feedData:", feedData);
+  console.log("🔍 home.jsx에서 feedLoading:", feedLoading);
+  
   // 현재 페이지에 해당하는 피드 데이터 계산
   const getCurrentFeedData = () => {
-    if (!feedData?.result?.content) return [];
+    console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
+    if (!feedData?.result) return [];
     const endIndex = currentFeedPage * 6;
-    return feedData.result.content.slice(0, endIndex);
+    return feedData.result.slice(0, endIndex);
   };
 
   // 더보기 버튼 클릭 핸들러
@@ -336,7 +341,7 @@ export default function Home() {
               </div>
               
               {/* 더보기 버튼 */}
-              {currentFeedPage < 3 && feedData?.result?.content?.length > currentFeedPage * 6 && (
+              {currentFeedPage < 3 && feedData?.result?.length > currentFeedPage * 6 && (
                 <div className="text-center mt-8">
                   <button
                     onClick={handleLoadMoreFeeds}

@@ -16,16 +16,12 @@ export default function MobileSwiper() {
   const navigate = useNavigate();
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const pageable = { page: 0, size: 12 };
+  const pageable = { page: 0, size: 12, sort: ["createdAt,desc"] };
 
   const { data, isLoading } = usePopularRecruit(pageable);
+  console.log(data)
   useEffect(() => {
-    setRecruitData(data?.result?.content);
-    console.log(recruitData);
-  }, [data]);
-  
-  useEffect(() => {
-    setRecruitData(data?.result?.content || []);
+    setRecruitData(data?.result || []);
   }, [data]);
 
   const parsePayment = (paymentString) => {
@@ -100,7 +96,7 @@ export default function MobileSwiper() {
         }}
         modules={[Autoplay]}
       >
-        {recruitData?.map((recruit) => (
+        {recruitData.map((recruit) => (
           <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
             <div
               className="w-84 box-border h-80 px-6 cursor-pointer"
