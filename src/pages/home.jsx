@@ -16,6 +16,7 @@ import MobileSwiper from "../components/home/mobileSwiper";
 import { getContests } from "../api/contest";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
+import SEO from "../components/seo";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -234,8 +235,9 @@ export default function Home() {
     fetchContests();
   }, []);
 
-  
   return (
+    <>
+    <SEO  title="SouF 스프" description="스프 검색" subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
       {memberId && (
@@ -564,5 +566,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </>
   );
 }
