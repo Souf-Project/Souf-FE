@@ -6,7 +6,6 @@ export const getPopularFeed = async (pageable) => {
     const response = await client.get("/api/v1/feed/popular", {
       params: {
         page: pageable.page,
-        size: pageable.size,
       },
     });
     return response.data;
