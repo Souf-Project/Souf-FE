@@ -30,7 +30,8 @@ const processQueue = (error, token = null) => {
 // 요청 인터셉터 추가
 client.interceptors.request.use(
   (config) => {
-    const { accessToken } = UserStore.getState();
+    //const { accessToken } = UserStore.getState();
+    const accessToken = localStorage.getItem("accessToken");
     // console.log("🔑 요청 인터셉터 - 현재 액세스 토큰:", accessToken);
     
     if (accessToken) {
