@@ -8,6 +8,7 @@ import Feed from "../components/feed";
 import Loading from "../components/loading";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
+import SEO from "../components/seo";
 
 export default function StudentFeedList() {
   const navigate = useNavigate();
@@ -50,6 +51,7 @@ export default function StudentFeedList() {
   if (error) return <div>{error.message || "에러"}</div>;
 
   return (
+    <>
     <div className="w-full flex flex-col items-center justify-center w-full">
       {feedData?.result?.content && feedData.result.content.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
@@ -80,5 +82,6 @@ export default function StudentFeedList() {
         />
       )}
     </div>
+    </>
   );
 }

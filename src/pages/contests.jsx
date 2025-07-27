@@ -4,6 +4,7 @@ import buildingData from '../assets/competitionData/건축_건설_인테리어.j
 import marketingData from '../assets/competitionData/광고_마케팅.json';
 import { getContests } from '../api/contest';
 import Pagination from '../components/pagination';
+import SEO from '../components/seo';
 
 export default function Contests() {
     const [activeTab, setActiveTab] = useState("rendering");
@@ -194,6 +195,8 @@ export default function Contests() {
     };
 
     return (
+        <>
+        <SEO  title="공모전 정보" description="스프 SouF 대학생 공모전" subTitle='스프' />
         <div className="max-w-6xl mx-auto px-6 py-16 w-full">
             <h1 className="text-3xl font-bold mb-8">공모전 정보</h1>
             
@@ -320,5 +323,6 @@ export default function Contests() {
             </div>
             )}
         </div>
+        </>
     );
 } 
