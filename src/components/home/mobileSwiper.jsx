@@ -91,12 +91,12 @@ export default function MobileSwiper() {
         loop={true}
         speed={700}
         autoplay={{
-          delay:1000,
+          delay:4000,
           disableOnInteraction: false,
         }}
         modules={[Autoplay]}
       >
-        {recruitData?.map((recruit) => (
+        {recruitData.map((recruit) => (
           <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
             <div
               className="w-84 box-border h-80 px-6 cursor-pointer"

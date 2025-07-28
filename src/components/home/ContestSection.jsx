@@ -7,11 +7,11 @@ export default function ContestSection({ competitions, imageLoadingStates, getIm
   // 지정된 ID의 공모전만 필터링
   const filteredCompetitions = contestIds.length > 0 
     ? competitions.filter(comp => contestIds.includes(comp.contestID))
-    : competitions.slice(0, 3); // 처음 3개
+    : competitions.slice(0, 2); // 처음 2개
 
   return (
     
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 px-4 lg:px-0">
+      <div className="grid grid-cols-2 gap-6 px-4 lg:px-0">
         {filteredCompetitions.map((competition, index) => {
           return (
             <div
@@ -21,7 +21,7 @@ export default function ContestSection({ competitions, imageLoadingStates, getIm
             >
               {/* 썸네일 이미지 */}
               {competition.썸네일 && (
-                <div className="relative lg:h-[550px] w-auto rounded-t-xl overflow-hidden ">
+                <div className="relative lg:h-[800px] w-auto rounded-t-xl overflow-hidden ">
                   {/* 로딩 스켈레톤 */}
                   {imageLoadingStates[index] && (
                     <div className="absolute inset-0 bg-gray-200 animate-pulse">
@@ -32,7 +32,7 @@ export default function ContestSection({ competitions, imageLoadingStates, getIm
                   <img
                     src={getImageUrl(competition.썸네일)}
                     alt={competition.제목}
-                    className="w-full h-auto object-contain relative z-10"
+                    className="w-full h-full object-contain relative z-10"
                     onError={(e) => {
                       // 대체 URL 시도
                       const fallbackUrls = getFallbackUrls(competition.썸네일);
@@ -60,7 +60,7 @@ export default function ContestSection({ competitions, imageLoadingStates, getIm
               )}
               
               <div className="p-2 lg:p-6">
-                <h1 className="text-md lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h1>
+                <h1 className="text-lg lg:text-xl font-bold mb-2 line-clamp-2">{competition.제목}</h1>
                 <h2 className="text-gray-600 mb-2 text-[12px] lg:text-base">주최: {competition.주최}</h2>
                 
                 {/* 공모분야 태그 */}

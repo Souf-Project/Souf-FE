@@ -13,7 +13,7 @@ import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import MobileSwiper from "../components/home/mobileSwiper";
-import InfoBox from "../components/home/infoBox";
+import InfoBox from "../components/home/InfoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
 import SmallContestSection from "../components/home/smallContestSection";
@@ -239,9 +239,9 @@ export default function Home() {
     fetchContests();
   }, []);
 
-  const [viewCount, prevViewCount] = useCountUp(10000, 1200);
-  const [userCount, prevUserCount] = useCountUp(10000, 1200);
-  const [recruitCount, prevRecruitCount] = useCountUp(10000, 1200);
+  const [viewCount, prevViewCount] = useCountUp(382, 0);
+  const [userCount, prevUserCount] = useCountUp(16, 0);
+  const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
   
   return (
     <div className="relative overflow-x-hidden lg:max-w-[1920px] lg:mx-auto">
@@ -305,10 +305,10 @@ export default function Home() {
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-52">
-            <h1 className="text-xl lg:text-5xl font-semibold mb-4 text-black text-left">
+            <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-left">
               필요한 일을, 필요한 사람에게
             </h1>
-            <h2 className="text-2xl lg:text-8xl font-bold text-black mb-12 text-left">
+            <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-left">
               지금 바로 SouF!
             </h2>
 
@@ -495,7 +495,7 @@ export default function Home() {
             </div>
             </div>
             </div> */}
-'{/* 공모전 정보 스키마 */}
+{/* 공모전 정보 스키마 */}
       {/* {competitions.map((competition, index) => {
         const schema = {
           "@context": "https://schema.org",
@@ -565,36 +565,34 @@ export default function Home() {
         getImageUrl={getImageUrl}
         getFallbackUrls={getFallbackUrls}
       />
-      
-      <div className="relative pb-40">
       <SmallContestSection 
-        competitions={competitions}
-        imageLoadingStates={imageLoadingStates}
-        getImageUrl={getImageUrl}
-        getFallbackUrls={getFallbackUrls}
-      />
-      </div>
-      {/* 공모전 더보기 버튼 */}
-      <div className="flex justify-center my-8 z-30 mb-80">
-        <button
-          onClick={() => navigate("/contests")}
-          className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl"
-        >
-          공모전 더보기
-        </button>
-      </div>
-      <div className="absolute bottom-0 left-0 w-full pb-40 bg-white/50 backdrop-blur-lg h-80 z-20"></div>
-      <div className="absolute bottom-0 max-w-7xl ">
-      <SmallContestSection 
-        competitions={competitions}
-        imageLoadingStates={imageLoadingStates}
-        getImageUrl={getImageUrl}
-        getFallbackUrls={getFallbackUrls}
+          competitions={competitions}
+          imageLoadingStates={imageLoadingStates}
+          getImageUrl={getImageUrl}
+          getFallbackUrls={getFallbackUrls}
+        />
+      {/* SmallContestSection과 블러 처리 */}
+      <div className="relative pt-20">
+        <SmallContestSection 
+          competitions={competitions}
+          imageLoadingStates={imageLoadingStates}
+          getImageUrl={getImageUrl}
+          getFallbackUrls={getFallbackUrls}
+        />
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-lg z-20"></div>
         
-      />
-      </div> </div>
+        {/* 공모전 더보기 버튼 */}
+        <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
+          <button
+            onClick={() => navigate("/contests")}
+            className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+          >
+            공모전 더보기
+          </button>
+        </div>
       </div>
       </div>
-    
+      </div>
+    </div>
   );
 }
