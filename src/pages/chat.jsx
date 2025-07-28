@@ -8,6 +8,7 @@ import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
 import SouFLogo from "../assets/images/SouFLogo.png";
 import Loading from "../components/loading";
+import SEO from "../components/seo";
 
 
 export default function Chat() {
@@ -93,6 +94,8 @@ export default function Chat() {
     }
 
   return (
+    <>
+    <SEO title="채팅" description="스프 SouF 채팅" subTitle="스프"/>
     <div className="h-[calc(100vh-64px)] px-6">
       <div className="w-screen mx-auto h-full">
         <div className="bg-white rounded-lg shadow-sm h-full">
@@ -285,5 +288,6 @@ export default function Chat() {
         </div>
       </div>
     </div>
+    </>
   );
 }

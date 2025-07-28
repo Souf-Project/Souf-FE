@@ -11,6 +11,8 @@ import ThirdCategory from "../assets/categoryIndex/third_category.json";
 import Pagination from "../components/pagination";
 import StudentFeedList from "./studentFeedList";
 import Loading from "../components/loading";
+import SEO from "../components/seo";
+import { getFirstCategoryNameById, getNowPageByActiveTab } from "../utils/getCategoryById";
 
 export default function Recruit() {
   const location = useLocation();
@@ -27,6 +29,11 @@ export default function Recruit() {
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const pageSize = 12;
+
+// useEffect(() => {
+//   const name = getFirstCategoryNameById(selectedCategory[0]);
+//   document.title = `${name} | 스프`;
+// }, [selectedCategory]);
 
 
 
@@ -59,9 +66,7 @@ export default function Recruit() {
       setLoading(true);
       setError(null);
 
-
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
-      console.log("다시 패치되니?" , firstCategory, secondCategory, thirdCategory);
       const response = await getRecruit({
         firstCategory,
         secondCategory,
@@ -278,6 +283,8 @@ useEffect(() => {
   }
 
   return (
+    <>
+    <SEO  title={getFirstCategoryNameById(selectedCategory[0]) +" - "+ getNowPageByActiveTab(activeTab)} description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 대학생 `} subTitle='스프' />
     <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full ">
             {/* 모바일 탭  */}
       <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
@@ -455,5 +462,6 @@ useEffect(() => {
         )}
       </div>
     </div>
+    </>
   );
 }

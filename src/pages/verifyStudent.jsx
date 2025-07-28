@@ -7,6 +7,7 @@ import AlertModal from "../components/alertModal";
 import VerrifyImg from "../assets/images/verifyImg.svg";
 import { postStudentVerify, postEmailVerify } from "../api/member"; // API 함수 임포트
 import { UserStore } from "../store/userStore";
+import SEO from "../components/seo";
 
 export default function VerifyStudent() {
   const navigate = useNavigate();
@@ -111,6 +112,8 @@ export default function VerifyStudent() {
   };
 
   return (
+    <>
+    <SEO title="대학생 인증" description="스프 SouF 대학생 인증" subTitle="스프"/>
     <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-yellow-main">
       {/* PC 버전 설명 영역 */}
       <div className="hidden lg:block lg:w-1/2 my-auto bg-[#FFE681] flex flex-col px-16 justify-center">
@@ -200,6 +203,6 @@ export default function VerifyStudent() {
           }}
         />
       )}
-    </div>
+    </div></>
   );
 }

@@ -7,6 +7,7 @@ import loginImg from "../assets/images/loginImg.svg";
 import { postLogin } from "../api/member";
 import { useMutation } from "@tanstack/react-query";
 import { UserStore } from "../store/userStore";
+import SEO from "../components/seo";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -51,6 +52,8 @@ export default function Login() {
   });
 
   return (
+    <>
+    <SEO title="로그인" description="스프 SouF 로그인" subTitle="스프"/>
     <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-yellow-main">
       {/* PC 버전 스프 설명 */}
       <div className="hidden lg:block lg:w-1/2 my-auto  bg-[#FFE681] flex flex-col px-16 justify-center">
@@ -84,8 +87,14 @@ export default function Login() {
         </div>
         <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
   <h2 className="text-3xl lg:text-6xl font-bold mb-10 mx-auto">로그인</h2>
-
-  <div className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow">
+     <form
+        
+        onSubmit={(e) => {
+          e.preventDefault();
+           console.log('폼 제출됨');
+          loginMutation.mutate({ email, password })}}
+        className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow"
+      >
           <Input
             title="이메일"
             // isValidateTrigger={isValidateTrigger}
@@ -117,24 +126,25 @@ export default function Login() {
             <div className="mt-10 text-red-essential text-center">아이디 또는 비밀번호가 일치하지 않습니다.</div>
           )}
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
-            <button onClick={() => navigate("/join")}>회원가입</button>
-            <button onClick={() => navigate("/pwdFind")}>
+            <button type="button" onClick={() => navigate("/join")}>회원가입</button>
+            <button type="button" onClick={() => navigate("/pwdFind")}>
               비밀번호 재설정
             </button>
           </div>
           <div className="flex justify-center">
             <button
-              onClick={() => loginMutation.mutate({ email, password })}
+              type="submit"
               className="bg-yellow-main mx-auto w-36 h-12 rounded-xl text-2xl font-bold"
             >
               로그인
             </button>
           </div>
-        </div>
+           </form>
       </div>
       <div className="mt-10  lg:hidden flex justify-center">
             <img src={loginImg} className=" w-1/2" />
           </div>
     </div>
+    </>
   );
 }

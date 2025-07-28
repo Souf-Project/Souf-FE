@@ -23,6 +23,8 @@ import AlertModal from "../components/alertModal";
 import dayjs from "dayjs";
 import useCountUp from "../hooks/useCountUp";
 import AnimatedCount from "../components/AnimatedCount";
+import SEO from "../components/seo";
+
 
 export default function Home() {
   const navigate = useNavigate();
@@ -239,12 +241,15 @@ export default function Home() {
     fetchContests();
   }, []);
 
+
   const [viewCount, prevViewCount] = useCountUp(382, 0);
   const [userCount, prevUserCount] = useCountUp(16, 0);
   const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
-  
+
   return (
-    <div className="relative overflow-x-hidden lg:max-w-[1920px] lg:mx-auto">
+    <>
+    <SEO  title="SouF 스프" description="스프 SouF 대학생 외주 공모전" subTitle='대학생 외주 & 공모전' />
+    <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
       {memberId && (
         <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-4">
@@ -594,5 +599,6 @@ export default function Home() {
       </div>
       </div>
     </div>
+    </>
   );
 }

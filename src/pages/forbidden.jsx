@@ -1,6 +1,9 @@
 import warningIco from '../assets/images/warningIco.svg'
+import SEO from '../components/seo';
 export default function Forbidden() {
     return (
+      <>
+      <SEO title="오류" description="스프 SouF 오류" subTitle="스프"/>
       <div className="w-full flex flex-col items-center justify-center min-h-screen bg-gray-100 text-center px-4">
         <img src={warningIco} alt="warning" className="w-40 h-40 mb-4" />
         <h1 className="text-4xl font-bold text-red-500 mb-4">접근이 거부되었습니다</h1>
@@ -12,6 +15,8 @@ export default function Forbidden() {
           로그인 페이지로 이동
         </a>
       </div>
+      </>
+      
     );
   }
   
