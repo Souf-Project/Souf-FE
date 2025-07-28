@@ -306,7 +306,7 @@ export default function Home() {
       )}
       
   
-        <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-7xl mx-auto">
+        <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-52">
