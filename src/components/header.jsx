@@ -154,7 +154,14 @@ useEffect(() => {
 
 
   const UserTypeLabel = () => {
-    if (roleType === "STUDENT") {
+    if (roleType === "ADMIN") {
+      return (
+        <div className="flex justify-center gap-2">
+          <span className="font-bold">관리자</span>
+          <span className="font-normal ml-1">{nickname}</span>
+        </div>
+      );
+    } else if (roleType === "STUDENT") {
       return (
         <div className="flex justify-center gap-2">
           <span className="font-bold">학생</span>
@@ -173,7 +180,7 @@ useEffect(() => {
 
   // PC 버전 헤더
   const DesktopHeader = () => (
-    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 bg-white border-b border-grey-border">
+    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 glass">
       <div className="flex items-center gap-x-10">
         <div
           className="text-4xl font-bold text-black cursor-pointer"
@@ -250,19 +257,52 @@ useEffect(() => {
               </button>
 
               {showUserMenu && (
-                <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-200">
+                <div className="fixed right-10 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[99999] border border-gray-200">
                   <button
                     className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
                     onClick={() => handleNavigation("/mypage")}
                   >
                     마이페이지
                   </button>
-                  <button
-                    className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
-                    onClick={() => handleNavigation(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")}
-                  >
-                    {roleType === "MEMBER" ? "공고문 작성하기" : "피드 작성하기"}
-                  </button>
+                  
+                  {/* ADMIN인 경우 두 버튼 모두 표시 */}
+                  {roleType === "ADMIN" && (
+                    <>
+                      <button
+                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                        onClick={() => handleNavigation("/recruitUpload")}
+                      >
+                        공고문 작성하기
+                      </button>
+                      <button
+                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                        onClick={() => handleNavigation("/postUpload")}
+                      >
+                        피드 작성하기
+                      </button>
+                    </>
+                  )}
+                  
+                  {/* MEMBER인 경우 공고문 작성 버튼만 표시 */}
+                  {roleType === "MEMBER" && (
+                    <button
+                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                      onClick={() => handleNavigation("/recruitUpload")}
+                    >
+                      공고문 작성하기
+                    </button>
+                  )}
+                  
+                  {/* STUDENT인 경우 피드 작성 버튼만 표시 */}
+                  {roleType === "STUDENT" && (
+                    <button
+                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                      onClick={() => handleNavigation("/postUpload")}
+                    >
+                      피드 작성하기
+                    </button>
+                  )}
+                  
                   <button
                     className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
                     onClick={toggleLogin}
@@ -284,14 +324,14 @@ useEffect(() => {
             </button>
             <div className="flex items-center text-xl font-semibold">
               <button
-                className="bg-white w-20"
+                className="w-20"
                 onClick={() => handleNavigation("/login")}
               >
                 로그인
               </button>
               <span className="mx-2 font-thin">|</span>
               <button
-                className="bg-white w-20"
+                className="w-20"
                 onClick={() => handleNavigation("/join")}
               >
                 회원가입

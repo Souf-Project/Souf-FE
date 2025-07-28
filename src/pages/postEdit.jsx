@@ -89,7 +89,7 @@ export default function PostEdit() {
     });
   };
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (updateData) => {
       return updateFeed(worksData.feedId, updateData);
     },
@@ -273,11 +273,29 @@ export default function PostEdit() {
           onDeleteExistingImage={handleExistingImageDelete}
         />
 
-        <div className="flex flex-row px-52 gap-6">
-          <Button btnText="수정 완료" onClick={handleSubmit} />
+        <div className="flex gap-4 items-center justify-center">
           <button
-            className="w-full h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold border"
+            onClick={handleSubmit}
+            disabled={isPending}
+            className={`px-6 py-3 rounded-lg font-bold transition-colors duration-200 ${
+              isPending
+                ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                : 'bg-yellow-main text-black hover:bg-yellow-600'
+            }`}
+          >
+            {isPending ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                수정 중...
+              </div>
+            ) : (
+              '수정 완료'
+            )}
+          </button>
+          <button
+            type="button"
             onClick={() => navigate(-1)}
+            className="px-6 py-3 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 transition-colors duration-200"
           >
             취소
           </button>
