@@ -2,7 +2,7 @@ import React from "react";
 
 export default function AnimatedCount({ value, prevValue }) {
   return (
-    <span className="relative inline-block w-[90px] h-[60px] overflow-hidden align-middle">
+    <span className="relative inline-block w-40 h-10 overflow-hidden align-middle">
       <span
         key={prevValue}
         className="absolute left-0 top-0 w-full h-full flex items-center justify-center text-inherit animate-countup-out"
