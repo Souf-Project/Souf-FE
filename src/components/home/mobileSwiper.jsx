@@ -19,7 +19,7 @@ export default function MobileSwiper() {
   const pageable = { page: 0, size: 12, sort: ["createdAt,desc"] };
 
   const { data, isLoading } = usePopularRecruit(pageable);
-  console.log(data)
+  // console.log(data)
   useEffect(() => {
     setRecruitData(data?.result || []);
   }, [data]);
