@@ -237,7 +237,7 @@ export default function Home() {
 
   return (
     <>
-    <SEO  title="SouF 스프" description="스프 검색" subTitle='대학생 외주 & 공모전' />
+    <SEO  title="SouF 스프" description="스프 SouF 대학생 외주 공모전" subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
       {/* 플로팅 액션 버튼 */}
       {memberId && (

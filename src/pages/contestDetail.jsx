@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getContests } from '../api/contest';
 
 import fullIcon from '../assets/images/fullIcon.svg';
+import SEO from '../components/seo';
 
 
 export default function ContestDetail() {
@@ -192,6 +193,12 @@ export default function ContestDetail() {
         ];
     };
 
+    /*
+    useEffect(() => {
+      //const name = getFirstCategoryNameById(selectedCategory[0]);
+      document.title = `${contest?.제목} | 스프`;
+    }, [contest]);
+    */
 
     if (!contest) {
         return (
@@ -211,6 +218,8 @@ export default function ContestDetail() {
     }
 
     return (
+        <>
+        <SEO  title={contest.제목} description={`스프 SouF - ${contest.제목} 공모전`} subTitle='스프' />
         <div className="max-w-4xl mx-auto px-6 py-16">
             {/* 뒤로가기 버튼 */}
             <button
@@ -465,5 +474,6 @@ export default function ContestDetail() {
                 </div>
             )}
         </div>
+        </>
     );
 } 
