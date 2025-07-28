@@ -306,14 +306,14 @@ export default function Home() {
       )}
       
   
-        <div className="relative flex justify-between items-start pt-20 px-8 lg:pl-12 gap-8">
+        <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-7xl mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-52">
-            <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-left">
+            <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
               필요한 일을, 필요한 사람에게
             </h1>
-            <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-left">
+            <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-center lg:text-left">
               지금 바로 SouF!
             </h2>
 
