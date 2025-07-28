@@ -242,8 +242,8 @@ export default function Home() {
   }, []);
 
 
-  const [viewCount, prevViewCount] = useCountUp(382, 0);
-  const [userCount, prevUserCount] = useCountUp(16, 0);
+  const [viewCount, prevViewCount] = useCountUp(1082, 0);
+  const [userCount, prevUserCount] = useCountUp(316, 0);
   const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
 
   return (
