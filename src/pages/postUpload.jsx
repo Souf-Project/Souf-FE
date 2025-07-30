@@ -136,7 +136,9 @@ export default function PostUpload() {
 
         // 2. 비디오 업로드
         if (videoFiles.length > 0 && videoDto) {
+
           for (let uploadCount = 1; uploadCount <= chunkCount; uploadCount++) {
+
             const start = (uploadCount - 1) * chunkSize;
             const end = uploadCount * chunkSize;
             const fileBlob =
@@ -144,35 +146,47 @@ export default function PostUpload() {
                 ? videoFiles[0].slice(start, end)
                 : videoFiles[0].slice(start);
 
-            const signedUrlRes = await postVideoSignedUrl({
-              uploadId: videoDto.uploadId,
-              partNumber: uploadCount,
-              fileName: videoDto.fileName,
-            });
+            try {
+              const signedUrlRes = await postVideoSignedUrl({
+                uploadId: videoDto.uploadId,
+                partNumber: uploadCount,
+                fileName: videoDto.fileName,
+              });
 
-            const presignedUrl = signedUrlRes?.result?.presignedUrl;
-            const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
+              const presignedUrl = signedUrlRes?.result?.presignedUrl;
+              const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
+              const etag = uploadChunk.headers.get("ETag")?.replaceAll("\\", "");
+              multiUploadArray.push({
+                awsETag: etag,
+                partNumber: uploadCount,
+              });
 
-            const etag = uploadChunk.headers.get("ETag")?.replaceAll("\\", "");
-            
-            multiUploadArray.push({
-              awsETag: etag,
-              partNumber: uploadCount,
-            });
-
-            // 마지막 part만 URL 저장
-            if (uploadCount === chunkCount) {
-              getSignedUrlRes = signedUrlRes;
+              // 마지막 part만 URL 저장
+              if (uploadCount === chunkCount) {
+                getSignedUrlRes = signedUrlRes;
+                console.log("🏁 모든 청크 업로드 완료");
+              }
+            } catch (chunkError) {
+              console.error(`❌ 청크 ${uploadCount} 업로드 실패:`, chunkError);
+              throw chunkError;
             }
           }
 
-            videoUploadResponse = await postVideoUpload({
-              uploadId: videoDto.uploadId,
-              fileUrl: videoDto.fileName,
-              parts: multiUploadArray,
-              type:"feed"
-            });
-            console.log("videoUploadResponse", videoUploadResponse);
+         
+            
+            try {
+              videoUploadResponse = await postVideoUpload({
+                uploadId: videoDto.uploadId,
+                fileUrl: videoDto.fileName,
+                parts: multiUploadArray,
+                type: "feed"
+              });
+              console.log("✅ 동영상 업로드 완료 응답:", videoUploadResponse);
+            } catch (videoError) {
+              console.error("❌ 동영상 업로드 완료 요청 실패:", videoError);
+             
+              throw videoError;
+            }
 
         }
 
