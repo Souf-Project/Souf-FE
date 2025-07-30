@@ -352,7 +352,7 @@ export default function Home() {
 {/* 인기 공고문  */}
       <div className="relative mt-16 px-">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
+        <h2 className="text-2xl text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -436,7 +436,34 @@ export default function Home() {
             </span>
             <span className="ml-2">더보기</span>
           </h2>
-            <div className="flex flex-nowrap justify-between w-full lg:px-24 mt-20">
+          <div className="block lg:hidden grid grid-cols-2 gap-4 w-full lg:px-24 mt-20">
+              {categories.map((category, index) => {
+                const categoryImages = [
+                  cate1Img,
+                  cate2Img,
+                  cate3Img,
+                  cate4Img,
+                  cate5Img,
+                ];
+                return (
+                  <button
+                    key={category}
+                    onClick={() => handleCategoryClick(index + 1)}
+                    className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 px-1 sm:px-2 py-4 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                  >
+                    <img
+                      src={categoryImages[index]}
+                      alt={category}
+                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
+                    />
+                    <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
+                      {category}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="hidden lg:flex flex-nowrap justify-between w-full lg:px-24 mt-20">
               {categories.map((category, index) => {
                 const categoryImages = [
                   cate1Img,

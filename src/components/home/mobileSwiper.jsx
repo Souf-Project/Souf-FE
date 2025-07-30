@@ -104,12 +104,12 @@ export default function MobileSwiper() {
               <div className="h-64 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 카드 내용 */}
                 <div className="px-6 pt-6 pb-3">
-                  <h3 className="text-2xl font-bold text-gray-800 line-clamp-2">
+                  <h3 className="text-xl lg:text-2xl font-bold text-gray-800 line-clamp-2">
                     {recruit.title}
                   </h3>
                 </div>
                 <div className="px-6 pb-4">
-                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-md font-semibold rounded-full">
+                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-sm lg:text-md font-semibold rounded-full">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
