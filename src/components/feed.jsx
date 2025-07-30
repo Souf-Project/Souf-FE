@@ -110,7 +110,10 @@ export default function Feed({ feedData, onFeedClick }) {
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
       <div className="flex justify-between items-start mb-4">
-        <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
+        <h2 
+          className="text-base lg:text-xl font-semibold leading-snug text-black cursor-pointer hover:text-yellow-point transition-colors"
+          onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
+        >
           {feedData?.topic || "제목 없음"}
         </h2>
         <p className="text-xs lg:text-sm text-gray-500">
@@ -132,7 +135,10 @@ export default function Feed({ feedData, onFeedClick }) {
         <UpdateOption id={feedData.memberId} memberId={memberId}
           worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       </div>
-      <div className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative">
+      <div 
+        className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative cursor-pointer"
+        onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
+      >
         {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
           <>
             <Swiper
