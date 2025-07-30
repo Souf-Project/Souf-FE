@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Img1 from "../../assets/images/mainPopup/main1.png";
 import Img2 from "../../assets/images/mainPopup/main2.png";
 import Img3 from "../../assets/images/mainPopup/main3.png";
 import Img4 from "../../assets/images/mainPopup/main4.png";
 import Img5 from "../../assets/images/mainPopup/main5.png";
 import popupArrow from "../../assets/images/backArrow.svg";
+import { UserStore } from "../../store/userStore";
+import AlertModal from "../alertModal";
 
 export default function InfoBox() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const navigate = useNavigate();
+  const { memberId, roleType } = UserStore();
 
   const images = [Img1, Img2, Img3, Img4, Img5];
 
@@ -17,6 +24,31 @@ export default function InfoBox() {
 
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleStudentSignup = () => {
+    if (memberId) {
+      if (roleType === "STUDENT") {
+        setModalMessage("이미 대학생 회원으로 가입되어 있습니다.");
+        setShowModal(true);
+      } else {
+        navigate("/verifyStudent");
+      }
+    }
+  };
+
+  const handleRecruitUpload = () => {
+    if (memberId) {
+      if (roleType === "MEMBER" || roleType === "ADMIN") {
+        navigate("/recruitUpload");
+      } else {
+        setModalMessage(`기업 회원만 공고문을 업로드할 수 있습니다. \n기업 회원가입을 진행해주세요.`);
+        setShowModal(true);
+      }
+    } else {
+      setModalMessage("로그인이 필요합니다.");
+      setShowModal(true);
+    }
   };
 
   return (
@@ -58,6 +90,23 @@ export default function InfoBox() {
                 alt={`Main ${index + 1}`} 
                 className="w-full h-full object-cover rounded-lg"
               />
+             
+                              {index === 1 && (
+                  <div className="absolute inset-0 flex justify-center items-end pb-20 gap-4 z-50">
+                    <button 
+                      onClick={handleStudentSignup}
+                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-xl font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      대학생 회원가입하러 가기!
+                    </button>
+                    <button 
+                      onClick={handleRecruitUpload}
+                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-xl font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
+                    >
+                      외주 공고문 업로드하러 가기!
+                    </button>
+                  </div>
+                )}
             </div>
           );
         })}
@@ -92,6 +141,15 @@ export default function InfoBox() {
           />
         ))}
       </div>
+      
+      {showModal && (
+        <AlertModal
+          type="simple"
+          title={modalMessage}
+          TrueBtnText="확인"
+          onClickTrue={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 } 
