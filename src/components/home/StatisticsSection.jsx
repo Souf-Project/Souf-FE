@@ -4,7 +4,7 @@ import AnimatedCount from "../AnimatedCount";
 
 export default function StatisticsSection({ viewCount, prevViewCount, userCount, prevUserCount, recruitCount, prevRecruitCount }) {
   return (
-    <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 justify-around items-center w-full bg-[#FFFBE5] py-8 lg:h-52 mt-20 shadow-md px-4 lg:px-0">
+    <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 justify-around items-center w-full bg-[#FFFBE5] py-8 lg:h-64 mt-20 shadow-md px-4 lg:px-0">
       <div className="flex flex-col justify-center gap-2 text-center lg:text-left">
         <div className="text-2xl sm:text-5xl lg:text-6xl font-bold">{dayjs().format('YYYY.MM.DD')}</div>
         <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 ml-auto items-center">

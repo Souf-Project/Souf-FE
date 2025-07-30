@@ -24,6 +24,7 @@ import dayjs from "dayjs";
 import useCountUp from "../hooks/useCountUp";
 import AnimatedCount from "../components/AnimatedCount";
 import SEO from "../components/seo";
+import Loading from "../components/loading";
 
 
 export default function Home() {
@@ -138,10 +139,7 @@ export default function Home() {
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-  
-  // console.log("🔍 home.jsx에서 feedData:", feedData);
-  // console.log("🔍 home.jsx에서 feedLoading:", feedLoading);
-  
+
   // 현재 페이지에 해당하는 피드 데이터 계산
   const getCurrentFeedData = () => {
     // console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
@@ -242,8 +240,8 @@ export default function Home() {
   }, []);
 
 
-  const [viewCount, prevViewCount] = useCountUp(1082, 0);
-  const [userCount, prevUserCount] = useCountUp(316, 0);
+  const [viewCount, prevViewCount] = useCountUp(735, 0);
+  const [userCount, prevUserCount] = useCountUp(317, 0);
   const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
 
   return (
@@ -376,10 +374,10 @@ export default function Home() {
             <span className="ml-2">구경하러 가기</span>
           </h2>
           {feedLoading ? (
-            <div className="text-center py-8">로딩중...</div>
+            <Loading />
           ) : (
             <>
-              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
+              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
                 {getCurrentFeedData().map((profile, index) => (
                   <PopularFeed
                     key={`${profile.feedId}-${currentFeedPage}-${index}`}
@@ -564,38 +562,44 @@ export default function Home() {
        
       </div>
       <div className="flex flex-col gap-4">
-      <ContestSection 
-        competitions={competitions}
-        imageLoadingStates={imageLoadingStates}
-        getImageUrl={getImageUrl}
-        getFallbackUrls={getFallbackUrls}
-      />
-      <SmallContestSection 
-          competitions={competitions}
-          imageLoadingStates={imageLoadingStates}
-          getImageUrl={getImageUrl}
-          getFallbackUrls={getFallbackUrls}
-        />
-      {/* SmallContestSection과 블러 처리 */}
-      <div className="relative pt-20">
-        <SmallContestSection 
-          competitions={competitions}
-          imageLoadingStates={imageLoadingStates}
-          getImageUrl={getImageUrl}
-          getFallbackUrls={getFallbackUrls}
-        />
-        <div className="absolute inset-0 bg-white/50 backdrop-blur-lg z-20"></div>
-        
-        {/* 공모전 더보기 버튼 */}
-        <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
-          <button
-            onClick={() => navigate("/contests")}
-            className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl"
-          >
-            공모전 더보기
-          </button>
-        </div>
-      </div>
+        {competitions.length === 0 ? (
+          <Loading text="공모전 정보를 불러오는 중..." />
+        ) : (
+          <>
+            <ContestSection 
+              competitions={competitions}
+              imageLoadingStates={imageLoadingStates}
+              getImageUrl={getImageUrl}
+              getFallbackUrls={getFallbackUrls}
+            />
+            <SmallContestSection 
+                competitions={competitions}
+                imageLoadingStates={imageLoadingStates}
+                getImageUrl={getImageUrl}
+                getFallbackUrls={getFallbackUrls}
+              />
+            {/* SmallContestSection과 블러 처리 */}
+            <div className="relative pt-20">
+              <SmallContestSection 
+                competitions={competitions}
+                imageLoadingStates={imageLoadingStates}
+                getImageUrl={getImageUrl}
+                getFallbackUrls={getFallbackUrls}
+              />
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-lg z-20"></div>
+              
+              {/* 공모전 더보기 버튼 */}
+              <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
+                <button
+                  onClick={() => navigate("/contests")}
+                  className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                >
+                  공모전 더보기
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
       </div>
     </div>
