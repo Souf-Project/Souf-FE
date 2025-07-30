@@ -13,7 +13,7 @@ import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import MobileSwiper from "../components/home/mobileSwiper";
-import InfoBox from "../components/home/InfoBox";
+import InfoBox from "../components/home/infoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
 import SmallContestSection from "../components/home/smallContestSection";
