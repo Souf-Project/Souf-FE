@@ -35,6 +35,21 @@ export default function Chat() {
     return hasImageExtension || (isHttpUrl && hasImageKeyword);
   };
 
+  // 동영상 URL인지 확인하는 함수
+  const isVideoMessage = (message) => {
+    if (!message) return false;
+    
+    // 동영상 파일 확장자 확인
+    const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm'];
+    const hasVideoExtension = videoExtensions.some(ext => message.toLowerCase().includes(ext));
+    
+    // HTTP URL이면서 동영상 관련 키워드 확인
+    const isHttpUrl = message.startsWith('http://') || message.startsWith('https://');
+    const hasVideoKeyword = message.includes('video') || message.includes('mp4');
+    
+    return hasVideoExtension || (isHttpUrl && hasVideoKeyword);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Search query:", searchQuery);
@@ -54,8 +69,6 @@ export default function Chat() {
     queryKey: ["chatList"],
     queryFn: async () => {
       const data = await getChat();
-      
-      console.log("채팅 조회:", data);
       setChatList(data);
       return data;
     },
@@ -144,7 +157,9 @@ export default function Chat() {
                       </div>
                       <div className="flex justify-between items-center">
                         <p className="text-gray-600 truncate">
-                          {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : chat.lastMessage}
+                          {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : 
+                           isVideoMessage(chat.lastMessage) ? "동영상을 보냈습니다" : 
+                           chat.lastMessage}
                         </p>
                         {chat.unreadCount > 0 && (
                           <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
@@ -223,7 +238,9 @@ export default function Chat() {
                         </div>
                         <div className="flex justify-between items-center">
                           <p className="text-gray-600 truncate text-sm">
-                            {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : chat.lastMessage}
+                            {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : 
+                             isVideoMessage(chat.lastMessage) ? "동영상을 보냈습니다" : 
+                             chat.lastMessage}
                           </p>
                           {chat.unreadCount > 0 && (
                             <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full ml-2">
