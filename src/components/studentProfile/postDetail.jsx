@@ -40,6 +40,17 @@ export default function PostDetail() {
     queryKey: ["feedDetail"],
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
+      
+      console.log("피드 디테일응답:", data.result);
+
+      data.result.mediaResDtos?.forEach((media, index) => {
+        console.log(`미디어 ${index + 1}:`, {
+          fileUrl: media.fileUrl,
+          fileName: media.fileName,
+          fileType: media.fileType,
+          isVideo: media.fileType?.toLowerCase() === "mp4" || media.fileUrl?.toLowerCase().endsWith(".mp4")
+        });
+      });
     
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);

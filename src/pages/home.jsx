@@ -309,7 +309,7 @@ export default function Home() {
         <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-52">
+          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 ml-20">
             <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
               필요한 일을, 필요한 사람에게
             </h1>
@@ -366,7 +366,7 @@ export default function Home() {
       </div>
 
       {/* 인기 피드 섹션 */}
-      <div className="relative px-6 lg:px-24 ">
+      <div className="relative px-6 lg:px-24">
         <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
           <h2 className="text-2xl lg:text-3xl font-bold mb-8">
             <span className="relative inline-block">
@@ -451,7 +451,7 @@ export default function Home() {
                   <button
                     key={category}
                     onClick={() => handleCategoryClick(index + 1)}
-                    className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl"
+                                         className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
                   >
                     <img
                       src={categoryImages[index]}

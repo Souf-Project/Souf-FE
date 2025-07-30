@@ -23,12 +23,13 @@ export const postVideoSignedUrl = async ({ uploadId , partNumber , fileName}) =>
   }
 };
 
-export const postVideoUpload = async ({ uploadId , fileName, parts}) => {
+export const postVideoUpload = async ({ uploadId , fileUrl, parts, type}) => {
   try {
     const response = await client.post("/api/v1/upload/complete-video-upload", {
       uploadId: uploadId,
-      fileName: fileName,
-      parts : parts
+      fileUrl: fileUrl,
+      parts : parts,
+      type:type
     });
     return response.data;
   } catch (error) {
