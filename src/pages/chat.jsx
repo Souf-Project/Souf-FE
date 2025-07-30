@@ -40,6 +40,12 @@ export default function Chat() {
     console.log("Search query:", searchQuery);
   };
 
+  // 검색어에 따라 채팅 목록 필터링
+  const filteredChatList = chatList?.filter((chat) => {
+    if (!searchQuery.trim()) return true;
+    return chat.opponentNickname?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
     const {
     data: chatData,
     isLoading,
@@ -114,7 +120,7 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
 
-                {chatList?.map((chat,i) => (
+                {filteredChatList?.map((chat,i) => (
                   <div
                   key={i} 
                   className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
@@ -193,7 +199,7 @@ export default function Chat() {
                   />
                 </div>
                 <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(100vh-64px-120px)]">
-                  {chatList?.map((chat,i) => (
+                  {filteredChatList?.map((chat,i) => (
                     <div
                     key={i} 
                     className={`flex flex-row justify-start items-center pl-4 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""

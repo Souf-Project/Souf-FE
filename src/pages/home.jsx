@@ -24,6 +24,7 @@ import dayjs from "dayjs";
 import useCountUp from "../hooks/useCountUp";
 import AnimatedCount from "../components/AnimatedCount";
 import SEO from "../components/seo";
+import Loading from "../components/loading";
 
 
 export default function Home() {
@@ -138,10 +139,7 @@ export default function Home() {
 
   const { data: recruitData } = usePopularRecruit(pageable);
   const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-  
-  // console.log("🔍 home.jsx에서 feedData:", feedData);
-  // console.log("🔍 home.jsx에서 feedLoading:", feedLoading);
-  
+
   // 현재 페이지에 해당하는 피드 데이터 계산
   const getCurrentFeedData = () => {
     // console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
@@ -376,7 +374,7 @@ export default function Home() {
             <span className="ml-2">구경하러 가기</span>
           </h2>
           {feedLoading ? (
-            <div className="text-center py-8">로딩중...</div>
+            <Loading />
           ) : (
             <>
               <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
