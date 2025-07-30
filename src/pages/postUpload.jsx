@@ -93,8 +93,7 @@ export default function PostUpload() {
         originalFileNames: selectedFiles.map((file) => file.name),
         fileTypes: selectedFiles.map((file) => file.type),
       };
-      
-      console.log("📤 postFeed API에 전송할 데이터:", finalData);
+    
       if (!formData.topic.trim()) {
         alert("제목을 입력해주세요.");
         return;
@@ -164,10 +163,10 @@ export default function PostUpload() {
               // 마지막 part만 URL 저장
               if (uploadCount === chunkCount) {
                 getSignedUrlRes = signedUrlRes;
-                console.log("🏁 모든 청크 업로드 완료");
+               
               }
             } catch (chunkError) {
-              console.error(`❌ 청크 ${uploadCount} 업로드 실패:`, chunkError);
+              console.error(`청크 ${uploadCount} 업로드 실패:`, chunkError);
               throw chunkError;
             }
           }
@@ -181,9 +180,9 @@ export default function PostUpload() {
                 parts: multiUploadArray,
                 type: "feed"
               });
-              console.log("✅ 동영상 업로드 완료 응답:", videoUploadResponse);
+             
             } catch (videoError) {
-              console.error("❌ 동영상 업로드 완료 요청 실패:", videoError);
+              console.error("동영상 업로드 완료 요청 실패:", videoError);
              
               throw videoError;
             }
@@ -204,29 +203,49 @@ export default function PostUpload() {
         
         }
 
-        if (videoFiles.length > 0 && videoUploadResponse?.result?.fileUrl) {
-          fileUrls.push(videoUploadResponse.result.fileUrl);
-          fileNames.push(videoFiles[0].name);
-          fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
-
+        if (videoFiles.length > 0) {
+        
+          if (videoUploadResponse?.result?.fileName) {
+          
+            fileUrls.push(videoUploadResponse.result.fileName); // fileUrl에는 fileName
+            fileNames.push(videoFiles[0].name); // fileName에는 originalFileNames
+            fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
+          } else {
+            console.log("동영상 업로드 실패");
+          }
         }
 
         // 4. 통합 올림 서버에
         if (fileUrls.length > 0) {
-          await postMedia({
-            feedId,
-            fileUrl: fileUrls,
-            fileName: fileNames,
-            fileType: fileTypes,
-          });
+        
+          try {
+            const mediaResponse = await postMedia({
+              feedId,
+              fileUrl: fileUrls,
+              fileName: fileNames,
+              fileType: fileTypes,
+            });
+          
+          } catch (mediaError) {
+            console.error("미디어 서버 업로드 실패:", mediaError);
+            console.error("미디어 업로드 에러 상세:", {
+              message: mediaError.message,
+              response: mediaError.response,
+              status: mediaError.response?.status,
+              data: mediaError.response?.data
+            });
+            throw mediaError;
+          }
+        } else {
+          console.log("업로드할 파일이 없음");
         }
 
         // feedId를 저장하고 모달 표시
         setUploadedFeedId(feedId);
         setIsModal(true);
       } catch (error) {
-        console.error("❌ 파일 업로드 또는 미디어 등록 중 에러:", error);
-        console.error("❌ 에러 상세 정보:", {
+        console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
+        console.error("에러 상세 정보:", {
           message: error.message,
           stack: error.stack,
           response: error.response
