@@ -377,7 +377,7 @@ export default function Home() {
             <Loading />
           ) : (
             <>
-              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
+              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
                 {getCurrentFeedData().map((profile, index) => (
                   <PopularFeed
                     key={`${profile.feedId}-${currentFeedPage}-${index}`}

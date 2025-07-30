@@ -22,9 +22,9 @@ const PopularFeed = ({ url, context, username, feedId, memberId: profileMemberId
     <>
       <div
         onClick={handleClick}
-        className="cursor-pointer w-full max-w-[180px] sm:max-w-[200px] md:max-w-[220px] lg:max-w-[300px] flex flex-col items-center"
+        className="cursor-pointer w-full max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-lg xl:max-w-[380px] 2xl:max-w-[600px] flex flex-col items-center"
       >
-        <div className="w-full aspect-[3/4] rounded-md overflow-hidden">
+        <div className="w-full aspect-[1/1] rounded-md overflow-hidden">
           <img
             src={`${BUCKET_URL}${url}`}
             alt={`${username} 이미지`}
