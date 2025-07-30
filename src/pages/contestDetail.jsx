@@ -240,7 +240,18 @@ export default function ContestDetail() {
 
     return (
         <>
-        <SEO  title={contest.제목} description={`스프 SouF - ${contest.제목} 공모전`} subTitle='스프' />
+        <SEO  title={contest.제목} description={`스프 SouF - ${contest.제목} 공모전`} subTitle='스프' 
+        content={`
+            제목: ${contest.제목}
+            주최: ${contest.주최}
+            참여대상: ${contest.참여대상}
+            시상규모: ${contest.시상규모}
+            접수기간: ${contest.접수기간.시작일} ~ ${contest.접수기간.마감일}
+            활동혜택: ${contest.활동혜택}
+            기업형태: ${contest.기업형태}
+            공모분야: ${contest.공모분야?.join(", ") || "없음"}
+            상세내용: ${contest.상세내용.replace(/<[^>]+>/g, "")}
+        `}/>
         <div className="max-w-4xl mx-auto px-6 py-16">
             {/* 뒤로가기 버튼 */}
             <button
