@@ -32,16 +32,17 @@ export default function Header() {
   const categoryFromQuery = query.get("category");
 
   useEffect(() => {
-    const loginStatus = localStorage.getItem("isLogin");
-    if (loginStatus === "true") {
+    // userStore의 memberId가 있으면 로그인 상태로 간주
+    if (memberId) {
       setIsLogin(true);
-
-      const type = localStorage.getItem("userType") || "student";
-      const name = localStorage.getItem("userName") || "";
-      setUserType(type);
-      setUserName(name);
+      setUserType(roleType || "student");
+      setUserName(nickname || "");
+    } else {
+      setIsLogin(false);
+      setUserType("");
+      setUserName("");
     }
-  }, []);
+  }, [memberId, roleType, nickname]);
 
   useEffect(() => {
     // /recruit 경로 & 카테고리 쿼리 파라미터가 있는 경우만
