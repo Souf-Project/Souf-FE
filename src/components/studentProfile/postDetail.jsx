@@ -277,7 +277,7 @@ const handleDeleteClick = () => {
             
             
           <div className="flex flex-col justify-end items-start mb-4 h-[80%]">
-            <div>
+            <div className="w-full">
               <div className="flex justify-between items-center text-xl font-semibold leading-snug text-black py-3 ">
               {worksData.topic}
               </div>
