@@ -172,8 +172,6 @@ export default function PostUpload() {
               parts: multiUploadArray,
               type:"feed"
             });
-            console.log("videoUploadResponse", videoUploadResponse);
-
         }
 
         // 3. 최종 file 정보 구성
@@ -190,11 +188,11 @@ export default function PostUpload() {
         
         }
 
-        if (videoFiles.length > 0 && videoUploadResponse?.result?.fileUrl) {
-          fileUrls.push(videoUploadResponse.result.fileUrl);
+        if (videoFiles.length > 0 && videoUploadResponse?.result) {
+          // videoUploadResponse.result가 문자열이므로 videoDto.fileName을 사용
+          fileUrls.push(videoDto.fileName);
           fileNames.push(videoFiles[0].name);
           fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
-
         }
 
         // 4. 통합 올림 서버에
