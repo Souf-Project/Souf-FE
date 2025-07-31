@@ -276,19 +276,22 @@ const handleDeleteClick = () => {
         </div>
             
             
-          <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
-              <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3 ">
-            {worksData.topic}
-            </div>
+          <div className="flex flex-col justify-end items-start mb-4 h-[80%]">
+            <div>
+              <div className="flex justify-between items-center text-xl font-semibold leading-snug text-black py-3 ">
+              {worksData.topic}
+              </div>
               <div className="flex flex-col justify-between text-sm text-gray-600 h-full w-full border-t border-gray-300 pt-6">
-              <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
+                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
                 {worksData.content}
-              </p>
+                </p>
               </div>
             </div>
-            <div className="absolute bottom-4 left-6">
-              <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
+            <div className="ml-auto mt-4">
+              <p className="">{getFormattedDate(worksData.lastModifiedTime)}</p>
             </div>
+            </div>
+           
           </div>
         </div>
       </div>
