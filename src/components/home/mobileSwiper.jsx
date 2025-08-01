@@ -88,12 +88,12 @@ export default function MobileSwiper() {
       <Swiper
         slidesPerView={2}
         spaceBetween={0}
-        loop={true}
+        loop={recruitData.length > 2}
         speed={700}
-        autoplay={{
+        autoplay={recruitData.length > 2 ? {
           delay:4000,
           disableOnInteraction: false,
-        }}
+        } : false}
         modules={[Autoplay]}
       >
         {recruitData.map((recruit) => (
