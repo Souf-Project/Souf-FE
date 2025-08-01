@@ -240,9 +240,9 @@ export default function Home() {
   }, []);
 
 
-  const [viewCount, prevViewCount] = useCountUp(735, 0);
-  const [userCount, prevUserCount] = useCountUp(317, 0);
-  const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
+  const viewCount = useCountUp(735, 2000);
+  const userCount = useCountUp(317, 2000);
+  const recruitCount = useCountUp(4, 2000);
 
   return (
     <>
@@ -307,7 +307,7 @@ export default function Home() {
         <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 ml-20">
+          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
             <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
               필요한 일을, 필요한 사람에게
             </h1>
@@ -342,11 +342,8 @@ export default function Home() {
         </div>
         <StatisticsSection 
           viewCount={viewCount}
-          prevViewCount={prevViewCount}
           userCount={userCount}
-          prevUserCount={prevUserCount}
           recruitCount={recruitCount}
-          prevRecruitCount={prevRecruitCount}
         />
 
 {/* 인기 공고문  */}
