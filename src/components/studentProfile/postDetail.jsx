@@ -14,6 +14,7 @@ import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
 import Loading from "../loading";
+import SEO from "../seo";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -120,6 +121,9 @@ const handleDeleteClick = () => {
   }
 
   return (
+    <>
+    <SEO  title={worksData.topic} description={`스프 SouF - ${worksData.topic} 피드`} subTitle='스프'
+    content={worksData.content} />
     <div className="flex flex-col py-16 px-4 max-w-4xl w-full mx-auto">
       <div className="flex justify-between">
       <button
@@ -331,5 +335,6 @@ const handleDeleteClick = () => {
         />
       )}
     </div>
+  </>
   );
 }
