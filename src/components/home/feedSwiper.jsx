@@ -4,10 +4,18 @@ import { useNavigate } from "react-router-dom";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import firstCategoryData from "../../assets/categoryIndex/first_category.json";
-
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
+
+// Swiper 기본 navigation 스타일 오버라이드
+const swiperStyles = `
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none !important;
+  }
+`;
 
 export default function FeedSwiper() {
   const [feedData, setFeedData] = useState([]);
@@ -60,7 +68,23 @@ export default function FeedSwiper() {
   }
 
   return (
-    <div className="relative w-screen mt-4 lg:px-24">
+    <>
+      <style>{swiperStyles}</style>
+      <div className="relative w-screen lg:px-24 mx-auto mt-4">
+            {/* 이전 버튼 */}
+      <button className="custom-prev absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+        <svg className="w-12 h-12 text-yellow-point" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
+      {/* 다음 버튼 */}
+      <button className="custom-next absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+        <svg className="w-12 h-12 text-yellow-point" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
       <Swiper
         slidesPerView={2}
         spaceBetween={10}
@@ -83,20 +107,24 @@ export default function FeedSwiper() {
           1024: {
             slidesPerView: 4,
             spaceBetween: 0,
-            loop: feedData.length > 4,
+            loop: feedData.length > 3,
             autoplay: feedData.length > 4 ? {
               delay: 4000,
               disableOnInteraction: false,
             } : false,
           },
         }}
-        modules={[Autoplay]}
+        navigation={{
+          nextEl: '.custom-next',
+          prevEl: '.custom-prev',
+        }}
+        modules={[Autoplay, Navigation]}
       >
        
         {feedData.map((feed) => (
           <SwiperSlide key={feed.feedId} className="box-border min-w-0 px-4">
                           <div
-                className="w-full lg:w-72 box-border h-[400px] sm:h-[440px] lg:h-[500px] mb-2 px-2 lg:px-4 lg:px-6 cursor-pointer"
+                className="w-full lg:w-80 box-border h-[400px] sm:h-[440px] lg:h-[500px] mb-2 px-2 lg:px-4 lg:px-6 cursor-pointer mx-auto"
                 onClick={() => handleClick(feed?.feedId, feed?.memberId)}>
                 <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 피드 이미지 */}
@@ -142,6 +170,7 @@ export default function FeedSwiper() {
           onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 } 
