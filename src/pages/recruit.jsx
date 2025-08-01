@@ -368,6 +368,7 @@ useEffect(() => {
                 onClick={() => {
                   setActiveTab(tab);
                   setSearchQuery("");
+                  setSelectedCategory(prev => [prev[0], 0, 0]);
                 }}
               >
                 <span>
@@ -409,11 +410,11 @@ useEffect(() => {
         </div>
         {activeTab === "feed" ? (
           <div className="w-full lg:w-3/4 mx-auto">
-            <StudentFeedList />
+            <StudentFeedList secondCategoryId={selectedCategory[1]} thirdCategoryId={selectedCategory[2]} keyword={searchQuery} />
           </div>
         ) : activeTab === "profile" ? (
           <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-            <StudentProfileList />
+            <StudentProfileList secondCategoryId={selectedCategory[1]} thirdCategoryId={selectedCategory[2]} keyword={searchQuery}/>
           </div>
         ) : (
           <div className="w-full lg:w-3/4 mx-auto">
