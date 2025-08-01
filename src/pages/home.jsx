@@ -240,9 +240,9 @@ export default function Home() {
   }, []);
 
 
-  const [viewCount, prevViewCount] = useCountUp(735, 0);
-  const [userCount, prevUserCount] = useCountUp(317, 0);
-  const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
+  const viewCount = useCountUp(735, 2000);
+  const userCount = useCountUp(317, 2000);
+  const recruitCount = useCountUp(4, 2000);
 
   return (
     <>
@@ -342,11 +342,8 @@ export default function Home() {
         </div>
         <StatisticsSection 
           viewCount={viewCount}
-          prevViewCount={prevViewCount}
           userCount={userCount}
-          prevUserCount={prevUserCount}
           recruitCount={recruitCount}
-          prevRecruitCount={prevRecruitCount}
         />
 
 {/* 인기 공고문  */}
