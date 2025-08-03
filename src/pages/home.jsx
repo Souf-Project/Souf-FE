@@ -18,6 +18,7 @@ import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
 import SmallContestSection from "../components/home/smallContestSection";
 import { getContests } from "../api/contest";
+import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import dayjs from "dayjs";
@@ -32,6 +33,11 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
+  const [statsData, setStatsData] = useState({
+    todayVisitor: 735,
+    studentCount: 317,
+    recruitCount: 4
+  }); // 기본값 설정
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
@@ -217,10 +223,30 @@ export default function Home() {
     fetchContests();
   }, []);
 
+  // 통계 데이터 조회
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await getMainViewCount();
+        if (response.result) {
+          setStatsData({
+            todayVisitor: response.result.todayVisitor || 735,
+            studentCount: response.result.studentCount || 317,
+            recruitCount: response.result.recruitCount || 4
+          });
+        }
+      } catch (error) {
+        console.error("통계 데이터 조회 실패:", error);
+      }
+    };
 
-  const viewCount = useCountUp(735, 2000);
-  const userCount = useCountUp(317, 2000);
-  const recruitCount = useCountUp(4, 2000);
+    fetchStats();
+  }, []);
+
+
+  const viewCount = useCountUp(statsData.todayVisitor, 2000);
+  const userCount = useCountUp(statsData.studentCount, 2000);
+  const recruitCount = useCountUp(statsData.recruitCount, 2000);
 
   return (
     <>

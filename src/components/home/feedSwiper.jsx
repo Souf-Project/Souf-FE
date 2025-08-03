@@ -35,8 +35,6 @@ export default function FeedSwiper() {
   };
 
   useEffect(() => {
-    console.log("Feed data from API:", data);
-    console.log("Feed result:", data?.result);
     setFeedData(data?.result || []);
   }, [data]);
 
