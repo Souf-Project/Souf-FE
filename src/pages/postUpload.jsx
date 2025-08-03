@@ -227,7 +227,6 @@ export default function PostUpload() {
         // validation 에러는 이미 alert로 표시됨
         return;
       }
-      alert("피드 업로드 중 오류가 발생했습니다.");
     },
   });
 
