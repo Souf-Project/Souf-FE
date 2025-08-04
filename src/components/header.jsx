@@ -57,6 +57,9 @@ export default function Header() {
     } else if (location.pathname === "/contests") {
       // 공모전 정보 페이지인 경우
       setActiveCategory("contests");
+    }else if (location.pathname === "/recruitsAll") {
+      // 공모전 정보 페이지인 경우
+      setActiveCategory("recruitsAll");
     } else {
       setActiveCategory("");
     }
@@ -190,6 +193,23 @@ useEffect(() => {
           SouF
         </div>
         <ul className="flex items-center gap-x-8 font-bold text-xl text-black">
+        
+          <li
+            className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+              activeCategory === "recruitsAll" ? "text-yellow-point" : ""
+            }`}
+            onClick={() => handleNavigation("/recruitsAll")}
+          >
+            <span>공고문 모아보기</span>
+            <span
+              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                activeCategory === "recruitsAll"
+                  ? "w-full"
+                  : "w-0 group-hover:w-full origin-left"
+              }`}
+            ></span>
+          </li>
+          <li className="text-gray-400">|</li>
           {categories.map((category) => {
             return (
               <li
