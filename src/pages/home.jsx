@@ -7,17 +7,18 @@ import cate3Img from "../assets/images/cate3Img.png";
 import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
 import Background from "../assets/images/background.png";
-import PopularFeed from "../components/home/popularFeed";
-import { usePopularFeed } from "../hooks/usePopularFeed";
+
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import MobileSwiper from "../components/home/mobileSwiper";
+import FeedSwiper from "../components/home/feedSwiper";
 import InfoBox from "../components/home/infoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
 import SmallContestSection from "../components/home/smallContestSection";
 import { getContests } from "../api/contest";
+import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import dayjs from "dayjs";
@@ -32,8 +33,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
-  const [currentFeedPage, setCurrentFeedPage] = useState(1); // 현재 피드 페이지
-  const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
+  const [statsData, setStatsData] = useState({
+    todayVisitor: 735,
+    studentCount: 317,
+    recruitCount: 4
+  }); // 기본값 설정
+
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
@@ -138,27 +143,6 @@ export default function Home() {
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
-  const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-
-  // 현재 페이지에 해당하는 피드 데이터 계산
-  const getCurrentFeedData = () => {
-    // console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
-    if (!feedData?.result) return [];
-    const endIndex = currentFeedPage * 6;
-    return feedData.result.slice(0, endIndex);
-  };
-
-  // 더보기 버튼 클릭 핸들러
-  const handleLoadMoreFeeds = () => {
-    if (currentFeedPage < 3) {
-      setIsLoadingMore(true);
-      // 약간의 지연을 주어 로딩 효과를 보여줌
-      setTimeout(() => {
-        setCurrentFeedPage(prev => prev + 1);
-        setIsLoadingMore(false);
-      }, 300);
-    }
-  };
  
   const handleSearch = (e) => {
     e.preventDefault();
@@ -239,10 +223,30 @@ export default function Home() {
     fetchContests();
   }, []);
 
+  // 통계 데이터 조회
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await getMainViewCount();
+        if (response.result) {
+          setStatsData({
+            todayVisitor: response.result.todayVisitor || 735,
+            studentCount: response.result.studentCount || 317,
+            recruitCount: response.result.recruitCount || 4
+          });
+        }
+      } catch (error) {
+        console.error("통계 데이터 조회 실패:", error);
+      }
+    };
 
-  const viewCount = useCountUp(735, 2000);
-  const userCount = useCountUp(317, 2000);
-  const recruitCount = useCountUp(4, 2000);
+    fetchStats();
+  }, []);
+
+
+  const viewCount = useCountUp(statsData.todayVisitor, 2000);
+  const userCount = useCountUp(statsData.studentCount, 2000);
+  const recruitCount = useCountUp(statsData.recruitCount, 2000);
 
   return (
     <>
@@ -361,65 +365,16 @@ export default function Home() {
       </div>
 
       {/* 인기 피드 섹션 */}
-      <div className="relative px-6 lg:px-24">
-        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
-            <span className="relative inline-block">
-              <span className="relative z-10">인기있는 피드</span>
+      <div className="relative mt-16 px-">
+        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
+            <span className="relative inline-block ">
+              <span className="relative z-10 ">인기있는 피드</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
             </span>
             <span className="ml-2">구경하러 가기</span>
           </h2>
-          {feedLoading ? (
-            <Loading />
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
-                {getCurrentFeedData().map((profile, index) => (
-                  <PopularFeed
-                    key={`${profile.feedId}-${currentFeedPage}-${index}`}
-                    url={profile.mediaResDto?.fileUrl}
-                    context={profile.categoryName}
-                    username={profile.nickname}
-                    feedId={profile.feedId}
-                    memberId={profile.memberId}
-                  />
-                ))}
-              </div>
-              
-              {/* 더보기 버튼 */}
-              {currentFeedPage < 3 && feedData?.result?.length > currentFeedPage * 6 && (
-                <div className="text-center mt-8">
-                  <button
-                    onClick={handleLoadMoreFeeds}
-                    disabled={isLoadingMore}
-                    className={`px-6 py-3 bg-yellow-point text-white rounded-lg transition-colors duration-200 font-semibold ${
-                      isLoadingMore 
-                        ? 'opacity-50 cursor-not-allowed' 
-                        : 'hover:bg-yellow-600'
-                    }`}
-                  >
-                    {isLoadingMore ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        로딩중...
-                      </div>
-                    ) : (
-                      `더보기`
-                    )}
-                  </button>
-                </div>
-              )}
-              
-              {/* 모든 피드를 로드했을 때 표시 */}
-              {currentFeedPage >= 3 && (
-                <div className="text-center mt-8">
-                  <p className="text-gray-500 text-sm">모든 인기 피드를 확인했습니다!</p>
-                </div>
-              )}
-            </>
-
-          )}
+          <FeedSwiper />
         </div>
       </div>
 

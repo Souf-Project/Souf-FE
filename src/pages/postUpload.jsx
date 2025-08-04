@@ -15,10 +15,23 @@ import {
   uploadToS3Video,
 } from "../api/video";
 import { filterEmptyCategories } from "../utils/filterEmptyCategories";
+import LoadingModal from "../components/loadingModal";
+
+const validImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const validVideoTypes = [
+  "video/mp4",
+  "video/quicktime",
+  "video/x-msvideo",
+  "video/webm",
+  "video/x-flv",
+];
 
 export default function PostUpload() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isModal, setIsModal] = useState(false);
+  const [isWarningModal, setIsWarningModal] = useState(false);
+  const [warningText, setWarningText] = useState("업로드 실패");
+
   const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const { memberId } = UserStore();
@@ -49,22 +62,6 @@ export default function PostUpload() {
     ],
   });
 
-  /*
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      originalFileNames: selectedFiles?.map((file) => file.name),
-    }));
-  }, [selectedFiles]); */
-
-  /*
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      originalFileNames: selectedFiles?.map((file) => file.name),
-    }));
-  }, [selectedFiles]); */
-
   useEffect(() => {
     setFormData((prev) => ({
       ...prev,
@@ -74,7 +71,6 @@ export default function PostUpload() {
 
   const handleImagesChange = (files) => {
     setSelectedFiles(files); //파일 저장
-    //console.log("부모로 들어온", files);
     setImageFiles(files.filter((file) => file.type.startsWith("image")));
     setVideoFiles(files.filter((file) => file.type.startsWith("video/")));
   };
@@ -83,6 +79,7 @@ export default function PostUpload() {
     mutationFn: (postData) => {
       //1. 백엔드에서 presigned-url 받아오기 위해 텍스트관련된 내용 먼저 보내기
       const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+
       if (cleanedCategories.length === 0) {
         alert("최소 1개 이상의 카테고리를 선택해주세요.");
         return;
@@ -94,23 +91,60 @@ export default function PostUpload() {
         fileTypes: selectedFiles.map((file) => file.type),
       };
       
-      console.log("📤 postFeed API에 전송할 데이터:", finalData);
+
       if (!formData.topic.trim()) {
-        alert("제목을 입력해주세요.");
-        return;
+        //alert("제목을 입력해주세요.");
+        setWarningText("제목을 입력해주세요.");
+        throw new Error("제목을 입력해주세요.");
+        //return;
+      }
+      if (!formData.content.trim()) {
+        //alert("내용을 입력해주세요.");
+        setWarningText("내용을 입력해주세요.");
+        throw new Error("내용을 입력해주세요.");
+        //return;
+      }
+      if (cleanedCategories.length === 0) {
+        //alert("최소 1개 이상의 카테고리를 선택해주세요.");
+        setWarningText("최소 1개 이상의 카테고리를 선택해주세요.");
+        throw new Error("최소 1개 이상의 카테고리를 선택해주세요.");
+        //return;
       }
 
-      if (!formData.content.trim()) {
-        alert("내용을 입력해주세요.");
-        return;
-      }
       const hasNewMedia = imageFiles.length > 0;
       const hasExistingMedia = videoFiles.length > 0;
-
-      if (!hasNewMedia && !hasExistingMedia) {
-        alert("이미지 또는 영상을 1개 이상 첨부해주세요.");
-        return;
+      if (!hasExistingMedia && !hasNewMedia) {
+        //alert("이미지 또는 영상을 1개 이상 첨부해주세요.");
+        //return;
+        setWarningText("이미지 또는 영상을 1개 이상 첨부해주세요.");
+        throw new Error("이미지 또는 영상을 1개 이상 첨부해주세요.");
       }
+
+
+      // 여기서 유효성 검사
+      // 각 들어온 이미지는 JPG, JPEG, PNG, WEBP 얘네에 속하게 type 
+      // 각 들어온 영상은 mp4,quicktime, x-msvideo , webm, x-flv 얘네에 속하게
+
+      const invalidImage = imageFiles.find((file) => !validImageTypes.includes(file.type));
+      const invalidVideo = videoFiles.find((file) => !validVideoTypes.includes(file.type));
+
+      if (invalidImage) {
+        //const type = invalidImage.type.split("/");
+        console.log(invalidImage);
+        setWarningText(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
+        throw new Error("지원하지 않는 이미지 형식입니다.");
+      }
+
+      if (invalidVideo) {
+        setWarningText(`지원하지 않는 영상 형식입니다: ${invalidVideo.type}`);
+        throw new Error("지원하지 않는 영상 형식입니다.");
+      }
+
+
+      const finalData = {
+        ...formData,
+        categoryDtos: cleanedCategories,
+      };
 
       return postFeed(finalData);
     },
@@ -209,13 +243,10 @@ export default function PostUpload() {
         setUploadedFeedId(feedId);
         setIsModal(true);
       } catch (error) {
-        console.error("❌ 파일 업로드 또는 미디어 등록 중 에러:", error);
-        console.error("❌ 에러 상세 정보:", {
-          message: error.message,
-          stack: error.stack,
-          response: error.response
-        });
-        alert("업로드 중 오류가 발생했습니다.");
+
+        console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
+        //alert("업로드 중 오류가 발생했습니다.");
+        alert(error);
       }
     },
     onError: (error) => {
@@ -227,7 +258,11 @@ export default function PostUpload() {
         // validation 에러는 이미 alert로 표시됨
         return;
       }
-      alert("피드 업로드 중 오류가 발생했습니다.");
+      //alert("피드 업로드 중 오류가 발생했습니다.");
+      //alert(error);
+      //console.log(error);
+      setIsWarningModal(true);
+
     },
   });
 
@@ -297,14 +332,15 @@ export default function PostUpload() {
                 : 'bg-yellow-main text-black hover:bg-yellow-600'
             }`}
           >
-            {isPending ? (
+{/*            {isPending ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 업로드 중...
               </div>
             ) : (
               '업로드'
-            )}
+            )} */}
+업로드
           </button>
           <button
             type="button"
@@ -321,6 +357,18 @@ export default function PostUpload() {
             TrueBtnText="확인"
             onClickTrue={() => navigate(`/profileDetail/${memberId}/post/${uploadedFeedId}`)}
           />
+        )}
+        {isWarningModal && (
+          <AlertModal
+          type="warning"
+          title="업로드 실패"
+          description={warningText}
+          TrueBtnText="확인"
+          onClickTrue={() => setIsWarningModal(false)}
+          />
+        )}
+        {isPending && (
+          <LoadingModal size="xl"/> 
         )}
       </div>
     </div>
