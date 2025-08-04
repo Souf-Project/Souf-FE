@@ -122,7 +122,7 @@ export default function FeedSwiper() {
         {feedData.map((feed) => (
           <SwiperSlide key={feed.feedId} className="box-border min-w-0 px-4">
                           <div
-                className="w-full lg:w-80 box-border h-[400px] sm:h-[440px] lg:h-[500px] mb-2 px-2 lg:px-4 lg:px-6 cursor-pointer mx-auto"
+                className="w-full lg:w-80 box-border h-full lg:h-[500px] mb-2 px-2 lg:px-4 lg:px-6 cursor-pointer mx-auto"
                 onClick={() => handleClick(feed?.feedId, feed?.memberId)}>
                 <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 피드 이미지 */}
