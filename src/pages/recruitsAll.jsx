@@ -6,6 +6,7 @@ import Pagination from "../components/pagination";
 import Loading from "../components/loading";
 import SEO from "../components/seo";
 import SearchBar from "../components/SearchBar";
+import adImg from "../assets/images/adImg.png";
 import { getFeed } from "../api/feed";
 import basicProfileImg from "../assets/images/BasicProfileImg1.png";
 
@@ -18,23 +19,35 @@ export default function RecruitsAll() {
     const [currentPage, setCurrentPage] = useState(0);
     const [pageSize, setPageSize] = useState(5);
     const [studentProfiles, setStudentProfiles] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchTerm, setSearchTerm] = useState(""); // 실제 검색에 사용할 용어
   
     const fetchRecruits = useCallback(async () => {
         try {
           setLoading(true);
           setError(null);
     
-          const response = await getRecruit({
+          const requestParams = {
             firstCategory: null, 
             page: currentPage,
             size: pageSize,
             sort: ["createdAt,desc"],
-          });
+          };
+
+          // 검색어가 있을 때만 recruitSearchReqDto 추가
+          const trimmedQuery = String(searchTerm || '').trim();
+          if (trimmedQuery) {
+            requestParams.recruitSearchReqDto = {
+              title: trimmedQuery,
+              content: trimmedQuery
+            };
+          }
+
+          const response = await getRecruit(requestParams);
     
           if (response.data) {
             const recruits = response.data.result?.content || [];
-            console.log("공고문 데이터:", recruits);
-           
+
             setFilteredRecruits(recruits);
     
             const totalElements =
@@ -52,10 +65,9 @@ export default function RecruitsAll() {
         } finally {
           setLoading(false);
         }
-      }, [currentPage, pageSize]);
+      }, [currentPage, pageSize, searchTerm]);
 
     const fetchStudentProfiles = useCallback(async () => {
-      console.log("fetchStudentProfiles 함수 시작");
       try {
         // 1~5 중 랜덤 값 생성
         const randomCategory = Math.floor(Math.random() * 5) + 1;
@@ -88,6 +100,11 @@ export default function RecruitsAll() {
       setCurrentPage(newPage);
     };
 
+    const handleSearch = (query) => {
+      setSearchTerm(query); // 실제 검색에 사용할 용어 설정
+      setCurrentPage(0); // 검색 시 첫 페이지로 이동
+    };
+
     if (loading) {
       return <Loading />;
     }
@@ -106,9 +123,9 @@ export default function RecruitsAll() {
             <div className="pt-12 md:px-6 px-24 w-full bg-[#FFFEF5] shadow-md py-10">
         <div className="">
           <SearchBar 
-            value={""}
-            onChange={""}
-            onSubmit={""} 
+            value={searchQuery}
+            onChange={(value) => setSearchQuery(value)}
+            onSubmit={handleSearch} 
             placeholder={"검색어를 입력해주세요"}
             width="w-96 w-[800px]"
             height="py-4"/>
@@ -159,10 +176,12 @@ export default function RecruitsAll() {
           )}
         </div>
         <div className="w-1/4 flex flex-col gap-6">
-            <button className="w-full bg-yellow-main text-gray-800 px-4 py-4 rounded-lg shadow-md">의뢰 등록하기</button>
+            <button 
+            onClick={() => navigate("/recruitUpload")}
+            className="w-full bg-yellow-main font-bold text-2xl text-gray-800 px-4 py-4 rounded-lg shadow-md">의뢰 등록하기</button>
                          <div className="flex flex-col gap-4 ">
-                <div className="w-full aspect-[7/4] bg-black rounded-lg flex items-center justify-center text-white  shadow-md">
-                  AD
+                <div className="w-full aspect-[7/4] rounded-lg flex items-center justify-center text-white shadow-md">
+                  <img src={adImg} alt="광고 이미지" className="w-full h-full object-cover" />
                 </div>
                          <div className="bg-[#FFFDF5] rounded-lg p-6 shadow-md">
                <h2 className="text-gray-800 text-2xl font-bold mb-4">의뢰와 딱 맞는<br/>학생을 찾고있다면</h2>
