@@ -239,15 +239,16 @@ useEffect(() => {
       </div>
 
       <div className="flex items-center gap-x-4">
-        {memberId ? (
-          // 로그인 상태
-          <div className="flex items-center gap-x-4">
-             <div
+      <div
             className="text-black bg-[#FFFBE5] px-5 py-2 font-bold rounded-lg whitespace-nowrap cursor-pointer shadow-md"
             onClick={() => handleNavigation("/recruitsAll")}
           >
             <span>공고문 모아보기</span>
           </div>
+        {memberId ? (
+          // 로그인 상태
+          <div className="flex items-center gap-x-4">
+             
             {roleType === "MEMBER" && 
             <button
               className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg whitespace-nowrap shadow-md"
