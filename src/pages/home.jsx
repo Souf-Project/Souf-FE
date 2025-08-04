@@ -252,62 +252,6 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="스프 SouF 대학생 외주 공모전" subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-      {/* 플로팅 액션 버튼 */}
-      {memberId && (
-        <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-4">
-          {/* ADMIN인 경우 두 버튼 모두 표시 */}
-          {roleType === "ADMIN" && (
-            <>
-              <button
-                onClick={() => navigate("/recruitUpload")}
-                className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                공고문 작성
-              </button>
-              <button
-                onClick={() => navigate("/postUpload")}
-                className="bg-blue-500 text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                피드 작성
-              </button>
-            </>
-          )}
-          
-          {/* MEMBER인 경우 공고문 작성 버튼만 표시 */}
-          {roleType === "MEMBER" && (
-            <button
-              onClick={() => navigate("/recruitUpload")}
-              className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              공고문 작성
-            </button>
-          )}
-          
-          {/* STUDENT인 경우 피드 작성 버튼만 표시 */}
-          {roleType === "STUDENT" && (
-            <button
-              onClick={() => navigate("/postUpload")}
-              className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              피드 작성
-            </button>
-          )}
-        </div>
-      )}
-      
-  
         <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
