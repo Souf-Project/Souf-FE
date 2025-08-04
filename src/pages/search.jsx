@@ -60,7 +60,7 @@ export default function Search(){
 
   return (
     <>
-    <SEO title={keyword} description="스프 검색" subTitle='검색'/>
+    <SEO title={keyword} description="스프 SouF 검색" subTitle=' 스프 검색'/>
     <div className="flex flex-col justify-center items-center pt-12 px-6 w-4/5">
         <div className="flex justify-between items-center mx-auto py-8 gap-4 w-full">
             <div className='flex'>

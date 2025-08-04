@@ -79,6 +79,19 @@ export default function PostUpload() {
     mutationFn: (postData) => {
       //1. 백엔드에서 presigned-url 받아오기 위해 텍스트관련된 내용 먼저 보내기
       const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+
+      if (cleanedCategories.length === 0) {
+        alert("최소 1개 이상의 카테고리를 선택해주세요.");
+        return;
+      }
+      const finalData = {
+        ...formData,
+        categoryDtos: cleanedCategories,
+        originalFileNames: selectedFiles.map((file) => file.name),
+        fileTypes: selectedFiles.map((file) => file.type),
+      };
+      
+
       if (!formData.topic.trim()) {
         //alert("제목을 입력해주세요.");
         setWarningText("제목을 입력해주세요.");
@@ -136,25 +149,27 @@ export default function PostUpload() {
       return postFeed(finalData);
     },
     onSuccess: async (response) => {
-      const { feedId, dtoList, videoResDto } = response.result;
+      const { feedId, dtoList, videoDto } = response.result;
 
       const chunkSize = 10 * 1024 * 1024;
       const chunkCount = Math.ceil(videoFiles[0]?.size / chunkSize);
+      
       let getSignedUrlRes = "";
       let multiUploadArray = [];
+      let videoUploadResponse = null;
 
       try {
         // 1. 이미지 업로드
         if (imageFiles.length > 0 && dtoList?.length > 0) {
           await Promise.all(
-            dtoList.map(({ presignedUrl }, i) =>
-              uploadToS3(presignedUrl, imageFiles[i])
-            )
+            dtoList.map(({ presignedUrl }, i) => {
+              return uploadToS3(presignedUrl, imageFiles[i]);
+            })
           );
         }
 
         // 2. 비디오 업로드
-        if (videoFiles.length > 0 && videoResDto) {
+        if (videoFiles.length > 0 && videoDto) {
           for (let uploadCount = 1; uploadCount <= chunkCount; uploadCount++) {
             const start = (uploadCount - 1) * chunkSize;
             const end = uploadCount * chunkSize;
@@ -164,15 +179,16 @@ export default function PostUpload() {
                 : videoFiles[0].slice(start);
 
             const signedUrlRes = await postVideoSignedUrl({
-              uploadId: videoResDto.uploadId,
+              uploadId: videoDto.uploadId,
               partNumber: uploadCount,
-              fileName: videoResDto.fileName,
+              fileName: videoDto.fileName,
             });
 
             const presignedUrl = signedUrlRes?.result?.presignedUrl;
             const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
 
             const etag = uploadChunk.headers.get("ETag")?.replaceAll("\\", "");
+            
             multiUploadArray.push({
               awsETag: etag,
               partNumber: uploadCount,
@@ -184,11 +200,12 @@ export default function PostUpload() {
             }
           }
 
-          await postVideoUpload({
-            uploadId: videoResDto.uploadId,
-            fileName: videoResDto.fileName,
-            parts: multiUploadArray,
-          });
+            videoUploadResponse = await postVideoUpload({
+              uploadId: videoDto.uploadId,
+              fileUrl: videoDto.fileName,
+              parts: multiUploadArray,
+              type:"feed"
+            });
         }
 
         // 3. 최종 file 정보 구성
@@ -202,10 +219,12 @@ export default function PostUpload() {
           fileTypes.push(
             ...imageFiles.map((file) => file.type.split("/")[1].toUpperCase())
           );
+        
         }
 
-        if (videoFiles.length > 0 && getSignedUrlRes?.result?.fileUrl) {
-          fileUrls.push(getSignedUrlRes.result.fileUrl);
+        if (videoFiles.length > 0 && videoUploadResponse?.result) {
+          // videoUploadResponse.result가 문자열이므로 videoDto.fileName을 사용
+          fileUrls.push(videoDto.fileName);
           fileNames.push(videoFiles[0].name);
           fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
         }
@@ -224,6 +243,7 @@ export default function PostUpload() {
         setUploadedFeedId(feedId);
         setIsModal(true);
       } catch (error) {
+
         console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
         //alert("업로드 중 오류가 발생했습니다.");
         alert(error);
@@ -242,6 +262,7 @@ export default function PostUpload() {
       //alert(error);
       //console.log(error);
       setIsWarningModal(true);
+
     },
   });
 

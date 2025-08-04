@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getContests } from '../api/contest';
+import Loading from '../components/loading';
 
 import fullIcon from '../assets/images/fullIcon.svg';
+import SEO from '../components/seo';
 
 
 export default function ContestDetail() {
@@ -21,32 +23,48 @@ export default function ContestDetail() {
     useEffect(() => {
     const loadContest = async () => {
         try {
-            const pageable = {
-                page: 0,
-                size: 100, // 충분히 큰 수로 설정하여 모든 공모전을 가져옴
+            // 모든 페이지의 공모전을 수집하는 함수
+            const fetchAllContests = async (type) => {
+                let allContests = [];
+                let page = 0;
+                let hasMore = true;
+                
+                while (hasMore) {
+                    try {
+                        const response = await getContests({ 
+                            page: page, 
+                            size: 24,
+                            type: type 
+                        });
+                        
+                        const contests = response?.data || [];
+                      
+                        if (contests.length === 0) {
+                            hasMore = false;
+                        } else {
+                            allContests = [...allContests, ...contests];
+                            page++;
+                        }
+                    } catch (error) {
+                        console.error(`${type} 페이지 ${page} 가져오기 실패:`, error);
+                        hasMore = false;
+                    }
+                }
+                
+                return allContests;
             };
             
             // 모집중과 모집 마감 공모전 모두 가져오기
-            const [renderingData, closedData] = await Promise.all([
-                getContests({ ...pageable, type: "rendering" }),
-                getContests({ ...pageable, type: "closed" })
+            const [renderingContests, closedContests] = await Promise.all([
+                fetchAllContests("rendering"),
+                fetchAllContests("closed")
             ]);
             
             // 두 데이터 합치기
-            const allContests = [
-                ...(renderingData?.data || []),
-                ...(closedData?.data || [])
-            ];
-            
-            console.log('전체 공모전 데이터:', allContests);
-            console.log('찾고 있는 contestID:', id);
-            console.log('찾고 있는 category:', category);
+            const allContests = [...renderingContests, ...closedContests];
             
             // contestID로 공모전 찾기
             const found = allContests.find(contest => contest.contestID === id);
-
-            console.log('찾은 공모전:', found);
-        
             if (!found) throw new Error('해당 공모전 없음');
 
             setContest(found);
@@ -192,6 +210,16 @@ export default function ContestDetail() {
         ];
     };
 
+    /*
+    useEffect(() => {
+      //const name = getFirstCategoryNameById(selectedCategory[0]);
+      document.title = `${contest?.제목} | 스프`;
+    }, [contest]);
+    */
+
+    if (loading) {
+        return <Loading />;
+    }
 
     if (!contest) {
         return (
@@ -211,6 +239,19 @@ export default function ContestDetail() {
     }
 
     return (
+        <>
+        <SEO  title={contest.제목} description={`스프 SouF - ${contest.제목} 공모전`} subTitle='스프' 
+        content={`
+            제목: ${contest.제목}
+            주최: ${contest.주최}
+            참여대상: ${contest.참여대상}
+            시상규모: ${contest.시상규모}
+            접수기간: ${contest.접수기간.시작일} ~ ${contest.접수기간.마감일}
+            활동혜택: ${contest.활동혜택}
+            기업형태: ${contest.기업형태}
+            공모분야: ${contest.공모분야?.join(", ") || "없음"}
+            상세내용: ${contest.상세내용.replace(/<[^>]+>/g, "")}
+        `}/>
         <div className="max-w-4xl mx-auto px-6 py-16">
             {/* 뒤로가기 버튼 */}
             <button
@@ -465,5 +506,6 @@ export default function ContestDetail() {
                 </div>
             )}
         </div>
+        </>
     );
 } 

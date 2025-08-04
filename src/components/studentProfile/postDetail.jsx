@@ -14,6 +14,7 @@ import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
 import Loading from "../loading";
+import SEO from "../seo";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -40,6 +41,17 @@ export default function PostDetail() {
     queryKey: ["feedDetail"],
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
+      
+      console.log("피드 디테일응답:", data.result);
+
+      data.result.mediaResDtos?.forEach((media, index) => {
+        console.log(`미디어 ${index + 1}:`, {
+          fileUrl: media.fileUrl,
+          fileName: media.fileName,
+          fileType: media.fileType,
+          isVideo: media.fileType?.toLowerCase() === "mp4" || media.fileUrl?.toLowerCase().endsWith(".mp4")
+        });
+      });
     
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);
@@ -109,6 +121,9 @@ const handleDeleteClick = () => {
   }
 
   return (
+    <>
+    <SEO  title={worksData.topic} description={`스프 SouF - ${worksData.topic} 피드`} subTitle='스프'
+    content={worksData.content} />
     <div className="flex flex-col py-16 px-4 max-w-4xl w-full mx-auto">
       <div className="flex justify-between">
       <button
@@ -188,7 +203,7 @@ const handleDeleteClick = () => {
     )}
   </div>
           
-          <div className="w-full max-w-[35%] h-full min-h-[240px] pl-6 relative ">
+          <div className="w-full max-w-[35%] pl-6 relative ">
             {/* 사용자 프로필 정보 */}
         <div className="flex items-center justify-between mb-4 w-full">
           {/* 프로필 사진과 닉네임 (왼쪽) */}
@@ -265,19 +280,23 @@ const handleDeleteClick = () => {
         </div>
             
             
-          <div className="flex flex-col justify-between items-start mb-4 h-[80%]">
-              <div className="flex flex-col justify-between items-center text-xl font-semibold leading-snug text-black py-3 ">
-            {worksData.topic}
-            </div>
-              <div className="flex flex-col justify-between text-sm text-gray-600 h-full w-full border-t border-gray-300 pt-6">
-              <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
-                {worksData.content}
-              </p>
+          <div className="flex flex-col justify-end items-start mb-4 h-[90%] w-full ">
+            <div className="w-full h-full flex justify-between flex-col">
+              <div className="w-full">
+              <div className="w-full text-xl font-semibold leading-snug text-black py-3 ">
+              {worksData.topic}
               </div>
+              <div className="w-full text-sm text-gray-600 border-t border-gray-300">
+                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
+                {worksData.content}
+                </p>
+              </div>
+              </div>
+              <p className="text-right">{getFormattedDate(worksData.lastModifiedTime)}</p>
             </div>
-            <div className="absolute bottom-4 left-6">
-              <p className="flex">{getFormattedDate(worksData.lastModifiedTime)}</p>
+            
             </div>
+           
           </div>
         </div>
       </div>
@@ -316,5 +335,6 @@ const handleDeleteClick = () => {
         />
       )}
     </div>
+  </>
   );
 }

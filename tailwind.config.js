@@ -36,6 +36,28 @@ module.exports = {
     },
   },
   plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        ".glass": {
+          "background-blend-mode": "overlay",
+          "background-image": "linear-gradient(to bottom right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05))",
+          "box-shadow": "0px 1.1966018676757812px 29.91504669189453px 0px rgba(69, 42, 124, 0.10), inset 10px 10px 29px 0px rgba(255, 255, 255, 0.25)",
+          "outline": "3px solid rgba(255, 255, 255, 0.5)",
+          "outline-offset": "-3px",
+          "backdrop-filter": "blur(47.86px)",
+          "overflow": "hidden"
+        },
+        ".headerGlass": {
+        "background-blend-mode": "overlay",
+        "background-image": "linear-gradient(to bottom right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05))",
+        "box-shadow": "0px 1.1966018676757812px 29.91504669189453px 0px rgba(69, 42, 124, 0.10), inset 10px 10px 29px 0px rgba(255, 255, 255, 0.25)",
+        "outline": "3px solid rgba(255, 255, 255, 0.5)",
+        "outline-offset": "-3px",
+        "backdrop-filter": "blur(47.86px)",
+        // overflow 속성 없음
+      }
+      });
+    },
     // function ({ addUtilities }) {
     //   addUtilities({
         

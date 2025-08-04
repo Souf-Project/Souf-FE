@@ -23,6 +23,7 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
+import { HelmetProvider } from 'react-helmet-async';
 
 function AppRouter() {
   const location = useLocation();
@@ -66,8 +67,10 @@ function AppRouter() {
 export default function Router() {
   return (
     <BrowserRouter>
+    <HelmetProvider>
       <ScrollToTop/>
       <AppRouter />
+      </HelmetProvider>
     </BrowserRouter>
   );
 }

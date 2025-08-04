@@ -51,3 +51,16 @@ export const getSecondCategoryNameById = (id) => {
   );
   return category ? category.name : null;
 };
+
+
+// feed,profile, recruit 으로 해서 한국어 반환해주기
+
+export const getNowPageByActiveTab = (activeTab) => {
+  if(activeTab === 'feed'){
+    return "대학생 피드"
+  }else if(activeTab === 'profile'){
+    return "대학생 프로필"
+  }else{
+    return "기업 공고문"
+  }
+}

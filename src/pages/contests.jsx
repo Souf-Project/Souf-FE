@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import buildingData from '../assets/competitionData/건축_건설_인테리어.json';
-import marketingData from '../assets/competitionData/광고_마케팅.json';
 import { getContests } from '../api/contest';
 import Pagination from '../components/pagination';
+import SEO from '../components/seo';
 
 export default function Contests() {
     const [activeTab, setActiveTab] = useState("rendering");
@@ -16,65 +15,36 @@ export default function Contests() {
 
     const navigate = useNavigate();
 
-    const pageable = {
-        page: currentPage,
-        size: pageSize,
-    };
-
-      useEffect(() => {
-    const fetchContests = async () => {
-      try {
-        const data = await getContests({ ...pageable, type: activeTab });
-        // console.log("데이터 확인용 :", data);
-        setContests(data.data);
-        setTotalPages(Math.ceil(data?.total/data?.pageSize));
-      } catch (err) {
-        console.error("❌ 에러 발생:", err);
-       
-      }
-    };
-
-    fetchContests();
-  }, [activeTab,currentPage]);
+    useEffect(() => {
+        const fetchContests = async () => {
+          try {
+            const data = await getContests({
+              page: currentPage,
+              size: pageSize,
+              type: activeTab
+            });
+    
+            setContests(data.data); 
+            setTotalPages(Math.ceil(data.total / data.pageSize)); // 총 페이지 수 계산
+          } catch (err) {
+            console.error("❌ 공모전 불러오기 실패:", err);
+            setContests([]);
+            setTotalPages(1);
+          }
+        };
+    
+        fetchContests();
+      }, [activeTab, currentPage]);
+    
 
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-    useEffect(() => {
-        // 탭이 변경될 때마다 해당하는 데이터를 로드
-        let data;
-        switch(activeTab) {
-            case 'building':
-                data = buildingData;
-                break;
-           
-            case 'marketing':
-                data = marketingData;
-                break;
-            default:
-                data = buildingData;
-        }
-        //setContests(data);
-        
-        // 새로운 이미지들에 대해 로딩 상태 초기화
-        const newLoadingStates = {};
-        data.forEach((contest, index) => {
-            if (contest.썸네일) {
-                newLoadingStates[index] = true;
-            }
-        });
-        setImageLoadingStates(newLoadingStates);
-        
-        // 1초 후에 모든 스켈레톤 숨기기
-        setTimeout(() => {
-            setImageLoadingStates({});
-        }, 1000);
-    }, [activeTab]);
 
     const handleContestClick = (contest) => {
-        navigate(`/contests/${contest.categoryID[0]}/${contest.contestID}`);
+        navigate(`/contests/${contest.categoryID?.[0]}/${contest.contestID}`);
     };
 
 
@@ -194,6 +164,8 @@ export default function Contests() {
     };
 
     return (
+        <>
+        <SEO  title="공모전 정보" description="스프 SouF 대학생 공모전" subTitle='스프' />
         <div className="max-w-6xl mx-auto px-6 py-16 w-full">
             <h1 className="text-3xl font-bold mb-8">공모전 정보</h1>
             
@@ -320,5 +292,6 @@ export default function Contests() {
             </div>
             )}
         </div>
+        </>
     );
 } 

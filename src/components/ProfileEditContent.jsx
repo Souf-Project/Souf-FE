@@ -58,6 +58,7 @@ export default function ProfileEditContent() {
           newCategories: newCategories,
           originalNickname: profileData.nickname // 원본 닉네임 저장
         });
+
       } else {
         console.error('프로필 데이터 조회 실패:', response.data?.message);
         setFormData(null);
@@ -94,9 +95,9 @@ export default function ProfileEditContent() {
         updatePayload.profileImageUrl = formData.profileImageUrl;
       }
 
-      // console.log('서버로 전송되는 데이터:', updatePayload);
-      // console.log('selectedFile 존재 여부:', !!selectedFile);
-      // console.log('기존 이미지 URL:', formData.profileImageUrl);
+      console.log('서버로 전송되는 데이터:', updatePayload);
+      console.log('selectedFile 존재 여부:', !!selectedFile);
+      console.log('기존 이미지 URL:', formData.profileImageUrl);
 
       const updateResponse = await updateProfileInfo(updatePayload);
 
@@ -153,10 +154,10 @@ export default function ProfileEditContent() {
     // 선택되지 않은 2차, 3차 카테고리는 null로 처리하여 전송
     const finalCategories = selectedCategories.map(cat => {
       const category = {
-        firstCategory: cat.firstCategory
+        firstCategory: cat.firstCategory,
+        secondCategory: cat.secondCategory || null,
+        thirdCategory: cat.thirdCategory || null
       };
-      if (cat.secondCategory) category.secondCategory = cat.secondCategory;
-      if (cat.thirdCategory) category.thirdCategory = cat.thirdCategory;
       return category;
     });
     

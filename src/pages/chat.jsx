@@ -8,6 +8,7 @@ import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
 import SouFLogo from "../assets/images/SouFLogo.png";
 import Loading from "../components/loading";
+import SEO from "../components/seo";
 
 
 export default function Chat() {
@@ -34,10 +35,31 @@ export default function Chat() {
     return hasImageExtension || (isHttpUrl && hasImageKeyword);
   };
 
+  // 동영상 URL인지 확인하는 함수
+  const isVideoMessage = (message) => {
+    if (!message) return false;
+    
+    // 동영상 파일 확장자 확인
+    const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm'];
+    const hasVideoExtension = videoExtensions.some(ext => message.toLowerCase().includes(ext));
+    
+    // HTTP URL이면서 동영상 관련 키워드 확인
+    const isHttpUrl = message.startsWith('http://') || message.startsWith('https://');
+    const hasVideoKeyword = message.includes('video') || message.includes('mp4');
+    
+    return hasVideoExtension || (isHttpUrl && hasVideoKeyword);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     console.log("Search query:", searchQuery);
   };
+
+  // 검색어에 따라 채팅 목록 필터링
+  const filteredChatList = chatList?.filter((chat) => {
+    if (!searchQuery.trim()) return true;
+    return chat.opponentNickname?.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
     const {
     data: chatData,
@@ -47,8 +69,6 @@ export default function Chat() {
     queryKey: ["chatList"],
     queryFn: async () => {
       const data = await getChat();
-      
-      console.log("채팅 조회:", data);
       setChatList(data);
       return data;
     },
@@ -93,6 +113,8 @@ export default function Chat() {
     }
 
   return (
+    <>
+    <SEO title="채팅" description="스프 SouF 채팅" subTitle="스프"/>
     <div className="h-[calc(100vh-64px)] px-6">
       <div className="w-screen mx-auto h-full">
         <div className="bg-white rounded-lg shadow-sm h-full">
@@ -111,7 +133,7 @@ export default function Chat() {
               </div>
               <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
 
-                {chatList?.map((chat,i) => (
+                {filteredChatList?.map((chat,i) => (
                   <div
                   key={i} 
                   className={`flex flex-row justify-start items-center pl-6 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
@@ -135,7 +157,9 @@ export default function Chat() {
                       </div>
                       <div className="flex justify-between items-center">
                         <p className="text-gray-600 truncate">
-                          {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : chat.lastMessage}
+                          {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : 
+                           isVideoMessage(chat.lastMessage) ? "동영상을 보냈습니다" : 
+                           chat.lastMessage}
                         </p>
                         {chat.unreadCount > 0 && (
                           <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
@@ -190,7 +214,7 @@ export default function Chat() {
                   />
                 </div>
                 <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(100vh-64px-120px)]">
-                  {chatList?.map((chat,i) => (
+                  {filteredChatList?.map((chat,i) => (
                     <div
                     key={i} 
                     className={`flex flex-row justify-start items-center pl-4 w-full ${selectedChat === chat.roomId ? "bg-gray-50" : ""
@@ -214,7 +238,9 @@ export default function Chat() {
                         </div>
                         <div className="flex justify-between items-center">
                           <p className="text-gray-600 truncate text-sm">
-                            {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : chat.lastMessage}
+                            {isImageMessage(chat.lastMessage) ? "사진을 보냈습니다" : 
+                             isVideoMessage(chat.lastMessage) ? "동영상을 보냈습니다" : 
+                             chat.lastMessage}
                           </p>
                           {chat.unreadCount > 0 && (
                             <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full ml-2">
@@ -285,5 +311,6 @@ export default function Chat() {
         </div>
       </div>
     </div>
+    </>
   );
 }
