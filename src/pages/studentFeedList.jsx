@@ -10,7 +10,7 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import SEO from "../components/seo";
 
-export default function StudentFeedList() {
+export default function StudentFeedList({secondCategoryId, thirdCategoryId ,keyword }) {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
@@ -32,14 +32,14 @@ export default function StudentFeedList() {
     navigate(`/profileDetail/${memberId}`);
   };
 
-  const {
+const {
     data: feedData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", pageable],
+    queryKey: ["feed", categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable],
     queryFn: async () => {
-      const data = await getFeed(categoryParam, pageable);
+      const data = await getFeed(categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable);
       console.log("getFeed 결과:", data);
       return data;
     },

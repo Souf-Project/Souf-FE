@@ -317,12 +317,6 @@ useEffect(() => {
         ) : (
           // 로그아웃 상태
           <>
-            <button
-              className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg"
-              onClick={() => handleNavigation("/verifyStudent")}
-            >
-              대학생 인증
-            </button>
             <div className="flex items-center text-xl font-semibold">
               <button
                 className="w-20"

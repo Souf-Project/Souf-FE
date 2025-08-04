@@ -152,7 +152,7 @@ export default function Feed({ feedData, onFeedClick }) {
               className="rounded-lg w-full max-w-[800px]"
             >
               {feedData?.mediaResDtos?.map((data, i) => {
-                const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+                const isVideo = data.fileType?.toLowerCase().startsWith("video") || data.fileUrl?.toLowerCase().endsWith(".mp4");
                 return (
                   <SwiperSlide key={i}>
                     <div className="flex justify-center items-center">
