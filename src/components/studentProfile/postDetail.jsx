@@ -131,7 +131,7 @@ const handleDeleteClick = () => {
         onClick={handleGoBack}
       >
         <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
-        <span>프로필로 돌아가기</span>
+        <span>뒤로가기</span>
       </button>
 
       <p className="text-sm text-gray-500 pr-6">
