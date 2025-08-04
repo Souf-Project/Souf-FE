@@ -131,7 +131,7 @@ const handleDeleteClick = () => {
         onClick={handleGoBack}
       >
         <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
-        <span>프로필로 돌아가기</span>
+        <span>뒤로가기</span>
       </button>
 
       <p className="text-sm text-gray-500 pr-6">
@@ -140,11 +140,21 @@ const handleDeleteClick = () => {
             </div>
 
 
-      <div className="flex flex-col rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+            <div className="flex flex-col rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+        
+        {/* 모바일: 제목과 날짜  */}
+        <div className="flex justify-between items-center mb-4 lg:hidden">
+          <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
+            {worksData.topic}
+          </h2>
+          <p className="text-xs lg:text-sm text-gray-500">
+            {getFormattedDate(worksData.lastModifiedTime)}
+          </p>
+        </div>
         
         
-        <div className="flex w-full">
-         <div className="flex w-[65%] h-full relative">
+        <div className="flex flex-col lg:flex-row w-full">
+          <div className="flex w-full lg:w-[65%] h-full relative order-2 lg:order-1">
     <Swiper
       onSwiper={(swiper) => {
         swiperRef.current = swiper;
@@ -203,7 +213,7 @@ const handleDeleteClick = () => {
     )}
   </div>
           
-          <div className="w-full max-w-[35%] pl-6 relative ">
+          <div className="w-full lg:max-w-[35%] lg:pl-6 relative order-1 lg:order-2 mb-6 lg:mb-0">
             {/* 사용자 프로필 정보 */}
         <div className="flex items-center justify-between mb-4 w-full">
           {/* 프로필 사진과 닉네임 (왼쪽) */}
@@ -280,10 +290,10 @@ const handleDeleteClick = () => {
         </div>
             
             
-          <div className="flex flex-col justify-end items-start mb-4 h-[90%] w-full ">
+          <div className="flex flex-col justify-start items-start mb-4 lg:h-[90%] w-full ">
             <div className="w-full h-full flex justify-between flex-col">
               <div className="w-full">
-              <div className="w-full text-xl font-semibold leading-snug text-black py-3 ">
+              <div className="w-full text-xl font-semibold leading-snug text-black py-3 lg:block hidden">
               {worksData.topic}
               </div>
               <div className="w-full text-sm text-gray-600 border-t border-gray-300">
@@ -292,7 +302,7 @@ const handleDeleteClick = () => {
                 </p>
               </div>
               </div>
-              <p className="text-right">{getFormattedDate(worksData.lastModifiedTime)}</p>
+              <p className="text-right mt-4 lg:block hidden">{getFormattedDate(worksData.lastModifiedTime)}</p>
             </div>
             
             </div>

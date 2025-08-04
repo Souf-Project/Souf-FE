@@ -6,6 +6,7 @@ import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { uploadRecruit, uploadToS3, postRecruitMedia, updateRecruit } from '../api/recruit';
 import { UserStore } from '../store/userStore';
+import { filterEmptyCategories } from '../utils/filterEmptyCategories';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -62,7 +63,11 @@ export default function RecruitUpload() {
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
         hasPreference: !!editData.preferentialTreatment,
-        categoryDtos: [
+        categoryDtos: editData.categoryDtoList?.map(cat => ({
+          firstCategory: cat.firstCategory,
+          secondCategory: cat.secondCategory,
+          thirdCategory: cat.thirdCategory
+        })) || [
           {
             "firstCategory": null,
             "secondCategory": null,
@@ -79,21 +84,16 @@ export default function RecruitUpload() {
             "thirdCategory": null
           }
         ],
-        selectedCategories: editData.categoryDtoList?.map(cat => ({
-          firstCategory: cat.firstCategory,
-          secondCategory: cat.secondCategory,
-          thirdCategory: cat.thirdCategory
-        })) || [],
         files: [],
         workType: editData.workType?.toLowerCase() || 'online',
       };
     } else {
       return {
-    title: '',
+        title: '',
         content: '',
         region: '',
         city: '',
-    deadline: '',
+        deadline: '',
         deadlineTime: '00:00',
         deadlineHour: '01',
         deadlineMinute: '00',
@@ -121,7 +121,6 @@ export default function RecruitUpload() {
             "thirdCategory": null
           }
         ],
-        selectedCategories: [],
         files: [],
         workType: 'online',
       };
@@ -197,37 +196,21 @@ export default function RecruitUpload() {
     if (type === 'file') {
       const fileArray = Array.from(files);
       
-      const validateImageSize = async (file) => {
-        if (!file.type.startsWith('image/')) {
-          return true;
+      const validateFileSize = (file) => {
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const isValid = file.size <= maxSize;
+        if (!isValid) {
+          alert(`${file.name}의 크기가 10MB를 초과합니다.`);
         }
-
-        return new Promise((resolve) => {
-          const img = new Image();
-          img.onload = () => {
-            const isValid = img.width <= 1080 && img.height <= 1080;
-            if (!isValid) {
-              alert(`${file.name}의 크기가 1080x1080px를 초과합니다.`);
-            }
-            resolve(isValid);
-          };
-          img.onerror = () => {
-            alert(`${file.name} 파일을 읽을 수 없습니다.`);
-            resolve(false);
-          };
-          img.src = URL.createObjectURL(file);
-        });
+        return isValid;
       };
 
 
-      Promise.all(fileArray.map(validateImageSize))
-        .then(results => {
-          const validFiles = fileArray.filter((_, index) => results[index]);
-          setFormData(prev => ({
-            ...prev,
-            files: validFiles
-          }));
-        });
+      const validFiles = fileArray.filter(validateFileSize);
+      setFormData(prev => ({
+        ...prev,
+        files: validFiles
+      }));
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -247,27 +230,14 @@ export default function RecruitUpload() {
     e.preventDefault();
 
     try {
-      // selectedCategories 배열에서 유효한 카테고리만 필터링
-      const categoryDtos = formData.selectedCategories
-        .filter(category => 
-          category && 
-          category.firstCategory && 
-          category.secondCategory && 
-          category.thirdCategory
-        )
-        .map(category => ({
-          firstCategory: category.firstCategory,
-          secondCategory: category.secondCategory,
-          thirdCategory: category.thirdCategory
-        }));
-      
       // 카테고리 검증
-      if (categoryDtos.length === 0) {
-        alert('카테고리를 선택해주세요.');
+      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+      if (cleanedCategories.length === 0) {
+        alert("최소 1개 이상의 카테고리를 선택해주세요.");
         return;
       }
 
-      console.log('Selected categories:', categoryDtos);
+      console.log('Selected categories:', cleanedCategories);
 
       let cityId = null;
       let cityDetailId = null;
@@ -298,7 +268,7 @@ export default function RecruitUpload() {
         minPayment: `${formData.minPayment}만원`,
         maxPayment: `${formData.maxPayment}만원`,
         preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
-        categoryDtos: categoryDtos,
+        categoryDtos: cleanedCategories,
         originalFileNames: formData.files.map((file) => file.name),
         workType: formData.workType.toUpperCase(),
       };
@@ -403,83 +373,16 @@ dtoList.forEach((dto, i) => {
   };
   
 
-  const handleCategoryChange = (categoryData) => {
-    setFormData(prev => ({
-      ...prev,
-      category: categoryData
-    }));
-  };
-
-  // 첫 번째 카테고리 선택 핸들러
-  const handleFirstCategory = (categoryData) => {
-    console.log('첫 번째 카테고리 선택:', categoryData);
-    if (categoryData && categoryData.firstCategory && categoryData.secondCategory && categoryData.thirdCategory) {
-      const newCategory = {
-        firstCategory: parseInt(categoryData.firstCategory),
-        secondCategory: parseInt(categoryData.secondCategory),
-        thirdCategory: parseInt(categoryData.thirdCategory)
-      };
-      
-      // NaN 체크
-      if (isNaN(newCategory.firstCategory) || isNaN(newCategory.secondCategory) || isNaN(newCategory.thirdCategory)) {
-        console.error('카테고리 값이 유효하지 않습니다:', newCategory);
-        alert('카테고리 선택에 문제가 있습니다. 다시 선택해주세요.');
-        return;
-      }
-      
-      setFormData(prev => ({
+  const handleCategoryChange = (index) => (categoryData) => {
+    setFormData((prev) => {
+      const updatedCategories = prev.categoryDtos.map((cat, i) =>
+        i === index ? categoryData : cat
+      );
+      return {
         ...prev,
-        selectedCategories: [newCategory, ...prev.selectedCategories.slice(1, 3)]
-      }));
-    }
-  };
-
-  // 두 번째 카테고리 선택 핸들러
-  const handleSecondCategory = (categoryData) => {
-    console.log('두 번째 카테고리 선택:', categoryData);
-    if (categoryData && categoryData.firstCategory && categoryData.secondCategory && categoryData.thirdCategory) {
-      const newCategory = {
-        firstCategory: parseInt(categoryData.firstCategory),
-        secondCategory: parseInt(categoryData.secondCategory),
-        thirdCategory: parseInt(categoryData.thirdCategory)
+        categoryDtos: updatedCategories,
       };
-      
-      // NaN 체크
-      if (isNaN(newCategory.firstCategory) || isNaN(newCategory.secondCategory) || isNaN(newCategory.thirdCategory)) {
-        console.error('카테고리 값이 유효하지 않습니다:', newCategory);
-        alert('카테고리 선택에 문제가 있습니다. 다시 선택해주세요.');
-        return;
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        selectedCategories: [prev.selectedCategories[0], newCategory, prev.selectedCategories[2]]
-      }));
-    }
-  };
-
-  // 세 번째 카테고리 선택 핸들러
-  const handleThirdCategory = (categoryData) => {
-    console.log('세 번째 카테고리 선택:', categoryData);
-    if (categoryData && categoryData.firstCategory && categoryData.secondCategory && categoryData.thirdCategory) {
-      const newCategory = {
-        firstCategory: parseInt(categoryData.firstCategory),
-        secondCategory: parseInt(categoryData.secondCategory),
-        thirdCategory: parseInt(categoryData.thirdCategory)
-      };
-      
-      // NaN 체크
-      if (isNaN(newCategory.firstCategory) || isNaN(newCategory.secondCategory) || isNaN(newCategory.thirdCategory)) {
-        console.error('카테고리 값이 유효하지 않습니다:', newCategory);
-        alert('카테고리 선택에 문제가 있습니다. 다시 선택해주세요.');
-        return;
-      }
-      
-      setFormData(prev => ({
-        ...prev,
-        selectedCategories: [prev.selectedCategories[0], prev.selectedCategories[1], newCategory]
-      }));
-    }
+    });
   };
 
   // 카테고리 데이터 배열 추출
@@ -721,31 +624,19 @@ dtoList.forEach((dto, i) => {
             카테고리
           </label>
           <div className="grid grid-cols-3 gap-4 mb-4">
-          <CategorySelectBox 
-            title="카테고리 선택"
-            content=""
-            defaultValue={formData.categoryDtos}
-            width='w-full'
-            onChange={handleFirstCategory}
-            isEditing={!isEditMode}
-          />
-          <CategorySelectBox 
-            title="카테고리 선택"
-            content=""
-            defaultValue={formData.categoryDtos}
-            width='w-full'
-            onChange={handleSecondCategory}
-            isEditing={!isEditMode}
-          />
-            <CategorySelectBox 
-            title="카테고리 선택"
-              content=""
-            defaultValue={formData.categoryDtos}
-            width='w-full'
-            onChange={handleThirdCategory}
-            isEditing={!isEditMode}
-          />
-            </div>
+            {formData?.categoryDtos?.map((category, index) => (
+              <CategorySelectBox
+                key={index}
+                title="카테고리 선택"
+                content=""
+                defaultValue={category}
+                type="text"
+                isEditing={!isEditMode}
+                onChange={handleCategoryChange(index)}
+                width="w-full"
+              />
+            ))}
+          </div>
         </div>
 
         <div>
@@ -775,7 +666,7 @@ dtoList.forEach((dto, i) => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
           />
           <p className="mt-1 text-sm text-gray-500">
-            이미지 파일은 1080x1080px 이하로 업로드해주세요.
+            파일 크기는 10MB 이하로 업로드해주세요.
           </p>
         </div>
 
