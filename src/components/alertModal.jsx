@@ -18,7 +18,7 @@ export default function AlertModal({
       
     >
       <div
-        className="flex flex-col justify-center items-center bg-white rounded-[25px] p-6 max-w-[600px]  px-24 py-8 min-h-[250px]"
+        className="flex flex-col justify-center items-center bg-white rounded-[25px] p-6 max-w-[600px]  px-24 py-8 min-h-[250px] min-w-[450px]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-2xl font-semibold text-black mb-0.5 text-center">
@@ -27,7 +27,7 @@ export default function AlertModal({
         <div className="text-lg font-medium mb-6 text-black text-center whitespace-pre-line">
           {description}
         </div>
-        {type !== "simple" && <img src={type === "success" ? SuccessIco : WarningIco} className={`flex mx-auto mb-6 ${type !== "success" && "w-40"}`}/>}
+        {type !== "simple" && <img src={type === "success" ? SuccessIco : WarningIco} className={`flex mx-auto ${type !== "warning" && "mb-6"} ${type !== "success" && "w-40"}`}/>}
         <div className="text-[15px] font-medium mb-2 text-black text-center whitespace-pre-line">
           {bottomText}
         </div>
