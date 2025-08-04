@@ -84,12 +84,6 @@ export default function PostUpload() {
         alert("최소 1개 이상의 카테고리를 선택해주세요.");
         return;
       }
-      const finalData = {
-        ...formData,
-        categoryDtos: cleanedCategories,
-        originalFileNames: selectedFiles.map((file) => file.name),
-        fileTypes: selectedFiles.map((file) => file.type),
-      };
       
 
       if (!formData.topic.trim()) {
