@@ -122,7 +122,7 @@ export default function FeedSwiper() {
         {feedData.map((feed) => (
           <SwiperSlide key={feed.feedId} className="box-border min-w-0 px-4">
                           <div
-                className="w-full lg:w-80 box-border h-full lg:h-[500px] mb-2 px-2 lg:px-4 lg:px-6 cursor-pointer mx-auto"
+                className="w-full lg:w-96 xl:w-[420px] box-border h-full mb-2 px-2 lg:px-4 lg:px-6 cursor-pointer mx-auto"
                 onClick={() => handleClick(feed?.feedId, feed?.memberId)}>
                 <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 피드 이미지 */}
@@ -139,15 +139,17 @@ export default function FeedSwiper() {
                   </div>
                 )}
                 {/* 카드 내용 */}
-                <div className="px-2 lg:px-6 pt-4">
-                  <span className="inline-block px-2 lg:px-3 py-1 bg-yellow-point/10 text-yellow-point text-sm lg:text-md font-semibold rounded-full">
-                    {feed.firstCategories?.map(categoryId => getCategoryName(categoryId)).join(', ')}
-                  </span>
-                </div>
-                <div className="px-2 lg:px-6 pb-3 text-right">
-                  <h3 className="text-lg lg:text-xl lg:text-2xl font-bold text-gray-800 line-clamp-2">
-                    {feed.nickname}
-                  </h3>
+                <div className="px-2 lg:px-6 pt-4 pb-3 flex flex-col justify-between h-full">
+                  <div>
+                    <span className="inline-block px-2 lg:px-3 py-1 bg-yellow-point/10 text-yellow-point text-sm lg:text-md font-semibold rounded-full">
+                      {feed.firstCategories?.map(categoryId => getCategoryName(categoryId)).join(', ')}
+                    </span>
+                  </div>
+                  <div className="text-right mt-auto">
+                    <h3 className="text-lg lg:text-xl lg:text-2xl font-bold text-gray-800 line-clamp-2">
+                      {feed.nickname}
+                    </h3>
+                  </div>
                 </div>
               </div>
             </div>

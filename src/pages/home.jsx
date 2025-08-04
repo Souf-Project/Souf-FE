@@ -328,7 +328,7 @@ export default function Home() {
        {/* 카테고리 섹션 */}
        <div className="relative px-6 lg:px-24 ">
        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-       <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+       <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block">
               <span className="relative z-10">관심있는 주제 피드</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -508,7 +508,7 @@ export default function Home() {
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
       <div className="flex justify-between items-center px-4 sm:px-6 ">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
           <span className="relative inline-block">
             <span className="relative z-10">금주 인기 공모전</span>
             <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -517,7 +517,7 @@ export default function Home() {
         </h2>
        
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 px-6 lg:px-24">
         {competitions.length === 0 ? (
           <Loading text="공모전 정보를 불러오는 중..." />
         ) : (

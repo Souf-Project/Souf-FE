@@ -34,7 +34,6 @@ export default function RecruitsAll() {
             sort: ["createdAt,desc"],
           };
 
-          // 검색어가 있을 때만 recruitSearchReqDto 추가
           const trimmedQuery = String(searchTerm || '').trim();
           if (trimmedQuery) {
             requestParams.recruitSearchReqDto = {
@@ -49,13 +48,12 @@ export default function RecruitsAll() {
             const recruits = response.data.result?.content || [];
 
             setFilteredRecruits(recruits);
-    
+            console.log(recruits);
             const totalElements =
               response.data.result?.page?.totalElements || recruits.length;
             const totalPagesData = response.data.result?.page?.totalPages;
             setTotalPages(totalPagesData);
           } else {
-            console.log('검색 실패: 응답 데이터 없음');
             setFilteredRecruits([]);
             setError("데이터를 불러오는데 실패했습니다.");
           }
@@ -120,7 +118,7 @@ export default function RecruitsAll() {
   return (
     <>
       <SEO title="모든 공고문" description="스프 SouF - 모든 공고문 조회" subTitle="스프" />
-            <div className="pt-12 md:px-6 px-24 w-full bg-[#FFFEF5] shadow-md py-10">
+            <div className="pt-12 md:px-6 px-24 w-full bg-[#FFFBE5] shadow-md py-10">
         <div className="">
           <SearchBar 
             value={searchQuery}
@@ -133,6 +131,49 @@ export default function RecruitsAll() {
       </div>
               <div className="flex gap-6 pt-6 md:px-6 px-24 w-full">
           <div className="w-full lg:w-3/4 mx-auto">
+          {filteredRecruits.length > 0 && (() => {
+            const today = new Date();
+            const validRecruits = filteredRecruits.filter(recruit => {
+              const deadlineDate = new Date(recruit.deadLine);
+              const diffTime = deadlineDate - today;
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+              return diffDays > 0;
+            });
+            
+            if (validRecruits.length === 0) return null;
+            
+            const sortedByDeadline = validRecruits.sort((a, b) => {
+              const dateA = new Date(a.deadLine);
+              const dateB = new Date(b.deadLine);
+              return dateA - dateB;
+            });
+            
+            const nearestDeadline = sortedByDeadline[0];
+            const deadlineDate = new Date(nearestDeadline.deadLine);
+            const diffTime = deadlineDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            return (
+              <div 
+                className="py-4 px-6 w-full text-gray-500 text-xl bg-white rounded-[30px] border border-red-200 mb-6 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer"
+                onClick={() => navigate(`/recruitDetails/${nearestDeadline.recruitId}`)}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center gap-4">
+
+                    <span className="text-red-500 font-bold">
+                      D-{diffDays > 0 ? diffDays : 0}
+                    </span>
+                    
+                  </div>
+                  <span className="text-gray-800 font-medium">
+                      {nearestDeadline.title}
+                    </span>
+                
+                </div>
+              </div>
+            );
+          })()}
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit) => {
