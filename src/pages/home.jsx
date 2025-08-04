@@ -256,8 +256,11 @@ export default function Home() {
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
-            <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
+            <h1 className="hidden lg:block text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
               필요한 일을, 필요한 사람에게
+            </h1>
+            <h1 className="block lg:hidden text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
+              필요한 일을,<br/> 필요한 사람에게
             </h1>
             <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-center lg:text-left">
               지금 바로 SouF!
@@ -297,7 +300,7 @@ export default function Home() {
 {/* 인기 공고문  */}
       <div className="relative mt-16 px-">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -311,7 +314,7 @@ export default function Home() {
       {/* 인기 피드 섹션 */}
       <div className="relative mt-16 px-">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-3xl font-bold mb-8 px-6 lg:px-24">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 피드</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -332,32 +335,89 @@ export default function Home() {
             </span>
             <span className="ml-2">더보기</span>
           </h2>
-            <div className="flex flex-nowrap justify-between w-full lg:px-24 mt-20">
-              {categories.map((category, index) => {
-                const categoryImages = [
-                  cate1Img,
-                  cate2Img,
-                  cate3Img,
-                  cate4Img,
-                  cate5Img,
-                ];
-                return (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(index + 1)}
-                                         className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                  >
-                    <img
-                      src={categoryImages[index]}
-                      alt={category}
-                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
-                    />
-                    <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
-                      {category}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="flex flex-col md:flex-row md:flex-nowrap md:justify-between w-full lg:px-24 mt-20">
+              <div className="flex justify-center md:hidden mb-4">
+                {categories.slice(0, 3).map((category, index) => {
+                  const categoryImages = [
+                    cate1Img,
+                    cate2Img,
+                    cate3Img,
+                    cate4Img,
+                    cate5Img,
+                  ];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryClick(index + 1)}
+                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                    >
+                      <img
+                        src={categoryImages[index]}
+                        alt={category}
+                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex justify-center md:hidden">
+                {categories.slice(3, 5).map((category, index) => {
+                  const categoryImages = [
+                    cate1Img,
+                    cate2Img,
+                    cate3Img,
+                    cate4Img,
+                    cate5Img,
+                  ];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryClick(index + 4)}
+                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                    >
+                      <img
+                        src={categoryImages[index + 3]}
+                        alt={category}
+                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* 데스크톱 버전 */}
+              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full">
+                {categories.map((category, index) => {
+                  const categoryImages = [
+                    cate1Img,
+                    cate2Img,
+                    cate3Img,
+                    cate4Img,
+                    cate5Img,
+                  ];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryClick(index + 1)}
+                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                    >
+                      <img
+                        src={categoryImages[index]}
+                        alt={category}
+                        className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
+                      />
+                      <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             </div>
             </div>
