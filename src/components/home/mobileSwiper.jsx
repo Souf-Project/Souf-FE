@@ -137,13 +137,13 @@ export default function MobileSwiper() {
                     {recruit.title}
                   </h3>
                 </div>
-                <div className="px-6 pb-4">
+                <div className="hidden lg:block px-6 pb-4">
                   <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-md font-semibold rounded-full">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
                 <div className="px-6 pb-4">
-                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-gray-600 line-clamp-5 lg:line-clamp-3 leading-relaxed">
                     {recruit.content}
                   </p>
                 </div>
