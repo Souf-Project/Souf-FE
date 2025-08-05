@@ -348,6 +348,11 @@ useEffect(() => {
           secondCategories={filteredSecondCategories}
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
+          selectedCategories={{
+            firstCategoryId: selectedCategory[0],
+            secondCategoryId: selectedCategory[1],
+            thirdCategoryId: selectedCategory[2]
+          }}
         />
       </div>
     )}
@@ -406,6 +411,11 @@ useEffect(() => {
             secondCategories={filteredSecondCategories}
             thirdCategories={thirdCategories}
             onSelect={handleCategorySelect}
+            selectedCategories={{
+              firstCategoryId: selectedCategory[0],
+              secondCategoryId: selectedCategory[1],
+              thirdCategoryId: selectedCategory[2]
+            }}
           />
         </div>
         {activeTab === "feed" ? (
