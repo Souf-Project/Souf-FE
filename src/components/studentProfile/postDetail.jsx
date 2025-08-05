@@ -379,42 +379,12 @@ const handleDeleteClick = () => {
                       <p className="text-sm text-gray-600">공유</p>
                       <img src={shareIco} alt="shareIco" />
                     </button>
-                    
-                    {showShareDropdown && (
-                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                        <div className="p-4">
-                          <h3 className="text-sm font-semibold text-gray-800 mb-3">공유하기</h3>
-                          
-                          <div className="flex justify-center gap-3 mb-4">
-                            <button onClick={handleShareToTwitter} className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
-                              <span className="text-white text-xs font-bold">X</span>
-                            </button>
-                            <button onClick={handleShareToFacebook} className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
-                              <span className="text-white text-xs font-bold">f</span>
-                            </button>
-                            {/* <button onClick={handleShareToKakaoTalk} className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
-                              <span className="text-white text-xs font-bold">K</span>
-                            </button> */}
-                          </div>
-                          
-                          <div className="border-t border-gray-200 pt-3">
-                            <div className="flex items-center gap-2 mb-2 bg-gray-50 border border-gray-200 rounded px-2 py-1">
-                              <span className="flex-1 text-xs text-gray-600 truncate">
-                                {shortenUrl(window.location.href)}
-                              </span>
-                              <button onClick={handleCopyUrl} className="px-2 py-1 bg-white hover:bg-gray-100 rounded text-xs transition-colors border border-gray-200">
-                                {copySuccess ? "복사됨!" : "복사"}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                  
                   </div>
                     
                     {/* 공유 드롭다운 */}
                     {showShareDropdown && (
-                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-sm z-50">
+                      <div className="absolute bottom-full right-[-200px] lg:right-[-100px] mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-sm z-50">
                         <div className="p-4">
                           <h3 className="text-sm font-semibold text-gray-800 mb-3">공유하기</h3>
                           
@@ -437,14 +407,9 @@ const handleDeleteClick = () => {
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                               </svg>
                             </button>
-                            
-                            {/* <button 
-                              onClick={handleShareToKakaoTalk}
-                              className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors"
-                            >
-                              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z"/>
-                              </svg>
+{/*                             
+                            <button onClick={handleShareToKakaoTalk} className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                              <span className="text-white text-xs font-bold">K</span>
                             </button> */}
                           </div>
                           
