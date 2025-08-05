@@ -78,11 +78,11 @@ export default function Recruit() {
        
       });
 
-      console.log("API 응답:", response);
+      // console.log("API 응답:", response);
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log("공고문 데이터:", recruits);
+        // console.log("공고문 데이터:", recruits);
        
         setFilteredRecruits(recruits);
 
@@ -245,7 +245,7 @@ useEffect(() => {
 
   // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
-    console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
+    // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
     fetchRecruits();
   }, [selectedCategory, currentPage, fetchRecruits]);
 
