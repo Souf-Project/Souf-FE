@@ -297,7 +297,7 @@ const handleDeleteClick = () => {
               {worksData.topic}
               </div>
               <div className="w-full text-sm text-gray-600 border-t border-gray-300">
-                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
+                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md w-full break-words overflow-hidden">
                 {worksData.content}
                 </p>
               </div>
