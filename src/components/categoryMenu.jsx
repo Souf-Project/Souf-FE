@@ -13,6 +13,15 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect }) => {
     }
   };
 
+  const handleSecondCategoryClick = (secondCategory) => {
+    if (onSelect) {
+      // 대분류가 6(IT.개발)인 경우 중분류를 직접 클릭
+      if (secondCategory.first_category_id === 6) {
+        onSelect(secondCategory.first_category_id, secondCategory.second_category_id, null);
+      }
+    }
+  };
+
   if (!secondCategories || secondCategories.length === 0) {
     return (
       <div className="w-60 h-[50%] border p-4 bg-gray-50 lg:hidden">
@@ -27,22 +36,29 @@ const DesktopCategoryMenu = () => (
     <h3 className="text-lg lg:text-2xl font-bold text-gray-800 mb-4">카테고리</h3>
     {secondCategories.map((second) => (
       <div key={second.second_category_id} className="mb-3">
-        <div className="font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded text-gray-700">
+        <div 
+          className={`font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded text-gray-700 ${
+            second.first_category_id === 6 ? 'cursor-pointer hover:text-yellow-point hover:bg-yellow-50' : ''
+          }`}
+          onClick={second.first_category_id === 6 ? () => handleSecondCategoryClick(second) : undefined}
+        >
           <span>{second.name}</span>
         </div>
-        <div className="ml-4 mt-2 border-l-2 border-gray-200 pl-3">
-          {thirdCategories.third_category
-            .filter(third => third.second_category_id === second.second_category_id)
-            .map((third) => (
-              <div 
-                key={third.third_category_id} 
-                className="py-1 px-2 text-xs text-gray-600 hover:text-yellow-point hover:bg-yellow-50 rounded cursor-pointer transition-colors"
-                onClick={() => handleThirdCategoryClick(second, third)}
-              >
-                {third.name}
-              </div>
-            ))}
-        </div>
+        {second.first_category_id !== 6 && (
+          <div className="ml-4 mt-2 border-l-2 border-gray-200 pl-3">
+            {thirdCategories.third_category
+              .filter(third => third.second_category_id === second.second_category_id)
+              .map((third) => (
+                <div 
+                  key={third.third_category_id} 
+                  className="py-1 px-2 text-xs text-gray-600 hover:text-yellow-point hover:bg-yellow-50 rounded cursor-pointer transition-colors"
+                  onClick={() => handleThirdCategoryClick(second, third)}
+                >
+                  {third.name}
+                </div>
+              ))}
+          </div>
+        )}
       </div>
     ))}
   </div>
@@ -54,6 +70,11 @@ const DesktopCategoryMenu = () => (
     const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
 
     const handleSecondCategoryClick = (second) => {
+      // 대분류가 6(IT.개발)인 경우 중분류를 직접 클릭
+      if (second.first_category_id === 6) {
+        handleSecondCategoryClick(second);
+        return;
+      }
       setSelectedSecondCategory(second);
     };
 
@@ -91,7 +112,7 @@ const DesktopCategoryMenu = () => (
           <div className="w-1/2">
             
             <div className="overflow-y-auto h-full">
-              {selectedSecondCategory ? (
+              {selectedSecondCategory && selectedSecondCategory.first_category_id !== 6 ? (
                 getThirdCategories().map((third) => (
                   <div
                     key={third.third_category_id}
