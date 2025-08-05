@@ -197,9 +197,9 @@ export default function PostUpload() {
             videoUploadResponse = await postVideoUpload({
               uploadId: videoDto.uploadId,
               fileUrl: videoDto.fileName,
-              parts: multiUploadArray,
+            parts: multiUploadArray,
               type:"feed"
-            });
+          });
         }
 
         // 3. 최종 file 정보 구성

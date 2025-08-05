@@ -29,9 +29,9 @@ export default function RecruitsAll() {
     
           const requestParams = {
             firstCategory: null, 
-            page: currentPage,
-            size: pageSize,
-            sort: ["createdAt,desc"],
+              page: currentPage,
+              size: pageSize,
+              sort: ["createdAt,desc"],
           };
 
           const trimmedQuery = String(searchTerm || '').trim();
@@ -46,10 +46,10 @@ export default function RecruitsAll() {
     
           if (response.data) {
             const recruits = response.data.result?.content || [];
-
+           
             setFilteredRecruits(recruits);
             // console.log(recruits);
-           
+    
             const totalPagesData = response.data.result?.page?.totalPages;
             setTotalPages(totalPagesData);
           } else {
