@@ -89,11 +89,11 @@ export default function RecruitUpload() {
       };
     } else {
       return {
-        title: '',
+    title: '',
         content: '',
         region: '',
         city: '',
-        deadline: '',
+    deadline: '',
         deadlineTime: '00:00',
         deadlineHour: '01',
         deadlineMinute: '00',
@@ -199,18 +199,18 @@ export default function RecruitUpload() {
       const validateFileSize = (file) => {
         const maxSize = 10 * 1024 * 1024; // 10MB
         const isValid = file.size <= maxSize;
-        if (!isValid) {
+            if (!isValid) {
           alert(`${file.name}의 크기가 10MB를 초과합니다.`);
-        }
+            }
         return isValid;
-      };
+          };
 
 
       const validFiles = fileArray.filter(validateFileSize);
-      setFormData(prev => ({
-        ...prev,
-        files: validFiles
-      }));
+          setFormData(prev => ({
+            ...prev,
+            files: validFiles
+          }));
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -625,18 +625,18 @@ dtoList.forEach((dto, i) => {
           </label>
           <div className="grid grid-cols-3 gap-4 mb-4">
             {formData?.categoryDtos?.map((category, index) => (
-              <CategorySelectBox
+          <CategorySelectBox 
                 key={index}
-                title="카테고리 선택"
-                content=""
+            title="카테고리 선택"
+            content=""
                 defaultValue={category}
                 type="text"
-                isEditing={!isEditMode}
+            isEditing={!isEditMode}
                 onChange={handleCategoryChange(index)}
                 width="w-full"
-              />
+          />
             ))}
-          </div>
+            </div>
         </div>
 
         <div>

@@ -1,5 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
+import heartOn from "../../assets/images/heartOn.svg";
+import heartOff from "../../assets/images/heartOff.svg";
+import commentIco from "../../assets/images/commentIco.svg";
+import shareIco from "../../assets/images/shareIco.svg";
 import { deleteFeed, getFeedDetail } from "../../api/feed";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -13,8 +17,12 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
+import CommentList from "../post/commentList";
 import Loading from "../loading";
 import SEO from "../seo";
+import useSNSShare from "../../hooks/useSNSshare";
+import copyIco from "../../assets/images/shareIco.svg";
+
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -32,6 +40,9 @@ export default function PostDetail() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showProfileSkeleton, setShowProfileSkeleton] = useState(true);
   const swiperRef = useRef(null);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareDropdown, setShowShareDropdown] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
     const {
     data: feedData,
@@ -116,200 +127,353 @@ const handleDeleteClick = () => {
     navigate("/");
   };
 
+  // SNS 공유 훅 사용
+  const { shareToTwitter, shareToFacebook, shareToKakaoTalk, shareToNavigator, isAvailNavigator } = useSNSShare({
+    title: worksData.topic,
+    url: window.location.href,
+  });
+
+  const handleShareClick = () => {
+    setShowShareDropdown(!showShareDropdown);
+  };
+
+  const handleCopyUrl = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('URL 복사 실패:', err);
+    }
+  };
+
+  const shortenUrl = (url) => {
+    if (url.length <= 40) return url;
+    const start = url.substring(0, 20);
+    const end = url.substring(url.length - 20);
+    return `${start}...${end}`;
+  };
+
+  const handleShareToTwitter = () => {
+    shareToTwitter();
+    setShowShareModal(false);
+  };
+
+  const handleShareToFacebook = () => {
+    shareToFacebook();
+    setShowShareModal(false);
+  };
+
+  const handleShareToKakaoTalk = () => {
+    shareToKakaoTalk();
+    setShowShareModal(false);
+  };
+
+  const handleShareToNavigator = () => {
+    shareToNavigator({
+      text: worksData.topic,
+      url: window.location.href,
+    });
+    setShowShareModal(false);
+  };
+
   if (isLoading) {
     return <Loading text="게시글을 불러오는 중..." />;
   }
 
   return (
     <>
-    <SEO  title={worksData.topic} description={`스프 SouF - ${worksData.topic} 피드`} subTitle='스프'
-    content={worksData.content} />
-    <div className="flex flex-col py-16 px-4 max-w-4xl w-full mx-auto">
-      <div className="flex justify-between">
-      <button
-        className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
-        onClick={handleGoBack}
-      >
-        <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
-        <span>뒤로가기</span>
-      </button>
+      <SEO  title={worksData.topic} description={`스프 SouF - ${worksData.topic} 피드`} subTitle='스프'
+      content={worksData.content} />
+      <div className="flex flex-col pt-16 px-4 max-w-4xl w-full mx-auto">
+        <div className="flex justify-between">
+          <button
+            className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
+            onClick={handleGoBack}
+          >
+            <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
+            <span>뒤로가기</span>
+          </button>
 
-      <p className="text-sm text-gray-500 pr-6">
-              누적 조회 수 {worksData.view}회
-            </p>
-            </div>
-
-
-            <div className="flex flex-col rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
-        
-        {/* 모바일: 제목과 날짜  */}
-        <div className="flex justify-between items-center mb-4 lg:hidden">
-          <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
-            {worksData.topic}
-          </h2>
-          <p className="text-xs lg:text-sm text-gray-500">
-            {getFormattedDate(worksData.lastModifiedTime)}
+          <p className="text-sm text-gray-500 pr-6">
+            누적 조회 수 {worksData.view}회
           </p>
         </div>
-        
-        
-        <div className="flex flex-col lg:flex-row w-full">
-          <div className="flex w-full lg:w-[65%] h-full relative order-2 lg:order-1">
-    <Swiper
-      onSwiper={(swiper) => {
-        swiperRef.current = swiper;
-      }}
-      pagination={{
-        dynamicBullets: true,
-      }}
-      modules={[Pagination]}
-      className="rounded-lg relative"
-    >
-      {mediaData?.map((data, i) => {
-  const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
 
-  return (
-    <SwiperSlide key={i} className="flex justify-center items-center">
-                    <div className="flex justify-center items-center h-auto w-full">
-        {isVideo ? (
-          <video
-            src={`${BUCKET_URL}${data.fileUrl}`}
-            controls
-            className="w-full h-full object-cover rounded-lg"
-          />
-        ) : (
-          <img
-            src={`${BUCKET_URL}${data.fileUrl}`}
-            alt={data.fileName}
-            className="w-full h-full object-cover rounded-lg"
-          />
-        )}
-      </div>
-    </SwiperSlide>
-      );
-    })}
-    </Swiper>
-    
-    {/* 커스텀 화살표 버튼 - 이미지가 여러 장일 때만 표시 */}
-    {mediaData && mediaData.length > 1 && (
-      <>
-        <button 
-          onClick={() => swiperRef.current?.slidePrev()}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-        >
-          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button 
-          onClick={() => swiperRef.current?.slideNext()}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-        >
-          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </>
-    )}
-  </div>
-          
-          <div className="w-full lg:max-w-[35%] lg:pl-6 relative order-1 lg:order-2 mb-6 lg:mb-0">
-            {/* 사용자 프로필 정보 */}
-        <div className="flex items-center justify-between mb-4 w-full">
-          {/* 프로필 사진과 닉네임 (왼쪽) */}
-          <div 
-            className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => navigate(`/profileDetail/${id}`)}
-          >
-            {worksData.profileImageUrl ? (
-              <img
-                src={worksData.profileImageUrl}
-                alt="프로필 이미지"
-                className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200"
-                onError={(e) => {
-                  e.target.src = BasicProfileImg1;
-                }}
-              />
-            ) : showProfileSkeleton ? (
-              <div className="w-10 h-10 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
-            ) : (
-              <img
-                src={BasicProfileImg1}
-                alt="기본 프로필 이미지"
-                className="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200"
-              />
-            )}
-            <div className="flex flex-col">
-              {worksData.nickname ? (
-                <>
-                  <span className="font-semibold text-md text-gray-800">{worksData.nickname}</span>
-                  <span className="text-sm text-gray-500">{worksData.categoryName}</span>
-                </>
-              ) : (
-                <>
-                  <div className="h-6 bg-gray-200 rounded animate-pulse mb-1 w-24"></div>
-                  <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
-                </>
-              )}
-            </div>
-          </div>
-          
-          {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
-          {Number(id) === memberId && (
-            <div ref={optionsRef}>
-              <button
-                onClick={() => setShowOptions((prev) => !prev)}
-                className="text-xl px-2 py-1 rounded hover:bg-gray-100"
-              >
-                ⋯
-              </button>
-
-              {showOptions && (
-                <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-10">
-                  <button
-                    onClick={() => navigate("/postEdit", {
-                              state: {
-                              worksData,
-                              mediaData
-                            }
-                          })}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                  >
-                    수정하기
-                  </button>
-                  <button
-                     onClick={handleDeleteClick}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
-                  >
-                    삭제하기
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-            
-            
-          <div className="flex flex-col justify-start items-start mb-4 lg:h-[90%] w-full ">
-            <div className="w-full h-full flex justify-between flex-col">
-              <div className="w-full">
-              <div className="w-full text-xl font-semibold leading-snug text-black py-3 lg:block hidden">
+        <div className="flex flex-col rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+          {/* 모바일: 제목과 날짜  */}
+          <div className="flex justify-between items-center mb-4 lg:hidden">
+            <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
               {worksData.topic}
-              </div>
-              <div className="w-full text-sm text-gray-600 border-t border-gray-300">
-                <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md">
-                {worksData.content}
-                </p>
-              </div>
-              </div>
-              <p className="text-right mt-4 lg:block hidden">{getFormattedDate(worksData.lastModifiedTime)}</p>
+            </h2>
+            <p className="text-xs lg:text-sm text-gray-500">
+              {getFormattedDate(worksData.lastModifiedTime)}
+            </p>
+          </div>
+          
+          <div className="flex flex-col lg:flex-row w-full">
+            <div className="flex w-full lg:w-[65%] h-full relative order-2 lg:order-1">
+              <Swiper
+                onSwiper={(swiper) => {
+                  swiperRef.current = swiper;
+                }}
+                pagination={{
+                  dynamicBullets: true,
+                }}
+                modules={[Pagination]}
+                className="rounded-lg relative"
+              >
+                {mediaData?.map((data, i) => {
+                  const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+
+                  return (
+                    <SwiperSlide key={i} className="flex justify-center items-center">
+                      <div className="flex justify-center items-center h-auto w-full">
+                        {isVideo ? (
+                          <video
+                            src={`${BUCKET_URL}${data.fileUrl}`}
+                            controls
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <img
+                            src={`${BUCKET_URL}${data.fileUrl}`}
+                            alt={data.fileName}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        )}
+                      </div>
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+              
+              {/* 커스텀 화살표 버튼 - 이미지가 여러 장일 때만 표시 */}
+              {mediaData && mediaData.length > 1 && (
+                <>
+                  <button 
+                    onClick={() => swiperRef.current?.slidePrev()}
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  >
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => swiperRef.current?.slideNext()}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  >
+                    <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
             </div>
             
+            <div className="w-full lg:max-w-[35%] lg:pl-6 relative order-1 lg:order-2 mb-6 lg:mb-0">
+              <div className="flex flex-col justify-between h-full">
+                {/* 상단: 프로필 + 제목 + 내용 */}
+                <div>
+                  <div className="flex items-center justify-between mb-4 w-full">
+                   
+                    <div 
+                      className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => navigate(`/profileDetail/${id}`)}
+                    >
+                      {worksData.profileImageUrl ? (
+                        <img
+                          src={worksData.profileImageUrl}
+                          alt="프로필 이미지"
+                          className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+                          onError={(e) => {
+                            e.target.src = BasicProfileImg1;
+                          }}
+                        />
+                      ) : showProfileSkeleton ? (
+                        <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
+                      ) : (
+                        <img
+                          src={BasicProfileImg1}
+                          alt="기본 프로필 이미지"
+                          className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
+                        />
+                      )}
+                      <div className="flex flex-col">
+                        {worksData.nickname ? (
+                          <>
+                            <span className="font-semibold text-md text-gray-800">{worksData.nickname}</span>
+                            <p className="text-right text-gray-500">{getFormattedDate(worksData.lastModifiedTime)}</p>
+                          </>
+                        ) : (
+                          <>
+                            <div className="h-6 bg-gray-200 rounded animate-pulse mb-1 w-24"></div>
+                            <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
+                          </>
+                        )}
+                      </div>
+                     
+                    </div>
+                    
+                    {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
+                    {Number(id) === memberId && (
+                      <div ref={optionsRef}>
+                        <button
+                          onClick={() => setShowOptions((prev) => !prev)}
+                          className="text-xl px-2 py-1 rounded hover:bg-gray-100"
+                        >
+                          ⋯
+                        </button>
+
+                        {showOptions && (
+                          <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-10">
+                            <button
+                              onClick={() => navigate("/postEdit", {
+                                        state: {
+                                        worksData,
+                                        mediaData
+                                      }
+                                    })}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                            >
+                              수정하기
+                            </button>
+                            <button
+                               onClick={handleDeleteClick}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
+                            >
+                              삭제하기
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="w-full">
+                    <div className="w-full text-xl font-semibold leading-snug text-black py-3 lg:block hidden">
+                      {worksData.topic}
+                    </div>
+                    <div className="w-full text-sm text-gray-600">
+                      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md w-full break-words overflow-hidden">
+                        {worksData.content}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 mt-4">
+                  {/* <div className="flex items-center gap-2">
+                    <button className="flex items-center gap-2">
+                      <img src={heartOff} alt="heartOff" />
+                      <p className="text-sm text-gray-600">100</p>
+                    </button>
+                    <button className="flex items-center gap-2">
+                      <img src={commentIco} alt="commentIco" />
+                      <p className="text-sm text-gray-600">100</p>
+                    </button>
+                  </div> */}
+                  <div className="relative">
+                                      <div className="relative">
+                    <button className="flex items-center gap-2" onClick={handleShareClick}>
+                      <p className="text-sm text-gray-600">공유</p>
+                      <img src={shareIco} alt="shareIco" />
+                    </button>
+                    
+                    {showShareDropdown && (
+                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                        <div className="p-4">
+                          <h3 className="text-sm font-semibold text-gray-800 mb-3">공유하기</h3>
+                          
+                          <div className="flex justify-center gap-3 mb-4">
+                            <button onClick={handleShareToTwitter} className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
+                              <span className="text-white text-xs font-bold">X</span>
+                            </button>
+                            <button onClick={handleShareToFacebook} className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                              <span className="text-white text-xs font-bold">f</span>
+                            </button>
+                            {/* <button onClick={handleShareToKakaoTalk} className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
+                              <span className="text-white text-xs font-bold">K</span>
+                            </button> */}
+                          </div>
+                          
+                          <div className="border-t border-gray-200 pt-3">
+                            <div className="flex items-center gap-2 mb-2 bg-gray-50 border border-gray-200 rounded px-2 py-1">
+                              <span className="flex-1 text-xs text-gray-600 truncate">
+                                {shortenUrl(window.location.href)}
+                              </span>
+                              <button onClick={handleCopyUrl} className="px-2 py-1 bg-white hover:bg-gray-100 rounded text-xs transition-colors border border-gray-200">
+                                {copySuccess ? "복사됨!" : "복사"}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                    
+                    {/* 공유 드롭다운 */}
+                    {showShareDropdown && (
+                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-sm z-50">
+                        <div className="p-4">
+                          <h3 className="text-sm font-semibold text-gray-800 mb-3">공유하기</h3>
+                          
+                          {/* SNS 공유 버튼들 */}
+                          <div className="flex justify-center gap-3 mb-4">
+                            <button 
+                              onClick={handleShareToTwitter}
+                              className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors"
+                            >
+                              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                              </svg>
+                            </button>
+                            
+                            <button 
+                              onClick={handleShareToFacebook}
+                              className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
+                            >
+                              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                              </svg>
+                            </button>
+                            
+                            {/* <button 
+                              onClick={handleShareToKakaoTalk}
+                              className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors"
+                            >
+                              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 3c5.799 0 10.5 3.664 10.5 8.185 0 4.52-4.701 8.184-10.5 8.184a13.5 13.5 0 0 1-1.727-.11l-4.408 2.883c-.501.265-.678.236-.472-.413l.892-3.678c-2.88-1.46-4.785-3.99-4.785-6.866C1.5 6.665 6.201 3 12 3z"/>
+                              </svg>
+                            </button> */}
+                          </div>
+                          
+                          {/* URL 복사 섹션 */}
+                          <div className="border-t border-gray-200 pt-3">
+                            <div className="flex items-center gap-2 mb-2 bg-gray-50 border border-gray-200 rounded px-2 py-1">
+                              <span className="flex-1 text-xs text-gray-600 truncate">
+                                {shortenUrl(window.location.href)}
+                              </span>
+                              <button 
+                                onClick={handleCopyUrl}
+                                className="px-2 py-1 bg-white hover:bg-gray-100 rounded text-xs transition-colors border border-gray-200"
+                              >
+                                {copySuccess ? "복사됨!" : "복사"}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-           
           </div>
         </div>
+        {/* <CommentList /> */}
       </div>
+      
       {showDeleteModal && (
         <AlertModal
           type="warning"
@@ -344,7 +508,8 @@ const handleDeleteClick = () => {
        onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-    </div>
-  </>
+      
+
+    </>
   );
 }

@@ -9,7 +9,7 @@ export default function SEO({ title, subTitle ="", description, content }) {
   const safeTitle = title || "SouF";
   const safeSubTitle = subTitle || "대학생 외주 & 공모전";
 
-  useEffect(() => {
+    useEffect(() => {
     document.title = `${safeTitle} | ${safeSubTitle}`;
   }, [safeTitle, safeSubTitle]);
 
