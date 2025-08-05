@@ -55,7 +55,7 @@ export default function Profile({
     <div
       className="flex relative flex-col items-center justify-center w-full border border-[#D4D4D4] rounded-[30px] p-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
-      <img className="absolute top-4 right-4 w-11 z-10" src={sendIco} onClick={() => handleChat(memberId)} />
+      <img className="absolute top-4 right-4 w-11 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
       <div className="flex flex-col items-center justify-center"
       onClick={() => clickHandler(memberId)}>
       <img 
