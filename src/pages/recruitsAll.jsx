@@ -7,7 +7,7 @@ import Loading from "../components/loading";
 import SEO from "../components/seo";
 import SearchBar from "../components/SearchBar";
 import adImg from "../assets/images/adImg.png";
-import { getFeed } from "../api/feed";
+import { getProfile } from "../api/profile";
 import basicProfileImg from "../assets/images/BasicProfileImg1.png";
 
 export default function RecruitsAll() {
@@ -48,9 +48,8 @@ export default function RecruitsAll() {
             const recruits = response.data.result?.content || [];
 
             setFilteredRecruits(recruits);
-            console.log(recruits);
-            const totalElements =
-              response.data.result?.page?.totalElements || recruits.length;
+            // console.log(recruits);
+           
             const totalPagesData = response.data.result?.page?.totalPages;
             setTotalPages(totalPagesData);
           } else {
@@ -69,16 +68,26 @@ export default function RecruitsAll() {
       try {
         // 1~5 중 랜덤 값 생성
         const randomCategory = Math.floor(Math.random() * 5) + 1;
-        const response = await getFeed(randomCategory, null, null, null, {
+        const response = await getProfile(randomCategory, null, null, null, {
           page: 0,
-          size: 3,
+          size: 10,
         });
 
         if (response) {
-          const profiles = response.result?.content || [];
-          setStudentProfiles(profiles);
+          const allProfiles = response.result?.content || [];
+          const uniqueProfiles = allProfiles.filter((profile, index, self) => {
+            // 피드가 있는 학생만 선택
+            const hasFeed = profile.popularFeeds && profile.popularFeeds.length > 0;
+            // memberId 기준으로 중복 제거
+            const isFirstOccurrence = self.findIndex(p => p.memberId === profile.memberId) === index;
+            
+            return hasFeed && isFirstOccurrence;
+          });
+
+          const selectedProfiles = uniqueProfiles.slice(0, 3);
+          
+          setStudentProfiles(selectedProfiles);
         } else {
-          console.log('학생 프로필 조회 실패: 응답 데이터 없음');
           setStudentProfiles([]);
         }
       } catch (err) {
@@ -89,7 +98,6 @@ export default function RecruitsAll() {
     }, []);
 
     useEffect(() => {
-      console.log("useEffect 실행");
       fetchRecruits();
       fetchStudentProfiles();
     }, [fetchRecruits, fetchStudentProfiles]);
@@ -99,8 +107,8 @@ export default function RecruitsAll() {
     };
 
     const handleSearch = (query) => {
-      setSearchTerm(query); // 실제 검색에 사용할 용어 설정
-      setCurrentPage(0); // 검색 시 첫 페이지로 이동
+      setSearchTerm(query);
+      setCurrentPage(0); 
     };
 
     if (loading) {
@@ -235,7 +243,7 @@ export default function RecruitsAll() {
                          <img
                            src={profile.profileImageUrl}
                            alt="프로필 이미지"
-                           className="w-20 h-20 rounded-full object-cover"
+                           className="w-20 h-20 rounded-full object-cover border border-gray-300"
                            onError={(e) => {
                              e.target.src = basicProfileImg;
                            }}
@@ -244,7 +252,7 @@ export default function RecruitsAll() {
                          <img
                            src={basicProfileImg}
                            alt="기본 프로필 이미지"
-                           className="w-20 h-20 rounded-full object-cover"
+                           className="w-20 h-20 rounded-full object-cover border-[0.8px] border-gray-300"
                          />
                        )}
                        <div className="flex-1">
@@ -257,33 +265,33 @@ export default function RecruitsAll() {
                       
                        {/* 최신 피드 이미지들 */}
                        <div className="flex gap-2 flex-1 h-full w-full">
-                         {profile.mediaResDtos && profile.mediaResDtos.length > 0 && (
+                         {profile.popularFeeds && profile.popularFeeds.length > 0 && (
                            <>
-                             {/* 첫 번째 피드 이미지 */}
-                             <div className="w-1/2">
-                               <img 
-                                 src={`${import.meta.env.VITE_S3_BUCKET_URL}${profile.mediaResDtos[0].fileUrl}`}
-                                 alt="피드 이미지 1" 
-                                 className="w-full h-full max-h-28 object-cover rounded-lg"
-                                 onError={(e) => {
-                                   e.target.style.display = 'none';
-                                 }}
-                               />
-                             </div>
-                             
-                             {/* 두 번째 피드 이미지 (있는 경우) */}
-                             {profile.mediaResDtos.length > 1 && (
+                                                            {/* 첫 번째 피드 이미지 */}
                                <div className="w-1/2">
                                  <img 
-                                   src={`${import.meta.env.VITE_S3_BUCKET_URL}${profile.mediaResDtos[1].fileUrl}`}
-                                   alt="피드 이미지 2" 
-                                   className="w-full h-full max-h-28 object-cover rounded-lg"
+                                   src={`${import.meta.env.VITE_S3_BUCKET_URL}${profile.popularFeeds[0].imageUrl}`}
+                                   alt="피드 이미지 1" 
+                                   className="w-full h-full max-h-28 object-cover rounded-lg border-[0.8px] border-gray-300"
                                    onError={(e) => {
                                      e.target.style.display = 'none';
                                    }}
                                  />
                                </div>
-                             )}
+                               
+                               {/* 두 번째 피드 이미지 (있는 경우) */}
+                               {profile.popularFeeds.length > 1 && (
+                                 <div className="w-1/2">
+                                   <img 
+                                     src={`${import.meta.env.VITE_S3_BUCKET_URL}${profile.popularFeeds[1].imageUrl}`}
+                                     alt="피드 이미지 2" 
+                                     className="w-full h-full max-h-28 object-cover rounded-lg border-[0.8px] border-gray-300"
+                                     onError={(e) => {
+                                       e.target.style.display = 'none';
+                                     }}
+                                   />
+                                 </div>
+                               )}
                            </>
                          )}
                        </div>

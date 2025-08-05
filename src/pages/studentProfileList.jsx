@@ -66,7 +66,7 @@ export default function StudentProfileList({secondCategoryId, thirdCategoryId ,k
                 temperature={data.temperature}
                 userName={data.nickname}
                 userDetail={data.userDetail}
-                userWorks={data.userWorks}
+                popularFeeds={data.popularFeeds}
               />
             ))}
           </div>
