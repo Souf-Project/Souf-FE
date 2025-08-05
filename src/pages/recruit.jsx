@@ -265,7 +265,7 @@ useEffect(() => {
   };
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
-    console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
+    // console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
   };
@@ -348,6 +348,11 @@ useEffect(() => {
           secondCategories={filteredSecondCategories}
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
+          selectedCategories={{
+            firstCategoryId: selectedCategory[0],
+            secondCategoryId: selectedCategory[1],
+            thirdCategoryId: selectedCategory[2]
+          }}
         />
       </div>
     )}
@@ -406,6 +411,11 @@ useEffect(() => {
             secondCategories={filteredSecondCategories}
             thirdCategories={thirdCategories}
             onSelect={handleCategorySelect}
+            selectedCategories={{
+              firstCategoryId: selectedCategory[0],
+              secondCategoryId: selectedCategory[1],
+              thirdCategoryId: selectedCategory[2]
+            }}
           />
         </div>
         {activeTab === "feed" ? (
