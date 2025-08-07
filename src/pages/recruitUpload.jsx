@@ -391,9 +391,9 @@ dtoList.forEach((dto, i) => {
   const thirdCategories = thirdCategoryData.third_category || [];
 
   return (
-    <div className="pt-24 px-6 w-1/2 max-w-5xl mx-auto mb-12">
-      <h1 className="text-3xl font-bold w-1/4 mx-auto">
-        {isEditMode ? '공고문 수정' : '공고문 작성'}
+    <div className="pt-24 px-6 w-full lg:w-1/2  lg:max-w-5xl mx-auto mb-12">
+      <h1 className="text-3xl font-bold w-1/4 mx-auto whitespace-nowrap">
+        {isEditMode ? '공고문 수정' :   '공고문 작성'}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
