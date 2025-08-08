@@ -16,9 +16,10 @@ export default function SEO({ title, subTitle ="", description, content }) {
   return (
     <Helmet>
       <title>{`${safeTitle} | ${safeSubTitle}`}</title>
+      <meta property="title" content={`${safeTitle} | SouF`} />
+      <meta property="description" content={content || description || "스프 SouF 대학생 외주 공모전"} />
       <meta property="og:title" content={`${safeTitle} | SouF`} />
       <meta property="og:description" content={content || description || "스프 SouF 대학생 외주 공모전"} />
-      <meta property="description" content={content || description || "스프 SouF 대학생 외주 공모전"} />
       <meta charSet="utf-8" />
     </Helmet>
   );
