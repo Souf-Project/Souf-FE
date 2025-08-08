@@ -9,6 +9,7 @@ import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
 import { closeRecruit, getRecruitDetail } from '../api/recruit';
 import SEO from '../components/seo';
+import { generateSeoContent } from '../utils/seo';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -234,6 +235,25 @@ export default function RecruitDetail() {
     );
   }
 
+  const seoContent = generateSeoContent(
+  {
+    title: displayData?.title,
+    nickname: displayData?.nickname,
+    categoryNames,
+    minPrice,
+    maxPrice,
+    deadline: displayData?.deadline,
+    location: displayData?.location,
+    recruitDetail,
+    preferMajor: displayData?.preferMajor,
+    content: displayData?.content,
+  },
+  {
+    maskNickname,
+    formatDate,
+  }
+);
+
   return (
     <>
       {displayData?.title && (
@@ -241,6 +261,7 @@ export default function RecruitDetail() {
           title={displayData?.title}
           description={`스프 SouF ${displayData?.title} 기업 공고문`}
           subTitle="스프"
+          content={seoContent}
         />
       )}
       <div className="pt-16 px-8 w-5/6 mx-auto">

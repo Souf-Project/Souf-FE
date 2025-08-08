@@ -10,7 +10,7 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import SEO from "../components/seo";
 
-export default function StudentFeedList() {
+export default function StudentFeedList({secondCategoryId, thirdCategoryId ,keyword }) {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
@@ -32,21 +32,39 @@ export default function StudentFeedList() {
     navigate(`/profileDetail/${memberId}`);
   };
 
-  const {
+const {
     data: feedData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", pageable],
-    queryFn: async () => {
-      const data = await getFeed(categoryParam, pageable);
-      console.log("getFeed 결과:", data);
-      return data;
-    },
+    queryKey: ["feed", categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable],
+          queryFn: async () => {
+        const data = await getFeed(categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable);
+        // console.log("getFeed 결과:", data);
+        
+        if (data?.result?.content && thirdCategoryId) {
+          const filteredContent = data.result.content.filter(feed => {
+            const feedCategories = feed.categoryDtos || [];
+            
+            return feedCategories.some(category => 
+              category.thirdCategory === thirdCategoryId
+            );
+          });
+          
+          return {
+            ...data,
+            result: {
+              ...data.result,
+              content: filteredContent
+            }
+          };
+        }
+        
+        return data;
+      },
     keepPreviousData: true,
   });
 
-  //이거 나중에 제대로 추가하자
   if (isLoading) return <Loading/>;
   if (error) return <div>{error.message || "에러"}</div>;
 

@@ -7,17 +7,18 @@ import cate3Img from "../assets/images/cate3Img.png";
 import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
 import Background from "../assets/images/background.png";
-import PopularFeed from "../components/home/popularFeed";
-import { usePopularFeed } from "../hooks/usePopularFeed";
+
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import { calculateDday } from "../utils/getDate";
 import MobileSwiper from "../components/home/mobileSwiper";
+import FeedSwiper from "../components/home/feedSwiper";
 import InfoBox from "../components/home/infoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
 import SmallContestSection from "../components/home/smallContestSection";
 import { getContests } from "../api/contest";
+import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import dayjs from "dayjs";
@@ -32,8 +33,12 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
-  const [currentFeedPage, setCurrentFeedPage] = useState(1); // 현재 피드 페이지
-  const [isLoadingMore, setIsLoadingMore] = useState(false); // 더보기 로딩 상태
+  const [statsData, setStatsData] = useState({
+    todayVisitor: 735,
+    studentCount: 317,
+    recruitCount: 4
+  }); // 기본값 설정
+
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
@@ -138,27 +143,6 @@ export default function Home() {
   };
 
   const { data: recruitData } = usePopularRecruit(pageable);
-  const { data: feedData, isLoading: feedLoading } = usePopularFeed(pageable);
-
-  // 현재 페이지에 해당하는 피드 데이터 계산
-  const getCurrentFeedData = () => {
-    // console.log("🔍 getCurrentFeedData에서 feedData:", feedData?.result);
-    if (!feedData?.result) return [];
-    const endIndex = currentFeedPage * 6;
-    return feedData.result.slice(0, endIndex);
-  };
-
-  // 더보기 버튼 클릭 핸들러
-  const handleLoadMoreFeeds = () => {
-    if (currentFeedPage < 3) {
-      setIsLoadingMore(true);
-      // 약간의 지연을 주어 로딩 효과를 보여줌
-      setTimeout(() => {
-        setCurrentFeedPage(prev => prev + 1);
-        setIsLoadingMore(false);
-      }, 300);
-    }
-  };
  
   const handleSearch = (e) => {
     e.preventDefault();
@@ -239,77 +223,44 @@ export default function Home() {
     fetchContests();
   }, []);
 
+  // 통계 데이터 조회
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await getMainViewCount();
+        if (response.result) {
+          setStatsData({
+            todayVisitor: response.result.todayVisitor || 735,
+            studentCount: response.result.studentCount || 317,
+            recruitCount: response.result.recruitCount || 4
+          });
+        }
+      } catch (error) {
+        console.error("통계 데이터 조회 실패:", error);
+      }
+    };
 
-  const [viewCount, prevViewCount] = useCountUp(735, 0);
-  const [userCount, prevUserCount] = useCountUp(317, 0);
-  const [recruitCount, prevRecruitCount] = useCountUp(4, 0);
+    fetchStats();
+  }, []);
+
+
+  const viewCount = useCountUp(statsData.todayVisitor, 2000);
+  const userCount = useCountUp(statsData.studentCount, 2000);
+  const recruitCount = useCountUp(statsData.recruitCount, 2000);
 
   return (
     <>
-    <SEO  title="SouF 스프" description="스프 SouF 대학생 외주 공모전" subTitle='대학생 외주 & 공모전' />
+    <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-      {/* 플로팅 액션 버튼 */}
-      {memberId && (
-        <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-4">
-          {/* ADMIN인 경우 두 버튼 모두 표시 */}
-          {roleType === "ADMIN" && (
-            <>
-              <button
-                onClick={() => navigate("/recruitUpload")}
-                className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                공고문 작성
-              </button>
-              <button
-                onClick={() => navigate("/postUpload")}
-                className="bg-blue-500 text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                피드 작성
-              </button>
-            </>
-          )}
-          
-          {/* MEMBER인 경우 공고문 작성 버튼만 표시 */}
-          {roleType === "MEMBER" && (
-            <button
-              onClick={() => navigate("/recruitUpload")}
-              className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              공고문 작성
-            </button>
-          )}
-          
-          {/* STUDENT인 경우 피드 작성 버튼만 표시 */}
-          {roleType === "STUDENT" && (
-            <button
-              onClick={() => navigate("/postUpload")}
-              className="bg-yellow-point text-white px-6 py-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 flex items-center gap-3 font-bold text-lg"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              피드 작성
-            </button>
-          )}
-        </div>
-      )}
-      
-  
         <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
-            <h1 className="text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
+            <h1 className="hidden lg:block text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
               필요한 일을, 필요한 사람에게
+            </h1>
+            <h1 className="block lg:hidden text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
+              필요한 일을,<br/> 필요한 사람에게
             </h1>
             <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-center lg:text-left">
               지금 바로 SouF!
@@ -342,17 +293,14 @@ export default function Home() {
         </div>
         <StatisticsSection 
           viewCount={viewCount}
-          prevViewCount={prevViewCount}
           userCount={userCount}
-          prevUserCount={prevUserCount}
           recruitCount={recruitCount}
-          prevRecruitCount={prevRecruitCount}
         />
 
 {/* 인기 공고문  */}
-      <div className="relative mt-16 px-">
+      <div className="relative mt-16 px-6 lg:px-24">
         <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-2xl text-3xl font-bold mb-8 px-6 lg:px-24">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -364,131 +312,112 @@ export default function Home() {
       </div>
 
       {/* 인기 피드 섹션 */}
-      <div className="relative px-6 lg:px-24">
-        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
-            <span className="relative inline-block">
-              <span className="relative z-10">인기있는 피드</span>
+      <div className="relative lg:mt-16 px-6 lg:px-24">
+        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
+            <span className="relative inline-block ">
+              <span className="relative z-10 ">인기있는 피드</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
             </span>
             <span className="ml-2">구경하러 가기</span>
           </h2>
-          {feedLoading ? (
-            <Loading />
-          ) : (
-            <>
-              <div className="grid grid-cols-3 gap-x-4 sm:gap-x-6 md:gap-x-8 gap-y-6 justify-items-center transition-all duration-300 ease-in-out">
-                {getCurrentFeedData().map((profile, index) => (
-                  <PopularFeed
-                    key={`${profile.feedId}-${currentFeedPage}-${index}`}
-                    url={profile.mediaResDto?.fileUrl}
-                    context={profile.categoryName}
-                    username={profile.nickname}
-                    feedId={profile.feedId}
-                    memberId={profile.memberId}
-                  />
-                ))}
-              </div>
-              
-              {/* 더보기 버튼 */}
-              {currentFeedPage < 3 && feedData?.result?.length > currentFeedPage * 6 && (
-                <div className="text-center mt-8">
-                  <button
-                    onClick={handleLoadMoreFeeds}
-                    disabled={isLoadingMore}
-                    className={`px-6 py-3 bg-yellow-point text-white rounded-lg transition-colors duration-200 font-semibold ${
-                      isLoadingMore 
-                        ? 'opacity-50 cursor-not-allowed' 
-                        : 'hover:bg-yellow-600'
-                    }`}
-                  >
-                    {isLoadingMore ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        로딩중...
-                      </div>
-                    ) : (
-                      `더보기`
-                    )}
-                  </button>
-                </div>
-              )}
-              
-              {/* 모든 피드를 로드했을 때 표시 */}
-              {currentFeedPage >= 3 && (
-                <div className="text-center mt-8">
-                  <p className="text-gray-500 text-sm">모든 인기 피드를 확인했습니다!</p>
-                </div>
-              )}
-            </>
-
-          )}
+          <FeedSwiper />
         </div>
       </div>
 
        {/* 카테고리 섹션 */}
        <div className="relative px-6 lg:px-24 ">
        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-       <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+       <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block">
               <span className="relative z-10">관심있는 주제 피드</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
             </span>
             <span className="ml-2">더보기</span>
           </h2>
-          <div className="block lg:hidden grid grid-cols-2 gap-4 w-full lg:px-24 mt-20">
-              {categories.map((category, index) => {
-                const categoryImages = [
-                  cate1Img,
-                  cate2Img,
-                  cate3Img,
-                  cate4Img,
-                  cate5Img,
-                ];
-                return (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(index + 1)}
-                    className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 px-1 sm:px-2 py-4 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                  >
-                    <img
-                      src={categoryImages[index]}
-                      alt={category}
-                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
-                    />
-                    <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
-                      {category}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="hidden lg:flex flex-nowrap justify-between w-full lg:px-24 mt-20">
-              {categories.map((category, index) => {
-                const categoryImages = [
-                  cate1Img,
-                  cate2Img,
-                  cate3Img,
-                  cate4Img,
-                  cate5Img,
-                ];
-                return (
-                  <button
-                    key={category}
-                    onClick={() => handleCategoryClick(index + 1)}
-                                         className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                  >
-                    <img
-                      src={categoryImages[index]}
-                      alt={category}
-                      className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
-                    />
-                    <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
-                      {category}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="flex flex-col md:flex-row md:flex-nowrap md:justify-between w-full lg:px-24 mt-20">
+              <div className="flex justify-center md:hidden mb-4">
+                {categories.slice(0, 3).map((category, index) => {
+                  const categoryImages = [
+                    cate1Img,
+                    cate2Img,
+                    cate3Img,
+                    cate4Img,
+                    cate5Img,
+                  ];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryClick(index + 1)}
+                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                    >
+                      <img
+                        src={categoryImages[index]}
+                        alt={category}
+                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="flex justify-center md:hidden">
+                {categories.slice(3, 5).map((category, index) => {
+                  const categoryImages = [
+                    cate1Img,
+                    cate2Img,
+                    cate3Img,
+                    cate4Img,
+                    cate5Img,
+                  ];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryClick(index + 4)}
+                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                    >
+                      <img
+                        src={categoryImages[index + 3]}
+                        alt={category}
+                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
+                      />
+                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* 데스크톱 버전 */}
+              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full">
+                {categories.map((category, index) => {
+                  const categoryImages = [
+                    cate1Img,
+                    cate2Img,
+                    cate3Img,
+                    cate4Img,
+                    cate5Img,
+                  ];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => handleCategoryClick(index + 1)}
+                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
+                    >
+                      <img
+                        src={categoryImages[index]}
+                        alt={category}
+                        className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
+                      />
+                      <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
+                        {category}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             </div>
             </div>
@@ -579,7 +508,7 @@ export default function Home() {
       {/* 공모전 정보 섹션 */}
       <div className="relative px-6 lg:px-24  mx-auto py-16">
       <div className="flex justify-between items-center px-4 sm:px-6 ">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
           <span className="relative inline-block">
             <span className="relative z-10">금주 인기 공모전</span>
             <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -588,7 +517,7 @@ export default function Home() {
         </h2>
        
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 px-6 lg:px-24">
         {competitions.length === 0 ? (
           <Loading text="공모전 정보를 불러오는 중..." />
         ) : (

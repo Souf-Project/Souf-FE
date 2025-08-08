@@ -57,6 +57,9 @@ export default function Header() {
     } else if (location.pathname === "/contests") {
       // 공모전 정보 페이지인 경우
       setActiveCategory("contests");
+    }else if (location.pathname === "/recruitsAll") {
+      // 공모전 정보 페이지인 경우
+      setActiveCategory("recruitsAll");
     } else {
       setActiveCategory("");
     }
@@ -181,7 +184,7 @@ useEffect(() => {
 
   // PC 버전 헤더
   const DesktopHeader = () => (
-    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 glass">
+    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 headerGlass">
       <div className="flex items-center gap-x-10">
         <div
           className="text-4xl font-bold text-black cursor-pointer"
@@ -189,12 +192,12 @@ useEffect(() => {
         >
           SouF
         </div>
-        <ul className="flex items-center gap-x-8 font-bold text-xl text-black">
+        <ul className="flex items-center gap-x-6 font-bold text-xl text-black">
           {categories.map((category) => {
             return (
               <li
                 key={category.first_category_id}
-                className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+                className={`px-2 cursor-pointer transition-colors duration-200 relative group whitespace-nowrap ${
                   activeCategory === category.first_category_id.toString() ? "text-yellow-point" : ""
                 }`}
                 onClick={(e) => {
@@ -218,12 +221,12 @@ useEffect(() => {
           
           <li className="text-gray-400">|</li>
           <li
-            className={`px-2 cursor-pointer transition-colors duration-200 relative group ${
+            className={`px-2 cursor-pointer transition-colors duration-200 relative group whitespace-nowrap ${
               activeCategory === "contests" ? "text-yellow-point" : ""
             }`}
             onClick={() => handleNavigation("/contests")}
           >
-            <span>공모전 정보</span>
+            <span>공모전&대외활동</span>
             <span
               className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
                 activeCategory === "contests"
@@ -236,12 +239,19 @@ useEffect(() => {
       </div>
 
       <div className="flex items-center gap-x-4">
+      <div
+            className="text-black bg-[#FFFBE5] px-5 py-2 font-bold rounded-lg whitespace-nowrap cursor-pointer shadow-md"
+            onClick={() => handleNavigation("/recruitsAll")}
+          >
+            <span>공고문 모아보기</span>
+          </div>
         {memberId ? (
           // 로그인 상태
           <div className="flex items-center gap-x-4">
+             
             {roleType === "MEMBER" && 
             <button
-              className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg"
+              className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg whitespace-nowrap shadow-md"
               onClick={() => handleNavigation("/verifyStudent")}
             >
               대학생 인증
@@ -251,7 +261,7 @@ useEffect(() => {
             </button>
             <div className="relative user-menu-container">
               <button
-                className="text-black bg-yellow-main py-2 font-bold rounded-lg w-36"
+                className="text-black bg-yellow-main py-2 font-bold rounded-lg w-36 shadow-md"
                 onClick={toggleUserMenu}
               >
                 <UserTypeLabel />
@@ -317,12 +327,6 @@ useEffect(() => {
         ) : (
           // 로그아웃 상태
           <>
-            <button
-              className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg"
-              onClick={() => handleNavigation("/verifyStudent")}
-            >
-              대학생 인증
-            </button>
             <div className="flex items-center text-xl font-semibold">
               <button
                 className="w-20"

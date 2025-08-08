@@ -78,11 +78,11 @@ export default function Recruit() {
        
       });
 
-      console.log("API 응답:", response);
+      // console.log("API 응답:", response);
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log("공고문 데이터:", recruits);
+        // console.log("공고문 데이터:", recruits);
        
         setFilteredRecruits(recruits);
 
@@ -245,7 +245,7 @@ useEffect(() => {
 
   // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
-    console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
+    // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
     fetchRecruits();
   }, [selectedCategory, currentPage, fetchRecruits]);
 
@@ -265,7 +265,7 @@ useEffect(() => {
   };
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
-    console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
+    // console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
   };
@@ -348,6 +348,11 @@ useEffect(() => {
           secondCategories={filteredSecondCategories}
           thirdCategories={thirdCategories}
           onSelect={handleCategorySelect}
+          selectedCategories={{
+            firstCategoryId: selectedCategory[0],
+            secondCategoryId: selectedCategory[1],
+            thirdCategoryId: selectedCategory[2]
+          }}
         />
       </div>
     )}
@@ -368,6 +373,7 @@ useEffect(() => {
                 onClick={() => {
                   setActiveTab(tab);
                   setSearchQuery("");
+                  setSelectedCategory(prev => [prev[0], 0, 0]);
                 }}
               >
                 <span>
@@ -405,15 +411,20 @@ useEffect(() => {
             secondCategories={filteredSecondCategories}
             thirdCategories={thirdCategories}
             onSelect={handleCategorySelect}
+            selectedCategories={{
+              firstCategoryId: selectedCategory[0],
+              secondCategoryId: selectedCategory[1],
+              thirdCategoryId: selectedCategory[2]
+            }}
           />
         </div>
         {activeTab === "feed" ? (
           <div className="w-full lg:w-3/4 mx-auto">
-            <StudentFeedList />
+            <StudentFeedList secondCategoryId={selectedCategory[1]} thirdCategoryId={selectedCategory[2]} keyword={searchQuery} />
           </div>
         ) : activeTab === "profile" ? (
           <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-            <StudentProfileList />
+            <StudentProfileList secondCategoryId={selectedCategory[1]} thirdCategoryId={selectedCategory[2]} keyword={searchQuery}/>
           </div>
         ) : (
           <div className="w-full lg:w-3/4 mx-auto">

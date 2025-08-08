@@ -2,7 +2,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
 import starOn from "../../assets/images/starOn.svg";
 import starOff from "../../assets/images/starOff.svg";
-
 import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -133,7 +132,7 @@ export default function ProfileDetail({}) {
           subTitle="스프"
         />
       )}
-      <div className="flex flex-col pt-24 px-4 max-w-4xl w-full ">
+      <div className="flex flex-col pt-16 sm:pt-24 px-4 max-w-4xl w-full ">
         <button
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -141,25 +140,25 @@ export default function ProfileDetail({}) {
           <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
           <span>목록으로 돌아가기</span>
         </button>
-        <div className="rounded-2xl border border-gray p-8 mb-8 mt-4 w-full">
+        <div className="rounded-2xl border border-gray p-6 md:p-8 mb-8 mt-4 w-full">
           
 
-          <div className="flex gap-12 mb-6 pl-6">
+          <div className="flex gap-12 mb-4 md:mb-6 pl-6">
             {/* 프로필 이미지 */}
             <img 
               src={userData?.profileImageUrl || BasicImg4} 
-              className="rounded-full w-1/4 object-cover" 
+              className="rounded-full w-[15%] md:w-1/4 object-cover" 
               alt="프로필 이미지"
               onError={(e) => {
                 e.target.src = BasicImg4;
               }}
             />
             
-            <div className="flex flex-col gap-2 mt-4 w-full">
+            <div className="flex flex-col gap-1 md:gap-2 max-sm:text-[14px] md:mt-4 w-full overflow-hidden">
               <div className="flex items-center">
                 {/* 닉네임 */}
                 {userData?.nickname ? (
-                  <div className="font-semibold text-[23px]">{userData.nickname}</div>
+                  <div className="font-semibold text-[20px] md:text-[23px]">{userData.nickname}</div>
                 ) : (
                   <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
                 )}
@@ -183,7 +182,7 @@ export default function ProfileDetail({}) {
             
               {/* 자기소개 */}
               {userData?.intro ? (
-                <div className="text-[#5B5B5B]">{userData.intro}</div>
+                <div className="text-[#5B5B5B] break-words w-full">{userData.intro}</div>
               ) : showIntroSkeleton ? (
                 <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
               ) : (
@@ -192,7 +191,7 @@ export default function ProfileDetail({}) {
               
               {/* 개인 URL */}
               {userData?.personalUrl ? (
-                <div className="text-[#5B5B5B]">{userData.personalUrl}</div>
+                <div className="text-[#5B5B5B] break-words w-full">{userData.personalUrl}</div>
               ) : showIntroSkeleton ? (
                 <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
               ) : (
@@ -206,7 +205,7 @@ export default function ProfileDetail({}) {
               {userWorks.map((data) => (
                 <img
                   src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : BasicImg4}
-                  className="w-full h-64 object-cover rounded-lg"
+                  className="w-full h-44 sm:h-64 object-cover rounded-lg"
                   onClick={() => onWorkClick(data.feedId)}
                   alt="작품 이미지"
                 />
