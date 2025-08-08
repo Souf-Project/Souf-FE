@@ -5,6 +5,7 @@ import heartOff from "../../assets/images/heartOff.svg";
 import commentIco from "../../assets/images/commentIco.svg";
 import shareIco from "../../assets/images/shareIco.svg";
 import { deleteFeed, getFeedDetail } from "../../api/feed";
+import { patchLike} from "../../api/additionalFeed";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getFormattedDate } from "../../utils/getDate";
@@ -21,7 +22,6 @@ import CommentList from "../post/commentList";
 import Loading from "../loading";
 import SEO from "../seo";
 import useSNSShare from "../../hooks/useSNSshare";
-import copyIco from "../../assets/images/shareIco.svg";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -43,6 +43,9 @@ export default function PostDetail() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showShareDropdown, setShowShareDropdown] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isHeartAnimating, setIsHeartAnimating] = useState(false);
+  const [isHeartDisabled, setIsHeartDisabled] = useState(false);
 
     const {
     data: feedData,
@@ -53,15 +56,15 @@ export default function PostDetail() {
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
       
-      console.log("피드 디테일응답:", data.result);
+      // console.log("피드 디테일응답:", data.result);
 
       data.result.mediaResDtos?.forEach((media, index) => {
-        console.log(`미디어 ${index + 1}:`, {
-          fileUrl: media.fileUrl,
-          fileName: media.fileName,
-          fileType: media.fileType,
-          isVideo: media.fileType?.toLowerCase() === "mp4" || media.fileUrl?.toLowerCase().endsWith(".mp4")
-        });
+        // console.log(`미디어 ${index + 1}:`, {
+        //   fileUrl: media.fileUrl,
+        //   fileName: media.fileName,
+        //   fileType: media.fileType,
+        //   isVideo: media.fileType?.toLowerCase() === "mp4" || media.fileUrl?.toLowerCase().endsWith(".mp4")
+        // });
       });
     
       setWorksData(data.result);
@@ -135,6 +138,36 @@ const handleDeleteClick = () => {
 
   const handleShareClick = () => {
     setShowShareDropdown(!showShareDropdown);
+  };
+
+  const handleHeartClick = async () => {
+    
+    setIsHeartDisabled(true); 
+    setIsHeartAnimating(true);
+    
+    try {
+      const currentMemberId = UserStore.getState().memberId;
+      const requestBody = {
+        memberId: currentMemberId,
+        isLiked: !isLiked
+      };
+      
+      await patchLike(worksId, requestBody);
+      
+      setIsLiked(!isLiked);
+      console.log("좋아요 처리 성공");
+    } catch (error) {
+      console.error("좋아요 처리 에러:", error);
+    }
+    
+    setTimeout(() => {
+      setIsHeartAnimating(false);
+    }, 200);
+    
+    // 1초 후 버튼 다시 활성화
+    setTimeout(() => {
+      setIsHeartDisabled(false);
+    }, 1000);
   };
 
   const handleCopyUrl = async () => {
@@ -363,28 +396,36 @@ const handleDeleteClick = () => {
                 </div>
 
                 <div className="flex items-center justify-between gap-2 mt-4">
-                  {/* <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-2">
-                      <img src={heartOff} alt="heartOff" />
-                      <p className="text-sm text-gray-600">100</p>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      className={`flex items-center gap-2 transition-all duration-300 ease-in-out ${
+                        isHeartAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
+                      } hover:scale-110 ${isHeartDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`} 
+                      onClick={handleHeartClick}
+                      disabled={isHeartDisabled}
+                    >
+                      <img src={isLiked ? heartOn : heartOff} alt={isLiked ? "heartOn" : "heartOff"} className="w-7 h-7" />
                     </button>
+                     <p className="text-sm text-gray-600">{worksData.likedCount}</p>
+
                     <button className="flex items-center gap-2">
-                      <img src={commentIco} alt="commentIco" />
-                      <p className="text-sm text-gray-600">100</p>
+                      <img src={commentIco} alt="commentIco" className="w-7 h-7"  />
                     </button>
-                  </div> */}
+                     <p className="text-sm text-gray-600">{worksData.commentCount}</p>
+                     
+                  </div>
                   <div className="relative">
                                       <div className="relative">
-                    <button className="flex items-center gap-2" onClick={handleShareClick}>
+                    <div className="flex items-center gap-2">
                       <p className="text-sm text-gray-600">공유</p>
-                      <img src={shareIco} alt="shareIco" />
-                    </button>
+                      <img src={shareIco} alt="shareIco" className="w-7 h-7"  />
+                    </div>
                   
                   </div>
                     
                     {/* 공유 드롭다운 */}
                     {showShareDropdown && (
-                      <div className="absolute bottom-full right-[-200px] lg:right-[-100px] mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-sm z-50">
+                      <div className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-sm z-50">
                         <div className="p-4">
                           <h3 className="text-sm font-semibold text-gray-800 mb-3">공유하기</h3>
                           
@@ -407,10 +448,10 @@ const handleDeleteClick = () => {
                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                               </svg>
                             </button>
-{/*                             
+                            
                             <button onClick={handleShareToKakaoTalk} className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center hover:bg-yellow-500 transition-colors">
                               <span className="text-white text-xs font-bold">K</span>
-                            </button> */}
+                            </button>
                           </div>
                           
                           {/* URL 복사 섹션 */}
@@ -436,7 +477,7 @@ const handleDeleteClick = () => {
             </div>
           </div>
         </div>
-        {/* <CommentList /> */}
+        <CommentList />
       </div>
       
       {showDeleteModal && (
