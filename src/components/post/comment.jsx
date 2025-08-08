@@ -25,7 +25,6 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
         return `${year}.${month}.${day} ${hours}:${minutes}`;
     };
 
-    // 컴포넌트 마운트 시 대댓글 존재 여부 확인
     useEffect(() => {
         const checkReplies = async () => {
             if (checkHasReplies) {
@@ -35,28 +34,12 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
         };
         checkReplies();
     }, [checkHasReplies]);
-    
-    // console.log(comment);
-    // console.log("worksId from URL:", worksId);
-    
+     
     const handleDeleteComment = async () => {
-        const requestBody = {
-            commentId: comment.commentId,
-            writerId: memberId,
-            content: comment.content
-        };
-        
-        console.log("=== 삭제 API 호출 정보 ===");
-        console.log("worksId (postId):", worksId);
-        console.log("requestBody:", requestBody);
-        console.log("comment 객체:", comment);
-        console.log("memberId:", memberId);
-        console.log("==========================");
-        
         try {
-            const response = await deleteComment(worksId, requestBody);
-            console.log("삭제 API 응답:", response);
-            // 삭제 성공 후 페이지 새로고침 또는 댓글 목록 업데이트
+            const response = await deleteComment(worksId, Number(comment.commentId));
+           
+            // 삭제 성공 후 페이지 새로고침 
             window.location.reload();
         } catch (error) {
             console.error("댓글 삭제 에러:", error);
@@ -64,13 +47,10 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
     };
 
     const handleDeleteClick = () => {
-        console.log("=== 삭제 버튼 클릭됨 ===");
-        console.log("showDeleteModal 상태:", showDeleteModal);
         setShowDeleteModal(true);
     };
 
     const handleConfirmDelete = () => {
-        console.log("=== 확인 버튼 클릭됨 ===");
         handleDeleteComment();
         setShowDeleteModal(false);
     };

@@ -22,7 +22,10 @@ export default function commentList() {
             const response = await getComment(worksId);
             // console.log("댓글 리스트 조회 결과:", response);
             if (response?.result?.content) {
-                setCommentList(response.result.content);
+                // 대댓글이 아닌 일반 댓글만 필터링
+                const parentComments = response.result.content.filter(comment => !comment.parentId);
+                setCommentList(parentComments);
+                console.log("댓글 리스트:", parentComments);
                 // console.log("댓글 리스트:", response.result.content);
             }
         } catch (error) {

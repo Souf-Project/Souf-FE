@@ -1,491 +1,159 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Input from "../input";
-import ButtonInput from "../buttonInput";
-import Button from "../button";
-import { useMutation } from "@tanstack/react-query";
-import {
-  getNickNameVerify,
-  postEmailVerification,
-  postEmailVerify,
-  postSignUp,
-} from "../../api/member";
-import CategorySelectBox from "../categorySelectBox";
-import AlertModal from "../alertModal";
-import { filterEmptyCategories } from "../../utils/filterEmptyCategories";
-import { useSignupMutations } from "../../hooks/join/join";
-import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
+import dayjs from "dayjs";
 
-export default function Step1() {
-  const [email, setEmail] = useState("");
-  const [verification, setVerification] = useState("");
-  const [verificationApproveText, setVerificationApproveText] = useState("");
-  const [verificationCheck, setVerificationCheck] = useState(undefined);
-  
-  const [emailVerification, setEmailVerification] = useState(undefined);
-  const [approveText,setApproveText] = useState("");
-  
+export default function Step2() {
+  const [privacyAgreement, setPrivacyAgreement] = useState(false);
+  const [thirdPartyAgreement, setThirdPartyAgreement] = useState(false);
+  const [marketingAgreement, setMarketingAgreement] = useState(false);
 
-  const [checkResult, setCheckResult] = useState(undefined);
-  const [nicknameModal, setNicknameModal] = useState(false);
-  const [emailModal, setEmailModal] = useState(false);
-  const [successModal,setSuccessModal] = useState(false);
-  const [modalTitle, setModalTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [nickname, setNickname] = useState("");
-  const [isNameConfirm, setIsNameConfirm] = useState(undefined);
-  const [passwordValidation, setPasswordValidation] = useState(undefined);
-  const [passwordCheckValidation, setpasswordCheckValidation] = useState(undefined);
-
-  const [errors, setErrors] = useState({
-    username: false,
-    nickname: false,
-    email: false,
-    password: false,
-    passwordCheck: false,
-  });
-  const navigate = useNavigate();
-
-  const validateForm = () => {
-    const isPasswordValid = isValidPassword(formData.password);
-    const isPasswordMatchValid = isPasswordMatch(formData.password, formData.passwordCheck);
-  
-    const newErrors = {
-      username: !formData.username.trim(),
-      nickname: !formData.nickname.trim() || !checkResult,
-      email: !formData.email.trim(),
-      password: !isPasswordValid,
-      passwordCheck: !isPasswordMatchValid,
-    };
-  
-    setErrors(newErrors);
-    setPasswordValidation(isPasswordValid);
-  
-    const hasError = Object.values(newErrors).some(Boolean);
-    return !hasError;
-  };
-  
-
-
-  const [formData, setFormData] = useState({
-    username: "",
-    nickname: "",
-    email: "",
-    password: "",
-    passwordCheck: "",
-    categoryDtos: [
-      {
-        firstCategory: null,
-        secondCategory: null,
-        thirdCategory: null,
-      },
-      {
-        firstCategory: null,
-        secondCategory: null,
-        thirdCategory: null,
-      },
-      {
-        firstCategory: null,
-        secondCategory: null,
-        thirdCategory: null,
-      },
-    ],
-  });
-
-  /*
-  const emailVerificationMutation = useMutation({
-    mutationFn: (email) => postEmailVerification(email),
-    onSuccess: (response) => {
-      setModalTitle("인증번호 발송");
-      setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
-      setEmailModal(true);
-    },
-    onError: (error) => {
-      console.log("에러발생", error);
-      if (error.response?.data?.code === 400) {
-        setModalTitle("중복된 이메일");
-        setDescription(error.response?.data?.message);
-      } else {
-        setModalTitle("인증번호 발송 오류");
-        setDescription("올바르지 않은 이메일 형식입니다.");
-      }
-      setEmailModal(true);
-    },
-  });
-
-  const {
-    mutate: checkNickname,
-    isLoading,
-    isError,
-    error,
-    data,
-  } = useMutation({
-    mutationFn: (nickname) => getNickNameVerify(nickname),
-    onSuccess: (response) => {
-      console.log(response.data);
-      setCheckResult(response.data.result);
-      setNicknameModal(true);
-    },
-  });
-
-  const emailNumberVerificationMutation = useMutation({
-    mutationFn: ({ email, verification }) =>
-      postEmailVerify(email, verification, "SIGNUP"),
-    onSuccess: (response, { email }) => {
-      if (response.result === true) {
-        updateUserData("email", email);
-        setApproveText("인증번호가 확인되었습니다.");
-        setEmailVerification(true);
-        // 여기도 초록색 처리
-      } else {
-        setApproveText("인증번호가 일치하지 않습니다.");
-        setEmailVerification(false);
-        // 여기도 빨간색 처리
-      }
-    },
-    onError: (error) => {
-      setApproveText("서버 오류로 인증에 실패했습니다.");
-      setEmailVerification(false);
-    },
-  });
-
-  const postSignUpMutation = useMutation({
-    mutationFn: () => {
-      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
-
-      // 선택된 카테고리 수 검증
-      if (cleanedCategories.length === 0) {
-        alert("최소 1개 이상의 카테고리를 선택해주세요.");
-        return;
-      }
-
-      if (cleanedCategories.length > 3) {
-        alert("최대 3개까지의 카테고리만 선택 가능합니다.");
-        return;
-      }
-
-      // 최종 전송 데이터 구성
-      const finalData = {
-        ...formData,
-        categoryDtos: cleanedCategories,
-      };
-
-      return postSignUp(finalData);
-    },
-    onSuccess: (response) => {
-      setSuccessModal(true);
-      //navigate("/");
-      //console.log(response);
-    },
-    onError: (error) => {
-      setApproveText("서버 오류로 인증에 실패했습니다.");
-      console.log(error);
-      setEmailVerification(false);
-    },
-  });*/
-
-  const handleCategoryChange = (index) => (categoryData) => {
-    setFormData((prev) => {
-      const updatedCategories = prev.categoryDtos.map((cat, i) =>
-        i === index ? categoryData : cat
-      );
-      return {
-        ...prev,
-        categoryDtos: updatedCategories,
-      };
-    });
-  };
-
-  // const handleInputChange = (name, e) => {
-  //   const { value } = e.target;
-  //   if (value === "") {
-  //     setIsNameConfirm(true);
-  //   }
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  //   console.log(formData);
-  // };
-
-  const handleInputChange = (name, e) => {
-    const { value } = e.target;
-
-    setFormData((prev) => {
-      const updatedForm = { ...prev, [name]: value };
-
-      const newErrors = { ...errors };
-
-      if (name === "password") {
-        const isPasswordValid = isValidPassword(value);
-        newErrors.password = !isPasswordValid;
-        // password가 바뀌면 passwordCheck도 다시 비교해야 함
-        newErrors.passwordCheck = !isPasswordMatch(value, updatedForm.passwordCheck);
-        
-        // 비밀번호 유효성 검사 결과 저장
-        if (value.trim() !== "") {
-          setPasswordValidation(isPasswordValid);
-        } else {
-          setPasswordValidation(undefined);
-        }
-      } else if (name === "passwordCheck") {
-        newErrors.passwordCheck = !isPasswordMatch(updatedForm.password, value);
-        if(value.trim() !== ""){
-          setpasswordCheckValidation(isPasswordMatch(updatedForm.password, value));
-        }else{
-          setpasswordCheckValidation(undefined);
-        }
-
-      }
-
-      setErrors(newErrors);
-      return updatedForm;
-    });
-  };
-
-  //  const nickNameVerification = useMutation({})
-
-
-  //따로 뺀 부분
-
-    const {
-      emailVerificationMutation,
-      checkNickname,
-      emailVerify,
-      signUp,
-    } = useSignupMutations({
-      onEmailSuccess: (res) => {
-        setModalTitle("인증번호 발송");
-        setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
-        setEmailModal(true);
-      },
-      onEmailError: (err) => {
-        if (err.response?.data?.code === 400) {
-          setModalTitle("중복된 이메일");
-          setDescription(err.response?.data?.message);
-        } else {
-          setModalTitle("인증번호 발송 오류");
-          setDescription("올바르지 않은 이메일 형식입니다.");
-        }
-        setEmailModal(true);
-      },
-      onNicknameChecked: (res) => {
-        const result = res.data.result;
-        setCheckResult(result);
-
-        if (result === true) {
-         
-          setNicknameModal(true);
-        } else if (result === false) {
-        
-          setNicknameModal(true);
-        } else {
-      
-        }
-      },
-      onEmailVerifySuccess: (res, { email }) => {
-        const result = res.result;
-
-        if (result === true) {
-          setVerificationApproveText("인증번호가 확인되었습니다.");
-          setEmailVerification(true);
-          setVerificationCheck(true);
-        } else {
-          setVerificationApproveText("인증번호가 일치하지 않습니다.");
-          setEmailVerification(false);
-          setVerificationCheck(false);
-        }
-      },
-      onEmailVerifyError: (err) => {
-        const serverMessage = err.response?.data?.message || "서버 오류로 인증에 실패했습니다.";
-        setVerificationApproveText(serverMessage);
-        setEmailVerification(false);
-        setVerificationCheck(false);
-      },
-      
-      onSignUpSuccess: () => {
-        console.log('회원가입 성공! 모달을 띄웁니다.');
-        setSuccessModal(true);
-      },
-      onSignUpError: (err) => {
-        console.log(err);
-        
-        // 비밀번호 형식 에러 처리
-        if (err.response?.data?.message?.includes("비밀번호")) {
-          setPasswordValidation(false);
-          setErrors(prev => ({ ...prev, password: true }));
-        } else {
-          setApproveText("서버 오류로 인증에 실패했습니다.");
-          setEmailVerification(false);
-        }
-      },
-    });
-
-  const handleSignup = () => {
-     
-    const isValid = validateForm();
-    if (!isValid) return;
-    
-    const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
-    if (cleanedCategories.length === 0) {
-      alert("최소 1개 이상의 카테고리를 선택해주세요.");
-      return;
-    }
-    if (cleanedCategories.length > 3) {
-      alert("최대 3개까지 선택 가능합니다.");
-      return;
-    }
-
-    const finalData = {
-      ...formData,
-      categoryDtos: cleanedCategories,
-    };
-    signUp.mutate(finalData);
-  }
-//border-t-[1px] md:
   return (
-    <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
-      <Input
-        title="이름"
-        name="username"
-        value={formData.username}
-        onChange={(e) => handleInputChange("username", e)}
-        disapproveText="이름을 입력해주세요."
-        essentialText="이름을 입력해주세요."
-        isValidateTrigger={errors.username}
-      />
-      <ButtonInput
-        name="nickname"
-        value={formData.nickname}
-        onChange={(e) => {
-          setNickname(e.target.value);
-          handleInputChange("nickname", e);
-        }}
-        title="닉네임"
-        btnText="중복확인"
-        essentialText="닉네임을 입력해주세요."
-        onClick={() => checkNickname.mutate(nickname)}
-        isValidateTrigger={errors.nickname}
-        isConfirmed={checkResult}
-        approveText="사용 가능한 닉네임입니다."
-        disapproveText="이미 가입된 닉네임입니다."
-      />
-      <ButtonInput
-        name="email"
-        value={formData.email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          handleInputChange("email", e);
-        }}
-        title="이메일"
-        btnText="인증요청"
-        essentialText="이메일을 입력해주세요."
-        onClick={() => emailVerificationMutation.mutate(email)}
-        isValidateTrigger={errors.email}
-        isLoading={emailVerificationMutation.isPending}
-      />
-
-<ButtonInput
-  value={verification}
-  onChange={(e) => setVerification(e.target.value)}
-  title="이메일 인증"
-  btnText="인증확인"
-  onClick={() => {
-    emailVerify.mutate({
-      email: formData.email,
-      verification,
-    });
-  }}
-  isConfirmed={verificationCheck}
-  approveText={verificationApproveText}
-  disapproveText={verificationApproveText}
-/>
-
-
-      <Input
-        title="비밀번호"
-        type="password"
-        name="password"
-        essentialText="비밀번호를 입력해주세요."
-        subtitle="영문자, 숫자, 특수문자(@,$,!,%,*,#,?,&) 포함 / 8자~20자"
-        value={formData.password}
-        onChange={(e) => handleInputChange("password", e)}
-        isValidateTrigger={errors.password}
-        isConfirmed={passwordValidation}
-        approveText="올바른 비밀번호 형식입니다."
-        disapproveText="비밀번호 형식이 올바르지 않습니다."
-      />
-      <Input
-        title="비밀번호 확인"
-        type="password"
-        name="passwordCheck"
-        essentialText="비밀번호 확인이 올바르지 않습니다."
-        value={formData.passwordCheck}
-        isConfirmed={passwordCheckValidation}
-        onChange={(e) => handleInputChange("passwordCheck", e)}
-        isValidateTrigger={errors.passwordCheck}
-        approveText="비밀번호 확인이 완료되었습니다."
-        disapproveText="비밀번호 확인이 올바르지 않습니다."
-      />
-      <div className="w-full relative mb-8 flex flex-col gap-3">
-        <div className="text-black text-lg md:text-2xl font-regular mb-2">
-          관심분야 <span className="text-gray-500 text-sm">(최소 1개 이상 선택)</span>
+    <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
+        <h2 className="text-4xl font-bold text-left mb-4">개인정보 동의</h2>
+        
+        {/* 스크롤 가능한 개인정보 동의 내용 */}
+        <div className="w-full max-h-96 overflow-y-auto border border-gray-300 rounded-lg p-4 mb-6">
+          <div className="w-full flex flex-col gap-4">
+            <h3 className="text-2xl font-bold text-left">1. 수집 항목 및 이용 목적</h3>
+            <table className="w-full border-collapse border border-gray-300">
+              <thead className="text-left">
+                <tr className="border-b border-gray-300 text-left bg-gray-100">
+                  <th className="w-2/5">수집 항목</th>
+                  <th className="w-2/5">수집 목적</th>
+                  <th className="w-1/5">보유 및 이용 기간</th>
+                </tr>
+                <tr className="border-b border-gray-100">
+                  <td>이름, 이메일</td>
+                  <td>회원 식별 및 본인 인증, 고지사항 전달</td>
+                  <td>회원 탈퇴 시까지</td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                <td>비밀번호</td>
+                <td>로그인 및 계정 보호</td>
+                <td>회원 탈퇴 시까지</td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                <td>소속 학교, 학과</td>
+                <td>기업 매칭 및 포트폴리오 정보 제공</td>
+                <td>회원 탈퇴 시까지</td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                <td>IP 주소, 서비스 시용 기록</td>
+                <td>서비스 개선, 보안 및 로그 기록</td>
+                <td>3년</td>
+                </tr>
+                <tr className="border-b border-gray-100">
+                <td>(선택) 프로필 사진, 자기소개, SNS 연동 정보</td>
+                <td>개인화된 포트폴리오 제공</td>
+                <td>회원 탈퇴 시까지</td>
+                </tr>
+                <tr>
+                <td>(선택) 마케팅 수신 동의(이메일, SMS)</td>
+                <td>이벤트, 혜택 안내 등 마케팅 정보 전달</td>
+                <td>동의 철회 시까지</td>
+                </tr>
+              </thead>
+                </table>
+                <p>※ 귀하는 개인정보 수집·이용에 대한 동의를 거부할 권리가 있으며, 필수 항목 동의 거부 시 회원가입 및 서비스 이용이 제한될 수 있습니다.</p>
+            </div>
+            <div className="w-full flex flex-col gap-4">
+              <h3 className="text-2xl font-bold text-left mt-4">2. 제3자 제공에 관한 사항</h3>
+              <table className="w-full border-collapse border border-gray-300">
+                <thead className="text-left">
+                  <tr className="border-b border-gray-300 text-left bg-gray-100">
+                    <th className="">제공받는 자</th>
+                    <th className="">제공 항목</th>
+                    <th className="">제공 목적</th>
+                    <th className="">보유 및 이용 기간</th>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td>매칭 기업 회원사</td>
+                    <td>이름, 소속, 포트폴리오 정보</td>
+                    <td>채용 및 인재 매칭</td>
+                    <td>매칭 후 1년 또는 동의 철회 시까지</td>
+                  </tr>
+                </thead>
+                  </table>
+                  <p>※ 제3자 제공에 대한 동의는 선택 사항이나, 동의하지 않을 경우 일부 매칭 서비스 이용에 제한이 있을 수 있습니다.</p>
+            </div>
+            <div className="w-full flex flex-col gap-4">
+              <h3 className="text-2xl font-bold text-left mt-4">3. 민감 정보 및 아동 정보</h3>
+              <div className="flex">
+              <span>
+              회사는  
+              </span>
+              <span className="font-bold">
+                민감정보(사상·신념, 건강 등)
+                </span>
+                <span>
+                를 수집하지 않으며, 만 14세 미만 아동의 경우 법정대리인의 동의를 받아야 합니다.
+              </span>
+              </div>
+            </div>
+          </div>
         </div>
-        {formData?.categoryDtos?.map((category, index) => (
-          <CategorySelectBox
-            key={index}
-            title=""
-            content=""
-            defaultValue={category}
-            type="text"
-            isEditing={true}
-            onChange={handleCategoryChange(index)}
-          />
-        ))}
-        {formData?.categoryDtos.length < 3 && (
-          <CategorySelectBox
-            key={formData?.categoryDtos.length + 1}
-            title=""
-            content=""
-            defaultValue={category}
-            type="text"
-            isEditing={true}
-            onChange={handleCategoryChange(formData?.categoryDtos.length + 1)}
-          />
-        )}
-      </div>
 
-      <Button btnText="회원가입" onClick={handleSignup} />
-      {nicknameModal && (
-        <AlertModal
-          type={checkResult ? "success" : "warning"}
-          title={
-            checkResult
-              ? "사용 가능한 닉네임입니다."
-              : "이미 가입된 닉네임입니다."
-          }
-          TrueBtnText="확인"
-          onClickTrue={() => setNicknameModal(false)}
-        />
-      )}
-      {emailModal && (
-        <AlertModal
-          type="simple"
-          title={modalTitle}
-          description={description}
-          TrueBtnText="확인"
-          onClickTrue={() => setEmailModal(false)}
-        />
-      )}
-      {successModal && (
-        <AlertModal
-          type="success"
-          title="회원가입이 완료되었습니다."
-          TrueBtnText="확인"
-          onClickTrue={() => navigate("/login")}
-        />
-      )}
-    </div>
+        {/* 동의 여부 체크박스 */}
+        <div className="w-full flex flex-col gap-4">
+          <h3 className="text-2xl font-bold text-left ml-6">동의 여부</h3>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3 ml-6">
+              <input
+                type="checkbox"
+                id="privacy-agreement"
+                checked={privacyAgreement}
+                onChange={(e) => setPrivacyAgreement(e.target.checked)}
+                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
+              />
+              <label htmlFor="privacy-agreement" className="text-lg">
+                개인정보 수집 및 이용 동의 (필수)
+                <span className="text-sm text-red-500 ml-1">*</span>
+              </label>
+            </div>
+            <div className="flex items-center gap-3 ml-6">
+              <input
+                type="checkbox"
+                id="third-party-agreement"
+                checked={thirdPartyAgreement}
+                onChange={(e) => setThirdPartyAgreement(e.target.checked)}
+                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
+              />
+              <label htmlFor="third-party-agreement" className="text-lg">
+                제3자 제공 동의 (선택)
+              </label>
+            </div>
+            <div className="flex items-center gap-3 ml-6">
+              <input
+                type="checkbox"
+                id="marketing-agreement"
+                checked={marketingAgreement}
+                onChange={(e) => setMarketingAgreement(e.target.checked)}
+                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
+              />
+              <label htmlFor="marketing-agreement" className="text-lg">
+                마케팅 수신 동의 (선택)
+              </label>
+            </div>
+            <div className="flex flex-col gap-2 mt-4 mx-6">
+            <div className="flex flex-col gap-2 items-end border-t border-gray-200 pt-4">
+              <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-500">시행 일자:</p>
+              <p className="text-sm text-gray-500">{dayjs().format('YYYY.MM.DD')}</p>
+              </div>
+              <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-500">회사명:</p>
+              <p className="text-sm text-gray-500">주식회사 스프</p>
+              </div>
+              <div className="flex items-center gap-2">
+              <p className="text-sm text-gray-500">연락처:</p>
+              <p className="text-sm text-gray-500">010-1234-5678</p>
+              </div>
+           
+            </div>
+            </div>
+           
+          </div>
+        </div>
+      </div>
   );
 }
