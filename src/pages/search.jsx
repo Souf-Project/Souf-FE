@@ -100,7 +100,7 @@ export default function Search() {
                 className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
                   activeTab === tab ? "text-yellow-point" : "text-gray-700"
                 }`}
-              ></span>
+              >
             </button>
           ))}
         </div>
