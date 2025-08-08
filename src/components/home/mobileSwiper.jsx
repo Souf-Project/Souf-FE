@@ -8,8 +8,17 @@ import AlertModal from "../alertModal";
 import { getRecruitDetail } from "../../api/recruit";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay } from "swiper/modules";
+import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
+import "swiper/css/navigation";
+
+// Swiper 기본 navigation 스타일 오버라이드
+const swiperStyles = `
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none !important;
+  }
+`;
 
 export default function MobileSwiper() {
   const [recruitData, setRecruitData] = useState([]);
@@ -19,7 +28,7 @@ export default function MobileSwiper() {
   const pageable = { page: 0, size: 12, sort: ["createdAt,desc"] };
 
   const { data, isLoading } = usePopularRecruit(pageable);
-  console.log(data)
+  // console.log(data)
   useEffect(() => {
     setRecruitData(data?.result || []);
   }, [data]);
@@ -84,22 +93,42 @@ export default function MobileSwiper() {
   }
 
   return (
-    <div className="relative w-screen mt-4 lg:px-24">
+    <>
+      <style>{swiperStyles}</style>
+      <div className="relative  w-screen lg:px-24  mt-4">
+      {/* 이전 버튼 */}
+      <button className="custom-prev absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+        <svg className="w-12 h-12 text-yellow-point" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
+      {/* 다음 버튼 */}
+      <button className="custom-next absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+        <svg className="w-12 h-12 text-yellow-point" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+      
       <Swiper
         slidesPerView={2}
         spaceBetween={0}
-        loop={true}
+        loop={recruitData.length > 2}
         speed={700}
-        autoplay={{
+        autoplay={recruitData.length > 2 ? {
           delay:4000,
           disableOnInteraction: false,
+        } : false}
+        navigation={{
+          nextEl: '.custom-next',
+          prevEl: '.custom-prev',
         }}
-        modules={[Autoplay]}
+        modules={[Autoplay, Navigation]}
       >
         {recruitData.map((recruit) => (
-          <SwiperSlide key={recruit.recruitId} className="box-border min-w-0">
+          <SwiperSlide key={recruit.recruitId} className="box-border min-w-0 ">
             <div
-              className="w-84 box-border h-80 px-6 cursor-pointer"
+              className="w-84 box-border h-64 mb-4 px-6 cursor-pointer"
               onClick={() => handleClick(recruit?.recruitId)}>
               <div className="h-64 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 카드 내용 */}
@@ -108,13 +137,13 @@ export default function MobileSwiper() {
                     {recruit.title}
                   </h3>
                 </div>
-                <div className="px-6 pb-4">
+                <div className="hidden lg:block px-6 pb-4">
                   <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-md font-semibold rounded-full">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
                 <div className="px-6 pb-4">
-                  <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-gray-600 line-clamp-5 lg:line-clamp-3 leading-relaxed">
                     {recruit.content}
                   </p>
                 </div>
@@ -148,6 +177,7 @@ export default function MobileSwiper() {
           onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 }

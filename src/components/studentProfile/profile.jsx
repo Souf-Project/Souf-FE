@@ -12,7 +12,7 @@ export default function Profile({
   temperature,
   userName,
   userDetail,
-  userWorks,
+  popularFeeds,
 }) {
   // console.log("profileImageUrl", profileImageUrl);
   const navigate = useNavigate();
@@ -55,25 +55,34 @@ export default function Profile({
     <div
       className="flex relative flex-col items-center justify-center w-full border border-[#D4D4D4] rounded-[30px] p-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
-      <img className="absolute top-4 right-4 w-11 z-10" src={sendIco} onClick={() => handleChat(memberId)} />
-      <div onClick={() => clickHandler(memberId)}>
+      <img className="absolute top-4 right-4 w-11 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
+      <div className="flex flex-col items-center justify-center"
+      onClick={() => clickHandler(memberId)}>
       <img 
         src={profileImageUrl || getDefaultImage()} 
-        className="rounded-full" 
+        className="rounded-full w-24 h-24 border border-gray-200 " 
         alt={userName || "프로필 이미지"}
         onError={(e) => {
           e.target.src = getDefaultImage();
         }}
       />
       {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
-      <div className="font-semibold text-sm lg:text-[15px] mt-4 text-gray-500">스프 온도 36.5도</div>
+      <div className="font-semibold text-sm lg:text-[14px] mt-2 text-gray-500">스프 온도 36.5도</div>
       <div className="flex flex-col justify-center">
-        <div className="font-semibold text-base lg:text-2xl">{userName}</div>
+        <div className="font-semibold text-base lg:text-2xl my-2">{userName}</div>
         <div className="text-[#5B5B5B]">{userDetail}</div>
       </div>
-      <div className="grid grid-cols-3 justify-center gap-2">
-        {userWorks?.map((data) => (
-          <img key={i} src={data} />
+      <div className="grid grid-cols-3  justify-center gap-2">
+        {popularFeeds?.map((feed, index) => (
+          <img 
+            key={index} 
+            src={`${import.meta.env.VITE_S3_BUCKET_URL}${feed.imageUrl}`}
+            alt={`피드 이미지 ${index + 1}`}
+            className="w-32 h-32 object-cover rounded-lg"
+            onError={(e) => {
+              e.target.style.display = 'none';
+            }}
+          />
         ))}
       </div>
       </div>

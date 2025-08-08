@@ -50,11 +50,6 @@ export async function getRecruit(params = {}) {
 
         // 토큰 확인
         const token = localStorage.getItem('accessToken');
-        console.log("Token exists:", !!token);
-        if (token) {
-            console.log("Token preview:", token.substring(0, 20) + "...");
-        }
-
         const response = await client.get('/api/v1/recruit', {
             params: queryParams,
             headers: {

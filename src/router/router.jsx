@@ -5,6 +5,7 @@ import Login from "../pages/login";
 import VerifyStudent from "../pages/verifyStudent";
 import Recruit from "../pages/recruit";
 import RecruitDetail from "../pages/recruitDetails";
+import RecruitsAll from "../pages/recruitsAll";
 import MyPage from "../pages/mypage";
 import Footer from "../components/footer";
 import Join from "../pages/join";
@@ -23,6 +24,8 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
+import FloatingActionButton from "../components/FloatingActionButton";
+import { HelmetProvider } from 'react-helmet-async';
 
 function AppRouter() {
   const location = useLocation();
@@ -38,6 +41,7 @@ function AppRouter() {
           <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
           <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
+          <Route path="/recruitsAll" element={<RecruitsAll />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/join" element={<Join />} />
           <Route path="/pwdFind" element={<PwdFind />} />
@@ -59,6 +63,7 @@ function AppRouter() {
         </Routes>
       </main>
       {!isChatPage && <Footer />}
+      <FloatingActionButton />
     </div>
   );
 }
@@ -66,8 +71,10 @@ function AppRouter() {
 export default function Router() {
   return (
     <BrowserRouter>
+    <HelmetProvider>
       <ScrollToTop/>
       <AppRouter />
+      </HelmetProvider>
     </BrowserRouter>
   );
 }

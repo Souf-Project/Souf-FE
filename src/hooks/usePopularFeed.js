@@ -8,7 +8,10 @@ export const usePopularFeed = (pageable) => {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["popularFeed", pageable],
-    queryFn: () => getPopularFeed(pageable),
+    queryFn: async () => {
+      const result = await getPopularFeed(pageable);
+      return result;
+    },
     keepPreviousData: true,
     select: (incomingData) => {
       if (incomingData === null) {
@@ -23,6 +26,5 @@ export const usePopularFeed = (pageable) => {
     staleTime: 1000 * 60, // 1분 동안 stale 아님
     refetchOnWindowFocus: false,
   });
-
   return { data, isLoading, error };
 };

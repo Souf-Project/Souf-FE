@@ -54,21 +54,25 @@ export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
   }
 };
 
-export const getFeed = async (firstCategory, pageable) => {
+export const getFeed = async (firstCategory, secondCategory, thirdCategory, keyword, pageable) => {
   try {
-    const response = await client.get("/api/v1/feed", {
-      params: {
-        firstCategory,
-        page: pageable.page,
-        size: pageable.size,
-      },
-    });
+    const params = {
+      page: pageable.page,
+      size: pageable.size,
+      ...(firstCategory ? { firstCategory } : {}),
+      ...(secondCategory ? { secondCategory } : {}),
+      ...(thirdCategory ? { thirdCategory } : {}),
+      ...(keyword ? { keyword } : {}),
+    };
+
+    const response = await client.get("/api/v1/feed", { params });
     return response.data;
   } catch (error) {
-    console.error("인기 피드 조회 에러:", error);
+    console.error("피드 조회 에러:", error);
     throw error;
   }
 };
+
 
 
 export const getFeedDetail = async (memberId,feedId) => {

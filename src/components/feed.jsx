@@ -109,8 +109,11 @@ export default function Feed({ feedData, onFeedClick }) {
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
     >
-      <div className="flex justify-between items-start mb-4">
-        <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
+      <div className="flex justify-between items-center mb-4">
+        <h2 
+          className="text-base lg:text-xl font-semibold leading-snug text-black cursor-pointer hover:text-yellow-point transition-colors mr-2"
+          onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
+        >
           {feedData?.topic || "제목 없음"}
         </h2>
         <p className="text-xs lg:text-sm text-gray-500">
@@ -118,7 +121,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </p>
       </div>
       <div className="flex justify-between items-center">
-        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
+        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
@@ -132,7 +135,9 @@ export default function Feed({ feedData, onFeedClick }) {
         <UpdateOption id={feedData.memberId} memberId={memberId}
           worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
       </div>
-      <div className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative">
+      <div 
+        className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative"
+      >
         {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
           <>
             <Swiper
@@ -146,7 +151,7 @@ export default function Feed({ feedData, onFeedClick }) {
               className="rounded-lg w-full max-w-[800px]"
             >
               {feedData?.mediaResDtos?.map((data, i) => {
-                const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+                const isVideo = data.fileType?.toLowerCase().startsWith("video") || data.fileUrl?.toLowerCase().endsWith(".mp4");
                 return (
                   <SwiperSlide key={i}>
                     <div className="flex justify-center items-center">
@@ -196,7 +201,8 @@ export default function Feed({ feedData, onFeedClick }) {
           </div>
         )}
       </div>
-      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-4">
+      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-4 cursor-pointer"
+       onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}>
         {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
         <span
           onClick={toggleExpand}

@@ -8,8 +8,9 @@ import Feed from "../components/feed";
 import Loading from "../components/loading";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
+import SEO from "../components/seo";
 
-export default function StudentFeedList() {
+export default function StudentFeedList({secondCategoryId, thirdCategoryId ,keyword }) {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
@@ -31,25 +32,44 @@ export default function StudentFeedList() {
     navigate(`/profileDetail/${memberId}`);
   };
 
-  const {
+const {
     data: feedData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", pageable],
-    queryFn: async () => {
-      const data = await getFeed(categoryParam, pageable);
-      console.log("getFeed 결과:", data);
-      return data;
-    },
+    queryKey: ["feed", categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable],
+          queryFn: async () => {
+        const data = await getFeed(categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable);
+        // console.log("getFeed 결과:", data);
+        
+        if (data?.result?.content && thirdCategoryId) {
+          const filteredContent = data.result.content.filter(feed => {
+            const feedCategories = feed.categoryDtos || [];
+            
+            return feedCategories.some(category => 
+              category.thirdCategory === thirdCategoryId
+            );
+          });
+          
+          return {
+            ...data,
+            result: {
+              ...data.result,
+              content: filteredContent
+            }
+          };
+        }
+        
+        return data;
+      },
     keepPreviousData: true,
   });
 
-  //이거 나중에 제대로 추가하자
   if (isLoading) return <Loading/>;
   if (error) return <div>{error.message || "에러"}</div>;
 
   return (
+    <>
     <div className="w-full flex flex-col items-center justify-center w-full">
       {feedData?.result?.content && feedData.result.content.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
@@ -80,5 +100,6 @@ export default function StudentFeedList() {
         />
       )}
     </div>
+    </>
   );
 }

@@ -10,6 +10,7 @@ import {
   postResetEmailVerification,
 } from "../api/member";
 import AlertModal from "../components/alertModal";
+import SEO from "../components/seo";
 
 export default function PwdFind({}) {
   const navigate = useNavigate();
@@ -87,6 +88,8 @@ export default function PwdFind({}) {
   });
 
   return (
+    <>
+    <SEO title="비밀번호 찾기" description="스프 SouF 비밀번호 찾기" subTitle="스프"/>
     <div className="flex items-center justify-center my-20 w-full">
       <div className="w-full max-w-[1000px] px-4">
         <div className="max-sm:pl-4 font-semibold text-3xl sm:text-[48px] md:text-[60px] mt-12 sm:mb-6">
@@ -154,5 +157,6 @@ export default function PwdFind({}) {
         </div>
       </div>
     </div>
+    </>
   );
 }
