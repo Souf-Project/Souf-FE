@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import SearchBar from '../components/SearchBar';
 import Loading from '../components/loading';
 import SearchBlock from "../components/search/searchBlock";
-import Pagination from "../components/Pagination"; // 페이징 컴포넌트 경로 맞게 조정
+import Pagination from "../components/pagination"; // 페이징 컴포넌트 경로 맞게 조정
 import SEO from '../components/seo';
 
 const useQueryParam = () => new URLSearchParams(useLocation().search);
@@ -37,9 +37,13 @@ export default function Search() {
     enabled: !!submittedQuery,
   });
 
+  useEffect(() => {
+    console.log("검색", searchQuery);
+  },[searchQuery]);
+
   const handleSearch = (e) => {
-    e.preventDefault();
-    const trimmed = searchQuery.trim();
+    //e.preventDefault();
+    const trimmed = searchQuery?.trim();
     if (!trimmed) return;
 
     navigate(`/search?q=${encodeURIComponent(trimmed)}`);
@@ -90,19 +94,40 @@ export default function Search() {
 
   return (
     <>
-    <SEO title={keyword} description="스프 SouF 검색" subTitle=' 스프 검색'/>
-    <div className="flex flex-col justify-center items-center pt-12 px-6 w-4/5">
+      <SEO title={keyword} description="스프 SouF 검색" subTitle=' 스프 검색'/>
+      <div className="flex flex-col justify-center items-center py-12 px-6 w-4/5">
         <div className="flex justify-between items-center mx-auto py-8 gap-4 w-full">
-            <div className='flex'>
-            {["recruit", "profile", "feed"].map((tab) => (
+          <div className="flex">
+            {['recruit', 'profile', 'feed'].map((tab) => (
               <button
                 key={tab}
                 className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
-                  activeTab === tab ? "text-yellow-point" : "text-gray-700"
+                  activeTab === tab ? 'text-yellow-point' : 'text-gray-700'
                 }`}
               >
-            </button>
-          ))}
+
+                <span>
+                  {tab === 'recruit'
+                    ? '기업 공고문'
+                    : tab === 'profile'
+                    ? '대학생 프로필'
+                    : '대학생 피드'}
+                </span>
+                <span
+                  className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
+                    activeTab === tab ? 'w-3/4' : 'w-0 group-hover:w-3/4'
+                  }`}
+                ></span>
+              </button>
+            ))}
+          </div>
+          <SearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            placeholder="검색어를 입력하세요"
+            width="w-[60%]"
+            onSubmit={handleSearch}
+          />
         </div>
         <SearchBar
           value={searchQuery}
@@ -113,74 +138,77 @@ export default function Search() {
         />
       </div>
 
-      {isLoading ? (
-        <div className="w-full">
-          <Loading />
-        </div>
-      ) : isError ? (
-        <p className="text-red-500">검색 중 오류가 발생했습니다.</p>
-      ) : (
-        <>
-          {activeTab === 'recruit' && (
-            <>
-              {pagedResults.length > 0 ? (
-                <ul className="space-y-4 w-full">
-                  {pagedResults.map((recruit, idx) => (
-                    <SearchBlock
-                      key={idx}
-                      title={recruit.title}
-                      description={recruit.content}
-                    />
-                  ))}
-                </ul>
-              ) : (
-                <p>검색 결과가 없습니다.</p>
-              )}
-            </>
-          )}
+        {isLoading ? (
+          <div className="w-full">
+            <Loading />
+          </div>
+        ) : isError ? (
+          <p className="text-red-500">검색 중 오류가 발생했습니다.</p>
+        ) : (
+          <>
+            {activeTab === 'recruit' && (
+              <>
+                {pagedResults.length > 0 ? (
+                  <ul className="space-y-4 w-full">
+                    {pagedResults.map((recruit, idx) => (
+                      <SearchBlock
+                        key={idx}
+                        title={recruit.title}
+                        description={recruit.content}
+                      />
+                    ))}
+                  </ul>
+                ) : (
+                  <p>검색 결과가 없습니다.</p>
+                )}
+              </>
+            )}
 
-          {activeTab === 'profile' && (
-            <>
-              {pagedResults.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl">
-                  {pagedResults.map((data, idx) => (
-                    <SearchBlock key={idx} title={data.nickname} />
-                  ))}
-                </div>
-              ) : (
-                <p>검색 결과가 없습니다.</p>
-              )}
-            </>
-          )}
+            {activeTab === 'profile' && (
+              <>
+                {pagedResults.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 w-full max-w-7xl">
+                    {pagedResults.map((data, idx) => (
+                      <SearchBlock key={idx} title={data.nickname} />
+                    ))}
+                  </div>
+                ) : (
+                  <p>검색 결과가 없습니다.</p>
+                )}
+              </>
+            )}
 
-          {activeTab === 'feed' && (
-            <>
-              {pagedResults.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
-                  {pagedResults.map((data, idx) => (
-                    <SearchBlock
-                      key={idx}
-                      title={data.topic}
-                      description={data.content}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <p>검색 결과가 없습니다.</p>
-              )}
-            </>
-          )}
+            {activeTab === 'feed' && (
+              <>
+                {pagedResults.length > 0 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
+                    {pagedResults.map((data, idx) => (
+                      <SearchBlock
+                        key={idx}
+                        title={data.topic}
+                        description={data.content}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p>검색 결과가 없습니다.</p>
+                )}
+              </>
+            )}
 
-          {pagedResults.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={onPageChange}
-            />
-          )}
-        </>
-      )}
+            {pagedResults.length > 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+              />
+            )}
+          </>
+        )}
       </div>
-      </>
+    </>
   );
+
 }
+//<SEO title={keyword} description="스프 SouF 검색" subTitle=' 스프 검색'/>
+
