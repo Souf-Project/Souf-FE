@@ -33,9 +33,9 @@ export const getComment = async (postId) => {
     }
   };
 
-  export const deleteComment = async (postId, requestBody) => {
+  export const deleteComment = async (postId, commentId) => {
     try {
-      const response = await client.delete(`/api/v1/post/${postId}/comment`, requestBody);
+      const response = await client.delete(`/api/v1/post/${postId}/comment/${commentId}`);
       return response.data;
     } catch (error) {
       console.error("댓글 삭제 에러:", error);

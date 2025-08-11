@@ -7,8 +7,8 @@ import { deleteComment, postAdditionalComment } from "../../api/additionalFeed";
 import { useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
 
-export default function Comment({ comment, onReplyClick, onToggleReplies, showReplies, hasReplies, checkHasReplies }) {
-    const [editContent, setEditContent] = useState("");
+export default function Comment({ comment, onReplyClick, onToggleReplies, showReplies, hasReplies, checkHasReplies, commentsWithReplies }) {
+    // const [editContent, setEditContent] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [hasRepliesState, setHasRepliesState] = useState(false);
     const { id, worksId } = useParams();
@@ -40,21 +40,9 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
     // console.log("worksId from URL:", worksId);
     
     const handleDeleteComment = async () => {
-        const requestBody = {
-            commentId: comment.commentId,
-            writerId: memberId,
-            content: comment.content
-        };
-        
-        console.log("=== 삭제 API 호출 정보 ===");
-        console.log("worksId (postId):", worksId);
-        console.log("requestBody:", requestBody);
-        console.log("comment 객체:", comment);
-        console.log("memberId:", memberId);
-        console.log("==========================");
-        
+       
         try {
-            const response = await deleteComment(worksId, requestBody);
+            const response = await deleteComment(worksId, comment.commentId);
             console.log("삭제 API 응답:", response);
             // 삭제 성공 후 페이지 새로고침 또는 댓글 목록 업데이트
             window.location.reload();
@@ -64,13 +52,10 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
     };
 
     const handleDeleteClick = () => {
-        console.log("=== 삭제 버튼 클릭됨 ===");
-        console.log("showDeleteModal 상태:", showDeleteModal);
         setShowDeleteModal(true);
     };
 
     const handleConfirmDelete = () => {
-        console.log("=== 확인 버튼 클릭됨 ===");
         handleDeleteComment();
         setShowDeleteModal(false);
     };
@@ -112,7 +97,7 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
                 {!comment.parentId && (
                     <div className="text-sm text-gray-400 flex items-center gap-2">
                         <button onClick={handleReplyClick}>답글 달기</button>
-                        {hasRepliesState && (
+                        {commentsWithReplies[comment.commentId] && (
                             <button onClick={handleToggleRepliesClick}>
                                 {showReplies ? "답글 닫기" : "답글 열기"}
                             </button>
