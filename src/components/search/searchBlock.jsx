@@ -1,4 +1,5 @@
 export default function SearchBlock({ title, description, onClick }) {
+
 const maxLength = 100;
 
 const handlerFeedContent = (length, data) => {

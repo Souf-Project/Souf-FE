@@ -7,8 +7,8 @@ import { deleteComment, postAdditionalComment } from "../../api/additionalFeed";
 import { useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
 
-export default function Comment({ comment, onReplyClick, onToggleReplies, showReplies, hasReplies, checkHasReplies }) {
-    const [editContent, setEditContent] = useState("");
+export default function Comment({ comment, onReplyClick, onToggleReplies, showReplies, hasReplies, checkHasReplies, commentsWithReplies }) {
+    // const [editContent, setEditContent] = useState("");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [hasRepliesState, setHasRepliesState] = useState(false);
     const { id, worksId } = useParams();
@@ -92,7 +92,7 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
                 {!comment.parentId && (
                     <div className="text-sm text-gray-400 flex items-center gap-2">
                         <button onClick={handleReplyClick}>답글 달기</button>
-                        {hasRepliesState && (
+                        {commentsWithReplies[comment.commentId] && (
                             <button onClick={handleToggleRepliesClick}>
                                 {showReplies ? "답글 닫기" : "답글 열기"}
                             </button>
