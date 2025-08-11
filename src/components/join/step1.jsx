@@ -1,5 +1,7 @@
 import { useState } from "react";
 import dayjs from "dayjs";
+import noneCheckBox from "../../assets/images/noneCheckBox.png";
+import fillCheckBox from "../../assets/images/fillCheckBox.png";
 
 export default function Step2({ onNextStep }) {
   const [privacyAgreement, setPrivacyAgreement] = useState(false);
@@ -93,8 +95,6 @@ export default function Step2({ onNextStep }) {
             </div>
           </div>
         </div>
-
-        
 
         <h2 className="text-4xl font-bold text-left my-4">스프(SOUF) 서비스 이용약관</h2>
         <p className="text-lg text-gray-500 mb-4 px-6">본 약관은 주식회사 스프(이하 “회사”)가 운영하는 SOUF 플랫폼(https://souf.ac.kr, 이하 “서비스”)의 이용조건 및 절차, 회사와 회원 간의 권리·의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
@@ -256,59 +256,101 @@ export default function Step2({ onNextStep }) {
        {/* 동의 여부 체크박스 */}
        <div className="w-full flex flex-col gap-4">
           <h3 className="text-2xl font-bold text-left ml-6">동의 여부</h3>
+          
+          {/* 전체 선택 버튼 */}
+          <div className="flex items-center gap-3 ml-6">
+            <button
+              type="button"
+              onClick={() => {
+                const allChecked = privacyAgreement && serviceAgreement && thirdPartyAgreement && marketingAgreement;
+                const newState = !allChecked;
+                setPrivacyAgreement(newState);
+                setServiceAgreement(newState);
+                setThirdPartyAgreement(newState);
+                setMarketingAgreement(newState);
+              }}
+              className="flex items-center gap-3"
+            >
+              <img 
+                src={privacyAgreement && serviceAgreement && thirdPartyAgreement && marketingAgreement ? fillCheckBox : noneCheckBox} 
+                alt="전체 선택" 
+                className="w-5 h-5"
+              />
+              <span className="text-xl font-bold">
+                전체 선택
+              </span>
+            </button>
+          </div>
+          
           <div className="flex flex-col">
             <div className="flex items-center gap-3 ml-6">
-              <input
-                type="checkbox"
-                id="privacy-agreement"
-                checked={privacyAgreement}
-                onChange={(e) => setPrivacyAgreement(e.target.checked)}
-                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
-              />
-              <label htmlFor="privacy-agreement" className="text-lg">
-                개인정보 수집 및 이용 동의 (필수)
-                <span className="text-sm text-red-500 ml-1">*</span>
-              </label>
+              <button
+                type="button"
+                onClick={() => setPrivacyAgreement(!privacyAgreement)}
+                className="flex items-center gap-3"
+              >
+                <img 
+                  src={privacyAgreement ? fillCheckBox : noneCheckBox} 
+                  alt="개인정보 동의" 
+                  className="w-5 h-5"
+                />
+                <span className="text-lg">
+                  개인정보 수집 및 이용 동의 (필수)
+                  <span className="text-sm text-red-500 ml-1">*</span>
+                </span>
+              </button>
             </div>
             <div className="flex items-center gap-3 ml-6">
-              <input
-                type="checkbox"
-                id="service-agreement"
-                checked={serviceAgreement}
-                onChange={(e) => setServiceAgreement(e.target.checked)}
-                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
-              />
-              <label htmlFor="service-agreement" className="text-lg">
-                서비스 이용 약관 동의 (필수)
-                <span className="text-sm text-red-500 ml-1">*</span>
-              </label>
+              <button
+                type="button"
+                onClick={() => setServiceAgreement(!serviceAgreement)}
+                className="flex items-center gap-3"
+              >
+                <img 
+                  src={serviceAgreement ? fillCheckBox : noneCheckBox} 
+                  alt="서비스 이용 약관 동의" 
+                  className="w-5 h-5"
+                />
+                <span className="text-lg">
+                  서비스 이용 약관 동의 (필수)
+                  <span className="text-sm text-red-500 ml-1">*</span>
+                </span>
+              </button>
             </div>
             <div className="flex items-center gap-3 ml-6">
-              <input
-                type="checkbox"
-                id="third-party-agreement"
-                checked={thirdPartyAgreement}
-                onChange={(e) => setThirdPartyAgreement(e.target.checked)}
-                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
-              />
-              <label htmlFor="third-party-agreement" className="text-lg">
-                제3자 제공 동의 (선택)
-              </label>
+              <button
+                type="button"
+                onClick={() => setThirdPartyAgreement(!thirdPartyAgreement)}
+                className="flex items-center gap-3"
+              >
+                <img 
+                  src={thirdPartyAgreement ? fillCheckBox : noneCheckBox} 
+                  alt="제3자 제공 동의" 
+                  className="w-5 h-5"
+                />
+                <span className="text-lg">
+                  제3자 제공 동의 (선택)
+                </span>
+              </button>
             </div>
             <div className="flex items-center gap-3 ml-6">
-              <input
-                type="checkbox"
-                id="marketing-agreement"
-                checked={marketingAgreement}
-                onChange={(e) => setMarketingAgreement(e.target.checked)}
-                className="w-5 h-5 text-yellow-point bg-gray-100 border-gray-300 rounded focus:ring-yellow-point focus:ring-2"
-              />
-              <label htmlFor="marketing-agreement" className="text-lg">
-                마케팅 수신 동의 (선택)
-              </label>
+              <button
+                type="button"
+                onClick={() => setMarketingAgreement(!marketingAgreement)}
+                className="flex items-center gap-3"
+              >
+                <img 
+                  src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                  alt="마케팅 수신 동의" 
+                  className="w-5 h-5"
+                />
+                <span className="text-lg">
+                  마케팅 수신 동의 (선택)
+                </span>
+              </button>
             </div>
             <div className="flex flex-col gap-2 mt-4 mx-6">
-            <div className="flex flex-col gap-2 items-end border-b border-gray-200 py-4">
+            <div className="flex flex-col gap-2 items-end border-t border-gray-200 py-4">
               <div className="flex items-center gap-2">
               <p className="text-sm text-gray-500">시행 일자:</p>
               <p className="text-sm text-gray-500">{dayjs().format('YYYY.MM.DD')}</p>
@@ -323,7 +365,7 @@ export default function Step2({ onNextStep }) {
               </div>
            
            <button 
-              className={`mx-auto w-80 py-2 rounded-md my-4 ${
+              className={`mx-auto w-80 py-3 rounded-md mt-8 ${
                 privacyAgreement && serviceAgreement 
                   ? 'bg-yellow-main text-gray-800 cursor-pointer' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
