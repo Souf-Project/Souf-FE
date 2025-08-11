@@ -69,6 +69,13 @@ export default function PostDetail() {
     
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);
+      
+      // 좋아요 상태 초기화
+      if (data.result.liked !== undefined) {
+        setIsLiked(data.result.liked);
+        console.log("좋아요 상태:", data.result.liked);
+      }
+      
       return data;
     },
     keepPreviousData: true,
@@ -149,11 +156,12 @@ const handleDeleteClick = () => {
       const currentMemberId = UserStore.getState().memberId;
       const requestBody = {
         memberId: currentMemberId,
-        isLiked: !isLiked
+        isLiked: !isLiked // 현재 상태의 반대값을 전송
       };
       
       await patchLike(worksId, requestBody);
       
+      // 성공 시 상태 업데이트
       setIsLiked(!isLiked);
       console.log("좋아요 처리 성공");
     } catch (error) {
