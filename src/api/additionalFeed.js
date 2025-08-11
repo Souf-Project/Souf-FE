@@ -1,11 +1,9 @@
 import axios from "axios";
 import client from "./client";
 
-export const patchLike = async (feedId) => {
+export const patchLike = async (feedId, requestBody) => {
     try {
-      const response = await client.patch(`/api/v1/feed/${feedId}/like`, {
-       
-      });
+      const response = await client.patch(`/api/v1/feed/${feedId}/like`, requestBody);
       return response.data;
     } catch (error) {
       console.error("좋아요 생성/삭제 에러:", error);
@@ -35,9 +33,9 @@ export const getComment = async (postId) => {
     }
   };
 
-  export const deleteComment = async (postId, requestBody) => {
+  export const deleteComment = async (postId, commentId) => {
     try {
-      const response = await client.delete(`/api/v1/post/${postId}/comment`, requestBody);
+      const response = await client.delete(`/api/v1/post/${postId}/comment/${commentId}`);
       return response.data;
     } catch (error) {
       console.error("댓글 삭제 에러:", error);

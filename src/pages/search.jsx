@@ -104,8 +104,8 @@ export default function Search() {
                 className={`px-6 py-3 rounded-lg font-extrabold transition-colors duration-200 relative group ${
                   activeTab === tab ? 'text-yellow-point' : 'text-gray-700'
                 }`}
-                onClick={() => setActiveTab(tab)}
               >
+
                 <span>
                   {tab === 'recruit'
                     ? '기업 공고문'
@@ -129,6 +129,14 @@ export default function Search() {
             onSubmit={handleSearch}
           />
         </div>
+        <SearchBar
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="검색어를 입력하세요"
+          width="w-[60%]"
+          onSubmit={handleSearch}
+        />
+      </div>
 
         {isLoading ? (
           <div className="w-full">
@@ -200,5 +208,7 @@ export default function Search() {
       </div>
     </>
   );
+
 }
 //<SEO title={keyword} description="스프 SouF 검색" subTitle=' 스프 검색'/>
+
