@@ -41,7 +41,7 @@ export const postVideoUpload = async ({ uploadId , fileUrl, parts, type}) => {
 export const uploadToS3Video = async (url, file) => {
   return axios.put(url, file, {
     headers: {
-      "Content-Type": "video/mp4", // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
+      "Content-Type": `video/${file.type}`, // 백엔드에서 서명한 값과 정확히 일치시켜야 함!
     },
   });
 };
