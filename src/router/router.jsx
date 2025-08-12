@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
+import Redirect from "../pages/redirect";
 import VerifyStudent from "../pages/verifyStudent";
 import Recruit from "../pages/recruit";
 import RecruitDetail from "../pages/recruitDetails";
@@ -13,7 +14,6 @@ import PwdFind from "../pages/pwdFind";
 import StudentProfileList from "../pages/studentProfileList";
 import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
-import CompanyApplicants from "../components/companyMyPage/companyApplicants";
 import PostEdit from "../pages/postEdit";
 import PostUpload from "../pages/postUpload";
 import RecruitUpload from "../pages/recruitUpload";
@@ -38,6 +38,7 @@ function AppRouter() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/oauth/kakao/callback" element={<Redirect />} />
           <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
           <Route path="/recruitDetails/:id" element={<RecruitDetail />} />

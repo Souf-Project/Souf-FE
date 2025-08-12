@@ -6,6 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
 import { UserStore } from '../store/userStore';
 import { useNavigate } from 'react-router-dom';
+import noneCheckBox from "../assets/images/noneCheckBox.png";
+import fillCheckBox from "../assets/images/fillCheckBox.png";
 import Loading from './loading';
 
 export default function ProfileEditContent() {
@@ -15,6 +17,7 @@ export default function ProfileEditContent() {
   const [nicknameVerified, setNicknameVerified] = useState(false);
   const [verifyingNickname, setVerifyingNickname] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState('');
+  const [marketingAgreement, setMarketingAgreement] = useState(false);
   const {roleType} = UserStore();
   
   const [formData, setFormData] = useState(null);
@@ -330,7 +333,23 @@ export default function ProfileEditContent() {
            <></>
           )}
       </div>
-      <div className='flex justify-end items-end'>
+      <div className='flex justify-between items-center'>
+      <button
+                type="button"
+                onClick={() => setMarketingAgreement(!marketingAgreement)}
+                className="flex items-center gap-3"
+              >
+                <img 
+                  src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                  alt="마케팅 수신 동의" 
+                  className="w-5 h-5"
+                />
+                <span className="text-lg">
+                  마케팅 수신 동의 (선택)
+                </span>
+              </button>
+      
+           
           <button
             className="text-gray-400 underline"
             onClick={() => navigate("/withdraw")}

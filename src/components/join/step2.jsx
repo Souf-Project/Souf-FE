@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../input";
 import ButtonInput from "../buttonInput";
@@ -16,7 +16,7 @@ import { filterEmptyCategories } from "../../utils/filterEmptyCategories";
 import { useSignupMutations } from "../../hooks/join/join";
 import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
 
-export default function Step1() {
+export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
   const [email, setEmail] = useState("");
   const [verification, setVerification] = useState("");
   const [verificationApproveText, setVerificationApproveText] = useState("");
@@ -46,6 +46,23 @@ export default function Step1() {
     passwordCheck: false,
   });
   const navigate = useNavigate();
+
+  // 소셜 로그인 정보가 있으면 이메일과 닉네임 자동 설정
+  useEffect(() => {
+    if (socialLoginInfo?.socialLogin && socialLoginInfo?.socialUserInfo) {
+      const { email: socialEmail, nickname: socialNickname } = socialLoginInfo.socialUserInfo;
+      if (socialEmail) {
+        setEmail(socialEmail);
+        setFormData(prev => ({ ...prev, email: socialEmail }));
+      }
+      if (socialNickname) {
+        setNickname(socialNickname);
+        setFormData(prev => ({ ...prev, nickname: socialNickname }));
+        // 소셜 로그인 사용자는 닉네임 중복 확인을 건너뛰기
+        setCheckResult(true);
+      }
+    }
+  }, [socialLoginInfo]);
 
   const validateForm = () => {
     const isPasswordValid = isValidPassword(formData.password);
@@ -171,7 +188,17 @@ export default function Step1() {
         categoryDtos: cleanedCategories,
       };
 
-      return postSignUp(finalData);
+      // 소셜 로그인 정보가 있으면 소셜 회원가입 API 사용
+      if (socialLoginInfo?.socialLogin) {
+        finalData.socialLogin = {
+          provider: socialLoginInfo.provider,
+          socialUserInfo: socialLoginInfo.socialUserInfo
+        };
+        return postSocialSignUp(finalData);
+      } else {
+        // 일반 회원가입
+        return postSignUp(finalData);
+      }
     },
     onSuccess: (response) => {
       setSuccessModal(true);
@@ -327,20 +354,62 @@ export default function Step1() {
     const isValid = validateForm();
     if (!isValid) return;
     
-    const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+    // 카테고리 데이터 정리 및 검증
+    const cleanedCategories = formData.categoryDtos
+      .map((category) => {
+        const cleaned = {};
+        if (category.firstCategory !== null) {
+          cleaned.firstCategory = Number(category.firstCategory);
+        }
+        if (category.secondCategory !== null) {
+          cleaned.secondCategory = Number(category.secondCategory);
+        }
+        if (category.thirdCategory !== null) {
+          cleaned.thirdCategory = Number(category.thirdCategory);
+        }
+        return Object.keys(cleaned).length > 0 ? cleaned : null;
+      })
+      .filter(Boolean); // null 제거
+
     if (cleanedCategories.length === 0) {
       alert("최소 1개 이상의 카테고리를 선택해주세요.");
       return;
     }
-    if (cleanedCategories.length > 3) {
-      alert("최대 3개까지 선택 가능합니다.");
-      return;
+
+    console.log("원본 카테고리:", formData.categoryDtos);
+    console.log("정리된 카테고리:", cleanedCategories);
+
+    // 약관 동의 상태 처리
+    const isPersonalInfoAgreed = agreementData?.privacyAgreement && 
+                                 agreementData?.serviceAgreement && 
+                                 agreementData?.thirdPartyAgreement;
+    const isMarketingAgreed = agreementData?.marketingAgreement;
+
+    // 소셜 로그인 정보가 있으면 닉네임과 이메일을 소셜 정보로 설정
+    let finalNickname = formData.nickname;
+    let finalEmail = formData.email;
+    
+    if (socialLoginInfo?.socialLogin && socialLoginInfo?.socialUserInfo) {
+      const { nickname: socialNickname, email: socialEmail } = socialLoginInfo.socialUserInfo;
+      if (socialNickname) {
+        finalNickname = socialNickname;
+      }
+      if (socialEmail) {
+        finalEmail = socialEmail;
+      }
     }
 
     const finalData = {
       ...formData,
+      nickname: finalNickname,
+      email: finalEmail,
       categoryDtos: cleanedCategories,
+      isPersonalInfoAgreed,
+      isMarketingAgreed
     };
+
+    console.log("회원가입 요청 데이터:", finalData);
+    console.log("정리된 카테고리:", cleanedCategories);
     signUp.mutate(finalData);
   }
 //border-t-[1px] md:
@@ -389,7 +458,7 @@ export default function Step1() {
 <ButtonInput
   value={verification}
   onChange={(e) => setVerification(e.target.value)}
-  title="이메일 인증"
+  title="인증번호 입력"
   btnText="인증확인"
   onClick={() => {
     emailVerify.mutate({

@@ -1,13 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import noneCheckBox from "../../assets/images/noneCheckBox.png";
 import fillCheckBox from "../../assets/images/fillCheckBox.png";
 
-export default function Step2({ onNextStep }) {
+export default function Step2({ onNextStep, socialLoginInfo }) {
   const [privacyAgreement, setPrivacyAgreement] = useState(false);
   const [serviceAgreement, setServiceAgreement] = useState(false);
   const [thirdPartyAgreement, setThirdPartyAgreement] = useState(false);
   const [marketingAgreement, setMarketingAgreement] = useState(false);
+
+  // 소셜 로그인 정보가 있으면 체크박스 자동 체크
+  useEffect(() => {
+    if (socialLoginInfo?.socialLogin) {
+      setPrivacyAgreement(true);
+      setServiceAgreement(true);
+      setThirdPartyAgreement(true);
+    }
+  }, [socialLoginInfo]);
+
+  const handleNextStep = () => {
+    // 소셜 로그인 정보와 약관 동의 상태를 step2로 전달
+    const agreementData = {
+      privacyAgreement,
+      serviceAgreement,
+      thirdPartyAgreement,
+      marketingAgreement
+    };
+    onNextStep(socialLoginInfo, agreementData);
+  };
 
   return (
     <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 flex flex-col items-center justify-center">
@@ -329,7 +349,8 @@ export default function Step2({ onNextStep }) {
                   className="w-5 h-5"
                 />
                 <span className="text-lg">
-                  제3자 제공 동의 (선택)
+                  제3자 제공 동의 (필수)
+                  <span className="text-sm text-red-500 ml-1">*</span>
                 </span>
               </button>
             </div>
@@ -366,17 +387,11 @@ export default function Step2({ onNextStep }) {
            
            <button 
               className={`mx-auto w-80 py-3 rounded-md mt-8 ${
-                privacyAgreement && serviceAgreement 
+                privacyAgreement && serviceAgreement && thirdPartyAgreement
                   ? 'bg-yellow-main text-gray-800 cursor-pointer' 
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
-              onClick={() => {
-                if (privacyAgreement && serviceAgreement) {
-                  onNextStep();
-                } else {
-                  alert('필수 약관에 모두 동의해주세요.');
-                }
-              }}
+              onClick={handleNextStep}
               disabled={!privacyAgreement || !serviceAgreement}
             >
               다음으로

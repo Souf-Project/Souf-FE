@@ -7,6 +7,8 @@ import loginImg from "../assets/images/loginImg.svg";
 import { postLogin } from "../api/member";
 import { useMutation } from "@tanstack/react-query";
 import { UserStore } from "../store/userStore";
+import loginKakao from "../assets/images/loginKakao.png"
+import loginGoogle from "../assets/images/loginGoogle.png"
 import SEO from "../components/seo";
 
 export default function Login() {
@@ -50,6 +52,31 @@ export default function Login() {
       setShowError(true);
     },
   });
+
+  // 카카오 로그인
+  const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
+  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email`;
+  
+  const handleKakaoLogin = () => {
+    console.log("카카오 로그인 시작");
+    console.log("REST_API_KEY:", REST_API_KEY);
+    console.log("REDIRECT_URI:", REDIRECT_URI);
+    console.log("KAKAO_AUTH_URL:", KAKAO_AUTH_URL);
+    
+    localStorage.setItem('socialProvider', 'KAKAO');
+    window.location.href = KAKAO_AUTH_URL;
+  }
+
+  // 구글 로그인
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
+  
+  const handleGoogleLogin = () => {
+    localStorage.setItem('socialProvider', 'GOOGLE');
+    window.location.href = GOOGLE_AUTH_URL;
+  }
 
   return (
     <>
@@ -125,6 +152,7 @@ export default function Login() {
           {showError && (
             <div className="mt-10 text-red-essential text-center">아이디 또는 비밀번호가 일치하지 않습니다.</div>
           )}
+         
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
             <button type="button" onClick={() => navigate("/join")}>회원가입</button>
             <button type="button" onClick={() => navigate("/pwdFind")}>
@@ -134,11 +162,26 @@ export default function Login() {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-yellow-main mx-auto w-36 h-12 rounded-xl text-2xl font-bold"
+              className="bg-yellow-main mx-auto w-36 py-2 rounded-xl text-2xl font-semibold mt-4"
             >
               로그인
             </button>
+            
           </div>
+          <div className="flex flex-col items-center justify-center mt-4">
+            <p className="text-lg font-light mb-4">SNS 계정으로 시작하기</p>
+            <div className="flex items-center justify-center gap-4">
+              <button  onClick={handleKakaoLogin} >
+            <img src={loginKakao} className=" w-52 shadow-sm hover:shadow-md"/>
+            </button>
+            <button  onClick={handleGoogleLogin} >
+            <img src={loginGoogle} className=" w-52 shadow-sm hover:shadow-md"/>
+            </button>
+            </div>
+            
+           
+          </div>
+          
            </form>
       </div>
       <div className="mt-10  lg:hidden flex justify-center">
