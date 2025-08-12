@@ -8,11 +8,11 @@ export default function DeclareModal({
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [description, setDescription] = useState("");
 
-  const handleReasonChange = (value) => {
-    if (selectedReasons.includes(value)) {
-      setSelectedReasons(selectedReasons.filter(reason => reason !== value));
+  const handleReasonChange = (index) => {
+    if (selectedReasons.includes(index)) {
+      setSelectedReasons(selectedReasons.filter(reason => reason !== index));
     } else {
-      setSelectedReasons([...selectedReasons, value]);
+      setSelectedReasons([...selectedReasons, index]);
     }
   };
 
@@ -92,8 +92,8 @@ export default function DeclareModal({
               id="reason1" 
               name="reason" 
               value="개인정보 노출"
-              checked={selectedReasons.includes("개인정보 노출")}
-              onChange={() => handleReasonChange("개인정보 노출")}
+              checked={selectedReasons.includes(0)}
+              onChange={() => handleReasonChange(0)}
             />
             <label htmlFor="reason1" className="text-sm">개인정보 노출</label>
           </div>
@@ -103,8 +103,8 @@ export default function DeclareModal({
               id="reason2" 
               name="reason" 
               value="폭력 또는 악의적인 콘텐츠"
-              checked={selectedReasons.includes("폭력 또는 악의적인 콘텐츠")}
-              onChange={() => handleReasonChange("폭력 또는 악의적인 콘텐츠")}
+              checked={selectedReasons.includes(1)}
+              onChange={() => handleReasonChange(1)}
             />
             <label htmlFor="reason2" className="text-sm">폭력 또는 악의적인 콘텐츠</label>
           </div>
@@ -114,19 +114,19 @@ export default function DeclareModal({
               id="reason3" 
               name="reason" 
               value="음란성/선정성"
-              checked={selectedReasons.includes("음란성/선정성")}
-              onChange={() => handleReasonChange("음란성/선정성")}
+              checked={selectedReasons.includes(2)}
+              onChange={() => handleReasonChange(2)}
             />
             <label htmlFor="reason3" className="text-sm">음란성/선정성</label>
           </div>
-          <div className="flex items-center gap-2 whitespace-nowrap">
+          <div className="flex items-center gap-2">
             <input 
               type="checkbox" 
               id="reason4" 
               name="reason" 
               value="부적절한 닉네임 또는 이미지"
-              checked={selectedReasons.includes("부적절한 닉네임 또는 이미지")}
-              onChange={() => handleReasonChange("부적절한 닉네임 또는 이미지")}
+              checked={selectedReasons.includes(3)}
+              onChange={() => handleReasonChange(3)}
             />
             <label htmlFor="reason4" className="text-sm">부적절한 닉네임 또는 이미지</label>
           </div>
@@ -136,8 +136,8 @@ export default function DeclareModal({
               id="reason5" 
               name="reason" 
               value="욕설/인신공격"
-              checked={selectedReasons.includes("욕설/인신공격")}
-              onChange={() => handleReasonChange("욕설/인신공격")}
+              checked={selectedReasons.includes(4)}
+              onChange={() => handleReasonChange(4)}
             />
             <label htmlFor="reason5" className="text-sm">욕설/인신공격</label>
           </div>
@@ -147,8 +147,8 @@ export default function DeclareModal({
               id="reason6" 
               name="reason" 
               value="저작권 침해"
-              checked={selectedReasons.includes("저작권 침해")}
-              onChange={() => handleReasonChange("저작권 침해")}
+              checked={selectedReasons.includes(5)}
+              onChange={() => handleReasonChange(5)}
             />
             <label htmlFor="reason6" className="text-sm">저작권 침해</label>
           </div>
@@ -158,8 +158,8 @@ export default function DeclareModal({
               id="reason7" 
               name="reason" 
               value="반복성 게시글(도배)"
-              checked={selectedReasons.includes("반복성 게시글(도배)")}
-              onChange={() => handleReasonChange("반복성 게시글(도배)")}
+              checked={selectedReasons.includes(6)}
+              onChange={() => handleReasonChange(6)}
             />
             <label htmlFor="reason7" className="text-sm">반복성 게시글(도배)</label>
           </div>
@@ -169,8 +169,8 @@ export default function DeclareModal({
               id="reason8" 
               name="reason" 
               value="기타"
-              checked={selectedReasons.includes("기타")}
-              onChange={() => handleReasonChange("기타")}
+              checked={selectedReasons.includes(7)}
+              onChange={() => handleReasonChange(7)}
             />
             <label htmlFor="reason8" className="text-sm">기타</label>
           </div>
@@ -181,7 +181,7 @@ export default function DeclareModal({
         <textarea 
           className="w-full py-3 px-3 border border-gray-300 rounded-md focus:outline-none mb-4 resize-none"
           rows="3"
-          placeholder="신고 사유를 자세히 작성해주세요..."
+          placeholder=""
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
