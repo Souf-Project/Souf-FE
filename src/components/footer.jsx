@@ -39,7 +39,7 @@ export default function Footer() {
             className="flex items-center gap-2 transition-opacity"
           >
             <img src={iconInsta} alt="Instagram" className="w-6 h-6" />
-            <span className="text-gray-500">Instagram | @Souf.platform</span>
+            <span className="text-gray-500">Instagram | @souf.co.kr</span>
           </a>
 
           <a

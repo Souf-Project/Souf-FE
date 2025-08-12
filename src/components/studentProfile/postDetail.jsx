@@ -43,7 +43,7 @@ export default function PostDetail() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showShareDropdown, setShowShareDropdown] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState();
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
   const [isHeartDisabled, setIsHeartDisabled] = useState(false);
 
@@ -55,7 +55,8 @@ export default function PostDetail() {
     queryKey: ["feedDetail"],
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
-      
+      console.log("좋아요 상태:", data.result.liked);
+      console.log("응답:", data.result);
       // console.log("피드 디테일응답:", data.result);
 
       data.result.mediaResDtos?.forEach((media, index) => {
@@ -69,6 +70,13 @@ export default function PostDetail() {
     
       setWorksData(data.result);
       setMediaData(data.result.mediaResDtos);
+      
+      // 좋아요 상태 초기화
+      if (data.result.liked !== undefined) {
+        setIsLiked(data.result.liked);
+       
+      }
+      
       return data;
     },
     keepPreviousData: true,
@@ -149,13 +157,20 @@ const handleDeleteClick = () => {
       const currentMemberId = UserStore.getState().memberId;
       const requestBody = {
         memberId: currentMemberId,
-        isLiked: !isLiked
+        isLiked: !isLiked // 현재 상태의 반대값을 전송
       };
       
       await patchLike(worksId, requestBody);
+      console.log("요청:", requestBody);
       
-      setIsLiked(!isLiked);
+      // 좋아요 처리 후 전체 데이터 다시 가져오기
+      const updatedData = await getFeedDetail(id, worksId);
+      setWorksData(updatedData.result);
+      setIsLiked(updatedData.result.liked);
+      setMediaData(updatedData.result.mediaResDtos);
+      
       console.log("좋아요 처리 성공");
+     
     } catch (error) {
       console.error("좋아요 처리 에러:", error);
     }

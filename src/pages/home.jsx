@@ -391,7 +391,7 @@ export default function Home() {
                 })}
               </div>
               {/* 데스크톱 버전 */}
-              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full">
+              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-6xl mx-auto">
                 {categories.map((category, index) => {
                   const categoryImages = [
                     cate1Img,
