@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import SearchBar from '../components/SearchBar';
 import Loading from '../components/loading';
 import SearchBlock from "../components/search/searchBlock";
-import Pagination from "../components/pagination"; // 페이징 컴포넌트 경로 맞게 조정
+import Pagination from "../components/Pagination"; // 페이징 컴포넌트 경로 맞게 조정
 import SEO from '../components/seo';
 
 const useQueryParam = () => new URLSearchParams(useLocation().search);
@@ -37,13 +37,9 @@ export default function Search() {
     enabled: !!submittedQuery,
   });
 
-  useEffect(() => {
-    console.log("검색", searchQuery);
-  },[searchQuery]);
-
   const handleSearch = (e) => {
-    //e.preventDefault();
-    const trimmed = searchQuery?.trim();
+    e.preventDefault();
+    const trimmed = searchQuery.trim();
     if (!trimmed) return;
 
     navigate(`/search?q=${encodeURIComponent(trimmed)}`);
@@ -91,6 +87,7 @@ export default function Search() {
     if (page < 0 || page >= totalPages) return;
     setCurrentPage(page);
   };
+
 
  return (
   <>
@@ -197,7 +194,8 @@ export default function Search() {
           )}
         </>
       )}
-    </div>
-  </>
-);
+      </div>
+      </>
+  );
 }
+
