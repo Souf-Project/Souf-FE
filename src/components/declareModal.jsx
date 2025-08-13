@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReasonCheckbox from "./ReasonCheckbox";
 
 export default function DeclareModal({
   onClickFalse,
@@ -7,6 +8,18 @@ export default function DeclareModal({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [description, setDescription] = useState("");
+
+  // 신고 사유 목록
+  const reasonList = [
+    "개인정보 노출",
+    "폭력 또는 악의적인 콘텐츠",
+    "음란성/선정성",
+    "부적절한 닉네임 또는 이미지",
+    "욕설/인신공격",
+    "저작권 침해",
+    "반복성 게시글(도배)",
+    "기타"
+  ];
 
   const handleReasonChange = (index) => {
     if (selectedReasons.includes(index)) {
@@ -23,6 +36,9 @@ export default function DeclareModal({
     }
 
     try {
+      console.log("사유 인덱스:", selectedReasons);
+      console.log("인덱스 이름:", selectedReasons.map(index => reasonList[index]));
+      console.log("신고 사유 설명:", description);
       // 여기에 신고 API 추가
     
       setIsSubmitted(true);
@@ -86,94 +102,15 @@ export default function DeclareModal({
           신고 사유를 하나 이상 선택해주세요.
         </div>
         <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason1" 
-              name="reason" 
-              value="개인정보 노출"
-              checked={selectedReasons.includes(0)}
-              onChange={() => handleReasonChange(0)}
+          {reasonList.map((reason, index) => (
+            <ReasonCheckbox
+              key={index}
+              index={index}
+              label={reason}
+              isSelected={selectedReasons.includes(index)}
+              onChange={handleReasonChange}
             />
-            <label htmlFor="reason1" className="text-sm">개인정보 노출</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason2" 
-              name="reason" 
-              value="폭력 또는 악의적인 콘텐츠"
-              checked={selectedReasons.includes(1)}
-              onChange={() => handleReasonChange(1)}
-            />
-            <label htmlFor="reason2" className="text-sm">폭력 또는 악의적인 콘텐츠</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason3" 
-              name="reason" 
-              value="음란성/선정성"
-              checked={selectedReasons.includes(2)}
-              onChange={() => handleReasonChange(2)}
-            />
-            <label htmlFor="reason3" className="text-sm">음란성/선정성</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason4" 
-              name="reason" 
-              value="부적절한 닉네임 또는 이미지"
-              checked={selectedReasons.includes(3)}
-              onChange={() => handleReasonChange(3)}
-            />
-            <label htmlFor="reason4" className="text-sm">부적절한 닉네임 또는 이미지</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason5" 
-              name="reason" 
-              value="욕설/인신공격"
-              checked={selectedReasons.includes(4)}
-              onChange={() => handleReasonChange(4)}
-            />
-            <label htmlFor="reason5" className="text-sm">욕설/인신공격</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason6" 
-              name="reason" 
-              value="저작권 침해"
-              checked={selectedReasons.includes(5)}
-              onChange={() => handleReasonChange(5)}
-            />
-            <label htmlFor="reason6" className="text-sm">저작권 침해</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason7" 
-              name="reason" 
-              value="반복성 게시글(도배)"
-              checked={selectedReasons.includes(6)}
-              onChange={() => handleReasonChange(6)}
-            />
-            <label htmlFor="reason7" className="text-sm">반복성 게시글(도배)</label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="reason8" 
-              name="reason" 
-              value="기타"
-              checked={selectedReasons.includes(7)}
-              onChange={() => handleReasonChange(7)}
-            />
-            <label htmlFor="reason8" className="text-sm">기타</label>
-          </div>
+          ))}
         </div>
         <div className="text-lg font-bold my-4">
           신고 사유를 자세하게 작성해주세요.
