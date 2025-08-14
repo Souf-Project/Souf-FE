@@ -10,6 +10,7 @@ import {
   postEmailVerify,
   postSignUp,
 } from "../../api/member";
+import { postSocialSignUp } from "../../api/social";
 import CategorySelectBox from "../categorySelectBox";
 import AlertModal from "../alertModal";
 import { filterEmptyCategories } from "../../utils/filterEmptyCategories";
@@ -47,44 +48,6 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
   });
   const navigate = useNavigate();
 
-  // 소셜 로그인 정보가 있으면 이메일과 닉네임 자동 설정
-  useEffect(() => {
-    if (socialLoginInfo?.socialLogin && socialLoginInfo?.socialUserInfo) {
-      const { email: socialEmail, nickname: socialNickname } = socialLoginInfo.socialUserInfo;
-      if (socialEmail) {
-        setEmail(socialEmail);
-        setFormData(prev => ({ ...prev, email: socialEmail }));
-      }
-      if (socialNickname) {
-        setNickname(socialNickname);
-        setFormData(prev => ({ ...prev, nickname: socialNickname }));
-        // 소셜 로그인 사용자는 닉네임 중복 확인을 건너뛰기
-        setCheckResult(true);
-      }
-    }
-  }, [socialLoginInfo]);
-
-  const validateForm = () => {
-    const isPasswordValid = isValidPassword(formData.password);
-    const isPasswordMatchValid = isPasswordMatch(formData.password, formData.passwordCheck);
-  
-    const newErrors = {
-      username: !formData.username.trim(),
-      nickname: !formData.nickname.trim() || !checkResult,
-      email: !formData.email.trim(),
-      password: !isPasswordValid,
-      passwordCheck: !isPasswordMatchValid,
-    };
-  
-    setErrors(newErrors);
-    setPasswordValidation(isPasswordValid);
-  
-    const hasError = Object.values(newErrors).some(Boolean);
-    return !hasError;
-  };
-  
-
-
   const [formData, setFormData] = useState({
     username: "",
     nickname: "",
@@ -110,107 +73,125 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
     ],
   });
 
-  /*
-  const emailVerificationMutation = useMutation({
-    mutationFn: (email) => postEmailVerification(email),
-    onSuccess: (response) => {
-      setModalTitle("인증번호 발송");
-      setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
-      setEmailModal(true);
-    },
-    onError: (error) => {
-      console.log("에러발생", error);
-      if (error.response?.data?.code === 400) {
-        setModalTitle("중복된 이메일");
-        setDescription(error.response?.data?.message);
-      } else {
-        setModalTitle("인증번호 발송 오류");
-        setDescription("올바르지 않은 이메일 형식입니다.");
-      }
-      setEmailModal(true);
-    },
-  });
-
-  const {
-    mutate: checkNickname,
-    isLoading,
-    isError,
-    error,
-    data,
-  } = useMutation({
-    mutationFn: (nickname) => getNickNameVerify(nickname),
-    onSuccess: (response) => {
-      console.log(response.data);
-      setCheckResult(response.data.result);
-      setNicknameModal(true);
-    },
-  });
-
-  const emailNumberVerificationMutation = useMutation({
-    mutationFn: ({ email, verification }) =>
-      postEmailVerify(email, verification, "SIGNUP"),
-    onSuccess: (response, { email }) => {
-      if (response.result === true) {
-        updateUserData("email", email);
-        setApproveText("인증번호가 확인되었습니다.");
+  // 소셜 로그인 -> 이메일&닉네임 자동 설정
+  useEffect(() => {
+    if (socialLoginInfo?.socialLogin) {
+      if (socialLoginInfo?.email) {
+       
+        setEmail(socialLoginInfo.email);
+        setFormData(prev => ({ 
+          ...prev, 
+          email: socialLoginInfo.email 
+        }));
+        // 소셜 로그인이면 이메일 인증X
         setEmailVerification(true);
-        // 여기도 초록색 처리
+        setVerificationCheck(true);
+      }
+      if (socialLoginInfo?.username) {
+        setFormData(prev => ({ 
+          ...prev, 
+          username: socialLoginInfo.username 
+        }));
+      }
+    }
+  }, [socialLoginInfo]);
+
+  const validateForm = () => {
+    // 소셜 로그인이면 비밀번호 검증 X
+    if (socialLoginInfo?.socialLogin) {
+      const newErrors = {
+        username: !formData.username.trim(),
+        nickname: !formData.nickname.trim() || !checkResult,
+        email: !formData.email.trim(),
+        password: false, 
+        passwordCheck: false, 
+      };
+      
+      setErrors(newErrors);
+      return !newErrors.username && !newErrors.nickname && !newErrors.email;
+    }
+
+    // 일반 회원가입이면 검증 다 수행
+    const isPasswordValid = isValidPassword(formData.password);
+    const isPasswordMatchValid = isPasswordMatch(formData.password, formData.passwordCheck);
+  
+    const newErrors = {
+      username: !formData.username.trim(),
+      nickname: !formData.nickname.trim() || !checkResult,
+      email: !formData.email.trim(),
+      password: !isPasswordValid,
+      passwordCheck: !isPasswordMatchValid,
+    };
+  
+    setErrors(newErrors);
+    setPasswordValidation(isPasswordValid);
+  
+    const hasError = Object.values(newErrors).some(Boolean);
+    return !hasError;
+  };
+
+  //따로 뺀 부분
+  const {
+    emailVerificationMutation,
+    checkNickname,
+    emailVerify,
+    signUp,
+    socialSignUp,
+  } = useSignupMutations({
+    onEmailSuccess: (data) => {
+      setEmailVerification(true);
+      setModalTitle("인증번호가 전송되었습니다.");
+      setDescription("이메일로 전송된 인증번호를 입력해주세요.");
+      setEmailModal(true);
+    },
+    onEmailError: (error) => {
+      setModalTitle("인증번호 전송 실패");
+      setDescription("인증번호 전송에 실패했습니다. 다시 시도해주세요.");
+      setEmailModal(true);
+    },
+    onNicknameChecked: (data) => {
+      console.log("닉네임 중복확인 응답:", data);
+      if (data?.data?.result === true) {
+        setCheckResult(true);
+        setModalTitle("사용 가능한 닉네임입니다.");
+        setDescription("해당 닉네임을 사용할 수 있습니다.");
+        setNicknameModal(true);
       } else {
-        setApproveText("인증번호가 일치하지 않습니다.");
-        setEmailVerification(false);
-        // 여기도 빨간색 처리
+        setCheckResult(false);
+        setModalTitle("이미 가입된 닉네임입니다.");
+        setDescription("다른 닉네임을 사용해주세요.");
+        setNicknameModal(true);
       }
     },
-    onError: (error) => {
-      setApproveText("서버 오류로 인증에 실패했습니다.");
-      setEmailVerification(false);
+    onEmailVerifySuccess: (data) => {
+      setVerificationCheck(true);
+      setVerificationApproveText("이메일 인증이 완료되었습니다.");
+    },
+    onEmailVerifyError: (error) => {
+      setVerificationCheck(false);
+      setVerificationApproveText("인증번호가 올바르지 않습니다.");
+    },
+    onSignUpSuccess: (data) => {
+      setModalTitle("회원가입이 완료되었습니다.");
+      setDescription("로그인 페이지로 이동합니다.");
+      setSuccessModal(true);
+    },
+    onSignUpError: (error) => {
+      setModalTitle("회원가입 실패");
+      setDescription("회원가입에 실패했습니다. 다시 시도해주세요.");
+      setEmailModal(true);
+    },
+    onSocialSignUpSuccess: (data) => {
+      setModalTitle("소셜 회원가입이 완료되었습니다.");
+      setDescription("로그인 페이지로 이동합니다.");
+      setSuccessModal(true);
+    },
+    onSocialSignUpError: (error) => {
+      setModalTitle("소셜 회원가입 실패");
+      setDescription("소셜 회원가입에 실패했습니다. 다시 시도해주세요.");
+      setEmailModal(true);
     },
   });
-
-  const postSignUpMutation = useMutation({
-    mutationFn: () => {
-      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
-
-      // 선택된 카테고리 수 검증
-      if (cleanedCategories.length === 0) {
-        alert("최소 1개 이상의 카테고리를 선택해주세요.");
-        return;
-      }
-
-      if (cleanedCategories.length > 3) {
-        alert("최대 3개까지의 카테고리만 선택 가능합니다.");
-        return;
-      }
-
-      // 최종 전송 데이터 구성
-      const finalData = {
-        ...formData,
-        categoryDtos: cleanedCategories,
-      };
-
-      // 소셜 로그인 정보가 있으면 소셜 회원가입 API 사용
-      if (socialLoginInfo?.socialLogin) {
-        finalData.socialLogin = {
-          provider: socialLoginInfo.provider,
-          socialUserInfo: socialLoginInfo.socialUserInfo
-        };
-        return postSocialSignUp(finalData);
-      } else {
-        // 일반 회원가입
-        return postSignUp(finalData);
-      }
-    },
-    onSuccess: (response) => {
-      setSuccessModal(true);
-      //navigate("/");
-      //console.log(response);
-    },
-    onError: (error) => {
-      setApproveText("서버 오류로 인증에 실패했습니다.");
-      console.log(error);
-      setEmailVerification(false);
-    },
-  });*/
 
   const handleCategoryChange = (index) => (categoryData) => {
     setFormData((prev) => {
@@ -273,82 +254,6 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
 
   //  const nickNameVerification = useMutation({})
 
-
-  //따로 뺀 부분
-
-    const {
-      emailVerificationMutation,
-      checkNickname,
-      emailVerify,
-      signUp,
-    } = useSignupMutations({
-      onEmailSuccess: (res) => {
-        setModalTitle("인증번호 발송");
-        setDescription(`입력하신 이메일로 \n인증번호가 발송되었습니다.`);
-        setEmailModal(true);
-      },
-      onEmailError: (err) => {
-        if (err.response?.data?.code === 400) {
-          setModalTitle("중복된 이메일");
-          setDescription(err.response?.data?.message);
-        } else {
-          setModalTitle("인증번호 발송 오류");
-          setDescription("올바르지 않은 이메일 형식입니다.");
-        }
-        setEmailModal(true);
-      },
-      onNicknameChecked: (res) => {
-        const result = res.data.result;
-        setCheckResult(result);
-
-        if (result === true) {
-         
-          setNicknameModal(true);
-        } else if (result === false) {
-        
-          setNicknameModal(true);
-        } else {
-      
-        }
-      },
-      onEmailVerifySuccess: (res, { email }) => {
-        const result = res.result;
-
-        if (result === true) {
-          setVerificationApproveText("인증번호가 확인되었습니다.");
-          setEmailVerification(true);
-          setVerificationCheck(true);
-        } else {
-          setVerificationApproveText("인증번호가 일치하지 않습니다.");
-          setEmailVerification(false);
-          setVerificationCheck(false);
-        }
-      },
-      onEmailVerifyError: (err) => {
-        const serverMessage = err.response?.data?.message || "서버 오류로 인증에 실패했습니다.";
-        setVerificationApproveText(serverMessage);
-        setEmailVerification(false);
-        setVerificationCheck(false);
-      },
-      
-      onSignUpSuccess: () => {
-        console.log('회원가입 성공! 모달을 띄웁니다.');
-        setSuccessModal(true);
-      },
-      onSignUpError: (err) => {
-        console.log(err);
-        
-        // 비밀번호 형식 에러 처리
-        if (err.response?.data?.message?.includes("비밀번호")) {
-          setPasswordValidation(false);
-          setErrors(prev => ({ ...prev, password: true }));
-        } else {
-          setApproveText("서버 오류로 인증에 실패했습니다.");
-          setEmailVerification(false);
-        }
-      },
-    });
-
   const handleSignup = () => {
      
     const isValid = validateForm();
@@ -379,37 +284,43 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
     console.log("원본 카테고리:", formData.categoryDtos);
     console.log("정리된 카테고리:", cleanedCategories);
 
+    // 소셜 로그인 회원가입인 경우
+    if (socialLoginInfo?.socialLogin) {
+      const isPersonalInfoAgreed = agreementData?.privacyAgreement && 
+                                   agreementData?.serviceAgreement && 
+                                   agreementData?.thirdPartyAgreement;
+      const isMarketingAgreed = agreementData?.marketingAgreement;
+
+      const socialSignupData = {
+        registrationToken: socialLoginInfo.registrationToken,
+        nickname: formData.nickname,
+        categoryDtos: cleanedCategories,
+        isPersonalInfoAgreed,
+        isMarketingAgreed
+      };
+
+      console.log("소셜 회원가입 요청 데이터:", socialSignupData);
+      
+      // postSocialSignUp API
+      socialSignUp.mutate(socialSignupData);
+      return;
+    }
+
+    // 일반 회원가입인 경우
     // 약관 동의 상태 처리
     const isPersonalInfoAgreed = agreementData?.privacyAgreement && 
                                  agreementData?.serviceAgreement && 
                                  agreementData?.thirdPartyAgreement;
     const isMarketingAgreed = agreementData?.marketingAgreement;
 
-    // 소셜 로그인 정보가 있으면 닉네임과 이메일을 소셜 정보로 설정
-    let finalNickname = formData.nickname;
-    let finalEmail = formData.email;
-    
-    if (socialLoginInfo?.socialLogin && socialLoginInfo?.socialUserInfo) {
-      const { nickname: socialNickname, email: socialEmail } = socialLoginInfo.socialUserInfo;
-      if (socialNickname) {
-        finalNickname = socialNickname;
-      }
-      if (socialEmail) {
-        finalEmail = socialEmail;
-      }
-    }
-
     const finalData = {
       ...formData,
-      nickname: finalNickname,
-      email: finalEmail,
       categoryDtos: cleanedCategories,
       isPersonalInfoAgreed,
       isMarketingAgreed
     };
 
-    console.log("회원가입 요청 데이터:", finalData);
-    console.log("정리된 카테고리:", cleanedCategories);
+    console.log("일반 회원가입 요청 데이터:", finalData);
     signUp.mutate(finalData);
   }
 //border-t-[1px] md:
@@ -423,6 +334,7 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
         disapproveText="이름을 입력해주세요."
         essentialText="이름을 입력해주세요."
         isValidateTrigger={errors.username}
+        disabled={socialLoginInfo?.socialLogin}
       />
       <ButtonInput
         name="nickname"
@@ -453,50 +365,55 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
         onClick={() => emailVerificationMutation.mutate(email)}
         isValidateTrigger={errors.email}
         isLoading={emailVerificationMutation.isPending}
+        disabled={socialLoginInfo?.socialLogin}
+        btnDisabled={socialLoginInfo?.socialLogin}
       />
 
-<ButtonInput
-  value={verification}
-  onChange={(e) => setVerification(e.target.value)}
-  title="인증번호 입력"
-  btnText="인증확인"
-  onClick={() => {
-    emailVerify.mutate({
-      email: formData.email,
-      verification,
-    });
-  }}
-  isConfirmed={verificationCheck}
-  approveText={verificationApproveText}
-  disapproveText={verificationApproveText}
-/>
+      {!socialLoginInfo?.socialLogin && (
+        <>
+          <ButtonInput
+            value={verification}
+            onChange={(e) => setVerification(e.target.value)}
+            title="인증번호 입력"
+            btnText="인증확인"
+            onClick={() => {
+              emailVerify.mutate({
+                email: formData.email,
+                verification,
+              });
+            }}
+            isConfirmed={verificationCheck}
+            approveText={verificationApproveText}
+            disapproveText={verificationApproveText}
+          />
+          <Input
+            title="비밀번호"
+            type="password"
+            name="password"
+            essentialText="비밀번호를 입력해주세요."
+            subtitle="영문자, 숫자, 특수문자(@,$,!,%,*,#,?,&) 포함 / 8자~20자"
+            value={formData.password}
+            onChange={(e) => handleInputChange("password", e)}
+            isValidateTrigger={errors.password}
+            isConfirmed={passwordValidation}
+            approveText="올바른 비밀번호 형식입니다."
+            disapproveText="비밀번호 형식이 올바르지 않습니다."
+          />
+          <Input
+            title="비밀번호 확인"
+            type="password"
+            name="passwordCheck"
+            essentialText="비밀번호 확인이 올바르지 않습니다."
+            value={formData.passwordCheck}
+            isConfirmed={passwordCheckValidation}
+            onChange={(e) => handleInputChange("passwordCheck", e)}
+            isValidateTrigger={errors.passwordCheck}
+            approveText="비밀번호 확인이 완료되었습니다."
+            disapproveText="비밀번호 확인이 올바르지 않습니다."
+          />
+        </>
+      )}
 
-
-      <Input
-        title="비밀번호"
-        type="password"
-        name="password"
-        essentialText="비밀번호를 입력해주세요."
-        subtitle="영문자, 숫자, 특수문자(@,$,!,%,*,#,?,&) 포함 / 8자~20자"
-        value={formData.password}
-        onChange={(e) => handleInputChange("password", e)}
-        isValidateTrigger={errors.password}
-        isConfirmed={passwordValidation}
-        approveText="올바른 비밀번호 형식입니다."
-        disapproveText="비밀번호 형식이 올바르지 않습니다."
-      />
-      <Input
-        title="비밀번호 확인"
-        type="password"
-        name="passwordCheck"
-        essentialText="비밀번호 확인이 올바르지 않습니다."
-        value={formData.passwordCheck}
-        isConfirmed={passwordCheckValidation}
-        onChange={(e) => handleInputChange("passwordCheck", e)}
-        isValidateTrigger={errors.passwordCheck}
-        approveText="비밀번호 확인이 완료되었습니다."
-        disapproveText="비밀번호 확인이 올바르지 않습니다."
-      />
       <div className="w-full relative mb-8 flex flex-col gap-3">
         <div className="text-black text-lg md:text-2xl font-regular mb-2">
           관심분야 <span className="text-gray-500 text-sm">(최소 1개 이상 선택)</span>
@@ -550,7 +467,8 @@ export default function Step1({ onPrevStep, socialLoginInfo, agreementData }) {
       {successModal && (
         <AlertModal
           type="success"
-          title="회원가입이 완료되었습니다."
+          title={modalTitle}
+          description={description}
           TrueBtnText="확인"
           onClickTrue={() => navigate("/login")}
         />

@@ -34,7 +34,7 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
         };
         checkReplies();
     }, [checkHasReplies]);
-     
+    
     const handleDeleteComment = async () => {
         try {
             // 대댓글인지 댓글인지 확인

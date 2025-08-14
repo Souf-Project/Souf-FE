@@ -16,8 +16,13 @@ export default function Join({}) {
   const socialLoginInfo = location.state?.socialLogin ? {
     socialLogin: location.state.socialLogin,
     provider: location.state.provider,
-    socialUserInfo: location.state.socialUserInfo
+    email: location.state.email,
+    username: location.state.username,
+    registrationToken: location.state.registrationToken
   } : null;
+
+  console.log("join.jsx - location.state:", location.state);
+  console.log("join.jsx - socialLoginInfo:", socialLoginInfo);
   
   const handleNextStep = (socialLoginInfo, agreementData) => {
     setStep(2);

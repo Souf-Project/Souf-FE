@@ -21,25 +21,29 @@ export default function Redirect() {
           const result = response?.result;
           
           if (result) {
-            if (result.memberId && result.accessToken) {
+            if (result.token.memberId && result.token.accessToken) {
               UserStore.getState().setUser({
                 memberId: result.memberId,
                 nickname: result.nickname,
                 roleType: result.roleType,
               });
-              UserStore.getState().setAccessToken(result.accessToken);
-              localStorage.setItem("accessToken", result.accessToken);
+              UserStore.getState().setAccessToken(result.token.accessToken);
+              localStorage.setItem("accessToken", result.token.accessToken);
               localStorage.removeItem('socialProvider');
               
               navigate("/");
-            } else {
-            
+            }
+             else {
+            console.log(result)
               navigate("/join", { 
                 state: { 
                   socialLogin: true,
-                  provider: provider,
-                  socialUserInfo: result.socialUserInfo || {}
-                }
+                  provider: provider || {},
+                  email: result.prefill.email || {},
+                  username: result.prefill.name || {},
+                  registrationToken: result.registrationToken || {},
+                },
+                
               });
             }
           } else {
@@ -48,10 +52,6 @@ export default function Redirect() {
         })
         .catch((error) => {
           console.error("소셜 로그인 에러:", error);
-          if (error.response?.data?.message?.includes("kauth.kakao.com")) {
-            console.error("카카오 OAuth 에러 - 리다이렉트 URI 또는 클라이언트 ID를 확인하세요");
-          }
-          
           navigate("/login");
         });
     } else {

@@ -11,3 +11,14 @@ export const postSocialLogin = async (requestBody) => {
   }
 };
 
+// 소셜 회원가입
+export const postSocialSignUp = async (requestBody) => {
+  try {
+    const response = await client.post("/api/v1/social/complete-signup", requestBody);
+    return response.data;
+  } catch (error) {
+    console.error("소셜 회원가입 에러:", error);
+    throw error;
+  }
+};
+

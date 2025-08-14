@@ -72,8 +72,8 @@ export default function commentList() {
                         }));
                     } else {
                         // 처음 로드: 기존 대댓글 교체
-                        setReplyComments(prev => ({
-                            ...prev,
+                setReplyComments(prev => ({
+                    ...prev,
                             [commentId]: actualReplies
                         }));
                     }
@@ -178,7 +178,7 @@ export default function commentList() {
             setReplyToComment(null);
 
             if (!replyMode) {
-                fetchComments();
+            fetchComments();
             }
         } catch (error) {
             console.error("댓글 작성 에러:", error);
