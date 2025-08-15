@@ -13,7 +13,9 @@ export default function FloatingActionButton() {
     "/join",
     "/postUpload",
     "/recruitUpload",
-    "/mypage"
+    "/mypage", 
+    "/postEdit",
+    "/chat"
   ];
 
   // 현재 페이지가 제외 목록에 있는지 확인
