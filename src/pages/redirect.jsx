@@ -6,6 +6,25 @@ import { UserStore } from "../store/userStore";
 export default function Redirect() {
   const navigate = useNavigate();
   const hasProcessed = useRef(false);
+  
+  // URL 경로를 통해 provider 감지
+  const getProviderFromPath = () => {
+    if (window.location.pathname.includes('/oauth/kakao/callback')) {
+      return 'KAKAO';
+    } else if (window.location.pathname.includes('/oauth/google/callback')) {
+      return 'GOOGLE';
+    }
+    return 'SOCIAL';
+  };
+  
+  const currentProvider = getProviderFromPath();
+  const getProviderDisplayName = (provider) => {
+    switch (provider) {
+      case 'KAKAO': return '카카오';
+      case 'GOOGLE': return '구글';
+      default: return '소셜';
+    }
+  };
 
   useEffect(() => {
     // 이미 처리되었으면 중복 실행 방지 -> 카카오 로그인시 400 토큰 에러 뜨는거 방지!!
@@ -15,13 +34,21 @@ export default function Redirect() {
     const code = urlParams.get('code');
     const provider = localStorage.getItem('socialProvider');
     
-    if (code && provider) {
-      // 처리 시작 표시
+    // URL 경로에서 provider 확인
+    let detectedProvider = provider;
+    if (!detectedProvider) {
+      if (window.location.pathname.includes('/oauth/kakao/callback')) {
+        detectedProvider = 'KAKAO';
+      } else if (window.location.pathname.includes('/oauth/google/callback')) {
+        detectedProvider = 'GOOGLE';
+      }
+    }
+    
+    if (code && detectedProvider) {
       hasProcessed.current = true;
-      
       postSocialLogin({ 
         code: code,
-        provider: provider
+        provider: detectedProvider
       })
         .then((response) => {
           const result = response?.result;
@@ -45,7 +72,7 @@ export default function Redirect() {
               navigate("/join", { 
                 state: { 
                   socialLogin: true,
-                  provider: provider || {},
+                  provider: detectedProvider || {},
                   email: result.prefill.email || {},
                   username: result.prefill.name || {},
                   registrationToken: result.registrationToken || {},
@@ -75,7 +102,7 @@ export default function Redirect() {
     <div className="flex items-center justify-center min-h-screen">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-point mx-auto mb-4"></div>
-        <p className="text-lg text-gray-600">카카오 로그인 처리 중...</p>
+        <p className="text-lg text-gray-600">{getProviderDisplayName(currentProvider)} 로그인 처리 중...</p>
       </div>
     </div>
   );

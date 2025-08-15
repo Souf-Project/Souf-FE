@@ -146,7 +146,7 @@ export default function MyPage() {
       )}
 
       {/* 사이드바 */}
-      <div className={`w-64 fixed z-40 left-0 top-16 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
+      <div className={`w-64 fixed z-40 lg:z-30 left-0 top-16 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         

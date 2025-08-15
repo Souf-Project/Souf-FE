@@ -39,6 +39,7 @@ function AppRouter() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/oauth/kakao/callback" element={<Redirect />} />
+          <Route path="/oauth/google/callback" element={<Redirect />} />
           <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
           <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
