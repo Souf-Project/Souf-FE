@@ -7,6 +7,7 @@ import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { uploadRecruit, uploadToS3, postRecruitMedia, updateRecruit } from '../api/recruit';
 import { UserStore } from '../store/userStore';
 import { filterEmptyCategories } from '../utils/filterEmptyCategories';
+import Loading from '../components/loading';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function RecruitUpload() {
   // 수정 모드 확인
   const isEditMode = location.state?.isEditMode || false;
   const editData = location.state?.recruitDetail || location.state?.recruitData;
+  
+  // 로딩 상태 추가
+  const [isLoading, setIsLoading] = useState(false);
   
   // 급여 파싱 함수
   const parsePayment = (paymentString) => {
@@ -229,11 +233,15 @@ export default function RecruitUpload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 로딩 시작
+    setIsLoading(true);
+
     try {
       // 카테고리 검증
       const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
       if (cleanedCategories.length === 0) {
         alert("최소 1개 이상의 카테고리를 선택해주세요.");
+        setIsLoading(false);
         return;
       }
 
@@ -369,6 +377,9 @@ dtoList.forEach((dto, i) => {
     } catch (error) {
       console.error('공고 등록/수정 중 오류 발생:', error);
       alert(isEditMode ? '공고 수정에 실패했습니다. 다시 시도해주세요.' : '공고 등록에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      // 로딩 종료
+      setIsLoading(false);
     }
   };
   
@@ -392,6 +403,18 @@ dtoList.forEach((dto, i) => {
 
   return (
     <div className="pt-24 px-6 w-full lg:w-1/2  lg:max-w-5xl mx-auto mb-12">
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 px-12 shadow-2xl">
+            <Loading 
+              size="xl" 
+              full={false} 
+              text={isEditMode ? "공고 수정 중..." : "공고 업로드 중..."} 
+              color="yellow-point"
+            />
+          </div>
+        </div>
+      )}
       <h1 className="text-3xl font-bold w-1/4 mx-auto whitespace-nowrap">
         {isEditMode ? '공고문 수정' :   '공고문 작성'}
       </h1>
@@ -673,14 +696,24 @@ dtoList.forEach((dto, i) => {
         <div className="flex gap-4 items-center justify-center">
         <button
             type="submit"
-            className="px-6 py-3 bg-yellow-main text-black rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200"
+            disabled={isLoading}
+            className={`px-6 py-3 rounded-lg font-bold transition-colors duration-200 ${
+              isLoading 
+                ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
+                : 'bg-yellow-main text-black hover:bg-yellow-point'
+            }`}
           >
-            {isEditMode ? '수정완료' : '업로드'}
+            {isLoading ? '처리 중...' : (isEditMode ? '수정완료' : '업로드')}
           </button>
           <button
             type="button"
             onClick={() => navigate('/recruit?category=1')}
-            className="px-6 py-3 border border-gray-300 rounded-lg font-bold hover:bg-gray-50 transition-colors duration-200"
+            disabled={isLoading}
+            className={`px-6 py-3 border border-gray-300 rounded-lg font-bold transition-colors duration-200 ${
+              isLoading 
+                ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
+                : 'hover:bg-gray-50'
+            }`}
           >
             취소
           </button>

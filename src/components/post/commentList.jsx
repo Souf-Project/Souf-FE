@@ -15,6 +15,8 @@ export default function commentList() {
     const [commentContent, setCommentContent] = useState("");
     const [replyMode, setReplyMode] = useState(false);
     const [replyToComment, setReplyToComment] = useState(null);
+    const [replyPages, setReplyPages] = useState({}); // { commentId: currentPage }
+    const [hasMoreReplies, setHasMoreReplies] = useState({}); // { commentId: boolean }
     const { id, worksId } = useParams();
     const { memberId } = UserStore();
 
@@ -27,9 +29,10 @@ export default function commentList() {
                 const commentsWithReplies = {};
                 for (const comment of response.result.content) {
                     try {
-                        const replyResponse = await getAdditionalComment(worksId, comment.commentId, { page: 0, size: 1 });
+                        const replyResponse = await getAdditionalComment(worksId, comment.commentId, { page: 0, size: 10 });
                         
-                        if (replyResponse?.result?.content && replyResponse.result.content.length > 0) {
+                        // 첫번째 대댓글은 댓글 내용이라 지움
+                        if (replyResponse?.result?.content && replyResponse.result.content.length > 1) {
                             commentsWithReplies[comment.commentId] = true;
                         }
                     } catch (error) {
@@ -48,15 +51,75 @@ export default function commentList() {
         fetchComments();
     }, [worksId]);
 
-    const fetchAdditionalComments = async (commentId) => {
+    const fetchAdditionalComments = async (commentId, page = 0, isLoadMore = false) => {
         try {
-            const response = await getAdditionalComment(worksId, commentId, { page: 0, size: 10 });
+            const response = await getAdditionalComment(worksId, commentId, { page: page, size: 5 });
+            
+            console.log(`대댓글 조회 - 댓글ID: ${commentId}, 페이지: ${page}`, response);
             
             if (response?.result?.content && response.result.content.length > 0) {
+                // 첫 번째 대댓글은 댓글이라 지움
+                const actualReplies = response.result.content.slice(1);
+                
+                console.log(`실제 대댓글 개수: ${actualReplies.length}`, actualReplies);
+                
+                if (actualReplies.length > 0) {
+                    if (isLoadMore) {
+                        // 더보기: 기존 대댓글에 추가
+                        setReplyComments(prev => ({
+                            ...prev,
+                            [commentId]: [...(prev[commentId] || []), ...actualReplies]
+                        }));
+                    } else {
+                        // 처음 로드: 기존 대댓글 교체
                 setReplyComments(prev => ({
                     ...prev,
-                    [commentId]: response.result.content
-                }));
+                            [commentId]: actualReplies
+                        }));
+                    }
+                    
+                    let hasMore = false;
+                    
+                    if (response.result.last !== undefined) {
+                        // last가 false이면 다음 페이지가 있음
+                        hasMore = !response.result.last;
+                    } else if (response.result.totalElements !== undefined && response.result.totalElements > 0) {
+                        // totalElements를 사용하여 계산
+                        // 첫 번째 항목(댓글 내용)을 제외한 실제 대댓글 수 계산
+                        const actualTotalReplies = response.result.totalElements - 1; // 첫 번째 항목 제외
+                        
+                        if (page === 0) {
+                            // 첫 페이지: (첫번째 대댓글을 제외한)4개 로드 + 현재 로드된 개수
+                            const currentTotal = 4 + actualReplies.length;
+                            hasMore = currentTotal < actualTotalReplies;
+                        } else {
+                            // 두 번째 페이지부터: 대댓글 5개씩 + 현재 로드된 개수
+                            const currentTotal = 4 + ((page - 1) * 5) + actualReplies.length;
+                            hasMore = currentTotal < actualTotalReplies;
+                        }
+                    } else if (response.result.numberOfElements !== undefined) {
+                        // numberOfElements를 사용하여 계산
+                        if (page === 0) {
+                            // 첫 페이지: 4개가 모두 로드되었다면 다음 페이지가 있을 가능성이 높음
+                            hasMore = response.result.numberOfElements > 4;
+                        } else {
+                            // 두 번째 페이지부터: 5개가 모두 로드되었다면 다음 페이지가 있을 가능성이 높음
+                            hasMore = response.result.numberOfElements === 5;
+                        }
+                    } else {
+                        // fallback: 현재 로드된 개수로 판단
+                        if (page === 0) {
+                            hasMore = actualReplies.length === 4;
+                        } else {
+                            hasMore = actualReplies.length === 5;
+                        }
+                    }
+                    
+                    setHasMoreReplies(prev => ({
+                        ...prev,
+                        [commentId]: hasMore
+                    }));
+                }
             }
         } catch (error) {
             console.error("대댓글 조회 에러:", error);
@@ -80,7 +143,7 @@ export default function commentList() {
                 
                 // 답글 작성 후 해당 댓글의 대댓글을 다시 가져오기
                 setTimeout(async () => {
-                    await fetchAdditionalComments(replyToComment.commentId);
+                    await fetchAdditionalComments(replyToComment.commentId, 0, false);
                     
                     setCommentsWithReplies(prev => ({
                         ...prev,
@@ -91,6 +154,12 @@ export default function commentList() {
                     setShowReplies(prev => ({
                         ...prev,
                         [replyToComment.commentId]: true
+                    }));
+                    
+                    // 페이지 상태 초기화
+                    setReplyPages(prev => ({
+                        ...prev,
+                        [replyToComment.commentId]: 0
                     }));
                 }, 1000);
             } else {
@@ -109,7 +178,7 @@ export default function commentList() {
             setReplyToComment(null);
 
             if (!replyMode) {
-                fetchComments();
+            fetchComments();
             }
         } catch (error) {
             console.error("댓글 작성 에러:", error);
@@ -134,27 +203,16 @@ export default function commentList() {
         setCommentContent("");
     };
 
-    const handleReplyDelete = async (replyComment) => {
-        try {
-            const requestBody = {
-                commentId: replyComment.commentId,
-                writerId: memberId,
-                content: replyComment.content
-            };
-            
-            await deleteComment(worksId, requestBody);
-            fetchComments(); 
-        } catch (error) {
-            console.error("대댓글 삭제 에러:", error);
-        }
-    };
-
     const handleToggleReplies = async (commentId) => {
         const isCurrentlyShown = showReplies[commentId];
         
         if (!isCurrentlyShown) {
-          
-            await fetchAdditionalComments(commentId);
+            // 답글을 처음 열 때는 페이지 0부터 시작
+            setReplyPages(prev => ({
+                ...prev,
+                [commentId]: 0
+            }));
+            await fetchAdditionalComments(commentId, 0, false);
         }
         
         setShowReplies(prev => ({
@@ -163,10 +221,25 @@ export default function commentList() {
         }));
     };
 
+    const handleLoadMoreReplies = async (commentId) => {
+        const currentPage = replyPages[commentId] || 0;
+        const nextPage = currentPage + 1;
+        
+        // 다음 페이지 로드
+        await fetchAdditionalComments(commentId, nextPage, true);
+        
+        // 페이지 상태 업데이트
+        setReplyPages(prev => ({
+            ...prev,
+            [commentId]: nextPage
+        }));
+    };
+
     const checkHasReplies = async (commentId) => {
         try {
             const response = await getAdditionalComment(worksId, commentId, { page: 0, size: 1 });
-            return response?.result?.content && response.result.content.length > 0;
+            // 첫 번째 항목은 댓글 내용이므로 제거하고 실제 대댓글이 있는지 확인
+            return response?.result?.content && response.result.content.length > 1;
         } catch (error) {
             console.error("대댓글 확인 에러:", error);
             return false;
@@ -196,9 +269,17 @@ export default function commentList() {
                                         <ReplyComment 
                                             key={reply.commentId} 
                                             reply={reply} 
-                                            onDelete={handleReplyDelete}
                                         />
                                     ))}
+                                    {/* 더보기 버튼 */}
+                                    {hasMoreReplies[comment.commentId] && (
+                                        <button
+                                            onClick={() => handleLoadMoreReplies(comment.commentId)}
+                                            className="text-sm text-gray-400 py-2 px-3 "
+                                        >
+                                            답글 더보기
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>

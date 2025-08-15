@@ -164,7 +164,9 @@ export default function PostUpload() {
 
         // 2. 비디오 업로드
         if (videoFiles.length > 0 && videoDto) {
+
           for (let uploadCount = 1; uploadCount <= chunkCount; uploadCount++) {
+
             const start = (uploadCount - 1) * chunkSize;
             const end = uploadCount * chunkSize;
             const fileBlob =
@@ -172,25 +174,29 @@ export default function PostUpload() {
                 ? videoFiles[0].slice(start, end)
                 : videoFiles[0].slice(start);
 
-            const signedUrlRes = await postVideoSignedUrl({
-              uploadId: videoDto.uploadId,
-              partNumber: uploadCount,
-              fileName: videoDto.fileName,
-            });
+            try {
+              const signedUrlRes = await postVideoSignedUrl({
+                uploadId: videoDto.uploadId,
+                partNumber: uploadCount,
+                fileName: videoDto.fileName,
+              });
 
-            const presignedUrl = signedUrlRes?.result?.presignedUrl;
-            const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
+              const presignedUrl = signedUrlRes?.result?.presignedUrl;
+              const uploadChunk = await uploadToS3Video(presignedUrl, fileBlob);
+              const etag = uploadChunk.headers.get("ETag")?.replaceAll("\\", "");
+              multiUploadArray.push({
+                awsETag: etag,
+                partNumber: uploadCount,
+              });
 
-            const etag = uploadChunk.headers.get("ETag")?.replaceAll("\\", "");
-            
-            multiUploadArray.push({
-              awsETag: etag,
-              partNumber: uploadCount,
-            });
-
-            // 마지막 part만 URL 저장
-            if (uploadCount === chunkCount) {
-              getSignedUrlRes = signedUrlRes;
+              // 마지막 part만 URL 저장
+              if (uploadCount === chunkCount) {
+                getSignedUrlRes = signedUrlRes;
+               
+              }
+            } catch (chunkError) {
+              console.error(`청크 ${uploadCount} 업로드 실패:`, chunkError);
+              throw chunkError;
             }
           }
 
@@ -225,12 +231,27 @@ export default function PostUpload() {
 
         // 4. 통합 올림 서버에
         if (fileUrls.length > 0) {
-          await postMedia({
-            feedId,
-            fileUrl: fileUrls,
-            fileName: fileNames,
-            fileType: fileTypes,
-          });
+        
+          try {
+            const mediaResponse = await postMedia({
+              feedId,
+              fileUrl: fileUrls,
+              fileName: fileNames,
+              fileType: fileTypes,
+            });
+          
+          } catch (mediaError) {
+            console.error("미디어 서버 업로드 실패:", mediaError);
+            console.error("미디어 업로드 에러 상세:", {
+              message: mediaError.message,
+              response: mediaError.response,
+              status: mediaError.response?.status,
+              data: mediaError.response?.data
+            });
+            throw mediaError;
+          }
+        } else {
+          console.log("업로드할 파일이 없음");
         }
 
         // feedId를 저장하고 모달 표시

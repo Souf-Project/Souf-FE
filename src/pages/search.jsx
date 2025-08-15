@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import SearchBar from '../components/SearchBar';
 import Loading from '../components/loading';
 import SearchBlock from "../components/search/searchBlock";
-import Pagination from "../components/Pagination"; // 페이징 컴포넌트 경로 맞게 조정
+import Pagination from "../components/pagination"; // 페이징 컴포넌트 경로 맞게 조정
 import SEO from '../components/seo';
 
 const useQueryParam = () => new URLSearchParams(useLocation().search);

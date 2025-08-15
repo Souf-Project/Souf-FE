@@ -129,7 +129,7 @@ export default function MyPage() {
     <div className="min-h-screen w-screen px-4 lg:px-0 lg:w-full flex pt-24 bg-yellow-main">
       {/* 모바일 메뉴 버튼 */}
       <button
-        className="lg:hidden fixed top-20 left-4 z-20 p-2 bg-white rounded-lg shadow-md"
+        className="lg:hidden fixed top-20 left-4 z-30 p-2 bg-white rounded-lg shadow-md"
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,13 +140,13 @@ export default function MyPage() {
       {/* 모바일 오버레이 */}
       {isSidebarOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-[35]"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* 사이드바 */}
-      <div className={`w-64 fixed z-10 left-0 top-16 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
+      <div className={`w-64 fixed z-40 lg:z-30 left-0 top-16 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         

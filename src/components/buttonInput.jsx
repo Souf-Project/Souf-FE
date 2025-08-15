@@ -15,7 +15,9 @@ export default function ButtonInput({
     isValidateTrigger = false,
     isConfirmed = undefined,
     value="",
-    isLoading = false
+    isLoading = false,
+    disabled = false,
+    btnDisabled = false
 }) {
             useEffect(() => {
             console.log("버튼 인풋에서", isConfirmed);
@@ -37,14 +39,15 @@ export default function ButtonInput({
                         disapproveText={disapproveText}
                         onValidChange={onValidChange}
                         value={value}
+                        disabled={disabled}
                     />
                 </div>
                 {btnText && (
                     <button
                         onClick={onClick}
-                        disabled={isLoading}
+                        disabled={isLoading || btnDisabled}
                         className={`h-[48px] md:h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-lg md:text-xl font-semibold ${
-                            isLoading 
+                            isLoading || btnDisabled
                                 ? 'bg-gray-300 cursor-not-allowed' 
                                 : 'bg-yellow-main hover:bg-yellow-point transition-colors duration-200'
                         }`}
