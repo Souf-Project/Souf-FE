@@ -1,18 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { postSocialLogin } from "../api/social";
 import { UserStore } from "../store/userStore";
 
 export default function Redirect() {
   const navigate = useNavigate();
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    // 이미 처리되었으면 중복 실행 방지 -> 카카오 로그인시 400 토큰 에러 뜨는거 방지!!
+    if (hasProcessed.current) return;
+    
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
- 
     const provider = localStorage.getItem('socialProvider');
     
     if (code && provider) {
+      // 처리 시작 표시
+      hasProcessed.current = true;
+      
       postSocialLogin({ 
         code: code,
         provider: provider
@@ -21,11 +27,12 @@ export default function Redirect() {
           const result = response?.result;
           
           if (result) {
-            if (result.token.memberId && result.token.accessToken) {
+            console.log(result)
+            if (result.token?.memberId && result.token?.accessToken) {
               UserStore.getState().setUser({
-                memberId: result.memberId,
-                nickname: result.nickname,
-                roleType: result.roleType,
+                memberId: result.token.memberId,
+                nickname: result.token.nickname,
+                roleType: result.token.roleType,
               });
               UserStore.getState().setAccessToken(result.token.accessToken);
               localStorage.setItem("accessToken", result.token.accessToken);
@@ -58,6 +65,10 @@ export default function Redirect() {
       console.error("인가코드가 없습니다.");
       navigate("/login");
     }
+
+    // Cleanup 함수
+    return () => {
+    };
   }, [navigate]);
 
   return (

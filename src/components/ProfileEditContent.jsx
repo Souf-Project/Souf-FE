@@ -240,7 +240,7 @@ export default function ProfileEditContent() {
             onFileSelect={handleFileSelect}
         />
          <div className="absolute top-[40px] left-[225px]">
-            <h1 className="text-4xl font-bold ">{formData.username}</h1>
+            <h1 className="text-4xl font-bold ">{formData.nickname}</h1>
         </div>
         {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="ml-auto w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>}
         <div className="bg-gray-50 p-6 rounded-lg">

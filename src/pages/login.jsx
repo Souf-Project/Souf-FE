@@ -7,8 +7,8 @@ import loginImg from "../assets/images/loginImg.svg";
 import { postLogin } from "../api/member";
 import { useMutation } from "@tanstack/react-query";
 import { UserStore } from "../store/userStore";
-import loginKakao from "../assets/images/loginKakao.png"
-import loginGoogle from "../assets/images/loginGoogle.png"
+import kakaoLogo from "../assets/images/kakaoLogo.png"
+import googleLogo from "../assets/images/googleLogo.png"
 import SEO from "../components/seo";
 
 export default function Login() {
@@ -24,24 +24,15 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
     onSuccess: (response) => {
-      console.log("onSuccess 응답:", response);
-  
       const result = response.data?.result;
   
-      console.log("이름", result.nickname);
-      console.log("멤버", result.roleType);
-  
-      // UserStore에 사용자 정보와 토큰 저장
       UserStore.getState().setUser({
         memberId: result.memberId,
         nickname: result.nickname,
         roleType: result.roleType,
       });
-  
-      // 여기! 문자열로만 전달
+
       UserStore.getState().setAccessToken(result.accessToken);
-  
-      // localStorage에도 백업 저장
       localStorage.setItem("accessToken", result.accessToken);
   
       navigate("/");
@@ -59,11 +50,6 @@ export default function Login() {
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email`;
   
   const handleKakaoLogin = () => {
-    console.log("카카오 로그인 시작");
-    console.log("REST_API_KEY:", REST_API_KEY);
-    console.log("REDIRECT_URI:", REDIRECT_URI);
-    console.log("KAKAO_AUTH_URL:", KAKAO_AUTH_URL);
-    
     localStorage.setItem('socialProvider', 'KAKAO');
     window.location.href = KAKAO_AUTH_URL;
   }
@@ -169,14 +155,26 @@ export default function Login() {
             
           </div>
           <div className="flex flex-col items-center justify-center mt-4">
-            <p className="text-lg font-light mb-4">SNS 계정으로 시작하기</p>
-            <div className="flex items-center justify-center gap-4">
-              <button  onClick={handleKakaoLogin} >
-            <img src={loginKakao} className=" w-52 shadow-sm hover:shadow-md"/>
-            </button>
-            <button  onClick={handleGoogleLogin} >
-            <img src={loginGoogle} className=" w-52 shadow-sm hover:shadow-md"/>
-            </button>
+            <div className="flex items-center justify-center w-full mb-4">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <p className="text-lg font-light mx-4">SNS 계정으로 시작하기</p>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <button 
+                onClick={handleKakaoLogin}
+                className="w-60 bg-[#FEE500] rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-4"
+              >
+                <img src={kakaoLogo} alt="카카오 로그인" className="w-[1.4rem] object-contain" />
+                <p>카카오 계정으로 로그인</p>
+              </button>
+              <button 
+                onClick={handleGoogleLogin}
+                className="w-60 bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-7"
+              >
+                <img src={googleLogo} alt="구글 로그인" className="w-[1.4rem] object-contain" />
+                구글 계정으로 로그인
+              </button>
             </div>
             
            
