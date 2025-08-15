@@ -36,6 +36,7 @@ export default function ProfileEditContent() {
       const response = await getProfile();
       if (response.status === 200 && response.data?.result) {
         const profileData = response.data.result;
+        console.log(profileData);
         
         // 백엔드에서 받은 categoryDtoList를 newCategories 형식으로 변환
         let newCategories = [
@@ -59,8 +60,10 @@ export default function ProfileEditContent() {
         setFormData({
           ...profileData,
           newCategories: newCategories,
-          originalNickname: profileData.nickname // 원본 닉네임 저장
+          originalNickname: profileData.nickname, // 원본 닉네임 저장
+          marketingAgreement: profileData.marketingAgreement || false // 마케팅 동의 여부 추가
         });
+        setMarketingAgreement(profileData.marketingAgreement || false); // 마케팅 동의 상태 초기화
 
       } else {
         console.error('프로필 데이터 조회 실패:', response.data?.message);
@@ -91,17 +94,13 @@ export default function ProfileEditContent() {
         personalUrl: dataToSave.personalUrl,
         newCategories: dataToSave.newCategories,
         profileOriginalFileName: selectedFile ? selectedFile.name : null,
+        marketingAgreement: marketingAgreement, // 마케팅 동의 여부 추가
       };
 
       // 이미지를 수정하지 않을 때만 profileImageUrl 추가
       if (!selectedFile && formData.profileImageUrl) {
         updatePayload.profileImageUrl = formData.profileImageUrl;
       }
-
-      console.log('서버로 전송되는 데이터:', updatePayload);
-      console.log('selectedFile 존재 여부:', !!selectedFile);
-      console.log('기존 이미지 URL:', formData.profileImageUrl);
-
       const updateResponse = await updateProfileInfo(updatePayload);
 
       // 2. 새 파일이 있고, 서버가 Presigned URL을 반환한 경우
@@ -173,6 +172,7 @@ export default function ProfileEditContent() {
     setSelectedFile(null);
     setNicknameVerified(false);
     setVerificationMessage('');
+    setMarketingAgreement(formData?.marketingAgreement || false); // 마케팅 동의 상태를 원래대로 되돌림
   };
   
   const handleFileSelect = (file) => {
@@ -321,6 +321,26 @@ export default function ProfileEditContent() {
             ))}
           </div>
         </div>
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">마케팅 수신 동의</h2>
+          <button
+                type="button"
+                onClick={() => isEditing && setMarketingAgreement(!marketingAgreement)}
+                disabled={!isEditing}
+                className={`flex items-center gap-3 ${
+                  !isEditing ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                }`}
+              >
+                <img 
+                  src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                  alt="마케팅 수신 동의" 
+                  className="w-5 h-5"
+                />
+                <span className="text-lg">
+                  마케팅 수신 동의 여부
+                </span>
+              </button>
+        </div>
         <div className="flex justify-center gap-4 mt-8">
           {isEditing ? (
             <>
@@ -334,20 +354,7 @@ export default function ProfileEditContent() {
           )}
       </div>
       <div className='flex justify-between items-center'>
-      <button
-                type="button"
-                onClick={() => setMarketingAgreement(!marketingAgreement)}
-                className="flex items-center gap-3"
-              >
-                <img 
-                  src={marketingAgreement ? fillCheckBox : noneCheckBox} 
-                  alt="마케팅 수신 동의" 
-                  className="w-5 h-5"
-                />
-                <span className="text-lg">
-                  마케팅 수신 동의 (선택)
-                </span>
-              </button>
+     
       
            
           <button

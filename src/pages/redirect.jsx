@@ -54,7 +54,7 @@ export default function Redirect() {
           const result = response?.result;
           
           if (result) {
-            console.log(result)
+            // console.log(result)
             if (result.token?.memberId && result.token?.accessToken) {
               UserStore.getState().setUser({
                 memberId: result.token.memberId,

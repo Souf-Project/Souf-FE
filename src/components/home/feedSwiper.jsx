@@ -38,10 +38,6 @@ export default function FeedSwiper() {
     setFeedData(data?.result || []);
   }, [data]);
 
-  useEffect(() => {
-    console.log("Current feedData state:", feedData);
-  }, [feedData]);
-
   // 에러 로그 추가
   useEffect(() => {
     if (error) {
@@ -84,28 +80,28 @@ export default function FeedSwiper() {
       </button>
       
       <Swiper
-        slidesPerView={2}
-        spaceBetween={10}
-        loop={feedData.length > 2}
+        slidesPerView={4}
+        spaceBetween={16}
+        loop={feedData.length > 4}
         speed={700}
-        autoplay={feedData.length > 2 ? {
+        autoplay={feedData.length > 4 ? {
           delay: 4000,
           disableOnInteraction: false,
         } : false}
         breakpoints={{
           640: {
-            slidesPerView: 2,
-            spaceBetween: 15,
-            loop: feedData.length > 2,
-            autoplay: feedData.length > 2 ? {
+            slidesPerView: 4,
+            spaceBetween: 20,
+            loop: feedData.length > 4,
+            autoplay: feedData.length > 4 ? {
               delay: 4000,
               disableOnInteraction: false,
             } : false,
           },
           1024: {
             slidesPerView: 4,
-            spaceBetween: 0,
-            loop: feedData.length > 3,
+            spaceBetween: 24,
+            loop: feedData.length > 4,
             autoplay: feedData.length > 4 ? {
               delay: 4000,
               disableOnInteraction: false,
@@ -120,11 +116,11 @@ export default function FeedSwiper() {
       >
        
         {feedData.map((feed) => (
-          <SwiperSlide key={feed.feedId} className="box-border min-w-0 px-4">
-                          <div
-                className="w-full lg:w-80 box-border h-full mb-2 px-2 lg:px-6 cursor-pointer mx-auto"
-                onClick={() => handleClick(feed?.feedId, feed?.memberId)}>
-                <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+          <SwiperSlide key={feed.feedId} className="box-border min-w-0">
+            <div
+              className="w-full max-w-[calc(100vw/4-2rem)] box-border h-full mb-2 cursor-pointer mx-auto"
+              onClick={() => handleClick(feed?.feedId, feed?.memberId)}>
+              <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 피드 이미지 */}
                 {feed.mediaResDto?.fileUrl && (
                   <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
@@ -139,14 +135,14 @@ export default function FeedSwiper() {
                   </div>
                 )}
                 {/* 카드 내용 */}
-                <div className="px-2 lg:px-6 pt-4 pb-3 flex flex-col justify-between h-full">
+                <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
                   <div>
-                    <span className="inline-block px-2 lg:px-3 py-1 bg-yellow-point/10 text-yellow-point text-sm lg:text-md font-semibold rounded-full">
+                    <span className="inline-block px-2 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
                       {feed.firstCategories?.map(categoryId => getCategoryName(categoryId)).join(', ')}
                     </span>
                   </div>
                   <div className="text-right mt-auto">
-                    <h3 className="text-lg lg:text-xl lg:text-2xl font-bold text-gray-800 line-clamp-2">
+                    <h3 className="text-base font-bold text-gray-800 line-clamp-2">
                       {feed.nickname}
                     </h3>
                   </div>

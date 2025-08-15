@@ -37,13 +37,9 @@ export default function Search() {
     enabled: !!submittedQuery,
   });
 
-  useEffect(() => {
-    console.log("검색", searchQuery);
-  },[searchQuery]);
-
   const handleSearch = (e) => {
-    //e.preventDefault();
-    const trimmed = searchQuery?.trim();
+    e.preventDefault();
+    const trimmed = searchQuery.trim();
     if (!trimmed) return;
 
     navigate(`/search?q=${encodeURIComponent(trimmed)}`);
@@ -91,6 +87,7 @@ export default function Search() {
     if (page < 0 || page >= totalPages) return;
     setCurrentPage(page);
   };
+
 
  return (
   <>
@@ -197,7 +194,8 @@ export default function Search() {
           )}
         </>
       )}
-    </div>
-  </>
-);
+      </div>
+      </>
+  );
 }
+
