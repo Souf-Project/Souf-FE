@@ -13,7 +13,7 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 import DeclareIcon from "../assets/images/declareIcon.png";
-import DeclareModal from "../components/declareModal";
+import DeclareModal from "./declare/declareModal";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 

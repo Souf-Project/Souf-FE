@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ReasonCheckbox from "./ReasonCheckbox";
+import ReasonCheckbox from "../ReasonCheckbox";
 
 export default function DeclareModal({
   onClickFalse,
