@@ -11,8 +11,9 @@ export default function WithdrawDescription({ onWithdraw }) {
       <h1 className="text-3xl font-bold mb-2 text-gray-800">지금 떠나시면 ...</h1>
       <h1 className="text-3xl font-bold mb-6 text-[#FFC105]">데이터가 영영 사라져요 🥹</h1>
       <p className="mb-6 text-gray-600">
-        정말로 Souf 플랫폼을 탈퇴하시겠습니까?<br />
-        탈퇴 시 모든 데이터는 복구할 수 없습니다.
+        탈퇴 시 모든 데이터는 복구할 수 없습니다.<br/>
+        또한, 탈퇴 시 해당 이메일은 7일간 재가입이 불가능합니다.<br/>
+        정말로 Souf 플랫폼을 탈퇴하시겠습니까?
       </p>
       <div className="flex justify-center gap-4">
         <button
