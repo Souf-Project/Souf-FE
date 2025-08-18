@@ -15,7 +15,7 @@ const ReasonCheckbox = ({ index, label, isSelected, onChange }) => (
       />
     </button>
     <label 
-    className="text-sm max-w-[150px] leading-tight cursor-pointer"
+    className="text-sm leading-tight cursor-pointer"
     onClick={() => onChange(index)}>{label}</label>
   </div>
 );

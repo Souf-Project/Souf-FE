@@ -92,7 +92,7 @@ export default function DeclareModal({
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-20 z-50"
     >
       <div
-        className="flex flex-col bg-white rounded-[25px] p-6 max-w-md w-full mx-4"
+        className="flex flex-col bg-white rounded-[25px] p-6 max-w-lg w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-3xl font-bold text-black text-center">
@@ -116,12 +116,16 @@ export default function DeclareModal({
           신고 사유를 자세하게 작성해주세요.
         </div>
         <textarea 
-          className="w-full py-3 px-3 border border-gray-300 rounded-md focus:outline-none mb-4 resize-none"
+          className="w-full py-3 px-3 border border-gray-300 rounded-md focus:outline-none mb-2 resize-none"
           rows="3"
           placeholder=""
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        <div className="text-sm text-gray-500 mb-4">
+        허위 신고가 확인될 경우, 해당 신고자에게<br/>
+        불이익이나 제재가 적용될 수 있으니, 신중하게 신고 부탁드립니다.
+        </div>
         <div className="w-full px-1 flex justify-center gap-8"> 
           <button
             className="py-3 px-8 bg-[#C9C9C9] rounded-[10px] font-semibold text-base"
