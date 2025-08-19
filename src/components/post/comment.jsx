@@ -25,7 +25,6 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
         return `${year}.${month}.${day} ${hours}:${minutes}`;
     };
 
-    // 컴포넌트 마운트 시 대댓글 존재 여부 확인
     useEffect(() => {
         const checkReplies = async () => {
             if (checkHasReplies) {
@@ -36,15 +35,18 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
         checkReplies();
     }, [checkHasReplies]);
     
-    // console.log(comment);
-    // console.log("worksId from URL:", worksId);
-    
     const handleDeleteComment = async () => {
-       
         try {
-            const response = await deleteComment(worksId, comment.commentId);
-            console.log("삭제 API 응답:", response);
-            // 삭제 성공 후 페이지 새로고침 또는 댓글 목록 업데이트
+            // 대댓글인지 댓글인지 확인
+            if (comment.parentId) {
+                // 대댓글인 경우
+                const response = await deleteComment(worksId, comment.commentId);
+            } else {
+                // 일반 댓글인 경우
+                const response = await deleteComment(worksId, Number(comment.commentId));
+            }
+           
+            // 삭제 성공 후 페이지 새로고침 
             window.location.reload();
         } catch (error) {
             console.error("댓글 삭제 에러:", error);

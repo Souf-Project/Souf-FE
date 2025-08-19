@@ -55,8 +55,8 @@ client.interceptors.response.use(
     const status = error.response?.status;
     const message = error.response?.data?.message;
 
-    console.log("🚨 응답 인터셉터 - 에러 상태:", status);
-    console.log("🚨 응답 인터셉터 - 에러 URL:", originalRequest?.url);
+    console.log("응답 인터셉터 - 에러 상태:", status);
+    console.log("응답 인터셉터 - 에러 URL:", originalRequest?.url);
 
     if ((status === 403 || status === 401) && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -68,7 +68,7 @@ client.interceptors.response.use(
         error.response.headers['X-New-Access-Token'];
 
       if (newAccessToken) {
-        console.log("✅ 응답 헤더에서 새 토큰 발견, 재시도");
+        console.log("응답 헤더에서 새 토큰 발견, 재시도");
 
         UserStore.getState().updateAccessToken(newAccessToken);
         localStorage.setItem("accessToken", newAccessToken);
@@ -86,7 +86,7 @@ client.interceptors.response.use(
 
     // 네트워크 에러 처리
     if (error.code === "ERR_NETWORK") {
-      console.error("❌ 서버 연결 실패");
+      console.error("서버 연결 실패");
     }
 
     return Promise.reject(error);
