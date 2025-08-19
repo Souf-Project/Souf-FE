@@ -52,9 +52,9 @@ export default function InfoBox() {
   };
 
   return (
-    <div className="relative w-full max-w-2xl mx-auto px-4 hidden lg:block">
+    <div className="relative w-full max-w-xl mx-auto hidden lg:block">
       {/* 이미지들 */}
-      <div className="relative w-full aspect-[8/7]">
+      <div className="relative w-[32rem] aspect-[8/7]">
         {images.map((image, index) => {
           const isActive = index === currentIndex;
           const isNext = index === (currentIndex + 1) % images.length;
@@ -95,13 +95,13 @@ export default function InfoBox() {
                   <div className="absolute inset-0 flex justify-center items-end pb-20 gap-4 z-50">
                     <button 
                       onClick={handleStudentSignup}
-                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-xl font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-sm font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       대학생 회원가입하러 가기!
                     </button>
                     <button 
                       onClick={handleRecruitUpload}
-                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-xl font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-sm font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       외주 공고문 업로드하러 가기!
                     </button>
