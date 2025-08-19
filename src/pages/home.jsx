@@ -6,11 +6,10 @@ import cate2Img from "../assets/images/cate2Img.png";
 import cate3Img from "../assets/images/cate3Img.png";
 import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
+import cate6Img from "../assets/images/cate6Img.png";
 import Background from "../assets/images/background.png";
 
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
-import { getFirstCategoryNameById } from "../utils/getCategoryById";
-import { calculateDday } from "../utils/getDate";
 import MobileSwiper from "../components/home/mobileSwiper";
 import FeedSwiper from "../components/home/feedSwiper";
 import InfoBox from "../components/home/infoBox";
@@ -20,10 +19,7 @@ import SmallContestSection from "../components/home/smallContestSection";
 import { getContests } from "../api/contest";
 import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
-import AlertModal from "../components/alertModal";
-import dayjs from "dayjs";
 import useCountUp from "../hooks/useCountUp";
-import AnimatedCount from "../components/AnimatedCount";
 import SEO from "../components/seo";
 import Loading from "../components/loading";
 
@@ -34,14 +30,13 @@ export default function Home() {
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
   const [statsData, setStatsData] = useState({
-    todayVisitor: 735,
-    studentCount: 317,
-    recruitCount: 4
-  }); // 기본값 설정
+    todayVisitor: 0,
+    studentCount: 0,
+    recruitCount: 0
+  });
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
-
 
   const categories = [
     "순수미술",
@@ -49,6 +44,7 @@ export default function Home() {
     "음악",
     "촬영 및 편집",
     "디지털 콘텐츠",
+    "IT · 개발"
   ]
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
@@ -230,9 +226,9 @@ export default function Home() {
         const response = await getMainViewCount();
         if (response.result) {
           setStatsData({
-            todayVisitor: response.result.todayVisitor || 735,
-            studentCount: response.result.studentCount || 317,
-            recruitCount: response.result.recruitCount || 4
+            todayVisitor: response.result.todayVisitor || 0,
+            studentCount: response.result.studentCount || 0,
+            recruitCount: response.result.recruitCount || 0
           });
         }
       } catch (error) {
@@ -344,6 +340,7 @@ export default function Home() {
                     cate3Img,
                     cate4Img,
                     cate5Img,
+                    cate6Img,
                   ];
                   return (
                     <button
@@ -364,13 +361,14 @@ export default function Home() {
                 })}
               </div>
               <div className="flex justify-center md:hidden">
-                {categories.slice(3, 5).map((category, index) => {
+                {categories.slice(3, 6).map((category, index) => {
                   const categoryImages = [
                     cate1Img,
                     cate2Img,
                     cate3Img,
                     cate4Img,
                     cate5Img,
+                    cate6Img,
                   ];
                   return (
                     <button
@@ -391,7 +389,7 @@ export default function Home() {
                 })}
               </div>
               {/* 데스크톱 버전 */}
-              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-6xl mx-auto">
+              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-7xl mx-auto">
                 {categories.map((category, index) => {
                   const categoryImages = [
                     cate1Img,
@@ -399,6 +397,7 @@ export default function Home() {
                     cate3Img,
                     cate4Img,
                     cate5Img,
+                    cate6Img,
                   ];
                   return (
                     <button
@@ -548,7 +547,7 @@ export default function Home() {
               <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
                 <button
                   onClick={() => navigate("/contests")}
-                  className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-500 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   공모전 더보기
                 </button>
