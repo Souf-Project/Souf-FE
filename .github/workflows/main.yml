@@ -28,7 +28,10 @@ jobs:
           CI: false
           VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
           VITE_S3_BUCKET_URL: ${{ secrets.VITE_S3_BUCKET_URL }}
-
+          VITE_REST_API_KEY: ${{ secrets.VITE_REST_API_KEY }}
+          VITE_REDIRECT_URI: ${{ secrets.VITE_REDIRECT_URI }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_REDIRECT_URI: ${{ secrets.VITE_GOOGLE_REDIRECT_URI }}
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
