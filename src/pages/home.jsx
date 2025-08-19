@@ -248,7 +248,7 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-        <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
+        <div className="relative flex justify-center items-start pt-20 px-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
@@ -280,10 +280,8 @@ export default function Home() {
               </div>
             </form>
             
-
-           
           </div>
-          {/* 오른쪽: Glass 효과 박스 */}
+          {/* 오른쪽: 팝업 가이드 박스 */}
           <InfoBox />
 
         </div>
@@ -295,7 +293,7 @@ export default function Home() {
 
 {/* 인기 공고문  */}
       <div className="relative mt-16 px-6 lg:px-24">
-        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+        <div className="relative flex flex-col mx-auto lg:px-6 py-16 overflow-x-hidden">
         <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
