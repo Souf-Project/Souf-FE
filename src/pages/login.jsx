@@ -7,6 +7,8 @@ import loginImg from "../assets/images/loginImg.svg";
 import { postLogin } from "../api/member";
 import { useMutation } from "@tanstack/react-query";
 import { UserStore } from "../store/userStore";
+import kakaoLogo from "../assets/images/kakaoLogo.png"
+import googleLogo from "../assets/images/googleLogo.png"
 import SEO from "../components/seo";
 
 export default function Login() {
@@ -22,24 +24,15 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
     onSuccess: (response) => {
-      console.log("onSuccess 응답:", response);
-  
       const result = response.data?.result;
   
-      console.log("이름", result.nickname);
-      console.log("멤버", result.roleType);
-  
-      // UserStore에 사용자 정보와 토큰 저장
       UserStore.getState().setUser({
         memberId: result.memberId,
         nickname: result.nickname,
         roleType: result.roleType,
       });
-  
-      // 여기! 문자열로만 전달
+
       UserStore.getState().setAccessToken(result.accessToken);
-  
-      // localStorage에도 백업 저장
       localStorage.setItem("accessToken", result.accessToken);
   
       navigate("/");
@@ -50,6 +43,26 @@ export default function Login() {
       setShowError(true);
     },
   });
+
+  // 카카오 로그인
+  const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
+  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email`;
+  
+  const handleKakaoLogin = () => {
+    localStorage.setItem('socialProvider', 'KAKAO');
+    window.location.href = KAKAO_AUTH_URL;
+  }
+
+  // 구글 로그인
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
+  
+  const handleGoogleLogin = () => {
+    localStorage.setItem('socialProvider', 'GOOGLE');
+    window.location.href = GOOGLE_AUTH_URL;
+  }
 
   return (
     <>
@@ -125,6 +138,7 @@ export default function Login() {
           {showError && (
             <div className="mt-10 text-red-essential text-center">아이디 또는 비밀번호가 일치하지 않습니다.</div>
           )}
+         
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
             <button type="button" onClick={() => navigate("/join")}>회원가입</button>
             <button type="button" onClick={() => navigate("/pwdFind")}>
@@ -134,11 +148,38 @@ export default function Login() {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="bg-yellow-main mx-auto w-36 h-12 rounded-xl text-2xl font-bold"
+              className="bg-yellow-main mx-auto w-36 py-2 rounded-xl text-2xl font-semibold mt-4"
             >
               로그인
             </button>
+            
           </div>
+          <div className="flex flex-col items-center justify-center mt-4">
+            <div className="flex items-center justify-center w-full mb-4">
+              <div className="flex-1 h-px bg-gray-300"></div>
+              <p className="text-lg font-light mx-4">SNS 계정으로 시작하기</p>
+              <div className="flex-1 h-px bg-gray-300"></div>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-4">
+              <button 
+                onClick={handleKakaoLogin}
+                className="w-60 bg-[#FEE500] rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-4"
+              >
+                <img src={kakaoLogo} alt="카카오 로그인" className="w-[1.4rem] object-contain" />
+                <p>카카오 계정으로 로그인</p>
+              </button>
+              <button 
+                onClick={handleGoogleLogin}
+                className="w-60 bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-7"
+              >
+                <img src={googleLogo} alt="구글 로그인" className="w-[1.4rem] object-contain" />
+                구글 계정으로 로그인
+              </button>
+            </div>
+            
+           
+          </div>
+          
            </form>
       </div>
       <div className="mt-10  lg:hidden flex justify-center">

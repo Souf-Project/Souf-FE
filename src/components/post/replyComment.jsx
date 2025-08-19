@@ -2,10 +2,13 @@ import { useState } from "react";
 import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
 import trashIco from "../../assets/images/trashIco.svg";
 import { UserStore } from "../../store/userStore";
+import { deleteComment } from "../../api/additionalFeed";
+import { useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
 
-export default function ReplyComment({ reply, onDelete }) {
+export default function ReplyComment({ reply }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const { id, worksId } = useParams();
     const { memberId } = UserStore();
 
     const formatDate = (dateString) => {
@@ -19,12 +22,23 @@ export default function ReplyComment({ reply, onDelete }) {
         return `${year}.${month}.${day} ${hours}:${minutes}`;
     };
 
+    const handleDeleteReply = async () => {
+        try {
+            const response = await deleteComment(worksId, reply.commentId);
+            
+            // 삭제 성공 후 페이지 새로고침 
+            window.location.reload();
+        } catch (error) {
+            console.error("답글 삭제 에러:", error);
+        }
+    };
+
     const handleDeleteClick = () => {
         setShowDeleteModal(true);
     };
 
     const handleConfirmDelete = () => {
-        onDelete(reply);
+        handleDeleteReply();
         setShowDeleteModal(false);
     };
 

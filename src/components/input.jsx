@@ -13,11 +13,17 @@ export default function Input({
   isConfirmed = undefined,
   subtitle = "",
   value="", 
+  disabled = false,
 }) {
   const [inputValue, setInputValue] = useState(value);
   const [message, setMessage] = useState("");
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
+
+  // value prop이 변경될 때 inputValue 상태 업데이트
+  useEffect(() => {
+    setInputValue(value);
+  }, [value]);
 
   const isEmpty = inputValue.trim() === "";
 
@@ -93,6 +99,7 @@ export default function Input({
         value={inputValue}
         onChange={handleChange}
         onFocus={handleFocus}
+        disabled={disabled}
       />
 
       {message && (

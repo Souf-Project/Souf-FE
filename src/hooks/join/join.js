@@ -6,6 +6,7 @@ import {
   postEmailVerify,
   postSignUp,
 } from "../../api/member";
+import { postSocialSignUp } from "../../api/social";
 
 export const useSignupMutations = ({
   onEmailSuccess,
@@ -15,6 +16,8 @@ export const useSignupMutations = ({
   onEmailVerifyError,
   onSignUpSuccess,
   onSignUpError,
+  onSocialSignUpSuccess,
+  onSocialSignUpError,
 }) => {
   const emailVerificationMutation = useMutation({
     mutationFn: (email) => postEmailVerification(email),
@@ -40,10 +43,17 @@ export const useSignupMutations = ({
     onError: onSignUpError,
   });
 
+  const socialSignUp = useMutation({
+    mutationFn: (socialSignupData) => postSocialSignUp(socialSignupData),
+    onSuccess: onSocialSignUpSuccess,
+    onError: onSocialSignUpError,
+  });
+
   return {
     emailVerificationMutation,
     checkNickname,
     emailVerify,
     signUp,
+    socialSignUp,
   };
 };

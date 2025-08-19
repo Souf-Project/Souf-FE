@@ -55,7 +55,7 @@ export async function getProfile() {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  console.log(response);
+  // console.log(response);
   return response;
 }
 
