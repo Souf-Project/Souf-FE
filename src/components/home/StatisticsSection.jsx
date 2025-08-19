@@ -14,15 +14,15 @@ export default function StatisticsSection({ viewCount, userCount, recruitCount }
         <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">{dayjs().format('YYYY.MM.DD')}</div>
         {/* PC 조회수*/}
         <div className="hidden lg:flex flex-col sm:flex-row gap-1 sm:gap-2 lg:ml-auto items-center">
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-center sm:text-left">오늘 스프 사이트 조회수: </div>
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center sm:text-left">오늘 스프 사이트 조회수: </div>
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
             {animatedViewCount.toLocaleString()}
           </div>
         </div>
         {/* Mobile 조회수*/}
         <div className="lg:hidden flex justify-between sm:flex-row gap-1 sm:gap-2 lg:ml-auto items-center">
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-center sm:text-left">오늘 스프 사이트 조회수: </div>
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center sm:text-left">오늘 스프 사이트 조회수: </div>
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
             {animatedViewCount.toLocaleString()}
           </div>
         </div>
@@ -31,29 +31,29 @@ export default function StatisticsSection({ viewCount, userCount, recruitCount }
       <div className="flex flex-col justify-center gap-2 lg:gap-2 text-center lg:text-left">
         {/* PC 대학생 프리랜서 가입자*/}
         <div className="hidden lg:flex flex-col sm:flex-row gap-1 sm:gap-2 lg:ml-auto items-center">
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">대학생 프리랜서 가입자: </div>
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">대학생 프리랜서 가입자: </div>
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
             +{(animatedUserCount+102).toLocaleString()}
           </div>
         </div>
         {/* Mobile 대학생 프리랜서 가입자*/}
         <div className="lg:hidden flex justify-between sm:flex-row gap-1 sm:gap-2 lg:ml-auto items-center">
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">대학생 프리랜서 가입자: </div>
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">대학생 프리랜서 가입자: </div>
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
             +{(animatedUserCount+102).toLocaleString()}
           </div>
         </div>
         {/* PC 등록된 기업 공고문*/}
         <div className="hidden lg:flex flex-col sm:flex-row gap-1 sm:gap-2 lg:ml-auto items-center lg:text-left">
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">등록된 기업 공고문: </div>
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">등록된 기업 공고문: </div>
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
             +{animatedRecruitCount.toLocaleString()}
           </div>
         </div>
         {/* Mobile 등록된 기업 공고문*/}
         <div className="lg:hidden flex justify-between sm:flex-row gap-1 sm:gap-2 lg:ml-auto items-center">
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">등록된 기업 공고문: </div>
-          <div className="text-2xl sm:text-3xl lg:text-5xl font-bold">
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">등록된 기업 공고문: </div>
+          <div className="text-2xl sm:text-3xl lg:text-4xl font-bold">
             +{animatedRecruitCount.toLocaleString()}
           </div>
         </div>
