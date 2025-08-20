@@ -108,10 +108,7 @@ export default function Feed({ feedData, onFeedClick }) {
 
      const toggleExpand = () => setIsExpanded((prev) => !prev);
           const handleDeclareClick = (declareData) => {
-       // 신고 데이터 처리
        console.log('신고 데이터:', declareData);
-       // 여기에 신고 API 호출 로직을 추가할 수 있습니다
-       alert('신고가 접수되었습니다.');
      }
   return (
     <div
@@ -141,8 +138,11 @@ export default function Feed({ feedData, onFeedClick }) {
             {feedData?.nickname || "학생" }
           </h2>
         </div>
-        <UpdateOption id={feedData.memberId} memberId={memberId}
-          worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+        <div className="flex items-center gap-2">
+          <DeclareButton onDeclare={handleDeclareClick} />
+          <UpdateOption id={feedData.memberId} memberId={memberId}
+            worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+        </div>
       </div>
       <div 
         className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative"
@@ -221,7 +221,6 @@ export default function Feed({ feedData, onFeedClick }) {
         </span>
         
       </p>
-      <DeclareButton onDeclare={handleDeclareClick}/>
       {showDeleteModal && (
         <AlertModal
           type="warning"

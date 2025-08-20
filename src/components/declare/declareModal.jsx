@@ -33,7 +33,6 @@ export default function DeclareModal({
 
   const handleSubmit = async () => {
     if (selectedReasons.length === 0) {
-      alert("신고 사유를 하나 이상 선택해주세요.");
       return;
     }
 
@@ -42,7 +41,7 @@ export default function DeclareModal({
     
       setIsSubmitted(true);
       
-      // 신고 완료 후 onSubmit 호출
+      // 신고 완료 후 onSubmit 호출하여 모달 닫기
       if (onSubmit) {
         onSubmit({
           reasons: selectedReasons.map(index => reasonList[index]),
@@ -51,9 +50,14 @@ export default function DeclareModal({
       }
     } catch (error) {
       console.error("신고 접수 실패:", error);
-      alert("신고 접수에 실패했습니다. 다시 시도해주세요.");
     }
   };
+
+  const handleClose = () => {
+    setIsSubmitted(false);
+    onClose();
+  };
+  
 
 
   if (isSubmitted) {
@@ -81,7 +85,7 @@ export default function DeclareModal({
           <div className="w-full flex justify-center">
             <button
               className="py-3 px-8 bg-yellow-main rounded-[10px] font-semibold text-base"
-              onClick={onClose}
+              onClick={handleClose}
             >
               확인
             </button>
