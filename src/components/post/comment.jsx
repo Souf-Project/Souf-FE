@@ -6,6 +6,7 @@ import { UserStore } from "../../store/userStore";
 import { deleteComment, postAdditionalComment } from "../../api/additionalFeed";
 import { useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
+import DeclareButton from "../declare/declareButton";
 
 export default function Comment({ comment, onReplyClick, onToggleReplies, showReplies, hasReplies, checkHasReplies, commentsWithReplies }) {
     // const [editContent, setEditContent] = useState("");
@@ -77,6 +78,11 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
             onToggleReplies();
         }
     };
+    
+    const handleDeclareClick = (declareData) => {
+        console.log('댓글 신고 데이터:', declareData);
+        // 여기에 신고 API 호출
+      };
 
     return (
         <div>
@@ -93,6 +99,11 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
                 <div className="flex items-center gap-2">
                 <p className="text-sm font-medium">{comment.nickname}</p>
                 <p className="text-sm text-gray-400">{formatDate(comment.lastModifiedTime)}</p>
+                <DeclareButton 
+                contentType="댓글" 
+                onDeclare={handleDeclareClick}
+                iconClassName="w-4 h-4 cursor-pointer ml-auto"
+              />
                 </div>
                 <p className="text-medium text-gray-800 font-medium">{comment.content}</p>
                 
