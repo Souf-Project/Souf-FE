@@ -12,8 +12,8 @@ import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
-import DeclareIcon from "../assets/images/declareIcon.png";
-import DeclareModal from "./declare/declareModal";
+import DeclareButton from "./declare/declareButton";
+
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -29,7 +29,7 @@ export default function Feed({ feedData, onFeedClick }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showDeclareModal, setShowDeclareModal] = useState(false);
+
   const {memberId} = UserStore();
   const swiperRef = useRef(null);
   const maxLength = 100;
@@ -107,8 +107,11 @@ export default function Feed({ feedData, onFeedClick }) {
     }
 
      const toggleExpand = () => setIsExpanded((prev) => !prev);
-     const handleDeclareClick = () => {
-      setShowDeclareModal(true);
+          const handleDeclareClick = (declareData) => {
+       // 신고 데이터 처리
+       console.log('신고 데이터:', declareData);
+       // 여기에 신고 API 호출 로직을 추가할 수 있습니다
+       alert('신고가 접수되었습니다.');
      }
   return (
     <div
@@ -218,7 +221,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </span>
         
       </p>
-      <img src={DeclareIcon} alt="신고" className="w-4 h-4 cursor-pointer ml-auto" onClick={handleDeclareClick}/>
+      <DeclareButton onDeclare={handleDeclareClick}/>
       {showDeleteModal && (
         <AlertModal
           type="warning"
@@ -252,12 +255,7 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-      {showDeclareModal && (
-        <DeclareModal
-          onClickFalse={() => setShowDeclareModal(false)}
-          onClickTrue={() => setShowDeclareModal(false)}
-        />
-      )}
+
     </div>
   );
 }

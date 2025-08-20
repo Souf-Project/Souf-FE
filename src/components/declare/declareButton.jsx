@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import DeclareModal from './declareModal';
-import DeclareIcon from '../assets/images/warningIco.svg';
+import DeclareIcon from '../../assets/images/warningIco.svg';
 
 export default function DeclareButton({ 
   contentType = "게시물", 
@@ -21,7 +21,8 @@ export default function DeclareButton({
     if (onDeclare) {
       onDeclare(declareData);
     }
-    // 모달은 자동으로 닫힙니다 (DeclareModal에서 처리)
+    // 모달 닫기
+    setIsModalOpen(false);
   };
 
   return (
