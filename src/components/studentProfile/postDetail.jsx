@@ -22,6 +22,7 @@ import CommentList from "../post/commentList";
 import Loading from "../loading";
 import SEO from "../seo";
 import useSNSShare from "../../hooks/useSNSshare";
+import DeclareButton from "../declare/declareButton";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -60,12 +61,6 @@ export default function PostDetail() {
       // console.log("피드 디테일응답:", data.result);
 
       data.result.mediaResDtos?.forEach((media, index) => {
-        // console.log(`미디어 ${index + 1}:`, {
-        //   fileUrl: media.fileUrl,
-        //   fileName: media.fileName,
-        //   fileType: media.fileType,
-        //   isVideo: media.fileType?.toLowerCase() === "mp4" || media.fileUrl?.toLowerCase().endsWith(".mp4")
-        // });
       });
     
       setWorksData(data.result);

@@ -62,10 +62,8 @@ export default function Feed({ feedData, onFeedClick }) {
   
   const clickHandler = (profileId) => {
     if (onFeedClick) {
-      // onFeedClick이 전달된 경우 부모 컴포넌트에서 로그인 체크 처리
       onFeedClick(null, profileId);
     } else {
-      // 기존 로직 (직접 네비게이션)
     navigate(`/profileDetail/${profileId}`);
     }
   };
@@ -127,7 +125,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </p>
       </div>
       <div className="flex justify-between items-center">
-        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2"
+        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
@@ -139,7 +137,7 @@ export default function Feed({ feedData, onFeedClick }) {
           </h2>
         </div>
         <div className="flex items-center gap-2">
-          <DeclareButton onDeclare={handleDeclareClick} />
+        
           <UpdateOption id={feedData.memberId} memberId={memberId}
             worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
         </div>
@@ -221,6 +219,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </span>
         
       </p>
+      <DeclareButton onDeclare={handleDeclareClick} />
       {showDeleteModal && (
         <AlertModal
           type="warning"
