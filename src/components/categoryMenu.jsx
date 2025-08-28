@@ -41,14 +41,10 @@ const DesktopCategoryMenu = () => (
       return (
         <div key={second.second_category_id} className="mb-3">
           <div 
-            className={`font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded text-gray-700 transition-colors ${
+            className={`font-semibold text-sm lg:text-base flex items-center justify-between p-2 rounded cursor-pointer transition-colors ${
               second.first_category_id === 6 
-                ? 'cursor-pointer hover:text-yellow-point hover:bg-yellow-50' 
-                : 'cursor-pointer hover:text-yellow-point hover:bg-yellow-50'
-            } ${
-              isSelectedSecond || (second.first_category_id === 6 && isSelectedFirst)
-                ? 'bg-yellow-50 text-yellow-point'
-                : ''
+                ? (isSelectedSecond ? 'bg-yellow-50 text-yellow-point' : 'text-gray-600 hover:text-yellow-point hover:bg-yellow-50')
+                : (isSelectedSecond ? 'bg-yellow-50 text-yellow-point' : 'text-gray-700 hover:text-yellow-point hover:bg-yellow-50')
             }`}
             onClick={second.first_category_id === 6 ? () => handleSecondCategoryClick(second) : undefined}
           >
@@ -89,7 +85,6 @@ const DesktopCategoryMenu = () => (
     const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
 
     const handleSecondCategoryClick = (second) => {
-      // 대분류가 6(IT.개발)인 경우 중분류를 직접 클릭
       if (second.first_category_id === 6) {
         handleSecondCategoryClick(second);
         return;
