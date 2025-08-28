@@ -12,8 +12,8 @@ import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
-import DeclareIcon from "../assets/images/declareIcon.png";
-import DeclareModal from "./declare/declareModal";
+import DeclareButton from "./declare/declareButton";
+
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -29,7 +29,7 @@ export default function Feed({ feedData, onFeedClick }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showDeclareModal, setShowDeclareModal] = useState(false);
+
   const {memberId} = UserStore();
   const swiperRef = useRef(null);
   const maxLength = 100;
@@ -62,10 +62,8 @@ export default function Feed({ feedData, onFeedClick }) {
   
   const clickHandler = (profileId) => {
     if (onFeedClick) {
-      // onFeedClick이 전달된 경우 부모 컴포넌트에서 로그인 체크 처리
       onFeedClick(null, profileId);
     } else {
-      // 기존 로직 (직접 네비게이션)
     navigate(`/profileDetail/${profileId}`);
     }
   };
@@ -107,8 +105,8 @@ export default function Feed({ feedData, onFeedClick }) {
     }
 
      const toggleExpand = () => setIsExpanded((prev) => !prev);
-     const handleDeclareClick = () => {
-      setShowDeclareModal(true);
+          const handleDeclareClick = (declareData) => {
+       console.log('신고 데이터:', declareData);
      }
   return (
     <div
@@ -127,7 +125,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </p>
       </div>
       <div className="flex justify-between items-center">
-        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2"
+        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
@@ -138,8 +136,11 @@ export default function Feed({ feedData, onFeedClick }) {
             {feedData?.nickname || "학생" }
           </h2>
         </div>
-        <UpdateOption id={feedData.memberId} memberId={memberId}
-          worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+        <div className="flex items-center gap-2">
+        
+          <UpdateOption id={feedData.memberId} memberId={memberId}
+            worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+        </div>
       </div>
       <div 
         className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative"
@@ -218,7 +219,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </span>
         
       </p>
-      <img src={DeclareIcon} alt="신고" className="w-4 h-4 cursor-pointer ml-auto" onClick={handleDeclareClick}/>
+      <DeclareButton onDeclare={handleDeclareClick} />
       {showDeleteModal && (
         <AlertModal
           type="warning"
@@ -252,12 +253,7 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-      {showDeclareModal && (
-        <DeclareModal
-          onClickFalse={() => setShowDeclareModal(false)}
-          onClickTrue={() => setShowDeclareModal(false)}
-        />
-      )}
+
     </div>
   );
 }
