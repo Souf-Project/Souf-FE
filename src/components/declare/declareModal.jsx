@@ -33,6 +33,7 @@ export default function DeclareModal({
 
   const handleSubmit = async () => {
     if (selectedReasons.length === 0) {
+      alert("신고 사유를 하나 이상 선택해주세요.");
       return;
     }
 
