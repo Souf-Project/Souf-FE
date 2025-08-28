@@ -219,7 +219,14 @@ export default function Feed({ feedData, onFeedClick }) {
         </span>
         
       </p>
-      <DeclareButton onDeclare={handleDeclareClick} />
+      <DeclareButton 
+        postType="FEED"
+        postId={feedData?.feedId}
+        title={feedData?.topic || "제목 없음"}
+        reporterId={memberId}
+        reportedMemberId={feedData?.memberId}
+        onDeclare={handleDeclareClick} 
+      />
       {showDeleteModal && (
         <AlertModal
           type="warning"

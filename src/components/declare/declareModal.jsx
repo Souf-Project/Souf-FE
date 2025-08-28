@@ -1,11 +1,16 @@
 import { useState } from "react";
 import ReasonCheckbox from "../ReasonCheckbox";
+import { postReport } from "../../api/report";
 
 export default function DeclareModal({
   isOpen,
   onClose,
   onSubmit,
-  contentType
+  postType,
+  postId,
+  title,
+  reporterId,
+  reportedMemberId,
 }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState([]);
@@ -38,14 +43,14 @@ export default function DeclareModal({
     }
 
     try {
-      // 여기에 신고 API 추가
+      const response = await postReport(postType, postId, title, reporterId, reportedMemberId, selectedReasons, description);
+      // console.log("신고 API 응답:", response);
     
       setIsSubmitted(true);
       
-      // 신고 완료 후 onSubmit 호출하여 모달 닫기
       if (onSubmit) {
         onSubmit({
-          reasons: selectedReasons.map(index => reasonList[index]),
+          reasons: selectedReasons,
           description: description
         });
       }
@@ -69,7 +74,7 @@ export default function DeclareModal({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="text-3xl font-bold text-black text-center mb-6">
-            {contentType} 신고가 접수되었습니다.
+            신고가 접수되었습니다.
           </div>
           <div className="text-base mb-8 leading-relaxed">
             회원님의 신고는 기업과 대학생을 연결하는 스프의 목적성을 <br/>
