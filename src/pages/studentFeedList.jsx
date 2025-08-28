@@ -42,14 +42,29 @@ const {
         const data = await getFeed(categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable);
         // console.log("getFeed 결과:", data);
         
-        if (data?.result?.content && thirdCategoryId) {
-          const filteredContent = data.result.content.filter(feed => {
-            const feedCategories = feed.categoryDtos || [];
-            
-            return feedCategories.some(category => 
-              category.thirdCategory === thirdCategoryId
-            );
-          });
+        if (data?.result?.content) {
+          let filteredContent = data.result.content;
+          
+          // 대분류가 6인 경우 중분류로 필터링
+          if (categoryParam === "6" && secondCategoryId) {
+            filteredContent = data.result.content.filter(feed => {
+              const feedCategories = feed.categoryDtos || [];
+              
+              return feedCategories.some(category => 
+                category.secondCategory === secondCategoryId
+              );
+            });
+          }
+          // 대분류가 6이 아닌경우 선탯한 소분류로 필터링
+          else if (thirdCategoryId) {
+            filteredContent = data.result.content.filter(feed => {
+              const feedCategories = feed.categoryDtos || [];
+              
+              return feedCategories.some(category => 
+                category.thirdCategory === thirdCategoryId
+              );
+            });
+          }
           
           return {
             ...data,
