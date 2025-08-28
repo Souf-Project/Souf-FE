@@ -91,10 +91,7 @@ export default function StudentInfoBlock({ studentInfo, type }) {
                         work.workImageUrl || work.imageUrl || "/src/assets/images/BasicProfileImg1.png"
                       }
                       alt={`작품 ${index + 1}`}
-                      className="w-16 h-16 rounded-lg object-cover border border-gray-200 flex-shrink-0"
-                      onError={(e) => {
-                        e.target.src = "/src/assets/images/BasicProfileImg1.png";
-                      }}
+        
                     />
                   ))}
                 </div>

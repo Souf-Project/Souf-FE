@@ -22,6 +22,7 @@ import CommentList from "../post/commentList";
 import Loading from "../loading";
 import SEO from "../seo";
 import useSNSShare from "../../hooks/useSNSshare";
+import DeclareButton from "../declare/declareButton";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -60,12 +61,6 @@ export default function PostDetail() {
       // console.log("피드 디테일응답:", data.result);
 
       data.result.mediaResDtos?.forEach((media, index) => {
-        // console.log(`미디어 ${index + 1}:`, {
-        //   fileUrl: media.fileUrl,
-        //   fileName: media.fileName,
-        //   fileType: media.fileType,
-        //   isVideo: media.fileType?.toLowerCase() === "mp4" || media.fileUrl?.toLowerCase().endsWith(".mp4")
-        // });
       });
     
       setWorksData(data.result);
@@ -193,6 +188,11 @@ const handleDeleteClick = () => {
     } catch (err) {
       console.error('URL 복사 실패:', err);
     }
+  };
+
+  const handleDeclareClick = (declareData) => {
+    console.log('프로필 신고 데이터:', declareData);
+    // 여기에 신고 API 호출
   };
 
   const shortenUrl = (url) => {
@@ -351,7 +351,7 @@ const handleDeleteClick = () => {
                         {worksData.nickname ? (
                           <>
                             <span className="font-semibold text-md text-gray-800">{worksData.nickname}</span>
-                            <p className="text-right text-gray-500">{getFormattedDate(worksData.lastModifiedTime)}</p>
+                            <p className="text-gray-500">{getFormattedDate(worksData.lastModifiedTime)}</p>
                           </>
                         ) : (
                           <>
@@ -429,22 +429,22 @@ const handleDeleteClick = () => {
                      <p className="text-sm text-gray-600">{worksData.commentCount}</p>
                      
                   </div>
+                  <DeclareButton 
+                contentType="프로필" 
+                onDeclare={handleDeclareClick}
+                iconClassName="w-7 h-7 cursor-pointer ml-auto"
+              />
                   <div className="relative">
-                                      <div className="relative">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm text-gray-600">공유</p>
-                      <img src={shareIco} alt="shareIco" className="w-7 h-7"  />
-                    </div>
+                                      {/* <img src={shareIco} alt="shareIco" className="w-7 h-7 cursor-pointer" onClick={handleShareClick} /> */}
                   
-                  </div>
-                    
+                  
+                 
                     {/* 공유 드롭다운 */}
-                    {showShareDropdown && (
+                    {/* {showShareDropdown && (
                       <div className="absolute bottom-full right-0 mb-2 w-64 bg-white border border-gray-200 rounded-lg shadow-sm z-50">
                         <div className="p-4">
                           <h3 className="text-sm font-semibold text-gray-800 mb-3">공유하기</h3>
                           
-                          {/* SNS 공유 버튼들 */}
                           <div className="flex justify-center gap-3 mb-4">
                             <button 
                               onClick={handleShareToTwitter}
@@ -469,7 +469,6 @@ const handleDeleteClick = () => {
                             </button>
                           </div>
                           
-                          {/* URL 복사 섹션 */}
                           <div className="border-t border-gray-200 pt-3">
                             <div className="flex items-center gap-2 mb-2 bg-gray-50 border border-gray-200 rounded px-2 py-1">
                               <span className="flex-1 text-xs text-gray-600 truncate">
@@ -485,7 +484,7 @@ const handleDeleteClick = () => {
                           </div>
                         </div>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>

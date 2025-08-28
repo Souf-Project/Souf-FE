@@ -2,8 +2,10 @@ import { useState } from "react";
 import ReasonCheckbox from "../ReasonCheckbox";
 
 export default function DeclareModal({
-  onClickFalse,
-  onClickTrue,
+  isOpen,
+  onClose,
+  onSubmit,
+  contentType
 }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState([]);
@@ -36,21 +38,28 @@ export default function DeclareModal({
     }
 
     try {
-      console.log("사유 인덱스:", selectedReasons);
-      console.log("인덱스 이름:", selectedReasons.map(index => reasonList[index]));
-      console.log("신고 사유 설명:", description);
       // 여기에 신고 API 추가
     
       setIsSubmitted(true);
+      
+      // 신고 완료 후 onSubmit 호출하여 모달 닫기
+      if (onSubmit) {
+        onSubmit({
+          reasons: selectedReasons.map(index => reasonList[index]),
+          description: description
+        });
+      }
     } catch (error) {
       console.error("신고 접수 실패:", error);
-      alert("신고 접수에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
   const handleClose = () => {
-    onClickFalse();
+    setIsSubmitted(false);
+    onClose();
   };
+  
+
 
   if (isSubmitted) {
     return (
@@ -60,7 +69,7 @@ export default function DeclareModal({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="text-3xl font-bold text-black text-center mb-6">
-            게시물 신고가 접수되었습니다.
+            {contentType} 신고가 접수되었습니다.
           </div>
           <div className="text-base mb-8 leading-relaxed">
             회원님의 신고는 기업과 대학생을 연결하는 스프의 목적성을 <br/>
@@ -86,6 +95,8 @@ export default function DeclareModal({
       </div>
     );
   }
+
+  if (!isOpen) return null;
 
   return (
     <div
@@ -129,7 +140,7 @@ export default function DeclareModal({
         <div className="w-full px-1 flex justify-center gap-8"> 
           <button
             className="py-3 px-8 bg-[#C9C9C9] rounded-[10px] font-semibold text-base"
-            onClick={onClickFalse}
+            onClick={onClose}
           >
             취소
           </button>
