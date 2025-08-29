@@ -478,25 +478,6 @@ export default function JoinForm({ socialLoginInfo }) {
               </span>
             </button>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setServiceAgreement(!serviceAgreement)}
-              className="flex items-center gap-3"
-            >
-              <img 
-                src={serviceAgreement ? fillCheckBox : noneCheckBox} 
-                alt="서비스 이용 약관 동의" 
-                className="w-5 h-5"
-              />
-              <span className="text-lg">
-                서비스 이용 약관 동의 (필수)
-                <span className="text-sm text-red-500 ml-1">*</span>
-              </span>
-            </button>
-          </div>
-          
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -514,28 +495,8 @@ export default function JoinForm({ socialLoginInfo }) {
               </span>
             </button>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMarketingAgreement(!marketingAgreement)}
-              className="flex items-center gap-3"
-            >
-              <img 
-                src={marketingAgreement ? fillCheckBox : noneCheckBox} 
-                alt="마케팅 수신 동의" 
-                className="w-5 h-5"
-              />
-              <span className="text-lg">
-                마케팅 수신 동의 (선택)
-              </span>
-            </button>
-          </div>
-        </div>
-        
-        {/* 약관 내용 드롭다운들 */}
-        {/* 개인정보 수집 및 이용 동의 내용 */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setShowPrivacyContent(!showPrivacyContent)}>
+            {/* 개인정보 수집 및 이용 동의 내용 */}
+            <div className="ml-4 flex items-center gap-3 cursor-pointer" onClick={() => setShowPrivacyContent(!showPrivacyContent)}>
             <img 
               src={backArrow} 
               alt="뒤로가기" 
@@ -543,7 +504,7 @@ export default function JoinForm({ socialLoginInfo }) {
                 showPrivacyContent ? 'rotate-90' : 'rotate-[270deg]'
               }`} 
             />
-            <span className="text-lg text-gray-600">개인정보 수집 및 이용 동의 보기</span>
+            <span className="text-lg text-gray-600">개인정보 수집 및 제3자 제공 동의 내용 보기</span>
           </div>
           {showPrivacyContent && (
             <div className="w-full max-h-96 overflow-y-auto border border-gray-300 rounded-lg p-4 mt-2">
@@ -566,11 +527,11 @@ export default function JoinForm({ socialLoginInfo }) {
                       <td>로그인 및 계정 보호</td>
                       <td>회원 탈퇴 시까지</td>
                     </tr>
-                    <tr className="border-b border-gray-100">
+                    {/* <tr className="border-b border-gray-100">
                       <td>소속 학교, 학과</td>
                       <td>기업 매칭 및 포트폴리오 정보 제공</td>
                       <td>회원 탈퇴 시까지</td>
-                    </tr>
+                    </tr> */}
                     <tr className="border-b border-gray-100">
                       <td>IP 주소, 서비스 시용 기록</td>
                       <td>서비스 개선, 보안 및 로그 기록</td>
@@ -618,9 +579,27 @@ export default function JoinForm({ socialLoginInfo }) {
               </div>
             </div>
           )}
-        
-        {/* 서비스 이용 약관 내용 */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setShowServiceContent(!showServiceContent)}>
+          
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setServiceAgreement(!serviceAgreement)}
+              className="flex items-center gap-3"
+            >
+              <img 
+                src={serviceAgreement ? fillCheckBox : noneCheckBox} 
+                alt="서비스 이용 약관 동의" 
+                className="w-5 h-5"
+              />
+              <span className="text-lg">
+                서비스 이용 약관 동의 (필수)
+                <span className="text-sm text-red-500 ml-1">*</span>
+              </span>
+            </button>
+            
+          </div>
+           {/* 서비스 이용 약관 내용 */}
+           <div className="ml-4 flex items-center gap-3 cursor-pointer" onClick={() => setShowServiceContent(!showServiceContent)}>
             <img 
               src={backArrow} 
               alt="뒤로가기" 
@@ -722,6 +701,24 @@ export default function JoinForm({ socialLoginInfo }) {
               </ol>
             </div>
           )}
+          
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setMarketingAgreement(!marketingAgreement)}
+              className="flex items-center gap-3"
+            >
+              <img 
+                src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                alt="마케팅 수신 동의" 
+                className="w-5 h-5"
+              />
+              <span className="text-lg">
+                마케팅 수신 동의 (선택)
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <Button btnText="회원가입" onClick={handleSignup} />
