@@ -106,10 +106,6 @@ export default function JoinForm({ socialLoginInfo }) {
           username: socialLoginInfo.username 
         }));
       }
-      // 소셜 로그인 정보가 있으면 체크박스 자동 체크
-      setPrivacyAgreement(true);
-      setServiceAgreement(true);
-      setThirdPartyAgreement(true);
     }
   }, [socialLoginInfo]);
 
@@ -284,9 +280,6 @@ export default function JoinForm({ socialLoginInfo }) {
       return;
     }
 
-    console.log("원본 카테고리:", formData.categoryDtos);
-    console.log("정리된 카테고리:", cleanedCategories);
-
     // 소셜 로그인 회원가입인 경우
     if (socialLoginInfo?.socialLogin) {
       const isPersonalInfoAgreed = privacyAgreement && serviceAgreement && thirdPartyAgreement;
@@ -300,9 +293,6 @@ export default function JoinForm({ socialLoginInfo }) {
         isMarketingAgreed
       };
 
-      console.log("소셜 회원가입 요청 데이터:", socialSignupData);
-      
-      // postSocialSignUp API
       socialSignUp.mutate(socialSignupData);
       return;
     }
@@ -319,7 +309,6 @@ export default function JoinForm({ socialLoginInfo }) {
       isMarketingAgreed
     };
 
-    console.log("일반 회원가입 요청 데이터:", finalData);
     signUp.mutate(finalData);
   }
 
