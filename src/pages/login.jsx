@@ -35,7 +35,8 @@ export default function Login() {
       UserStore.getState().setAccessToken(result.accessToken);
       localStorage.setItem("accessToken", result.accessToken);
   
-      navigate("/");
+      // navigate("/");
+      console.log(response)
     },
   
     onError: (error) => {

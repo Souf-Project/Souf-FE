@@ -73,7 +73,7 @@ export default function Profile({
         <div className="text-[#5B5B5B]">{userDetail}</div>
       </div>
       <div className="grid grid-cols-3  justify-center gap-2">
-        {popularFeeds?.map((feed, index) => (
+        {popularFeeds ? (popularFeeds?.map((feed, index) => (
           <img 
             key={index} 
             src={`${import.meta.env.VITE_S3_BUCKET_URL}${feed.imageUrl}`}
@@ -83,7 +83,13 @@ export default function Profile({
               e.target.style.display = 'none';
             }}
           />
-        ))}
+        ))) : (
+          <>
+            <div className="w-32 h-32 bg-gray-200 rounded-lg border border-gray-300"></div>
+            <div className="w-32 h-32 bg-gray-200 rounded-lg border border-gray-300"></div>
+            <div className="w-32 h-32 bg-gray-200 rounded-lg border border-gray-300"></div>
+          </>
+        )}
       </div>
       </div>
       
