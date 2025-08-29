@@ -14,7 +14,7 @@ export default function Profile({
   userDetail,
   popularFeeds,
 }) {
-  // console.log("profileImageUrl", profileImageUrl);
+
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
@@ -73,7 +73,7 @@ export default function Profile({
         <div className="text-[#5B5B5B]">{userDetail}</div>
       </div>
       <div className="grid grid-cols-3  justify-center gap-2">
-        {popularFeeds?.map((feed, index) => (
+        {popularFeeds && popularFeeds.length > 0 ? (popularFeeds?.map((feed, index) => (
           <img 
             key={index} 
             src={`${import.meta.env.VITE_S3_BUCKET_URL}${feed.imageUrl}`}
@@ -83,7 +83,13 @@ export default function Profile({
               e.target.style.display = 'none';
             }}
           />
-        ))}
+        ))) : (
+          <>
+            <div className="w-16 h-32 bg-gray-100 rounded-lg border border-gray-200"></div>
+            <div className="w-16 h-32 bg-gray-100 rounded-lg border border-gray-200"></div>
+            <div className="w-16 h-32 bg-gray-100 rounded-lg border border-gray-200"></div>
+          </>
+        )}
       </div>
       </div>
       
