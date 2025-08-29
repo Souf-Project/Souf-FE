@@ -90,7 +90,7 @@ export default function Profile({
         ) : (
           <div className="w-full h-32 flex flex-col items-center justify-center">
             <img src={SoufLogoBlack} alt="SouF 로고" className="w-24 h-24 object-contain" />
-            <span className="text-gray-500 text-sm">피드가 없습니다.</span>
+            <span className="text-gray-500 text-sm">작성된 피드가 없습니다.</span>
           </div>
         )}
       </div>
