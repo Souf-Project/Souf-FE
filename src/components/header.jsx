@@ -106,6 +106,9 @@ useEffect(() => {
     }
     setShowMobileMenu(false);
   };
+  const deleteCookie = (name) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  };
 
   const toggleLogin = () => {
     UserStore.getState().clearUser();
@@ -115,6 +118,9 @@ useEffect(() => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user-storage");
+
+  deleteCookie("refreshToken");
+
 
     setIsLogin(false);
     setShowUserMenu(false);
