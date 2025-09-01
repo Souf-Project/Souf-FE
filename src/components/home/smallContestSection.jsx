@@ -68,7 +68,7 @@ export default function SmallContestSection({ competitions, imageLoadingStates, 
                   {competition.공모분야.slice(0, 1).map((field, fieldIndex) => (
                     <h2
                       key={fieldIndex}
-                      className="px-2 py-1 bg-yellow-point/10 text-yellow-point text-[12px] font-semibold lg:text-xs rounded-full"
+                      className="px-2 py-1bg-yellow-point text-white text-[12px] font-semibold lg:text-xs rounded-full"
                     >
                       {field}
                     </h2>

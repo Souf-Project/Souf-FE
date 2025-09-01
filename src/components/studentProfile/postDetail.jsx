@@ -56,8 +56,8 @@ export default function PostDetail() {
     queryKey: ["feedDetail"],
     queryFn: async () => {
       const data = await getFeedDetail(id,worksId);
-      console.log("좋아요 상태:", data.result.liked);
-      console.log("응답:", data.result);
+      // console.log("좋아요 상태:", data.result.liked);
+      // console.log("응답:", data.result);
       // console.log("피드 디테일응답:", data.result);
 
       data.result.mediaResDtos?.forEach((media, index) => {
@@ -120,7 +120,7 @@ const handleDeleteClick = () => {
       setShowDeleteModal(false);
       setShowCompleteModal(true);
     } catch (err) {
-      console.log("실패함");
+      // console.log("실패함");
     }
   };
 
