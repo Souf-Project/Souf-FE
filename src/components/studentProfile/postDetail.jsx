@@ -156,18 +156,21 @@ const handleDeleteClick = () => {
       };
       
       await patchLike(worksId, requestBody);
-      console.log("요청:", requestBody);
-      
-      // 좋아요 처리 후 전체 데이터 다시 가져오기
+      // console.log("요청:", requestBody);
+
       const updatedData = await getFeedDetail(id, worksId);
       setWorksData(updatedData.result);
       setIsLiked(updatedData.result.liked);
       setMediaData(updatedData.result.mediaResDtos);
       
-      console.log("좋아요 처리 성공");
+      // console.log("좋아요 처리 성공");
      
     } catch (error) {
       console.error("좋아요 처리 에러:", error);
+      
+      if (error.response?.status === 403) {
+        setShowLoginModal(true);
+      }
     }
     
     setTimeout(() => {
