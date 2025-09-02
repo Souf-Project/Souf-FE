@@ -19,9 +19,7 @@ export default function ButtonInput({
     disabled = false,
     btnDisabled = false
 }) {
-            useEffect(() => {
-            console.log("버튼 인풋에서", isConfirmed);
-          }, [isConfirmed]);
+        
     return (
 
         

@@ -41,14 +41,12 @@ export default function Login() {
       localStorage.setItem("accessToken", result.accessToken);
   
       navigate("/");
-      console.log(response)
+
     },
   
     onError: (error) => {
       console.error("로그인 실패:", error);
-      console.log("에러 상태 코드:", error.response?.status);
       setShowError(true);
-      console.log("showError 설정됨:", true);
     },
   });
 
