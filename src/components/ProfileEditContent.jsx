@@ -62,10 +62,10 @@ export default function ProfileEditContent() {
         setFormData({
           ...profileData,
           newCategories: newCategories,
-          originalNickname: profileData.nickname, // 원본 닉네임 저장
-          marketingAgreement: profileData.marketingAgreement || false // 마케팅 동의 여부 추가
+          originalNickname: profileData.nickname,
+          marketingAgreement: profileData.marketingAgreement || false
         });
-        setMarketingAgreement(profileData.marketingAgreement || false); // 마케팅 동의 상태 초기화
+        setMarketingAgreement(profileData.marketingAgreement || false);
 
       } else {
         console.error('프로필 데이터 조회 실패:', response.data?.message);
@@ -131,7 +131,7 @@ export default function ProfileEditContent() {
       setSelectedFile(null);
       setNicknameVerified(false);
       setVerificationMessage('');
-      fetchProfileData(); // 수정 성공 후 데이터를 다시 불러옵니다.
+      fetchProfileData();
     },
     onError: (error) => {
       console.error("프로필 수정 실패:", error);
@@ -229,18 +229,25 @@ export default function ProfileEditContent() {
     const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
     const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email,profile_image`;
     
+    // 카카오 연동
     const handleKakaoLogin = () => {
+      if (!isEditing) return;
+      
       localStorage.setItem('socialProvider', 'KAKAO');
+      localStorage.setItem('isLinking', 'true'); // 연동 모드
       window.location.href = KAKAO_AUTH_URL;
     }
   
-    // 구글 로그인
+    // 구글 연동
     const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
     const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
     
     const handleGoogleLogin = () => {
+      if (!isEditing) return;
+      
       localStorage.setItem('socialProvider', 'GOOGLE');
+      localStorage.setItem('isLinking', 'true'); // 연동 모드
       window.location.href = GOOGLE_AUTH_URL;
     }
 
@@ -361,6 +368,7 @@ export default function ProfileEditContent() {
                     ? 'bg-[#FEE500] hover:shadow-md cursor-pointer' 
                     : 'bg-yellow-300 cursor-not-allowed opacity-60'
                 }`}
+                onClick={handleKakaoLogin}
               >
                 <img src={kakaoLogo} alt="카카오 로그인" className="w-[1.4rem] object-contain" />
                 <p>카카오 계정으로 연동</p>
@@ -372,6 +380,7 @@ export default function ProfileEditContent() {
                     ? 'bg-white border-2 border-gray-200 hover:shadow-md cursor-pointer' 
                     : 'bg-gray-100 border-2 border-gray-300 cursor-not-allowed opacity-60'
                 }`}
+                onClick={handleGoogleLogin}
               >
                 <img src={googleLogo} alt="구글 로그인" className="w-[1.4rem] object-contain" />
                 구글 계정으로 연동

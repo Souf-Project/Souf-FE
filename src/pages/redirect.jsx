@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { postSocialLogin } from "../api/social";
+import { postSocialLogin, postSocialLoginLink } from "../api/social";
 import { UserStore } from "../store/userStore";
 
 export default function Redirect() {
@@ -46,10 +46,41 @@ export default function Redirect() {
     
     if (code && detectedProvider) {
       hasProcessed.current = true;
-      postSocialLogin({ 
-        code: code,
-        provider: detectedProvider
-      })
+      
+      // 연동 모드인지 확인
+      const isLinking = localStorage.getItem('isLinking') === 'true';
+      
+      if (isLinking) {
+        // 마이페이지에서 연동하는 경우
+        postSocialLoginLink({
+          code: code,
+          provider: detectedProvider
+        })
+          .then((response) => {
+            console.log("소셜 계정 연동 성공:", response);
+            localStorage.removeItem('socialProvider');
+            localStorage.removeItem('isLinking');
+            alert("소셜 계정이 성공적으로 연동되었습니다.");
+            navigate("/mypage");
+          })
+          .catch((error) => {
+            console.error("소셜 계정 연동 에러:", error);
+            localStorage.removeItem('socialProvider');
+            localStorage.removeItem('isLinking');
+            
+            if (error.response?.status === 409) {
+              alert("이미 연동된 계정입니다.");
+            } else {
+              alert("소셜 계정 연동에 실패했습니다.");
+            }
+            navigate("/mypage");
+          });
+      } else {
+        // 일반 소셜 로그인
+        postSocialLogin({ 
+          code: code,
+          provider: detectedProvider
+        })
         .then((response) => {
           const result = response?.result;
           
@@ -95,6 +126,7 @@ export default function Redirect() {
           
           navigate("/login");
         });
+      }
     } else {
       console.error("인가코드가 없습니다.");
       navigate("/login");

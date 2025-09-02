@@ -22,3 +22,13 @@ export const postSocialSignUp = async (requestBody) => {
   }
 };
 
+// 이미 가입된 게정 - 마이페이지 연동
+export const postSocialLoginLink = async (requestBody) => {
+  try {
+    const response = await client.post("/api/v1/social/link", requestBody);
+    return response.data;
+  } catch (error) {
+    console.error("소셜 로그인 연동 에러:", error);
+    throw error;
+  }
+};
