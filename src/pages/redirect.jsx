@@ -86,6 +86,13 @@ export default function Redirect() {
         })
         .catch((error) => {
           console.error("소셜 로그인 에러:", error);
+          
+          // 409 에러 (이미 가입된 이메일) 처리
+          if (error.response?.status === 409) {
+            const errorMessage = error.response?.data?.message || "이미 가입된 이메일입니다. 마이페이지에서 소셜 계정을 연결해주세요.";
+            alert(errorMessage);
+          }
+          
           navigate("/login");
         });
     } else {
