@@ -17,6 +17,11 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
 
+  // showError 상태 변화 디버깅
+  useEffect(() => {
+    console.log("showError 상태 변경:", showError);
+  }, [showError]);
+
   const handleLoginClick = () => {
     navigate("/");
   };
@@ -35,13 +40,15 @@ export default function Login() {
       UserStore.getState().setAccessToken(result.accessToken);
       localStorage.setItem("accessToken", result.accessToken);
   
-      // navigate("/");
+      navigate("/");
       console.log(response)
     },
   
     onError: (error) => {
       console.error("로그인 실패:", error);
+      console.log("에러 상태 코드:", error.response?.status);
       setShowError(true);
+      console.log("showError 설정됨:", true);
     },
   });
 
@@ -105,27 +112,27 @@ export default function Login() {
         
         onSubmit={(e) => {
           e.preventDefault();
-           console.log('폼 제출됨');
+          //  console.log('폼 제출됨');
           loginMutation.mutate({ email, password })}}
         className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow"
       >
           <Input
             title="이메일"
             // isValidateTrigger={isValidateTrigger}
-            // isConfirmed={isConfirmed}
+            isConfirmed={showError ? false : undefined}
             placeholder="Souf@souf.com"
             onChange={(e) => {
               setEmail(e.target.value);
               setShowError(false);
             }}
             essentialText="이메일을 입력해주세요"
-            disapproveText="이메일을 입력해주세요"
+            disapproveText=""
             // onValidChange={onValidChange}
           />
           <Input
             title="비밀번호"
             // isValidateTrigger={isValidateTrigger}
-            // isConfirmed={isConfirmed}
+            isConfirmed={showError ? false : undefined}
             type="password"
             placeholder=""
             onChange={(e) => {
@@ -133,12 +140,9 @@ export default function Login() {
               setShowError(false);
             }}
             essentialText="비밀번호를 입력해주세요"
-            disapproveText="비밀번호를 입력해주세요"
+            disapproveText={showError ? "아이디 또는 비밀번호가 일치하지 않습니다." : "비밀번호를 입력해주세요"}
             // onValidChange={onValidChange}
           />
-          {showError && (
-            <div className="mt-10 text-red-essential text-center">아이디 또는 비밀번호가 일치하지 않습니다.</div>
-          )}
          
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
             <button type="button" onClick={() => navigate("/join")}>회원가입</button>
