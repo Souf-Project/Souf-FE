@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import noneCheckBox from "../assets/images/noneCheckBox.png";
 import fillCheckBox from "../assets/images/fillCheckBox.png";
 import Loading from './loading';
+import kakaoLogo from "../assets/images/kakaoLogo.png"
+import googleLogo from "../assets/images/googleLogo.png"
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -242,7 +244,14 @@ export default function ProfileEditContent() {
          <div className="absolute top-[40px] left-[225px]">
             <h1 className="text-4xl font-bold ">{formData.nickname}</h1>
         </div>
-        {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="ml-auto w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>}
+        
+            <div className="flex items-center justify-between gap-4 w-full">
+            {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="w-40 py-4 bg-yellow-main text-black rounded-xl font-bold transition-colors">수정하기</button>}
+           
+             
+            </div>
+
+        
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
           <div className="grid grid-cols-1 gap-6">
@@ -322,6 +331,24 @@ export default function ProfileEditContent() {
           </div>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">SNS 계정 연동</h2>
+        <div className="flex items-center justify-center gap-4">
+            <button 
+                className="w-60 bg-[#FEE500] rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-4"
+              >
+
+                <img src={kakaoLogo} alt="카카오 로그인" className="w-[1.4rem] object-contain" />
+                <p>카카오 계정으로 연동</p>
+              </button>
+              <button 
+                className="w-60 bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-7"
+              >
+                <img src={googleLogo} alt="구글 로그인" className="w-[1.4rem] object-contain" />
+                구글 계정으로 연동
+              </button>
+            </div>
+            </div>
+        <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">마케팅 수신 동의</h2>
           <button
                 type="button"
@@ -353,6 +380,7 @@ export default function ProfileEditContent() {
            <></>
           )}
       </div>
+      
       <div className='flex justify-between items-center'>
      
       
@@ -364,6 +392,7 @@ export default function ProfileEditContent() {
             회원탈퇴
           </button>
           </div>
+          
     </div>
     </div>
   );
