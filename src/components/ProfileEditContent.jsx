@@ -224,6 +224,27 @@ export default function ProfileEditContent() {
     }
   };
 
+    // 카카오 로그인
+    const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
+    const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+    const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email,profile_image`;
+    
+    const handleKakaoLogin = () => {
+      localStorage.setItem('socialProvider', 'KAKAO');
+      window.location.href = KAKAO_AUTH_URL;
+    }
+  
+    // 구글 로그인
+    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+    const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
+    
+    const handleGoogleLogin = () => {
+      localStorage.setItem('socialProvider', 'GOOGLE');
+      window.location.href = GOOGLE_AUTH_URL;
+    }
+
+    
   if (loading) {
     return <Loading text="프로필 정보를 불러오는 중..." />;
   }
@@ -334,14 +355,23 @@ export default function ProfileEditContent() {
         <h2 className="text-2xl font-bold mb-4">SNS 계정 연동</h2>
         <div className="flex items-center justify-center gap-4">
             <button 
-                className="w-60 bg-[#FEE500] rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-4"
+                disabled={!isEditing}
+                className={`w-60 rounded-xl p-4 shadow-sm duration-200 flex items-center justify-center gap-4 ${
+                  isEditing 
+                    ? 'bg-[#FEE500] hover:shadow-md cursor-pointer' 
+                    : 'bg-yellow-300 cursor-not-allowed opacity-60'
+                }`}
               >
-
                 <img src={kakaoLogo} alt="카카오 로그인" className="w-[1.4rem] object-contain" />
                 <p>카카오 계정으로 연동</p>
               </button>
               <button 
-                className="w-60 bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-7"
+                disabled={!isEditing}
+                className={`w-60 rounded-xl p-4 shadow-sm duration-200 flex items-center justify-center gap-7 ${
+                  isEditing 
+                    ? 'bg-white border-2 border-gray-200 hover:shadow-md cursor-pointer' 
+                    : 'bg-gray-100 border-2 border-gray-300 cursor-not-allowed opacity-60'
+                }`}
               >
                 <img src={googleLogo} alt="구글 로그인" className="w-[1.4rem] object-contain" />
                 구글 계정으로 연동

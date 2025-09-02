@@ -17,14 +17,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
 
-  // showError 상태 변화 디버깅
-  useEffect(() => {
-    console.log("showError 상태 변경:", showError);
-  }, [showError]);
-
-  const handleLoginClick = () => {
-    navigate("/");
-  };
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
