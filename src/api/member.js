@@ -62,22 +62,22 @@ export async function postEmailVerify(email, code, purpose) {
 
       }
     );
-    console.log("✅ 응답 성공:", response);
+  
     return response.data;
   } catch (error) {
-    console.error("❌ 요청 실패:", error);
+    console.error("요청 실패:", error);
     if (error.response) {
-      console.error("📡 서버 응답 에러:", {
+      console.error("서버 응답 에러:", {
         status: error.response.status,
         data: error.response.data,
         headers: error.response.headers,
       });
     } else if (error.request) {
-      console.error("📭 요청은 보내졌지만 응답 없음:", error.request);
+      console.error("응답 없음:", error.request);
     } else {
-      console.error("🚨 요청 설정 중 에러:", error.message);
+      console.error("요청 설정 중 에러:", error.message);
     }
-    throw error; // 다시 던져서 useMutation onError로 보내기
+    throw error; 
   }
 
 }
