@@ -69,7 +69,7 @@ export default function ContestSection({ competitions, imageLoadingStates, getIm
                     {competition.공모분야.slice(0, 2).map((field, fieldIndex) => (
                       <h2
                         key={fieldIndex}
-                        className="px-2 py-1 bg-yellow-point text-white text-[12px] lg:text-xs rounded-full"
+                        className="px-2 py-1 bg-yellow-point text-white text-[12px] font-semibold lg:text-xs rounded-full"
                       >
                         {field}
                       </h2>

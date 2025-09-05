@@ -531,26 +531,12 @@ export default function Home() {
                 getImageUrl={getImageUrl}
                 getFallbackUrls={getFallbackUrls}
               />
-            {/* SmallContestSection과 블러 처리 */}
-            <div className="relative pt-20">
-              <SmallContestSection 
-                competitions={competitions}
-                imageLoadingStates={imageLoadingStates}
-                getImageUrl={getImageUrl}
-                getFallbackUrls={getFallbackUrls}
-              />
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-lg z-20"></div>
-              
-              {/* 공모전 더보기 버튼 */}
-              <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
-                <button
+            <button
                   onClick={() => navigate("/contests")}
-                  className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-500 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-48 mt-8 mx-auto px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   공모전 더보기
                 </button>
-              </div>
-            </div>
           </>
         )}
       </div>

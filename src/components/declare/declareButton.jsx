@@ -3,7 +3,11 @@ import DeclareModal from './declareModal';
 import DeclareIcon from '../../assets/images/declareIcon.png'; 
 
 export default function DeclareButton({ 
-  contentType = "게시물", 
+  postType, 
+  postId,
+  title,
+  reporterId,
+  reportedMemberId,
   onDeclare, 
   iconClassName = "w-4 h-4 cursor-pointer ml-auto"
 }) {
@@ -36,7 +40,11 @@ export default function DeclareButton({
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         onSubmit={handleSubmitDeclare}
-        contentType={contentType}
+        postType={postType}
+        postId={postId}
+        title={title}
+        reporterId={reporterId}
+        reportedMemberId={reportedMemberId}
       />
     </>
   );

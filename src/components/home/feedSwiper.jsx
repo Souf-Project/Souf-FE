@@ -144,16 +144,16 @@ export default function FeedSwiper() {
                       />
                     </div>
                   )}
-                  <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
-                    <span className="inline-block px-2 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
+                  <div className="px-3 pt-4 pb-3 flex justify-between h-full">
+                    <span className="w-fit px-2 py-1 bg-yellow-point text-white text-sm font-semibold rounded-full">
                       {feed.firstCategories
                         ?.map((id) => getCategoryName(id))
                         .join(", ")}
                     </span>
                     <div className="text-right mt-auto">
-                      <h3 className="text-base font-bold text-gray-800 line-clamp-2">
+                      <span className="text-base font-bold text-gray-800 line-clamp-2">
                         {feed.nickname}
-                      </h3>
+                      </span>
                     </div>
                   </div>
                 </div>

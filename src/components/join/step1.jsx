@@ -533,7 +533,7 @@ export default function JoinForm({ socialLoginInfo }) {
                       <td>회원 탈퇴 시까지</td>
                     </tr> */}
                     <tr className="border-b border-gray-100">
-                      <td>IP 주소, 서비스 시용 기록</td>
+                      <td>IP 주소, 서비스 사용 기록</td>
                       <td>서비스 개선, 보안 및 로그 기록</td>
                       <td>3년</td>
                     </tr>
