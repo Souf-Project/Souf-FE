@@ -4,7 +4,6 @@ import { getSecondCategoryNameById } from "../../utils/getCategoryById";
 import { calculateDday } from "../../utils/getDate";
 import { useNavigate } from "react-router-dom";
 import { UserStore } from "../../store/userStore";
-import AlertModal from "../alertModal";
 import { getRecruitDetail } from "../../api/recruit";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,7 +11,6 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-// Swiper 기본 navigation 스타일 오버라이드
 const swiperStyles = `
   .swiper-button-prev,
   .swiper-button-next {
@@ -44,9 +42,6 @@ export default function MobileSwiper() {
   };
 
   const handleClick = async (recruitId) => {
-    if (!memberId) {
-      setShowLoginModal(true);
-    } else {
       try {
         const selectedRecruit = recruitData.find(recruit => recruit.recruitId === recruitId);
         const minPrice = parsePayment(selectedRecruit?.minPayment);
@@ -75,13 +70,7 @@ export default function MobileSwiper() {
         });
       } catch (error) {
         console.error('Error fetching recruit detail:', error);
-        
-        // 403 에러인 경우 로그인 모달 표시
-        if (error.response?.status === 403) {
-          setShowLoginModal(true);
-        }
       }
-    }
   };
 
   if (isLoading) {
@@ -138,7 +127,7 @@ export default function MobileSwiper() {
                   </h3>
                 </div>
                 <div className="hidden lg:block px-6 pb-4">
-                  <span className="inline-block px-3 py-1 bg-yellow-point/10 text-yellow-point text-md font-semibold rounded-full">
+                  <span className="inline-block px-3 py-1 bg-yellow-point text-white text-md font-semibold rounded-full">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
@@ -163,20 +152,6 @@ export default function MobileSwiper() {
           </SwiperSlide>
         ))}
       </Swiper>
-      {showLoginModal && (
-        <AlertModal
-          type="simple"
-          title="로그인이 필요합니다"
-          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
-          TrueBtnText="로그인하러 가기"
-          FalseBtnText="취소"
-          onClickTrue={() => {
-            setShowLoginModal(false);
-            navigate("/login");
-          }}
-          onClickFalse={() => setShowLoginModal(false)}
-        />
-      )}
       </div>
     </>
   );
