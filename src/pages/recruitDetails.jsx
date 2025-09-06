@@ -264,7 +264,7 @@ export default function RecruitDetail() {
           content={seoContent}
         />
       )}
-      <div className="pt-16 px-8 w-5/6 mx-auto">
+      <div className="w-full px-4 pt-12 sm:pt-16 sm:px-8 sm:w-5/6 mx-auto">
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -273,7 +273,7 @@ export default function RecruitDetail() {
           <span>목록으로 돌아가기</span>
         </button>
 
-        <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
+        <div className="bg-white rounded-2xl border border-gray p-5 sm:p-8 mb-8 mt-4">
           <div className="flex justify-between items-start">
             <div>{maskNickname(displayData?.nickname)}</div>
             {isAuthor && (
@@ -306,8 +306,8 @@ export default function RecruitDetail() {
               </div>
             )}
           </div>
-          <h1 className="text-3xl font-semibold">{displayData?.title}</h1>
-          <div className="border-t border-gray-200 my-6"></div>
+          <h1 className="text-xl sm:text-3xl font-semibold">{displayData?.title}</h1>
+          <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           
           <div className="flex flex-col text-gray-600 mb-6 mt-2">
             {categoryNames.map((category, index) => (
@@ -328,8 +328,8 @@ export default function RecruitDetail() {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-8 my-6">
-            <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-8 my-4 sm:my-6 text-sm sm:text-md">
+            <div className="space-y-2 sm:space-y-4 ">
               <div>
                 <span className="text-black mb-1">급여</span>
                 <span className="text-gray-500 mx-2">|</span>
@@ -365,9 +365,9 @@ export default function RecruitDetail() {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 my-6"></div>
+          <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           <div>
-            <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
+            <p className="text-lg sm:text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
             <img
