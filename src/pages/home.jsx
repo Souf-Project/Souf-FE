@@ -7,6 +7,7 @@ import cate3Img from "../assets/images/cate3Img.png";
 import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
 import cate6Img from "../assets/images/cate6Img.png";
+import loginImg from "../assets/images/loginImg.svg";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import MobileSwiper from "../components/home/mobileSwiper";
 import FeedSwiper from "../components/home/feedSwiper";
@@ -253,9 +254,9 @@ export default function Home() {
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
         <div className="relative bg-[#FBFBFB] py-20">
-        <div className="flex justify-center items-start px-8 max-w-[100rem] mx-auto">
+        <div className="flex justify-center items-start max-w-[100rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-20 px-8">
+          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-20">
             <h1 className="lg:block text-4xl lg:text-6xl font-bold mb-4 text-blue-main text-center lg:text-left">
             패션 브랜드 팝업 조형물
             </h1>
@@ -297,7 +298,7 @@ export default function Home() {
           recruitCount={recruitCount}
         />
 
-<div className="flex px-24 mt-24 max-w-[100rem] mx-auto">
+<div className="flex px-24 mt-32 max-w-[100rem] mx-auto">
   {/* 인기 피드 섹션 */}
   <div className="relative w-2/3">
   <div className="flex items-center mb-8 gap-4">
@@ -312,20 +313,32 @@ export default function Home() {
     
 {/* 인기 공고문  */}
       <div className="relative w-1/3">
-        <div className="relative flex flex-col mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-2xl lg:text-4xl font-bold mb-8 px-6">
-            <span className="relative inline-block ">
-              <span className="relative z-10 ">인기있는 공고문</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">모집 보러가기</span>
+      <div className="flex items-center mb-8 gap-4">
+  <h2 className="text-2xl lg:text-4xl font-bold">
+        진행 중인 외주 의뢰
           </h2>
+    <span className="font-NanumGothicCoding text-xl font-bold text-white bg-orange-300 py-1 px-4 rounded-xl">BEST</span>
+  </div>
           <MobileSwiper />
-        </div>
       </div>
       </div>
     
+{/* 스프 소개란 */}
+<div className="relative px-6 lg:px-24 mt-32 bg-[#2582E0BF]">
+<div className="max-w-[100rem] mx-auto flex justify-center items-center py-16">
+  <div className="flex flex-col items-start">
+    <h2 className="my-8 text-white text-6xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
+      왜 스프일까요?<br/>
+    왜 대학생 인재를 발굴할까요?</h2>
+    <p className="my-4 text-stone-50 text-4xl font-bold">기업 외주비용 “너무 비싸요..”</p>
+    <p className="my-4 text-stone-50 text-2xl font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
+    <p className="text-stone-50 text-2xl font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
+  </div>
+  
+<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="w-[28rem]"/>
+</div>
 
+</div>
        {/* 카테고리 섹션 */}
        <div className="relative px-6 lg:px-24 ">
        <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">

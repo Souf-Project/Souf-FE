@@ -21,6 +21,7 @@ export default function FeedSwiper() {
 
   useEffect(() => {
     setFeedData(data?.result || []);
+    console.log(data?.result);
   }, [data]);
 
   useEffect(() => {
@@ -56,10 +57,10 @@ export default function FeedSwiper() {
         {feedData.map((feed) => (
           <div
             key={feed.feedId}
-            className="w-64 cursor-pointer"
+            className="w-72 cursor-pointer"
             onClick={() => handleClick(feed.feedId, feed.memberId)}
           >
-            <div className="w-64 bg-white">
+            <div className="w-72 bg-white">
               {feed.mediaResDto?.fileUrl && (
                  <img
                  src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
@@ -69,16 +70,17 @@ export default function FeedSwiper() {
                />
               )}
               <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
-                <span className="inline-block px-2 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
+                <span className="text-neutral-400 text-xl font-bold">
                   {feed.firstCategories
                     ?.map((id) => getCategoryName(id))
                     .join(", ")}
                 </span>
-                <div className="text-right mt-auto">
-                  <h3 className="text-base font-bold text-gray-800 line-clamp-2">
+                <span className="text-neutral-600 text-2xl font-bold">
                     {feed.nickname}
-                  </h3>
-                </div>
+                  </span>
+                  <span className="text-zinc-500 text-xl font-bold">
+                    {feed.nickname}
+                  </span>
               </div>
             </div>
           </div>
