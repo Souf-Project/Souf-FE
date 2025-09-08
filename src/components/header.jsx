@@ -169,7 +169,8 @@ useEffect(() => {
 
   // PC 버전 헤더
   const DesktopHeader = () => (
-    <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 headerGlass">
+    <header className="fixed top-0 left-0 z-50 w-screen  headerGlass">
+      <div className="flex items-center justify-between px-10 py-4 max-w-[90rem] mx-auto">
       <div className="flex items-center gap-x-10">
       <img src={SOUFLogo} alt="SouF" className="w-28" onClick={() => handleNavigation("/")}/>
       
@@ -306,6 +307,7 @@ useEffect(() => {
             </div>
           </>
         )}
+      </div>
       </div>
     </header>
   );

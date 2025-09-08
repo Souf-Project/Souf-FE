@@ -9,7 +9,7 @@ export default function StatisticsSection({ viewCount, userCount, recruitCount }
   const animatedUserCount = useCountUp(userCount, 2000);
   const animatedRecruitCount = useCountUp(recruitCount, 2000);
   return (
-    <div className="flex flex-col lg:flex-row gap-2 lg:gap-10 justify-around items-center w-full bg-[#FFFBE5] py-8 lg:h-64 mt-20 shadow-md px-4 lg:px-0">
+    <div className="flex flex-col lg:flex-row gap-2 lg:gap-10 justify-around items-center w-full bg-[#F5F9FF] py-8 lg:h-64 shadow-md px-4 lg:px-0">
       <div className="flex flex-col justify-center gap-4 lg:gap-2 text-center lg:text-left">
         <div className="text-4xl sm:text-5xl lg:text-6xl font-bold">{dayjs().format('YYYY.MM.DD')}</div>
         {/* PC 조회수*/}

@@ -7,8 +7,6 @@ import cate3Img from "../assets/images/cate3Img.png";
 import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
 import cate6Img from "../assets/images/cate6Img.png";
-import Background from "../assets/images/background.png";
-
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import MobileSwiper from "../components/home/mobileSwiper";
 import FeedSwiper from "../components/home/feedSwiper";
@@ -38,6 +36,13 @@ export default function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
+  const titletext = [
+    "패션 브랜드 팝업 조형물",
+    "애니메이션 영상 제작",
+    "브랜드 로고 디자인",
+    "반응형 웹·앱 디자인",
+    "SNS·썸네일 디자인",
+  ]
   const categories = [
     "순수미술",
     "공예",
@@ -48,8 +53,7 @@ export default function Home() {
   ]
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
-    // console.log('getImageUrl called with:', imagePath);
-    
+
     if (!imagePath) return null;
     
     // 이미 전체 URL인 경우 (상세내용_이미지)
@@ -248,21 +252,23 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-        <div className="relative flex justify-center items-start pt-20 px-8 max-w-[100rem] mx-auto">
-          <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
+        <div className="relative bg-[#FBFBFB] py-20">
+        <div className="flex justify-center items-start px-8 max-w-[100rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
-            <h1 className="hidden lg:block text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
-              필요한 일을, 필요한 사람에게
+          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-20 px-8">
+            <h1 className="lg:block text-4xl lg:text-6xl font-bold mb-4 text-blue-main text-center lg:text-left">
+            패션 브랜드 팝업 조형물
             </h1>
-            <h1 className="block lg:hidden text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
-              필요한 일을,<br/> 필요한 사람에게
-            </h1>
-            <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-center lg:text-left">
-              지금 바로 SouF!
+            <h2 className="text-6xl lg:text-6xl font-bold text-black mb-8 text-center lg:text-left">
+              여기! 인재 매칭해드려요.
             </h2>
-
-            <form onSubmit={handleSearch} className="w-full lg:mt-20">
+            <h3 className="text-xl font-bold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
+            스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
+            <div className="flex justify-center lg:justify-start gap-4">
+              <button className="text-white bg-[#1E77D1] px-10 py-6 font-bold rounded-3xl whitespace-nowrap shadow-md text-2xl hover:shadow-lg">무료 외주 등록하기</button>
+              <button className="text-black bg-white border-[3px] border-blue-main px-10 py-6 font-bold rounded-3xl whitespace-nowrap shadow-md text-2xl hover:shadow-lg ">이용 가이드</button>
+            </div>
+            {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
               <div className="relative w-full max-w-2xl lg:max-w-3xl">
                 <input
                   type="text"
@@ -278,12 +284,12 @@ export default function Home() {
                   <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
                 </button>
               </div>
-            </form>
+            </form> */}
             
           </div>
           {/* 오른쪽: 팝업 가이드 박스 */}
           <InfoBox />
-
+          </div>
         </div>
         <StatisticsSection 
           viewCount={viewCount}

@@ -10,7 +10,7 @@ module.exports = {
           point: "#FFC400",
         },
         blue: {
-          main: "#5185E6",
+          main: "#3E78E3",
         },
         red: {
           essential: "#E43F2D",
