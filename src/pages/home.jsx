@@ -297,10 +297,23 @@ export default function Home() {
           recruitCount={recruitCount}
         />
 
+<div className="flex px-24 mt-24 max-w-[100rem] mx-auto">
+  {/* 인기 피드 섹션 */}
+  <div className="relative w-2/3">
+  <div className="flex items-center mb-8 gap-4">
+  <h2 className="text-2xl lg:text-4xl font-bold">
+        실시간 대학생 피드
+          </h2>
+    <span className="font-NanumGothicCoding text-xl font-bold text-white bg-blue-500/70 py-1 px-4 rounded-xl">NEW</span>
+  </div>
+       
+          <FeedSwiper />
+        </div>
+    
 {/* 인기 공고문  */}
-      <div className="relative mt-16 px-6 lg:px-24">
+      <div className="relative w-1/3">
         <div className="relative flex flex-col mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
+        <h2 className="text-2xl lg:text-4xl font-bold mb-8 px-6">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
               <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
@@ -310,20 +323,8 @@ export default function Home() {
           <MobileSwiper />
         </div>
       </div>
-
-      {/* 인기 피드 섹션 */}
-      <div className="relative lg:mt-16 px-6 lg:px-24">
-        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-            <span className="relative inline-block ">
-              <span className="relative z-10 ">인기있는 피드</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">구경하러 가기</span>
-          </h2>
-          <FeedSwiper />
-        </div>
       </div>
+    
 
        {/* 카테고리 섹션 */}
        <div className="relative px-6 lg:px-24 ">

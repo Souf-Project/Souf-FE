@@ -4,42 +4,20 @@ import { useNavigate } from "react-router-dom";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import firstCategoryData from "../../assets/categoryIndex/first_category.json";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Grid } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/grid";
 
-const swiperStyles = `
-  .swiper-button-prev,
-  .swiper-button-next {
-    display: none !important;
-  }
-`;
 
 export default function FeedSwiper() {
   const [feedData, setFeedData] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const navigate = useNavigate();
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { data, isLoading, error } = usePopularFeed({
     page: 0,
-    size: 12,
+    size: 6,
     sort: ["createdAt,desc"],
   });
 
   const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
-
-  useEffect(() => {
-    function handleResize() {
-      const mobile = window.innerWidth < 1024;
-      setIsMobile((prev) => (prev !== mobile ? mobile : prev));
-    }
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     setFeedData(data?.result || []);
@@ -73,110 +51,54 @@ export default function FeedSwiper() {
   }
 
   return (
-    <>
-      <style>{swiperStyles}</style>
-      <div className="relative w-screen lg:px-24 mx-auto mt-4">
-        {/* 항상 렌더링되는 화살표 버튼 */}
-        <button className="custom-prev absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
-          <svg
-            className="w-12 h-12 text-yellow-point"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <div className="w-full mx-auto mt-4">
+      <div className="grid grid-cols-3 grid-rows-2 gap-2 lg:gap-2">
+        {feedData.map((feed) => (
+          <div
+            key={feed.feedId}
+            className="w-64 cursor-pointer"
+            onClick={() => handleClick(feed.feedId, feed.memberId)}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-
-        <button className="custom-next absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
-          <svg
-            className="w-12 h-12 text-yellow-point"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-
-        <Swiper
-          key={isMobile ? "mobile" : "desktop"}
-          modules={[Autoplay, Navigation, Grid]}
-          navigation={{
-            nextEl: ".custom-next",
-            prevEl: ".custom-prev",
-          }}
-          grid={isMobile ? { rows: 2, fill: "row" } : undefined}
-          slidesPerView={isMobile ? 2 : 4}
-          spaceBetween={isMobile ? 16 : 24}
-          loop={isMobile ? false : feedData.length > 4}
-          speed={700}
-          autoplay={
-            feedData.length > 4
-              ? { delay: 4000, disableOnInteraction: false }
-              : false
-          }
-        >
-          {feedData.map((feed) => (
-            <SwiperSlide key={feed.feedId}>
-              <div
-                className="w-full max-w-[calc(100vw/2-2rem)] h-full mb-2 cursor-pointer mx-auto"
-                onClick={() => handleClick(feed.feedId, feed.memberId)}
-              >
-                <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
-                  {feed.mediaResDto?.fileUrl && (
-                    <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
-                      <img
-                        src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
-                        alt="피드 이미지"
-                        className="w-full h-full object-cover"
-                        onError={(e) => (e.target.style.display = "none")}
-                      />
-                    </div>
-                  )}
-                  <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
-                    <span className="inline-block px-2 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
-                      {feed.firstCategories
-                        ?.map((id) => getCategoryName(id))
-                        .join(", ")}
-                    </span>
-                    <div className="text-right mt-auto">
-                      <h3 className="text-base font-bold text-gray-800 line-clamp-2">
-                        {feed.nickname}
-                      </h3>
-                    </div>
-                  </div>
+            <div className="w-64 bg-white">
+              {feed.mediaResDto?.fileUrl && (
+                 <img
+                 src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
+                 alt="피드 이미지"
+                 className="w-full h-full object-cover aspect-[1/1] bg-gray-100 rounded-xl"
+                 onError={(e) => (e.target.style.display = "none")}
+               />
+              )}
+              <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
+                <span className="inline-block px-2 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
+                  {feed.firstCategories
+                    ?.map((id) => getCategoryName(id))
+                    .join(", ")}
+                </span>
+                <div className="text-right mt-auto">
+                  <h3 className="text-base font-bold text-gray-800 line-clamp-2">
+                    {feed.nickname}
+                  </h3>
                 </div>
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
-        {showLoginModal && (
-          <AlertModal
-            type="simple"
-            title="로그인이 필요합니다"
-            description="SouF 회원만 상세 글을 조회할 수 있습니다!"
-            TrueBtnText="로그인하러 가기"
-            FalseBtnText="취소"
-            onClickTrue={() => {
-              setShowLoginModal(false);
-              navigate("/login");
-            }}
-            onClickFalse={() => setShowLoginModal(false)}
-          />
-        )}
+            </div>
+          </div>
+        ))}
       </div>
-    </>
+
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+    </div>
   );
 }

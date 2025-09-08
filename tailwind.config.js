@@ -21,6 +21,7 @@ module.exports = {
       },
       fontFamily: {
         Pretendard: ["Pretendard"],
+        NanumGothicCoding: ["Nanum Gothic Coding", "monospace"],
       },
 
       screens: {
