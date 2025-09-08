@@ -5,6 +5,7 @@ import ChatIcon from "../assets/images/chatIco.svg";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
+import SOUFLogo from "../assets/images/SouFLogo.png";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -170,41 +171,18 @@ useEffect(() => {
   const DesktopHeader = () => (
     <header className="fixed top-0 left-0 z-50 w-screen flex items-center justify-between px-10 py-4 headerGlass">
       <div className="flex items-center gap-x-10">
-        <div
-          className="text-4xl font-bold text-black cursor-pointer"
-          onClick={() => handleNavigation("/")}
-        >
-          SouF
-        </div>
-        <ul className="flex items-center gap-x-4 font-bold text-lg text-black">
-          {categories.map((category) => {
-            return (
-              <li
-                key={category.first_category_id}
-                className={`px-2 cursor-pointer transition-colors duration-200 relative group whitespace-nowrap ${
-                  activeCategory === category.first_category_id.toString() ? "text-yellow-point" : ""
-                }`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                 
-                  handleNavigationCategory(category.first_category_id);
-                }}
-              >
-                <span>{category.name}</span>
-                <span
-                  className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                    activeCategory === category.first_category_id.toString()
-                      ? "w-full"
-                      : "w-0 group-hover:w-full origin-left"
-                  }`}
-                ></span>
-              </li>
-            );
-          })}
+      <img src={SOUFLogo} alt="SouF" className="w-28" onClick={() => handleNavigation("/")}/>
+      
+        <ul className="flex items-center gap-x-8 font-bold text-2xl text-black">
+          <li>외주 의뢰하기</li>
+          <li>외주 찾기</li>
+          <li>대학생 피드보기</li>
+          <li>외주 후기</li>
+          <li>실험실</li>
           
-          <li className="text-gray-400">|</li>
-          <li
+          <li className="text-gray-400 font-medium">|</li>
+          <li>이용 가이드</li>
+          {/* <li
             className={`px-2 cursor-pointer transition-colors duration-200 relative group whitespace-nowrap ${
               activeCategory === "contests" ? "text-yellow-point" : ""
             }`}
@@ -218,24 +196,24 @@ useEffect(() => {
                   : "w-0 group-hover:w-full origin-left"
               }`}
             ></span>
-          </li>
+          </li> */}
         </ul>
       </div>
 
       <div className="flex items-center gap-x-4">
-      <div
+      {/* <div
             className="text-black bg-[#FFFBE5] px-5 py-2 font-bold rounded-lg whitespace-nowrap cursor-pointer shadow-md"
             onClick={() => handleNavigation("/recruitsAll")}
           >
             <span>공고문 모아보기</span>
-          </div>
+          </div> */}
         {memberId ? (
           // 로그인 상태
           <div className="flex items-center gap-x-4">
              
             {roleType === "MEMBER" && 
             <button
-              className="text-black bg-yellow-main px-5 py-2 font-bold rounded-lg whitespace-nowrap shadow-md"
+              className="text-white bg-blue-main px-5 py-2 font-bold rounded-lg whitespace-nowrap shadow-md"
               onClick={() => handleNavigation("/verifyStudent")}
             >
               대학생 인증
@@ -245,7 +223,7 @@ useEffect(() => {
             </button>
             <div className="relative user-menu-container">
               <button
-                className="text-black bg-yellow-main py-2 font-bold rounded-lg w-36 shadow-md"
+                className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
                 onClick={toggleUserMenu}
               >
                 <UserTypeLabel />
@@ -311,16 +289,16 @@ useEffect(() => {
         ) : (
           // 로그아웃 상태
           <>
-            <div className="flex items-center text-xl font-semibold">
+            <div className="flex items-center text-2xl font-bold gap-x-4">
               <button
                 className="w-20"
                 onClick={() => handleNavigation("/login")}
               >
                 로그인
               </button>
-              <span className="mx-2 font-thin">|</span>
+            
               <button
-                className="w-20"
+                className="text-white bg-blue-main px-6 py-4 font-bold rounded-3xl whitespace-nowrap shadow-md"
                 onClick={() => handleNavigation("/join")}
               >
                 회원가입
@@ -401,7 +379,7 @@ useEffect(() => {
     {/* 추가적인 메뉴 (로그인 상태에 따라) */}
     {memberId ? (
       <div className="mt-4 space-y-2">
-        <div className="px-3 py-2 bg-yellow-main rounded-lg">
+        <div className="px-3 py-2 bg-blue-main rounded-lg">
           <UserTypeLabel />
         </div>
         <button
