@@ -8,6 +8,7 @@ import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
 import cate6Img from "../assets/images/cate6Img.png";
 import loginImg from "../assets/images/loginImg.svg";
+import secondCategoryData from "../assets/categoryIndex/second_category.json";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import MobileSwiper from "../components/home/mobileSwiper";
 import FeedSwiper from "../components/home/feedSwiper";
@@ -44,14 +45,38 @@ export default function Home() {
     "반응형 웹·앱 디자인",
     "SNS·썸네일 디자인",
   ]
-  const categories = [
-    "순수미술",
-    "공예",
-    "음악",
-    "촬영 및 편집",
-    "디지털 콘텐츠",
-    "IT · 개발"
-  ]
+
+  const getCategoryIcon = (categoryId) => {
+    const iconMap = {
+      1: "/src/assets/images/categoryIcons/cateIcon11.png", // 일러스트·캐릭터 디자인
+      2: "/src/assets/images/categoryIcons/cateIcon12.png", // 글자 디자인
+      3: "/src/assets/images/categoryIcons/cateIcon13.png", // 순수 미술
+      4: "/src/assets/images/categoryIcons/cateIcon24.png", // 시제품 디자인
+      5: "/src/assets/images/categoryIcons/cateIcon25.png", // 산업·제품 디자인
+      6: "/src/assets/images/categoryIcons/cateIcon26.png", // 패션·텍스타일 디자인
+      7: "/src/assets/images/categoryIcons/cateIcon27.png", // 조형 예술
+      8: "/src/assets/images/categoryIcons/cateIcon38.png", // 음향
+      9: "/src/assets/images/categoryIcons/cateIcon49.png", // 사진
+      10: "/src/assets/images/categoryIcons/cateIcon410.png", // 영상
+      11: "/src/assets/images/categoryIcons/cateIcon411.png", // 영화
+      12: "/src/assets/images/categoryIcons/cateIcon512.png", // 브랜드 디자인
+      13: "/src/assets/images/categoryIcons/cateIcon513.png", // 산업 디자인
+      14: "/src/assets/images/categoryIcons/cateIcon514.png", // 웹·모바일 디자인
+      15: "/src/assets/images/categoryIcons/cateIcon515.png", // 마케팅 디자인
+      16: "/src/assets/images/categoryIcons/cateIcon516.png", // 컴퓨터 그래픽·모션 그래픽
+      17: "/src/assets/images/categoryIcons/cateIcon517.png", // 게임 디자인
+      18: "/src/assets/images/categoryIcons/cateIcon518.png", // 애니메이션
+      19: "/src/assets/images/categoryIcons/cateIcon619.png", // 웹사이트
+      20: "/src/assets/images/categoryIcons/cateIcon620.png", // 안드로이드
+      21: "/src/assets/images/categoryIcons/cateIcon621.png", // IOS
+      22: "/src/assets/images/categoryIcons/cateIcon622.png", // 게임 프로그래밍
+    };
+    return iconMap[categoryId] || "/src/assets/images/categoryIcons/cateIcon11.png";
+  };
+
+
+  const categoryItems = secondCategoryData.second_category;
+
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
 
@@ -292,12 +317,35 @@ export default function Home() {
           <InfoBox />
           </div>
         </div>
-        <StatisticsSection 
+        {/* <StatisticsSection 
           viewCount={viewCount}
           userCount={userCount}
           recruitCount={recruitCount}
-        />
+        /> */}
 
+     {/* 카테고리 섹션 */}
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-[#F5F9FF] py-8 lg:h-68 shadow-md px-4 lg:px-0">
+       <div className="flex flex-col justify-center gap-2 items-center max-w-[100rem] mx-auto px-24">
+       <span className="text-black text-4xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+       <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
+         <div className="flex gap-12 items-center" style={{ width: 'max-content' }}>
+           {Array.isArray(categoryItems) && categoryItems.map((category) => (
+             <div key={category.second_category_id} className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-36">
+               <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2">
+                 <img 
+                   src={getCategoryIcon(category.second_category_id)} 
+                   alt={category.name}
+                   className="w-full h-full object-contain"
+                 />
+               </div>
+               <div className="text-zinc-600 text-sm lg:text-lg font-bold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
+             </div>
+           ))}
+         </div>
+       </div>
+       </div>
+     </div>
+     
 <div className="flex px-24 mt-32 max-w-[100rem] mx-auto">
   {/* 인기 피드 섹션 */}
   <div className="relative w-2/3">
@@ -339,105 +387,7 @@ export default function Home() {
 </div>
 
 </div>
-       {/* 카테고리 섹션 */}
-       <div className="relative px-6 lg:px-24 ">
-       <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-       <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-            <span className="relative inline-block">
-              <span className="relative z-10">관심있는 주제 피드</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">더보기</span>
-          </h2>
-            <div className="flex flex-col md:flex-row md:flex-nowrap md:justify-between w-full lg:px-24 mt-20">
-              <div className="flex justify-center md:hidden mb-4">
-                {categories.slice(0, 3).map((category, index) => {
-                  const categoryImages = [
-                    cate1Img,
-                    cate2Img,
-                    cate3Img,
-                    cate4Img,
-                    cate5Img,
-                    cate6Img,
-                  ];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => handleCategoryClick(index + 1)}
-                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                    >
-                      <img
-                        src={categoryImages[index]}
-                        alt={category}
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
-                        {category}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex justify-center md:hidden">
-                {categories.slice(3, 6).map((category, index) => {
-                  const categoryImages = [
-                    cate1Img,
-                    cate2Img,
-                    cate3Img,
-                    cate4Img,
-                    cate5Img,
-                    cate6Img,
-                  ];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => handleCategoryClick(index + 4)}
-                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                    >
-                      <img
-                        src={categoryImages[index + 3]}
-                        alt={category}
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
-                        {category}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              {/* 데스크톱 버전 */}
-              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-7xl mx-auto">
-                {categories.map((category, index) => {
-                  const categoryImages = [
-                    cate1Img,
-                    cate2Img,
-                    cate3Img,
-                    cate4Img,
-                    cate5Img,
-                    cate6Img,
-                  ];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => handleCategoryClick(index + 1)}
-                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                    >
-                      <img
-                        src={categoryImages[index]}
-                        alt={category}
-                        className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
-                      />
-                      <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
-                        {category}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            </div>
-            </div>
+  
 {/* 광고 배너 div */}
 {/* <div className="relative px-6 lg:px-24 ">
   광고 배너
