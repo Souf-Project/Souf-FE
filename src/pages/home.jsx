@@ -6,6 +6,7 @@ import secondCategoryData from "../assets/categoryIndex/second_category.json";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import BestRecruit from "../components/home/bestRecruit";
 import FeedGrid from "../components/home/feedGrid";
+import ReviewBox from "../components/home/reviewBox";
 import InfoBox from "../components/home/infoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
@@ -341,7 +342,7 @@ export default function Home() {
      </div>
      
 <div className="flex px-24 mt-32 max-w-[100rem] mx-auto">
-  {/* 인기 피드 섹션 */}
+{/* 실시간 대학생 피드 섹션 */}
   <div className="relative w-2/3">
   <div className="flex items-center mb-8 gap-4">
   <h2 className="text-2xl lg:text-4xl font-bold">
@@ -353,15 +354,19 @@ export default function Home() {
           <FeedGrid />
         </div>
     
-{/* 인기 공고문  */}
+{/* 진행 중인 외주 의뢰 섹션 */}
       <div className="relative w-1/3">
       <div className="flex items-center mb-8 gap-4">
-  <h2 className="text-2xl lg:text-4xl font-bold">
+        <h2 className="text-2xl lg:text-4xl font-bold">
         진행 중인 외주 의뢰
-          </h2>
-    <span className="font-NanumGothicCoding text-xl font-bold text-white bg-orange-300 py-1 px-4 rounded-xl">BEST</span>
-  </div>
+        </h2>
+      <span className="font-NanumGothicCoding text-xl font-bold text-white bg-orange-300 py-1 px-4 rounded-xl">BEST</span>
+      </div>
           <BestRecruit />
+          <div className="flex justify-center items-center gap-4 mt-8">
+            <button className="bg-[#2582E0] text-white text-[1.4rem] font-extrabold px-6 py-3 rounded-xl">무료 외주 등록하기</button>
+            <button className="bg-zinc-300 text-zinc-700 text-[1.4rem] font-extrabold px-6 py-3 rounded-xl">더 많은 외주 찾아보기</button>
+          </div>
       </div>
       </div>
     
@@ -381,93 +386,16 @@ export default function Home() {
 </div>
 
 </div>
-  
-{/* 광고 배너 div */}
-{/* <div className="relative px-6 lg:px-24 ">
-  광고 배너
-</div> */}
 
-{/* 추천 공고 (광고) */}
-{/* <div className="relative px-6 lg:px-24 ">
-       <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-       <h2 className="text-2xl lg:text-3xl font-bold mb-8">
-            <span className="relative inline-block">
-              <span className="relative z-10">스프 추천 공고</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-          </h2>
-            <div className="flex w-full justify-around">
-              <div className="flex flex-col gap-4"> 
-              <h3 className="text-2xl lg:text-3xl font-bold">외주 공고</h3>
-              <div>내용</div>
-              </div>
+      <div className="text-2xl lg:text-5xl font-bold mb-8 mt-32 text-center">
+        <span className="text-blue-500">스프</span>
+        에서 이렇게 
+        <span className="text-blue-500"> 작업</span>했어요!</div>
 
-              <div className="flex flex-col gap-4"> 
-              <h3 className="text-2xl lg:text-3xl font-bold">외주 공고</h3>
-              <div>내용</div>
-              </div>
 
-              <div className="flex flex-col gap-4"> 
-              <h3 className="text-2xl lg:text-3xl font-bold">외주 공고</h3>
-              <div>내용</div>
-              </div>
-             
-            </div>
-            </div>
-            </div> */}
-{/* 공모전 정보 스키마 */}
-      {/* {competitions.map((competition, index) => {
-        const schema = {
-          "@context": "https://schema.org",
-          "@type": "Event",
-          "name": competition.제목,
-          "startDate": competition.접수기간.시작일,
-          "endDate": competition.접수기간.마감일,
-          "eventStatus": "https://schema.org/EventScheduled",
-          "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-          "location": {
-            "@type": "Place",
-            "name": competition.온라인가능 ? "온라인" : "오프라인",
-            "address": competition.온라인가능
-              ? { "@type": "PostalAddress", "addressCountry": "KR" }
-              : {
-                  "@type": "PostalAddress",
-                  "streetAddress": competition.장소?.주소,
-                  "addressLocality": competition.장소?.시,
-                  "addressCountry": "KR"
-                }
-          },
-          "image": getImageUrl(competition.썸네일),
-          "description": `주최: ${competition.주최}, 대상: ${competition.참여대상}, 분야: ${competition.공모분야?.join(', ')}`,
-          "organizer": {
-            "@type": "Organization",
-            "name": competition.주최
-          },
-          "offers": {
-            "@type": "Offer",
-            "url": `${window.location.origin}/contests/${competition.categoryID[0]}/${competition.contestID}`,
-            "price": competition.유료여부 ? competition.참가비 : "0",
-            "priceCurrency": "KRW",
-            "availability": "https://schema.org/InStock",
-            "validFrom": competition.접수기간.시작일
-          },
-          "eventCategory": competition.공모분야,
-          "audience": {
-            "@type": "EducationalAudience",
-            "educationalRole": competition.참여대상
-          }
-        };
-
-        return (
-          <script
-            key={`schema-${index}`}
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-          />
-        );
-      })}' */}
+        <ReviewBox />
       {/* 공모전 정보 섹션 */}
-      <div className="relative px-6 lg:px-24  mx-auto py-16">
+      <div className="relative px-6 lg:px-24 mx-auto py-16">
       <div className="flex justify-between items-center px-4 sm:px-6 ">
         <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
           <span className="relative inline-block">
@@ -483,7 +411,7 @@ export default function Home() {
           <Loading text="공모전 정보를 불러오는 중..." />
         ) : (
           <>
-            <ContestSection 
+            {/* <ContestSection 
               competitions={competitions}
               imageLoadingStates={imageLoadingStates}
               getImageUrl={getImageUrl}
@@ -495,7 +423,7 @@ export default function Home() {
                 getImageUrl={getImageUrl}
                 getFallbackUrls={getFallbackUrls}
               />
-            {/* SmallContestSection과 블러 처리 */}
+
             <div className="relative pt-20">
               <SmallContestSection 
                 competitions={competitions}
@@ -505,7 +433,6 @@ export default function Home() {
               />
               <div className="absolute inset-0 bg-white/50 backdrop-blur-lg z-20"></div>
               
-              {/* 공모전 더보기 버튼 */}
               <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
                 <button
                   onClick={() => navigate("/contests")}
@@ -514,7 +441,7 @@ export default function Home() {
                   공모전 더보기
                 </button>
               </div>
-            </div>
+            </div> */}
           </>
         )}
       </div>

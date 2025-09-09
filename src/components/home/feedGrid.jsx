@@ -21,7 +21,7 @@ export default function FeedGrid() {
 
   useEffect(() => {
     setFeedData(data?.result || []);
-    console.log(data?.result);
+    // console.log(data?.result);
   }, [data]);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function FeedGrid() {
                     .join(", ")}
                 </span>
                 <span className="text-neutral-600 text-2xl font-bold">
-                    {feed.nickname}
+                    {feed.title}
                   </span>
                   <span className="text-zinc-500 text-xl font-bold">
                     {feed.nickname}

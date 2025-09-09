@@ -12,7 +12,7 @@ export default function BestRecruit() {
   const navigate = useNavigate();
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const pageable = { page: 0, size: 5, sort: ["createdAt,desc"] };
+  const pageable = { page: 0, size: 5};
 
   const { data, isLoading } = usePopularRecruit(pageable);
   console.log(data)
@@ -92,20 +92,22 @@ export default function BestRecruit() {
               {/* 카드 내용 */}
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-NanumGothicCoding text-blue-500 text-xl font-normal bg-stone-50 rounded-[30px] px-4 py-1 text-center">
+                  <span className="font-NanumGothicCoding text-blue-500 text-lg font-normal bg-stone-50 rounded-[30px] px-4 py-1 text-center">
                       {calculateDday(recruit?.deadLine, recruit?.recruitable)}
                   </span>
-                  <span className="text-neutral-500 text-xl font-bold">
+                  <span className="text-neutral-500 text-lg font-bold">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                     </div>
-                  <h3 className="text-lg font-bold text-gray-800 line-clamp-2">
+                  <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
                     {recruit.title}
                   </h3>
-                
-                  <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                    {recruit.title}
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-neutral-500 text-lg font-bold">
+                    {recruit.nickname}
                   </p>
+                  <p className="text-neutral-500 text-lg font-bold">{recruit.maxPayment}</p>
+                  </div>
                 </div>
                 
              
