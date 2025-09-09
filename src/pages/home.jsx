@@ -4,7 +4,7 @@ import searchIco from "../assets/images/searchIco.svg";
 import loginImg from "../assets/images/loginImg.svg";
 import secondCategoryData from "../assets/categoryIndex/second_category.json";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
-import MobileSwiper from "../components/home/mobileSwiper";
+import BestRecruit from "../components/home/bestRecruit";
 import FeedGrid from "../components/home/feedGrid";
 import InfoBox from "../components/home/infoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
@@ -361,7 +361,7 @@ export default function Home() {
           </h2>
     <span className="font-NanumGothicCoding text-xl font-bold text-white bg-orange-300 py-1 px-4 rounded-xl">BEST</span>
   </div>
-          <MobileSwiper />
+          <BestRecruit />
       </div>
       </div>
     
