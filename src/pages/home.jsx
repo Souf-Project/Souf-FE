@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIco from "../assets/images/searchIco.svg";
-import cate1Img from "../assets/images/cate1Img.png";
-import cate2Img from "../assets/images/cate2Img.png";
-import cate3Img from "../assets/images/cate3Img.png";
-import cate4Img from "../assets/images/cate4Img.png";
-import cate5Img from "../assets/images/cate5Img.png";
-import cate6Img from "../assets/images/cate6Img.png";
 import loginImg from "../assets/images/loginImg.svg";
 import secondCategoryData from "../assets/categoryIndex/second_category.json";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
 import MobileSwiper from "../components/home/mobileSwiper";
-import FeedSwiper from "../components/home/feedSwiper";
+import FeedGrid from "../components/home/feedGrid";
 import InfoBox from "../components/home/infoBox";
 import StatisticsSection from "../components/home/StatisticsSection";
 import ContestSection from "../components/home/ContestSection";
@@ -356,7 +350,7 @@ export default function Home() {
     <span className="font-NanumGothicCoding text-xl font-bold text-white bg-blue-500/70 py-1 px-4 rounded-xl">NEW</span>
   </div>
        
-          <FeedSwiper />
+          <FeedGrid />
         </div>
     
 {/* 인기 공고문  */}

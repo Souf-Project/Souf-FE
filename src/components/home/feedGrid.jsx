@@ -6,7 +6,7 @@ import AlertModal from "../alertModal";
 import firstCategoryData from "../../assets/categoryIndex/first_category.json";
 
 
-export default function FeedSwiper() {
+export default function FeedGrid() {
   const [feedData, setFeedData] = useState([]);
   const navigate = useNavigate();
   const { memberId } = UserStore();
