@@ -98,7 +98,7 @@ export default function BestRecruit() {
                   <span className="text-neutral-500 text-lg font-bold">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
-                    </div>
+                </div>
                   <h3 className="text-lg font-bold text-gray-800 line-clamp-1">
                     {recruit.title}
                   </h3>
