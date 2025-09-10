@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import backArrow from '../assets/images/backArrow.svg';
-import firstCategoryData from '../assets/categoryIndex/first_category.json';
-import secondCategoryData from '../assets/categoryIndex/second_category.json';
-import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import AlertModal from '../components/alertModal';
 import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
 import { closeRecruit, getRecruitDetail } from '../api/recruit';
 import SEO from '../components/seo';
 import { generateSeoContent } from '../utils/seo';
+import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
 import DeclareButton from '../components/declare/declareButton'
+
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -20,32 +19,6 @@ const parsePayment = (paymentString) => {
     num *= 10000;
   }
   return isNaN(num) ? null : num;
-};
-
-const getCategoryNames = (categoryDtoList) => {
-    if (!categoryDtoList || categoryDtoList.length === 0) {
-        return [];
-    }
-
-    return categoryDtoList.map(dto => {
-        const firstCatId = dto.firstCategory;
-        const secondCatId = dto.secondCategory;
-        const thirdCatId = dto.thirdCategory;
-
-        const firstName = firstCategoryData.first_category.find(
-            cat => cat.first_category_id === firstCatId
-        )?.name || '';
-
-        const secondName = secondCategoryData.second_category.find(
-            cat => cat.second_category_id === secondCatId
-        )?.name || '';
-
-        const thirdName = thirdCategoryData.third_category.find(
-            cat => cat.third_category_id === thirdCatId
-        )?.name || '';
-
-        return { first: firstName, second: secondName, third: thirdName };
-    });
 };
 
 export default function RecruitDetail() {
@@ -207,17 +180,10 @@ export default function RecruitDetail() {
     setIsApplySuccessModalOpen(true);
   };
 
-  // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
-  // const displayData = recruitDetail || recruitData;
-  // const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
-  // const categoryNames = getCategoryNames(categoryList);
-
-  // const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : (displayData?.minPrice || null);
-  // const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : (displayData?.maxPrice || null);
-
   const displayData = recruitDetail;
   const categoryList = recruitDetail?.categoryDtoList || [];
-  const categoryNames = getCategoryNames(categoryList);
+  const mobileCategoryNames = getCategoryNames(categoryList);
+  const categoryNames = getAllCategoryNames(categoryList);
   const minPrice = parsePayment(recruitDetail?.minPayment);
   const maxPrice = parsePayment(recruitDetail?.maxPayment);
   const isAuthor = memberId === recruitDetail?.memberId;
@@ -265,7 +231,7 @@ export default function RecruitDetail() {
           content={seoContent}
         />
       )}
-      <div className="pt-16 px-8 w-5/6 mx-auto">
+      <div className="w-full px-4 pt-12 sm:pt-16 sm:px-8 sm:w-5/6 mx-auto">
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -274,7 +240,7 @@ export default function RecruitDetail() {
           <span>목록으로 돌아가기</span>
         </button>
 
-        <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
+        <div className="bg-white rounded-2xl border border-gray p-5 sm:p-8 mb-8 mt-4">
           <div className="flex justify-between items-start">
             <div>{maskNickname(displayData?.nickname)}</div>
             {isAuthor ? (
@@ -312,10 +278,10 @@ export default function RecruitDetail() {
               />
             )}
           </div>
-          <h1 className="text-3xl font-semibold">{displayData?.title}</h1>
-          <div className="border-t border-gray-200 my-6"></div>
-          
-          <div className="flex flex-col text-gray-600 mb-6 mt-2">
+          <h1 className="text-xl sm:text-3xl font-semibold">{displayData?.title}</h1>
+          <div className="border-t border-gray-200 my-4 sm:my-6">
+          </div>
+          <div className="hidden sm:flex flex-col text-gray-600 mb-6 mt-2">
             {categoryNames.map((category, index) => (
               <div key={index} className="mb-1">
                 <span>{category.first}</span>
@@ -334,8 +300,20 @@ export default function RecruitDetail() {
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-8 my-6">
-            <div className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-8 my-4 sm:my-6 max-w-sm:text-sm ">
+             <div className="sm:hidden flex items-center flex-wrap">
+              <div className="flex flex-wrap gap-2">
+                {mobileCategoryNames.map((name, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-sm font-medium"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2 sm:space-y-4 ">
               <div>
                 <span className="text-black mb-1">급여</span>
                 <span className="text-gray-500 mx-2">|</span>
@@ -371,9 +349,9 @@ export default function RecruitDetail() {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 my-6"></div>
+          <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           <div>
-            <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
+            <p className="text-lg sm:text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
             <img
