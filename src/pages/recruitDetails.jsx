@@ -7,7 +7,7 @@ import { UserStore } from '../store/userStore';
 import { closeRecruit, getRecruitDetail } from '../api/recruit';
 import SEO from '../components/seo';
 import { generateSeoContent } from '../utils/seo';
-import { getCategoryNames } from '../utils/categoryUtils.js';
+import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -180,7 +180,8 @@ export default function RecruitDetail() {
 
   const displayData = recruitDetail;
   const categoryList = recruitDetail?.categoryDtoList || [];
-  const categoryNames = getCategoryNames(categoryList);
+  const mobileCategoryNames = getCategoryNames(categoryList);
+  const categoryNames = getAllCategoryNames(categoryList);
   const minPrice = parsePayment(recruitDetail?.minPayment);
   const maxPrice = parsePayment(recruitDetail?.maxPayment);
   const isAuthor = memberId === recruitDetail?.memberId;
@@ -271,12 +272,31 @@ export default function RecruitDetail() {
             )}
           </div>
           <h1 className="text-xl sm:text-3xl font-semibold">{displayData?.title}</h1>
-          <div className="border-t border-gray-200 my-4 sm:my-6"></div>
-          <div className="grid sm:grid-cols-2 gap-2 sm:gap-8 my-4 sm:my-6 text-sm sm:text-md">
-            <div className="space-y-2 sm:space-y-4 ">
-              <div className="flex items-center flex-wrap mt-2">
+          <div className="border-t border-gray-200 my-4 sm:my-6">
+          </div>
+          <div className="hidden sm:flex flex-col text-gray-600 mb-6 mt-2">
+            {categoryNames.map((category, index) => (
+              <div key={index} className="mb-1">
+                <span>{category.first}</span>
+                {category.second && (
+                  <>
+                <span className="mx-2">&gt;</span>
+                <span>{category.second}</span>
+                  </>
+                )}
+                {category.third && (
+                  <>
+                <span className="mx-2">&gt;</span>
+                <span className="font-medium text-black">{category.third}</span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-8 my-4 sm:my-6 max-w-sm:text-sm ">
+             <div className="sm:hidden flex items-center flex-wrap">
               <div className="flex flex-wrap gap-2">
-                {categoryNames.map((name, index) => (
+                {mobileCategoryNames.map((name, index) => (
                   <span
                     key={index}
                     className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-sm font-medium"
@@ -286,6 +306,7 @@ export default function RecruitDetail() {
                 ))}
               </div>
             </div>
+            <div className="space-y-2 sm:space-y-4 ">
               <div>
                 <span className="text-black mb-1">급여</span>
                 <span className="text-gray-500 mx-2">|</span>
