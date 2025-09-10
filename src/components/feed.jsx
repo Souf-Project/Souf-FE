@@ -12,6 +12,8 @@ import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
+import DeclareButton from "./declare/declareButton";
+
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -27,9 +29,11 @@ export default function Feed({ feedData, onFeedClick }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
   const {memberId} = UserStore();
   const swiperRef = useRef(null);
   const maxLength = 100;
+  const goToDetail = () => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`);
   const [pageable, setPageable] = useState({
     page: 1,
     size: 10,
@@ -59,10 +63,8 @@ export default function Feed({ feedData, onFeedClick }) {
   
   const clickHandler = (profileId) => {
     if (onFeedClick) {
-      // onFeedClick이 전달된 경우 부모 컴포넌트에서 로그인 체크 처리
       onFeedClick(null, profileId);
     } else {
-      // 기존 로직 (직접 네비게이션)
     navigate(`/profileDetail/${profileId}`);
     }
   };
@@ -104,6 +106,9 @@ export default function Feed({ feedData, onFeedClick }) {
     }
 
      const toggleExpand = () => setIsExpanded((prev) => !prev);
+          const handleDeclareClick = (declareData) => {
+       console.log('신고 데이터:', declareData);
+     }
   return (
     <div
       key={feedData?.memberId}
@@ -121,7 +126,7 @@ export default function Feed({ feedData, onFeedClick }) {
         </p>
       </div>
       <div className="flex justify-between items-center">
-        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2"
+        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
@@ -132,8 +137,11 @@ export default function Feed({ feedData, onFeedClick }) {
             {feedData?.nickname || "학생" }
           </h2>
         </div>
-        <UpdateOption id={feedData.memberId} memberId={memberId}
-          worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+        <div className="flex items-center gap-2">
+        
+          <UpdateOption id={feedData.memberId} memberId={memberId}
+            worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
+        </div>
       </div>
       <div 
         className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative"
@@ -159,13 +167,15 @@ export default function Feed({ feedData, onFeedClick }) {
                         <video
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           controls
-                          className="w-full h-auto max-h-[500px] object-cover rounded-lg"
+                          className="w-full h-auto max-h-[500px] object-cover rounded-lg cursor-pointer"
+                          onClick={goToDetail}
                         />
                       ) : (
                         <img
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           alt={data.fileName}
-                          className="w-full h-auto max-h-[500px] object-cover rounded-lg aspect-[3/4]"
+                          className="w-full h-auto max-h-[500px] object-cover rounded-lg aspect-[3/4] cursor-pointer"
+                          onClick={goToDetail}
                         />
                       )}
                     </div>
@@ -177,16 +187,16 @@ export default function Feed({ feedData, onFeedClick }) {
             {feedData?.mediaResDtos && feedData.mediaResDtos.length > 1 && (
               <div className="hidden lg:block">
                 <button 
-                  onClick={() => swiperRef.current?.slidePrev()}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  onClick={(e) => { e.stopPropagation(); swiperRef.current?.slidePrev(); }}
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
                 >
                   <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button 
-                  onClick={() => swiperRef.current?.slideNext()}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  onClick={(e) => { e.stopPropagation(); swiperRef.current?.slideNext(); }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
                 >
                   <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -210,7 +220,16 @@ export default function Feed({ feedData, onFeedClick }) {
         >
           {feedData?.content.length <= maxLength ? "" : isExpanded ? "접기" : "더보기"}
         </span>
+        
       </p>
+      <DeclareButton 
+        postType="FEED"
+        postId={feedData?.feedId}
+        title={feedData?.topic || "제목 없음"}
+        reporterId={memberId}
+        reportedMemberId={feedData?.memberId}
+        onDeclare={handleDeclareClick} 
+      />
       {showDeleteModal && (
         <AlertModal
           type="warning"
@@ -244,6 +263,7 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickFalse={() => setShowLoginModal(false)}
         />
       )}
+
     </div>
   );
 }

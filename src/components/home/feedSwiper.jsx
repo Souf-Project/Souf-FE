@@ -5,11 +5,11 @@ import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import firstCategoryData from "../../assets/categoryIndex/first_category.json";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation } from "swiper/modules";
+import { Autoplay, Navigation, Grid } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
+import "swiper/css/grid";
 
-// Swiper 기본 navigation 스타일 오버라이드
 const swiperStyles = `
   .swiper-button-prev,
   .swiper-button-next {
@@ -19,30 +19,34 @@ const swiperStyles = `
 
 export default function FeedSwiper() {
   const [feedData, setFeedData] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
   const navigate = useNavigate();
   const { memberId } = UserStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const pageable = { page: 0, size: 12, sort: ["createdAt,desc"] };
-
-  const { data, isLoading, error } = usePopularFeed(pageable);
+  const { data, isLoading, error } = usePopularFeed({
+    page: 0,
+    size: 12,
+    sort: ["createdAt,desc"],
+  });
 
   const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
-  // 카테고리 ID를 이름으로 변환하는 함수
-  const getCategoryName = (categoryId) => {
-    const category = firstCategoryData.first_category.find(cat => cat.first_category_id === categoryId);
-    return category ? category.name : `카테고리 ${categoryId}`;
-  };
+  useEffect(() => {
+    function handleResize() {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile((prev) => (prev !== mobile ? mobile : prev));
+    }
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     setFeedData(data?.result || []);
   }, [data]);
 
-  // 에러 로그 추가
   useEffect(() => {
-    if (error) {
-      console.error("Feed API error:", error);
-    }
+    if (error) console.error("Feed API error:", error);
   }, [error]);
 
   const handleClick = (feedId, memberId) => {
@@ -51,6 +55,13 @@ export default function FeedSwiper() {
     } else {
       navigate(`/profileDetail/${memberId}/post/${feedId}`);
     }
+  };
+
+  const getCategoryName = (categoryId) => {
+    const category = firstCategoryData.first_category.find(
+      (cat) => cat.first_category_id === categoryId
+    );
+    return category ? category.name : `카테고리 ${categoryId}`;
   };
 
   if (isLoading) {
@@ -65,108 +76,107 @@ export default function FeedSwiper() {
     <>
       <style>{swiperStyles}</style>
       <div className="relative w-screen lg:px-24 mx-auto mt-4">
-            {/* 이전 버튼 */}
-      <button className="custom-prev absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
-        <svg className="w-12 h-12 text-yellow-point" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      
-      {/* 다음 버튼 */}
-      <button className="custom-next absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
-        <svg className="w-12 h-12 text-yellow-point" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-      
-      <Swiper
-        slidesPerView={4}
-        spaceBetween={16}
-        loop={feedData.length > 4}
-        speed={700}
-        autoplay={feedData.length > 4 ? {
-          delay: 4000,
-          disableOnInteraction: false,
-        } : false}
-        breakpoints={{
-          640: {
-            slidesPerView: 4,
-            spaceBetween: 20,
-            loop: feedData.length > 4,
-            autoplay: feedData.length > 4 ? {
-              delay: 4000,
-              disableOnInteraction: false,
-            } : false,
-          },
-          1024: {
-            slidesPerView: 4,
-            spaceBetween: 24,
-            loop: feedData.length > 4,
-            autoplay: feedData.length > 4 ? {
-              delay: 4000,
-              disableOnInteraction: false,
-            } : false,
-          },
-        }}
-        navigation={{
-          nextEl: '.custom-next',
-          prevEl: '.custom-prev',
-        }}
-        modules={[Autoplay, Navigation]}
-      >
-       
-        {feedData.map((feed) => (
-          <SwiperSlide key={feed.feedId} className="box-border min-w-0">
-            <div
-              className="w-full max-w-[calc(100vw/4-2rem)] box-border h-full mb-2 cursor-pointer mx-auto"
-              onClick={() => handleClick(feed?.feedId, feed?.memberId)}>
-              <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
-                {/* 피드 이미지 */}
-                {feed.mediaResDto?.fileUrl && (
-                  <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
-                    <img 
-                      src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`} 
-                      alt="피드 이미지"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-                {/* 카드 내용 */}
-                <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
-                  <div>
-                    <span className="inline-block px-2 py-1 bg-yellow-point/10 text-yellow-point text-sm font-semibold rounded-full">
-                      {feed.firstCategories?.map(categoryId => getCategoryName(categoryId)).join(', ')}
+        {/* 항상 렌더링되는 화살표 버튼 */}
+        <button className="custom-prev absolute left-4 lg:left-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+          <svg
+            className="w-12 h-12 text-yellow-point"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
+        <button className="custom-next absolute right-4 lg:right-8 top-1/2 transform -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center hover:scale-110 transition-transform duration-200">
+          <svg
+            className="w-12 h-12 text-yellow-point"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </button>
+
+        <Swiper
+          key={isMobile ? "mobile" : "desktop"}
+          modules={[Autoplay, Navigation, Grid]}
+          navigation={{
+            nextEl: ".custom-next",
+            prevEl: ".custom-prev",
+          }}
+          grid={isMobile ? { rows: 2, fill: "row" } : undefined}
+          slidesPerView={isMobile ? 2 : 4}
+          spaceBetween={isMobile ? 16 : 24}
+          loop={isMobile ? false : feedData.length > 4}
+          speed={700}
+          autoplay={
+            feedData.length > 4
+              ? { delay: 4000, disableOnInteraction: false }
+              : false
+          }
+        >
+          {feedData.map((feed) => (
+            <SwiperSlide key={feed.feedId}>
+              <div
+                className="w-full max-w-[calc(100vw/2-2rem)] h-full mb-2 cursor-pointer mx-auto"
+                onClick={() => handleClick(feed.feedId, feed.memberId)}
+              >
+                <div className="h-full bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+                  {feed.mediaResDto?.fileUrl && (
+                    <div className="w-full aspect-[3/4] bg-gray-100 overflow-hidden">
+                      <img
+                        src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
+                        alt="피드 이미지"
+                        className="w-full h-full object-cover"
+                        onError={(e) => (e.target.style.display = "none")}
+                      />
+                    </div>
+                  )}
+                  <div className="px-3 pt-4 pb-3 flex justify-between h-full">
+                    <span className="w-fit px-2 py-1 bg-yellow-point text-white text-sm font-semibold rounded-full">
+                      {feed.firstCategories
+                        ?.map((id) => getCategoryName(id))
+                        .join(", ")}
                     </span>
-                  </div>
-                  <div className="text-right mt-auto">
-                    <h3 className="text-base font-bold text-gray-800 line-clamp-2">
-                      {feed.nickname}
-                    </h3>
+                    <div className="text-right mt-auto">
+                      <span className="text-base font-bold text-gray-800 line-clamp-2">
+                        {feed.nickname}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      {showLoginModal && (
-        <AlertModal
-          type="simple"
-          title="로그인이 필요합니다"
-          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
-          TrueBtnText="로그인하러 가기"
-          FalseBtnText="취소"
-          onClickTrue={() => {
-            setShowLoginModal(false);
-            navigate("/login");
-          }}
-          onClickFalse={() => setShowLoginModal(false)}
-        />
-      )}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {showLoginModal && (
+          <AlertModal
+            type="simple"
+            title="로그인이 필요합니다"
+            description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+            TrueBtnText="로그인하러 가기"
+            FalseBtnText="취소"
+            onClickTrue={() => {
+              setShowLoginModal(false);
+              navigate("/login");
+            }}
+            onClickFalse={() => setShowLoginModal(false)}
+          />
+        )}
       </div>
     </>
   );
-} 
+}

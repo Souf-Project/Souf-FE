@@ -10,6 +10,7 @@ import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import SEO from "../seo";
+import DeclareButton from "../declare/declareButton";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -122,6 +123,12 @@ export default function ProfileDetail({}) {
     navigate(`/profileDetail/${userData.id}/post/${worksId}`);
   };
 
+  // 신고 처리 함수
+  const handleDeclareClick = (declareData) => {
+    console.log('프로필 신고 데이터:', declareData);
+    // 여기에 신고 API 호출 
+  };
+
 
   return (
     <>
@@ -155,7 +162,7 @@ export default function ProfileDetail({}) {
             />
             
             <div className="flex flex-col gap-1 md:gap-2 max-sm:text-[14px] md:mt-4 w-full overflow-hidden">
-              <div className="flex items-center">
+              <div className="flex justify-between">
                 {/* 닉네임 */}
                 {userData?.nickname ? (
                   <div className="font-semibold text-[20px] md:text-[23px]">{userData.nickname}</div>
@@ -163,8 +170,9 @@ export default function ProfileDetail({}) {
                   <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
                 )}
                 
-                {/* 즐겨찾기 버튼 - 본인이 아닐 때만 */}
-                {UserStore.getState().memberId !== userData?.id && (
+                <div className="flex items-center gap-2">
+{/* 즐겨찾기 버튼 - 본인이 아닐 때만 */}
+{UserStore.getState().memberId !== userData?.id && (
                   <button
                     className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
                       isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
@@ -178,6 +186,13 @@ export default function ProfileDetail({}) {
                     />
                   </button>
                 )}
+                 <DeclareButton 
+                contentType="프로필" 
+                onDeclare={handleDeclareClick}
+                iconClassName="w-7 h-7 cursor-pointer ml-auto"
+              />
+                </div>
+                
               </div>
             
               {/* 자기소개 */}
@@ -197,6 +212,7 @@ export default function ProfileDetail({}) {
               ) : (
                 <div className="text-[#5B5B5B] opacity-50"></div>
               )}
+             
             </div>
           </div>
           <hr className="border-t border-gray-200 my-6" />

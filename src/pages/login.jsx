@@ -17,9 +17,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showError, setShowError] = useState(false);
 
-  const handleLoginClick = () => {
-    navigate("/");
-  };
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
@@ -36,6 +33,7 @@ export default function Login() {
       localStorage.setItem("accessToken", result.accessToken);
   
       navigate("/");
+
     },
   
     onError: (error) => {
@@ -47,7 +45,7 @@ export default function Login() {
   // 카카오 로그인
   const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
   const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
-  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email`;
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email,profile_image`;
   
   const handleKakaoLogin = () => {
     localStorage.setItem('socialProvider', 'KAKAO');
@@ -104,27 +102,27 @@ export default function Login() {
         
         onSubmit={(e) => {
           e.preventDefault();
-           console.log('폼 제출됨');
+          //  console.log('폼 제출됨');
           loginMutation.mutate({ email, password })}}
         className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow"
       >
           <Input
             title="이메일"
             // isValidateTrigger={isValidateTrigger}
-            // isConfirmed={isConfirmed}
+            isConfirmed={showError ? false : undefined}
             placeholder="Souf@souf.com"
             onChange={(e) => {
               setEmail(e.target.value);
               setShowError(false);
             }}
             essentialText="이메일을 입력해주세요"
-            disapproveText="이메일을 입력해주세요"
+            disapproveText=""
             // onValidChange={onValidChange}
           />
           <Input
             title="비밀번호"
             // isValidateTrigger={isValidateTrigger}
-            // isConfirmed={isConfirmed}
+            isConfirmed={showError ? false : undefined}
             type="password"
             placeholder=""
             onChange={(e) => {
@@ -132,12 +130,9 @@ export default function Login() {
               setShowError(false);
             }}
             essentialText="비밀번호를 입력해주세요"
-            disapproveText="비밀번호를 입력해주세요"
+            disapproveText={showError ? "아이디 또는 비밀번호가 일치하지 않습니다." : "비밀번호를 입력해주세요"}
             // onValidChange={onValidChange}
           />
-          {showError && (
-            <div className="mt-10 text-red-essential text-center">아이디 또는 비밀번호가 일치하지 않습니다.</div>
-          )}
          
           <div className="flex justify-between text-[#767676] text-xl font-reagular">
             <button type="button" onClick={() => navigate("/join")}>회원가입</button>

@@ -32,7 +32,6 @@ export default function Header() {
   const categoryFromQuery = query.get("category");
 
   useEffect(() => {
-    // userStore의 memberId가 있으면 로그인 상태로 간주
     if (memberId) {
       setIsLogin(true);
       setUserType(roleType || "student");
@@ -52,20 +51,16 @@ export default function Header() {
       // /recruit 경로지만 카테고리가 없는 경우는 카테고리 선택 없음
       setActiveCategory("");
     } else if (location.pathname.includes("/recruitDetails/")) {
-      // recruitDetails 페이지에서는 카테고리 선택 없음
       setActiveCategory("");
     } else if (location.pathname === "/contests") {
-      // 공모전 정보 페이지인 경우
       setActiveCategory("contests");
     }else if (location.pathname === "/recruitsAll") {
-      // 공모전 정보 페이지인 경우
       setActiveCategory("recruitsAll");
     } else {
       setActiveCategory("");
     }
   }, [location.pathname, categoryFromQuery]);
 
-  // 유저 메뉴 외부 클릭 시 닫기
   useEffect(() => {
     function handleClickOutside(event) {
       if (showUserMenu && !event.target.closest(".user-menu-container")) {
@@ -78,7 +73,6 @@ export default function Header() {
     };
   }, [showUserMenu]);
 
-  // 메뉴 외부 클릭 감지
 useEffect(() => {
   function handleClickOutside(event) {
     if (
@@ -102,11 +96,7 @@ useEffect(() => {
   };
 
   const handleNavigationCategory = (categoryId) => {
-    
-    
-    // 현재 경로가 /recruit가 아닌 경우에만 /recruit로 이동
     if (location.pathname !== "/recruit") {
-     
       navigate(`/recruit?category=${categoryId}`);
     } else {
     
@@ -116,32 +106,26 @@ useEffect(() => {
     }
     setShowMobileMenu(false);
   };
-
-  // 카테고리 이름을 가져오는 함수
-  const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.first_category_id === categoryId);
-    return category ? category.name : '';
+  const deleteCookie = (name) => {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   };
 
-  // 로그인 상태 전환 함수 (임시)
   const toggleLogin = () => {
-    // userStore 초기화
     UserStore.getState().clearUser();
-    
-    // 로컬 스토리지 초기화
     localStorage.removeItem("isLogin");
     localStorage.removeItem("userType");
     localStorage.removeItem("userName");
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user-storage");
-    
-    // 로그인 상태 변경
+
+  deleteCookie("refreshToken");
+
+
     setIsLogin(false);
     setShowUserMenu(false);
     setShowMobileMenu(false);
     
-    // 홈페이지로 이동
     navigate("/");
   };
 
@@ -192,7 +176,7 @@ useEffect(() => {
         >
           SouF
         </div>
-        <ul className="flex items-center gap-x-6 font-bold text-xl text-black">
+        <ul className="flex items-center gap-x-4 font-bold text-lg text-black">
           {categories.map((category) => {
             return (
               <li

@@ -8,6 +8,8 @@ import { closeRecruit, getRecruitDetail } from '../api/recruit';
 import SEO from '../components/seo';
 import { generateSeoContent } from '../utils/seo';
 import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
+import DeclareButton from '../components/declare/declareButton'
+
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -241,7 +243,7 @@ export default function RecruitDetail() {
         <div className="bg-white rounded-2xl border border-gray p-5 sm:p-8 mb-8 mt-4">
           <div className="flex justify-between items-start">
             <div>{maskNickname(displayData?.nickname)}</div>
-            {isAuthor && (
+            {isAuthor ? (
               <div className="relative">
                 <button
                   onClick={toggleMenu}
@@ -269,6 +271,11 @@ export default function RecruitDetail() {
                   </div>
                 )}
               </div>
+            ) : (
+              <DeclareButton 
+                contentType="공고문" 
+                iconClassName="w-5 h-5 cursor-pointer"
+              />
             )}
           </div>
           <h1 className="text-xl sm:text-3xl font-semibold">{displayData?.title}</h1>

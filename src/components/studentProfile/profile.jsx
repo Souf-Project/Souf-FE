@@ -4,6 +4,7 @@ import sendIco from "../../assets/images/sendIco.svg";
 import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
 import { postChatrooms } from "../../api/chat";
 import { UserStore } from "../../store/userStore";
+import SoufLogoBlack from "../../assets/images/SouFLogoBlack.png"
 import AlertModal from "../alertModal";
 
 export default function Profile({
@@ -14,7 +15,7 @@ export default function Profile({
   userDetail,
   popularFeeds,
 }) {
-  // console.log("profileImageUrl", profileImageUrl);
+
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
@@ -58,33 +59,40 @@ export default function Profile({
       <img className="absolute top-4 right-4 w-11 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
       <div className="flex flex-col items-center justify-center"
       onClick={() => clickHandler(memberId)}>
-      <img 
-        src={profileImageUrl || getDefaultImage()} 
-        className="rounded-full w-24 h-24 border border-gray-200 " 
-        alt={userName || "프로필 이미지"}
-        onError={(e) => {
-          e.target.src = getDefaultImage();
-        }}
-      />
-      {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
-      <div className="font-semibold text-sm lg:text-[14px] mt-2 text-gray-500">스프 온도 36.5도</div>
-      <div className="flex flex-col justify-center">
-        <div className="font-semibold text-base lg:text-2xl my-2">{userName}</div>
-        <div className="text-[#5B5B5B]">{userDetail}</div>
-      </div>
-      <div className="grid grid-cols-3  justify-center gap-2">
-        {popularFeeds?.map((feed, index) => (
-          <img 
-            key={index} 
-            src={`${import.meta.env.VITE_S3_BUCKET_URL}${feed.imageUrl}`}
-            alt={`피드 이미지 ${index + 1}`}
-            className="w-32 h-32 object-cover rounded-lg"
-            onError={(e) => {
-              e.target.style.display = 'none';
-            }}
-          />
-        ))}
-      </div>
+        <img 
+          src={profileImageUrl || getDefaultImage()} 
+          className="rounded-full w-24 h-24 border border-gray-200 " 
+          alt={userName || "프로필 이미지"}
+          onError={(e) => {
+            e.target.src = getDefaultImage();
+          }}
+        />
+        {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
+        <div className="font-semibold text-sm lg:text-[14px] mt-2 text-gray-500">스프 온도 36.5도</div>
+        <div className="flex flex-col justify-center">
+          <div className="font-semibold text-base lg:text-2xl my-2">{userName}</div>
+          <div className="text-[#5B5B5B]">{userDetail}</div>
+        </div>
+        {popularFeeds && popularFeeds.length > 0 ? (
+          <div className="grid grid-cols-3 justify-center gap-2">
+            {popularFeeds.map((feed, index) => (
+              <img 
+                key={index} 
+                src={`${import.meta.env.VITE_S3_BUCKET_URL}${feed.imageUrl}`}
+                alt={`피드 이미지 ${index + 1}`}
+                className="w-32 h-32 object-cover rounded-lg"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="w-full h-32 flex flex-col items-center justify-center">
+            <img src={SoufLogoBlack} alt="SouF 로고" className="w-24 h-24 object-contain" />
+            <span className="text-gray-500 text-sm">작성된 피드가 없습니다.</span>
+          </div>
+        )}
       </div>
       
       {showLoginModal && (

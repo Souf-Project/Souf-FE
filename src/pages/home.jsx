@@ -6,11 +6,10 @@ import cate2Img from "../assets/images/cate2Img.png";
 import cate3Img from "../assets/images/cate3Img.png";
 import cate4Img from "../assets/images/cate4Img.png";
 import cate5Img from "../assets/images/cate5Img.png";
+import cate6Img from "../assets/images/cate6Img.png";
 import Background from "../assets/images/background.png";
 
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
-import { getFirstCategoryNameById } from "../utils/getCategoryById";
-import { calculateDday } from "../utils/getDate";
 import MobileSwiper from "../components/home/mobileSwiper";
 import FeedSwiper from "../components/home/feedSwiper";
 import InfoBox from "../components/home/infoBox";
@@ -20,10 +19,7 @@ import SmallContestSection from "../components/home/smallContestSection";
 import { getContests } from "../api/contest";
 import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
-import AlertModal from "../components/alertModal";
-import dayjs from "dayjs";
 import useCountUp from "../hooks/useCountUp";
-import AnimatedCount from "../components/AnimatedCount";
 import SEO from "../components/seo";
 import Loading from "../components/loading";
 
@@ -34,14 +30,13 @@ export default function Home() {
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
   const [statsData, setStatsData] = useState({
-    todayVisitor: 735,
-    studentCount: 317,
-    recruitCount: 4
-  }); // 기본값 설정
+    todayVisitor: 0,
+    studentCount: 0,
+    recruitCount: 0
+  });
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
-
 
   const categories = [
     "순수미술",
@@ -49,6 +44,7 @@ export default function Home() {
     "음악",
     "촬영 및 편집",
     "디지털 콘텐츠",
+    "IT · 개발"
   ]
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
@@ -230,9 +226,9 @@ export default function Home() {
         const response = await getMainViewCount();
         if (response.result) {
           setStatsData({
-            todayVisitor: response.result.todayVisitor || 735,
-            studentCount: response.result.studentCount || 317,
-            recruitCount: response.result.recruitCount || 4
+            todayVisitor: response.result.todayVisitor || 0,
+            studentCount: response.result.studentCount || 0,
+            recruitCount: response.result.recruitCount || 0
           });
         }
       } catch (error) {
@@ -252,7 +248,7 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-        <div className="relative flex justify-center items-start pt-20 px-8 gap-8 max-w-[100rem] mx-auto">
+        <div className="relative flex justify-center items-start pt-20 px-8 max-w-[100rem] mx-auto">
           <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
@@ -284,10 +280,8 @@ export default function Home() {
               </div>
             </form>
             
-
-           
           </div>
-          {/* 오른쪽: Glass 효과 박스 */}
+          {/* 오른쪽: 팝업 가이드 박스 */}
           <InfoBox />
 
         </div>
@@ -299,7 +293,7 @@ export default function Home() {
 
 {/* 인기 공고문  */}
       <div className="relative mt-16 px-6 lg:px-24">
-        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
+        <div className="relative flex flex-col mx-auto lg:px-6 py-16 overflow-x-hidden">
         <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
             <span className="relative inline-block ">
               <span className="relative z-10 ">인기있는 공고문</span>
@@ -344,6 +338,7 @@ export default function Home() {
                     cate3Img,
                     cate4Img,
                     cate5Img,
+                    cate6Img,
                   ];
                   return (
                     <button
@@ -364,13 +359,14 @@ export default function Home() {
                 })}
               </div>
               <div className="flex justify-center md:hidden">
-                {categories.slice(3, 5).map((category, index) => {
+                {categories.slice(3, 6).map((category, index) => {
                   const categoryImages = [
                     cate1Img,
                     cate2Img,
                     cate3Img,
                     cate4Img,
                     cate5Img,
+                    cate6Img,
                   ];
                   return (
                     <button
@@ -391,7 +387,7 @@ export default function Home() {
                 })}
               </div>
               {/* 데스크톱 버전 */}
-              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-6xl mx-auto">
+              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-7xl mx-auto">
                 {categories.map((category, index) => {
                   const categoryImages = [
                     cate1Img,
@@ -399,6 +395,7 @@ export default function Home() {
                     cate3Img,
                     cate4Img,
                     cate5Img,
+                    cate6Img,
                   ];
                   return (
                     <button
@@ -534,26 +531,12 @@ export default function Home() {
                 getImageUrl={getImageUrl}
                 getFallbackUrls={getFallbackUrls}
               />
-            {/* SmallContestSection과 블러 처리 */}
-            <div className="relative pt-20">
-              <SmallContestSection 
-                competitions={competitions}
-                imageLoadingStates={imageLoadingStates}
-                getImageUrl={getImageUrl}
-                getFallbackUrls={getFallbackUrls}
-              />
-              <div className="absolute inset-0 bg-white/50 backdrop-blur-lg z-20"></div>
-              
-              {/* 공모전 더보기 버튼 */}
-              <div className="absolute top-36 left-1/2 transform -translate-x-1/2 z-30">
-                <button
+            <button
                   onClick={() => navigate("/contests")}
-                  className="px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="w-48 mt-8 mx-auto px-8 py-3 text-lg font-bold bg-yellow-point text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   공모전 더보기
                 </button>
-              </div>
-            </div>
           </>
         )}
       </div>

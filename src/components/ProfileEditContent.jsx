@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom';
 import noneCheckBox from "../assets/images/noneCheckBox.png";
 import fillCheckBox from "../assets/images/fillCheckBox.png";
 import Loading from './loading';
+import kakaoLogo from "../assets/images/kakaoLogo.png"
+import googleLogo from "../assets/images/googleLogo.png"
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -60,10 +62,10 @@ export default function ProfileEditContent() {
         setFormData({
           ...profileData,
           newCategories: newCategories,
-          originalNickname: profileData.nickname, // 원본 닉네임 저장
-          marketingAgreement: profileData.marketingAgreement || false // 마케팅 동의 여부 추가
+          originalNickname: profileData.nickname,
+          marketingAgreement: profileData.marketingAgreement || false
         });
-        setMarketingAgreement(profileData.marketingAgreement || false); // 마케팅 동의 상태 초기화
+        setMarketingAgreement(profileData.marketingAgreement || false);
 
       } else {
         console.error('프로필 데이터 조회 실패:', response.data?.message);
@@ -129,7 +131,7 @@ export default function ProfileEditContent() {
       setSelectedFile(null);
       setNicknameVerified(false);
       setVerificationMessage('');
-      fetchProfileData(); // 수정 성공 후 데이터를 다시 불러옵니다.
+      fetchProfileData();
     },
     onError: (error) => {
       console.error("프로필 수정 실패:", error);
@@ -222,6 +224,34 @@ export default function ProfileEditContent() {
     }
   };
 
+    // 카카오 로그인
+    const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
+    const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+    const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email,profile_image`;
+    
+    // 카카오 연동
+    const handleKakaoLogin = () => {
+      if (!isEditing) return;
+      
+      localStorage.setItem('socialProvider', 'KAKAO');
+      localStorage.setItem('isLinking', 'true'); // 연동 모드
+      window.location.href = KAKAO_AUTH_URL;
+    }
+  
+    // 구글 연동
+    const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+    const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
+    
+    const handleGoogleLogin = () => {
+      if (!isEditing) return;
+      
+      localStorage.setItem('socialProvider', 'GOOGLE');
+      localStorage.setItem('isLinking', 'true'); // 연동 모드
+      window.location.href = GOOGLE_AUTH_URL;
+    }
+
+    
   if (loading) {
     return <Loading text="프로필 정보를 불러오는 중..." />;
   }
@@ -242,7 +272,14 @@ export default function ProfileEditContent() {
          <div className="absolute top-[40px] left-[225px]">
             <h1 className="text-4xl font-bold ">{formData.nickname}</h1>
         </div>
-        {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="ml-auto w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">수정하기</button>}
+        
+            <div className="flex items-center justify-between gap-4 w-full">
+            {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="w-40 py-4 bg-yellow-main text-black rounded-xl font-bold transition-colors">수정하기</button>}
+           
+             
+            </div>
+
+        
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
           <div className="grid grid-cols-1 gap-6">
@@ -322,6 +359,35 @@ export default function ProfileEditContent() {
           </div>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">SNS 계정 연동</h2>
+        <div className="flex items-center justify-center gap-4">
+            <button 
+                disabled={!isEditing}
+                className={`w-60 rounded-xl p-4 shadow-sm duration-200 flex items-center justify-center gap-4 ${
+                  isEditing 
+                    ? 'bg-[#FEE500] hover:shadow-md cursor-pointer' 
+                    : 'bg-yellow-300 cursor-not-allowed opacity-60'
+                }`}
+                onClick={handleKakaoLogin}
+              >
+                <img src={kakaoLogo} alt="카카오 로그인" className="w-[1.4rem] object-contain" />
+                <p>카카오 계정으로 연동</p>
+              </button>
+              <button 
+                disabled={!isEditing}
+                className={`w-60 rounded-xl p-4 shadow-sm duration-200 flex items-center justify-center gap-7 ${
+                  isEditing 
+                    ? 'bg-white border-2 border-gray-200 hover:shadow-md cursor-pointer' 
+                    : 'bg-gray-100 border-2 border-gray-300 cursor-not-allowed opacity-60'
+                }`}
+                onClick={handleGoogleLogin}
+              >
+                <img src={googleLogo} alt="구글 로그인" className="w-[1.4rem] object-contain" />
+                구글 계정으로 연동
+              </button>
+            </div>
+            </div>
+        <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">마케팅 수신 동의</h2>
           <button
                 type="button"
@@ -353,6 +419,7 @@ export default function ProfileEditContent() {
            <></>
           )}
       </div>
+      
       <div className='flex justify-between items-center'>
      
       
@@ -364,6 +431,7 @@ export default function ProfileEditContent() {
             회원탈퇴
           </button>
           </div>
+          
     </div>
     </div>
   );
