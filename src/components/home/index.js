@@ -3,6 +3,7 @@ export { default as FeedGrid } from './feedGrid';
 export { default as ReviewBox } from './reviewBox';
 export { default as InfoBox } from './infoBox';
 export { default as MatchingPrice } from './matchingPrice';
+export { default as EstimateBanner } from './EstimateBanner';
 export { default as StatisticsSection } from './StatisticsSection';
 export { default as ContestSection } from './ContestSection';
 export { default as SmallContestSection } from './smallContestSection';

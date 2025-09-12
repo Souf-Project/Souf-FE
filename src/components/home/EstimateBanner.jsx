@@ -1,0 +1,30 @@
+import freeImg from "../../assets/images/freeImg.png";
+
+export default function FreeEstimate({color}) {
+  return (
+    <>
+      {color=="black" ? (
+        <div className="relative bg-neutral-700 w-full rounded-2xl p-16 flex justify-between items-center">
+          <div>
+            <h2 className="text-white text-3xl font-bold">스프 프로 작업자들의
+                <br/>
+            투명한 견적을 받아보세요.</h2>
+            <h3 className="text-white text-xl font-bold mt-4">연계 학교 단체 / 개인의 다양한 견적</h3>
+          </div>
+          <div className="flex items-center gap-4">
+              <img src={freeImg} alt="freeImg" className="absolute bottom-0 right-96 w-80" />
+              <button className="bg-white text-blue-500 text-3xl font-bold px-8 py-8 rounded-xl">무료 외주 견적 받기</button>
+          </div>
+        </div>
+      ) : (
+        <div className="relative bg-blue-500 w-full rounded-2xl px-16 py-8 flex justify-between items-center">
+          <div>
+            <h2 className="text-orange-100 text-3xl font-bold">웹사이트 제작<span className="text-white"> 견적을 무료로 받아보세요!</span></h2>
+            <h3 className="text-white text-2xl font-bold mt-4">인증된 전문가들이 견적을 보내요</h3>
+          </div>
+          <button className="bg-white text-blue-500 text-3xl font-bold px-8 py-8 rounded-xl">무료로 프로젝트 등록</button>
+        </div>
+      )}
+    </>
+  )
+}

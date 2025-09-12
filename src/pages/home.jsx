@@ -12,7 +12,8 @@ import {
   MatchingPrice, 
   StatisticsSection, 
   ContestSection, 
-  SmallContestSection 
+  SmallContestSection ,
+  EstimateBanner
 } from "../components/home";
 import { getContests } from "../api/contest";
 import { getMainViewCount } from "../api/home";
@@ -454,6 +455,29 @@ export default function Home() {
           {/* </>
         )}
       </div> */}
+      </div>
+
+      {/* 무료 외주 등록 섹션 */}
+      <div className="flex px-24 mt-32 max-w-[100rem] mx-auto">
+        <EstimateBanner color="black" />
+      </div>
+
+      <div className="flex gap-8 justify-between px-24 mt-32 max-w-[100rem] mx-auto">
+        <div className="w-full bg-blue-400/10 rounded-xl p-16">
+        <p className="text-2xl font-bold">외주를 등록하러 오셨나요?</p>
+        <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
+
+Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
+        </div>
+        <div className="w-full bg-amber-300/10 rounded-xl p-16">
+        <p className="text-2xl font-bold">작업을 하러 오셨나요?</p>
+        <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
+
+Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
+        </div>
+      </div>
+      <div className="flex px-24 my-32  max-w-[100rem] mx-auto">
+        <EstimateBanner color="blue" />
       </div>
     </div>
     </>
