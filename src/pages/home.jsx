@@ -4,13 +4,16 @@ import searchIco from "../assets/images/searchIco.svg";
 import loginImg from "../assets/images/loginImg.svg";
 import secondCategoryData from "../assets/categoryIndex/second_category.json";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
-import BestRecruit from "../components/home/bestRecruit";
-import FeedGrid from "../components/home/feedGrid";
-import ReviewBox from "../components/home/reviewBox";
-import InfoBox from "../components/home/infoBox";
-import StatisticsSection from "../components/home/StatisticsSection";
-import ContestSection from "../components/home/ContestSection";
-import SmallContestSection from "../components/home/smallContestSection";
+import { 
+  BestRecruit, 
+  FeedGrid, 
+  ReviewBox, 
+  InfoBox, 
+  MatchingPrice, 
+  StatisticsSection, 
+  ContestSection, 
+  SmallContestSection 
+} from "../components/home";
 import { getContests } from "../api/contest";
 import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
@@ -392,25 +395,31 @@ export default function Home() {
         에서 이렇게 
         <span className="text-blue-500"> 작업</span>했어요!</div>
 
+{/* 후기 섹션 */}
 
         <ReviewBox />
-      {/* 공모전 정보 섹션 */}
-      <div className="relative px-6 lg:px-24 mx-auto py-16">
-      <div className="flex justify-between items-center px-4 sm:px-6 ">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-          <span className="relative inline-block">
-            <span className="relative z-10">금주 인기 공모전</span>
-            <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-          </span>
-          <span className="ml-2">모아보기</span>
-        </h2>
-       
-      </div>
-      <div className="flex flex-col gap-4 px-6 lg:px-24">
+
+      {/* 실시간 매칭 금액 섹션 */}
+    <div className="flex px-24 mt-32 max-w-[100rem] mx-auto flex-col gap-4">
+    <div className="flex items-center mb-8 gap-4">
+      <h2 className="text-2xl lg:text-4xl font-bold">
+        실시간 매칭 금액
+      </h2>
+      <span className="font-NanumGothicCoding text-xl font-bold text-white bg-blue-500/70 py-1 px-4 rounded-xl">추천</span>
+   
+  </div>
+  <div className="flex items-center justify-around">
+  <MatchingPrice price={300} category="웹사이트 제작" project="연계 IT 중앙동아리 프로젝트" />
+  <MatchingPrice price={3} category="로고/브랜딩" project="연계 디자이너 프로젝트" />
+  <MatchingPrice price={90} category="조형물 기획/제작" project="전공 연구실 견적" />
+  <MatchingPrice price={30} category="브랜드 로고 디자인" type="satisfaction" />
+  </div>
+ 
+      {/* <div className="flex flex-col gap-4 px-6 lg:px-24">
         {competitions.length === 0 ? (
           <Loading text="공모전 정보를 불러오는 중..." />
         ) : (
-          <>
+          <> */}
             {/* <ContestSection 
               competitions={competitions}
               imageLoadingStates={imageLoadingStates}
@@ -442,9 +451,9 @@ export default function Home() {
                 </button>
               </div>
             </div> */}
-          </>
+          {/* </>
         )}
-      </div>
+      </div> */}
       </div>
     </div>
     </>
