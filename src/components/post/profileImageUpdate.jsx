@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import SouFLogo from '../../assets/images/SouFLogo.png';
+import SouFLogo from '../../assets/images/SouFLogo.svg';
 
 
 export default function ProfileImageUpdate({

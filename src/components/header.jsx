@@ -5,7 +5,7 @@ import ChatIcon from "../assets/images/chatIco.svg";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
-import SOUFLogo from "../assets/images/SouFLogo.png";
+import SOUFLogo from "../assets/images/SouFLogo.svg";
 
 export default function Header() {
   const navigate = useNavigate();

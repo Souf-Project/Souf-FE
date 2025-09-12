@@ -19,7 +19,7 @@ import chatImgIcon from "../../assets/images/chatImgIcon.png"
 import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
-import SouFLogo from "../../assets/images/SouFLogo.png";
+import SouFLogo from "../../assets/images/SouFLogo.svg";
 import outIcon from "../../assets/images/outIcon.svg";
 
 
