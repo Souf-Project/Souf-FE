@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
-import SouFLogo from "../assets/images/SouFLogo.png";
+import SouFLogo from "../assets/images/SouFLogo.svg";
 import Loading from "../components/loading";
 import SEO from "../components/seo";
 
