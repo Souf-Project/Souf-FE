@@ -70,7 +70,7 @@ export default function FeedGrid() {
                />
               )}
               <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
-                <span className="text-neutral-400 text-xl font-bold">
+                <span className="text-blue-main text-xl font-bold">
                   {feed.firstCategories
                     ?.map((id) => getCategoryName(id))
                     .join(", ")}

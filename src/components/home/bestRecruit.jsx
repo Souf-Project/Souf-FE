@@ -15,7 +15,7 @@ export default function BestRecruit() {
   const pageable = { page: 0, size: 5};
 
   const { data, isLoading } = usePopularRecruit(pageable);
-  console.log(data)
+  // console.log(data)
   useEffect(() => {
     setRecruitData(data?.result || []);
   }, [data]);

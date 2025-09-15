@@ -6,6 +6,7 @@ import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
 import SOUFLogo from "../assets/images/SouFLogo.svg";
+import backArrow from "../assets/images/backArrow.svg";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -15,12 +16,14 @@ export default function Header() {
   const [userType, setUserType] = useState("");
   const [userName, setUserName] = useState("");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
   //const memberId = UserStore((state) => state.memberId);
   const [menuAnimating, setMenuAnimating] = useState(false);
   const mobileMenuRef = useRef(null);
+  const headerRef = useRef(null);
 
 
 
@@ -139,6 +142,14 @@ useEffect(() => {
     setShowMobileMenu((prev) => !prev);
   };
 
+  const handleHeaderMouseEnter = () => {
+    setShowDropdown(true);
+  };
+
+  const handleHeaderMouseLeave = () => {
+    setShowDropdown(false);
+  };
+
   const categories = firstCategoryData.first_category;
 
 
@@ -169,14 +180,20 @@ useEffect(() => {
 
   // PC 버전 헤더
   const DesktopHeader = () => (
-    <header className="fixed top-0 left-0 z-50 w-screen headerGlass">
-      <div className="flex items-center justify-between px-10 py-4 max-w-[100rem] mx-auto">
-      <div className="flex items-center gap-x-10">
-      <img src={SOUFLogo} alt="SouF" className="w-28" onClick={() => handleNavigation("/")}/>
+    <div 
+      ref={headerRef}
+      onMouseEnter={handleHeaderMouseEnter}
+      onMouseLeave={handleHeaderMouseLeave}
+      className="fixed top-0 left-0 z-50 w-screen"
+    >
+      <header className="bg-white shadow-md">
+        <div className="flex items-center justify-between px-10 py-4 max-w-[100rem] mx-auto">
+      <div className="flex items-center gap-x-8">
+      <img src={SOUFLogo} alt="SouF" className="w-28 cursor-pointer" onClick={() => handleNavigation("/")}/>
       
-        <ul className="flex items-center gap-x-8 font-bold text-2xl text-black">
+        <ul className="flex items-center gap-x-10 font-bold text-2xl text-black cursor-pointer">
           <li>외주 의뢰하기</li>
-          <li>외주 찾기</li>
+          <li className="flex items-center gap-2">외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
           <li>대학생 피드보기</li>
           <li>외주 후기</li>
           <li>실험실</li>
@@ -309,7 +326,64 @@ useEffect(() => {
         )}
       </div>
       </div>
-    </header>
+      </header>
+      
+      {/* 드롭다운 메뉴 */}
+      {showDropdown && (
+        <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-8">
+          <div className="max-w-[100rem] mx-auto px-10">
+            <div className="flex justify-start">
+              {/* 외주 의뢰하기 - 로고(112px) + gap(32px) = 144px */}
+              <div className="ml-36">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">외주 의뢰하기</h3>
+                <ul className="space-y-2">
+                  <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
+                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
+                </ul>
+              </div>
+              {/* 외주 찾기 - 첫 번째 메뉴 + gap(40px) */}
+              <div className="ml-12">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">외주 찾기</h3>
+                <ul className="space-y-2">
+                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">카테고리별 외주<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></h3>
+                  <li><button onClick={() => handleNavigationCategory(1)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">순수 미술</button></li>
+                  <li><button onClick={() => handleNavigationCategory(2)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디자인</button></li>
+                  <li><button onClick={() => handleNavigationCategory(3)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">음악</button></li>
+                  <li><button onClick={() => handleNavigationCategory(4)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">촬영 및 편집</button></li>
+                  <li><button onClick={() => handleNavigationCategory(5)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디지털 콘텐츠</button></li>
+                  <li><button onClick={() => handleNavigationCategory(6)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">IT · 개발</button></li>
+                </ul>
+              </div>
+              {/* 대학생 피드보기 - 두 번째 메뉴 + gap(40px) */}
+              <div className="ml-4">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">대학생 피드보기</h3>
+                <ul className="space-y-2">
+                  <li><button onClick={() => handleNavigation("/studentProfileList")} className="text-gray-600 hover:text-blue-500">포트폴리오</button></li>
+                  <li><button onClick={() => handleNavigation("/studentFeedList")} className="text-gray-600 hover:text-blue-500">프로젝트 후기</button></li>
+                  <li><button onClick={() => handleNavigation("/studentProfileList")} className="text-gray-600 hover:text-blue-500">학생 프로필</button></li>
+                </ul>
+              </div>
+              {/* 외주 후기 - 세 번째 메뉴 + gap(40px) */}
+              <div className="ml-20">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">외주 후기</h3>
+                <ul className="space-y-2">
+                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
+                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
+                </ul>
+              </div>
+              {/* 실험실 - 네 번째 메뉴 + gap(40px) */}
+              <div className="ml-16">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">실험실</h3>
+                <ul className="space-y-2">
+                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 소개</button></li>
+                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 참여</button></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 
   // 모바일 버전 헤더
