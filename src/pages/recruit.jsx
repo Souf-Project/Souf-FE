@@ -190,7 +190,7 @@ export default function Recruit() {
   return (
     <>
     <SEO  title={getFirstCategoryNameById(selectedCategory[0]) +" - 기업 공고문"} description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 기업 공고문`} subTitle='스프' />
-    <div className="pt-12 md:px-6 md:w-4/5 px-2 w-full ">
+    <div className="pt-10 md:px-6 md:w-4/5 px-2 w-full ">
       {/* 모바일 카테고리 메뉴 */}
       <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
         showMobileCategoryMenu 

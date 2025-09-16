@@ -185,13 +185,13 @@ useEffect(() => {
       className="fixed top-0 left-0 z-50 w-screen"
     >
       <header className="bg-white shadow-md">
-        <div className="flex items-center justify-between px-10 py-3 max-w-[100rem] mx-auto">
+        <div className="flex items-center justify-between px-10 py-3 max-w-[80rem] mx-auto">
       <div className="flex items-center gap-x-8">
       <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
       
-        <ul className="flex items-center gap-x-10 font-bold text-xl text-black cursor-pointer">
+        <ul className="flex items-center gap-x-10 font-bold text-lg text-black cursor-pointer">
           <li className="flex items-center gap-1">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span></li>
-          <li className="flex items-center gap-2">외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
+          <li className={`flex items-center gap-2 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}>외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
           <li>대학생 피드보기</li>
           <li className="flex items-center gap-1">외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span></li>
           <li>실험실</li>
@@ -329,10 +329,10 @@ useEffect(() => {
       {/* 드롭다운 메뉴 */}
       {showDropdown && (
         <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-4">
-          <div className="max-w-[100rem] mx-auto px-10">
+          <div className="max-w-[90rem] mx-auto px-10">
             <div className="flex justify-start">
 
-              <div className="ml-32">
+              <div className="ml-52">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 의뢰하기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
@@ -340,21 +340,21 @@ useEffect(() => {
                 </ul>
               </div>
 
-              <div className="ml-11">
+              <div className="ml-8">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 찾기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigationCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 외주</button></li>
                 </ul>
               </div>
 
-              <div className="ml-10">
+              <div className="ml-8">
                 <h3 className="text-md font-bold text-gray-800 mb-4">대학생 피드보기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
                 </ul>
               </div>
 
-              <div className="ml-16">
+              <div className="ml-12">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 후기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
@@ -362,7 +362,7 @@ useEffect(() => {
                 </ul>
               </div>
 
-              <div className="ml-24">
+              <div className="ml-20">
                 <h3 className="text-md font-bold text-gray-800 mb-4">실험실</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 소개</button></li>

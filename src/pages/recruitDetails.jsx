@@ -265,7 +265,12 @@ export default function RecruitDetail() {
           content={seoContent}
         />
       )}
+     
       <div className="pt-16 px-8 w-5/6 mx-auto">
+       {/* 데스크톱 헤더와 검색창 */}
+       <div className="hidden lg:flex justify-between items-center mb-8 w-full border-b border-gray-200 pb-4">
+        <div></div>
+      </div>
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
