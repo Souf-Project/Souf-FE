@@ -5,13 +5,13 @@ import backArrow from '../assets/images/backArrow.svg';
 export default function Footer() {
   return (
     <footer className="w-full z-30 bg-[#FCFEFF] border-t border-gray-200 mt-auto py-8">
-      <div className="flex gap-8 justify-center items-center w-full max-w-[80rem] mx-auto">
-       <div className='flex flex-col gap-4 justify-between items-start w-1/2'>
+      <div className="flex gap-8 justify-center items-center w-full max-w-[70rem] mx-auto">
+       <div className='flex flex-col gap-10 justify-between items-start w-1/2'>
         <div>
-        <img src={SouFLogo} alt="SouFLogo" className="w-36 brightness-0" />
-        <h3 className='text-neutral-700 text-3xl font-bold mt-2'>No 1. 대학생 프리랜서 플랫폼</h3>
+        <img src={SouFLogo} alt="SouFLogo" className="w-24 brightness-0" />
+        <h3 className='text-neutral-700 text-xl font-bold mt-2'>No 1. 대학생 프리랜서 플랫폼</h3>
         </div>
-        <div className='text-neutral-400 text-xl font-bold '>
+        <div className='text-neutral-400 text-md font-semibold '>
           <p>한규탁</p>
           <p>사업자 번호 : 123-456-789</p>
           <p>(주) 스프 | 통신판매업</p>
@@ -19,13 +19,13 @@ export default function Footer() {
         </div>
        
        </div>
-        <div className="flex flex-col gap-4 font-semibold text-lg w-1/2">
+        <div className="flex flex-col gap-2 font-semibold text-md w-1/2">
           <div className='flex items-center gap-2 cursor-pointer'>
             스프 서비스 소개
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
           </div>
           <div className='flex items-center gap-2 cursor-pointer'>
-            제휴 &이  광고 문의
+            제휴 & 광고 문의
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
           </div>
           <div className='flex items-center gap-2 cursor-pointer'>

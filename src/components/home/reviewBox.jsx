@@ -98,22 +98,22 @@ export default function ReviewBox() {
   const nextReview = getNextReview();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 py-16">
+    <div className="w-full max-w-5xl mx-auto px-6 py-16">
       <div className="flex items-center justify-center gap-6 relative">
         {/* 왼쪽 이전 후기 (작고 투명) */}
-        <div className="flex flex-col gap-1 w-64 opacity-50 scale-95">
-          <div className="w-64 h-64 bg-gray-300 rounded-xl"></div>
+        <div className="flex flex-col gap-1 w-60 opacity-50 scale-95">
+          <div className="w-60 h-60 bg-gray-300 rounded-xl"></div>
           <p className="text-neutral-500 text-sm font-bold">{prevReview.category}</p>
-          <p className="text-zinc-800 text-lg font-extrabold line-clamp-1">{prevReview.title}</p>
-          <p className="text-stone-500 text-sm font-bold">{prevReview.client}</p>
+          <p className="text-zinc-800 text-md font-bold line-clamp-1">{prevReview.title}</p>
+          <p className="text-stone-500 text-sm font-semibold">{prevReview.client}</p>
           <div className="text-yellow-300 text-lg font-bold">★★★★★</div>
-          <p className="text-neutral-700 text-xs font-bold line-clamp-2 leading-4">{prevReview.content}</p>
+          <p className="text-neutral-700 text-xs font-semibold line-clamp-2 leading-4">{prevReview.content}</p>
         </div>
 
         {/* 왼쪽 화살표 */}
         <button
           onClick={prevSlide}
-          className="absolute left-36 z-10 w-12 h-12 flex items-center justify-center"
+          className="absolute left-16 z-10 w-12 h-12 flex items-center justify-center"
         >
          <img src={backArrow} alt="이전 후기" className="w-12 h-12 text-gray-600 hover:scale-105" />
         </button>
@@ -121,13 +121,13 @@ export default function ReviewBox() {
         {/* 중간 3개 캐러셀 */}
         <div className="flex items-center gap-6">
           {currentReviews.map((review, index) => (
-            <div key={`${review.id}-${currentIndex}`} className="flex flex-col gap-1 w-64">
-              <div className="w-64 h-64 bg-gray-300 rounded-xl"></div>
-              <p className="text-neutral-500 text-lg font-bold">{review.category}</p>
-              <p className="text-zinc-800 text-2xl font-extrabold line-clamp-1">{review.title}</p>
-              <p className="text-stone-500 text-xl font-bold">{review.client}</p>
+            <div key={`${review.id}-${currentIndex}`} className="flex flex-col gap-1 w-60">
+              <div className="w-60 h-60 bg-gray-300 rounded-xl"></div>
+              <p className="text-neutral-500 text-md font-bold">{review.category}</p>
+              <p className="text-zinc-800 text-xl font-bold line-clamp-1">{review.title}</p>
+              <p className="text-stone-500 text-md font-semibold">{review.client}</p>
               <div className="text-yellow-300 text-2xl font-bold">★★★★★</div>
-              <p className="text-neutral-700 text-md font-bold line-clamp-3 leading-5">{review.content}</p>
+              <p className="text-neutral-700 text-md font-semibold line-clamp-3 leading-5">{review.content}</p>
             </div>
           ))}
         </div>
@@ -135,16 +135,16 @@ export default function ReviewBox() {
         {/* 오른쪽 화살표 */}
         <button
           onClick={nextSlide}
-          className="absolute right-36 z-10 w-12 h-12 flex items-center justify-center"
+          className="absolute right-16 z-10 w-12 h-12 flex items-center justify-center"
         >
           <img src={backArrow} alt="다음 후기" className="w-12 h-12 text-gray-600 hover:scale-105 rotate-180" />
         </button>
 
         {/* 오른쪽 다음 후기 (작고 투명) */}
-        <div className="flex flex-col gap-1 w-64 opacity-50 scale-95">
-          <div className="w-64 h-64 bg-gray-300 rounded-xl"></div>
+        <div className="flex flex-col gap-1 w-60 opacity-50 scale-95">
+          <div className="w-60 h-60 bg-gray-300 rounded-xl"></div>
           <p className="text-neutral-500 text-sm font-bold">{nextReview.category}</p>
-          <p className="text-zinc-800 text-lg font-extrabold line-clamp-1">{nextReview.title}</p>
+          <p className="text-zinc-800 text-md font-bold line-clamp-1">{nextReview.title}</p>
           <p className="text-stone-500 text-sm font-bold">{nextReview.client}</p>
           <div className="text-yellow-300 text-lg font-bold">★★★★★</div>
           <p className="text-neutral-700 text-xs font-bold line-clamp-2 leading-4">{nextReview.content}</p>

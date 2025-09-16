@@ -57,10 +57,10 @@ export default function FeedGrid() {
         {feedData.map((feed) => (
           <div
             key={feed.feedId}
-            className="w-72 cursor-pointer"
+            className="w-64 cursor-pointer"
             onClick={() => handleClick(feed.feedId, feed.memberId)}
           >
-            <div className="w-72 bg-white">
+            <div className="w-64 bg-white">
               {feed.mediaResDto?.fileUrl && (
                  <img
                  src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
@@ -69,16 +69,16 @@ export default function FeedGrid() {
                  onError={(e) => (e.target.style.display = "none")}
                />
               )}
-              <div className="px-3 pt-4 pb-3 flex flex-col justify-between h-full">
-                <span className="text-blue-main text-xl font-bold">
+              <div className="px-3 py-2 flex flex-col justify-between h-full">
+                <span className="text-blue-main text-md font-semibold">
                   {feed.firstCategories
                     ?.map((id) => getCategoryName(id))
                     .join(", ")}
                 </span>
-                <span className="text-neutral-600 text-2xl font-bold">
+                <span className="text-neutral-600 text-xl font-semibold">
                     {feed.title}
                   </span>
-                  <span className="text-zinc-500 text-xl font-bold">
+                  <span className="text-zinc-500 text-md font-semibold">
                     {feed.nickname}
                   </span>
               </div>

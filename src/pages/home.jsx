@@ -278,20 +278,20 @@ export default function Home() {
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
         <div className="relative bg-[#FBFBFB] py-20 w-screen">
-        <div className="flex justify-center items-start max-w-[100rem] mx-auto">
+        <div className="flex justify-center items-start max-w-[90rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-20">
-            <h1 className="lg:block text-4xl lg:text-6xl font-bold mb-4 text-blue-main text-center lg:text-left">
+          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-28">
+            <h1 className="lg:block text-2xl lg:text-5xl font-bold mb-4 text-blue-main text-center lg:text-left">
             패션 브랜드 팝업 조형물
             </h1>
-            <h2 className="text-6xl lg:text-6xl font-bold text-black mb-8 text-center lg:text-left">
+            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
               여기! 인재 매칭해드려요.
             </h2>
-            <h3 className="text-xl font-bold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
+            <h3 className="text-lg font-semibold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
-              <button className="text-white bg-[#1E77D1] px-10 py-6 font-bold rounded-3xl whitespace-nowrap shadow-md text-2xl hover:shadow-lg">무료 외주 등록하기</button>
-              <button className="text-black bg-white border-[3px] border-blue-main px-10 py-6 font-bold rounded-3xl whitespace-nowrap shadow-md text-2xl hover:shadow-lg ">이용 가이드</button>
+              <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg">무료 외주 등록하기</button>
+              <button className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg ">이용 가이드</button>
             </div>
             {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
               <div className="relative w-full max-w-2xl lg:max-w-3xl">
@@ -324,20 +324,20 @@ export default function Home() {
 
      {/* 카테고리 섹션 */}
      <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-[#F5F9FF] py-8 lg:h-68 shadow-md px-4 lg:px-0">
-       <div className="flex flex-col justify-center gap-2 items-center max-w-[100rem] mx-auto px-24">
-       <span className="text-black text-4xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+       <div className="flex flex-col justify-center gap-2 items-center max-w-[90rem] mx-auto px-24">
+       <span className="text-black text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
-         <div className="flex gap-12 items-center" style={{ width: 'max-content' }}>
+         <div className="flex gap-6 items-center" style={{ width: 'max-content' }}>
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
-             <div key={category.second_category_id} className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-36">
-               <div className="w-20 h-20 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2">
+             <div key={category.second_category_id} className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-32">
+               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2">
                  <img 
                    src={getCategoryIcon(category.second_category_id)} 
                    alt={category.name}
                    className="w-full h-full object-contain"
                  />
                </div>
-               <div className="text-zinc-600 text-sm lg:text-lg font-bold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
+               <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
              </div>
            ))}
          </div>
@@ -345,14 +345,14 @@ export default function Home() {
        </div>
      </div>
      
-<div className="flex px-24 mt-32 max-w-[100rem] mx-auto">
+<div className="flex px-24 mt-32 max-w-[90rem] mx-auto">
 {/* 실시간 대학생 피드 섹션 */}
   <div className="relative w-2/3">
   <div className="flex items-center mb-8 gap-4">
-  <h2 className="text-2xl lg:text-4xl font-bold">
+  <h2 className="text-2xl font-semibold">
         실시간 대학생 피드
           </h2>
-    <span className="font-NanumGothicCoding text-xl font-bold text-white bg-blue-500/70 py-1 px-4 rounded-xl">NEW</span>
+    <span className="font-NanumGothicCoding text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
   </div>
        
           <FeedGrid />
@@ -361,37 +361,37 @@ export default function Home() {
 {/* 진행 중인 외주 의뢰 섹션 */}
       <div className="relative w-1/3">
       <div className="flex items-center mb-8 gap-4">
-        <h2 className="text-2xl lg:text-4xl font-bold">
+        <h2 className="text-2xl font-semibold">
         진행 중인 외주 의뢰
         </h2>
-      <span className="font-NanumGothicCoding text-xl font-bold text-white bg-orange-300 py-1 px-4 rounded-xl">BEST</span>
+      <span className="font-NanumGothicCoding text-lg font-bold text-white bg-orange-300 py-0.5 px-3 rounded-lg">BEST</span>
       </div>
           <BestRecruit />
-          <div className="flex justify-center items-center gap-4 mt-8">
-            <button className="bg-[#2582E0] text-white text-[1.4rem] font-extrabold px-6 py-3 rounded-xl">무료 외주 등록하기</button>
-            <button className="bg-zinc-300 text-zinc-700 text-[1.4rem] font-extrabold px-6 py-3 rounded-xl">더 많은 외주 찾아보기</button>
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button className="bg-[#2582E0] text-white text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md">무료 외주 등록하기</button>
+            <button className="bg-zinc-300 text-zinc-700 text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md">더 많은 외주 찾아보기</button>
           </div>
       </div>
       </div>
     
 {/* 스프 소개란 */}
 <div className="relative px-6 lg:px-24 mt-32 bg-[#2582E0BF]">
-<div className="max-w-[100rem] mx-auto flex justify-center items-center py-16">
+<div className="max-w-[90rem] mx-auto flex justify-center items-center py-16">
   <div className="flex flex-col items-start">
-    <h2 className="my-8 text-white text-6xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
+    <h2 className="my-8 text-white text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
     왜 대학생 인재를 발굴할까요?</h2>
-    <p className="my-4 text-stone-50 text-4xl font-bold">기업 외주비용 “너무 비싸요..”</p>
-    <p className="my-4 text-stone-50 text-2xl font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
-    <p className="text-stone-50 text-2xl font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
+    <p className="my-2 text-stone-50 text-2xl font-bold">기업 외주비용 “너무 비싸요..”</p>
+    <p className="my-2 text-stone-50 text-xl font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
+    <p className="text-stone-50 text-xl font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
   </div>
   
-<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="w-[28rem]"/>
+<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="w-[24rem] ml-12"/>
 </div>
 
 </div>
 
-      <div className="text-2xl lg:text-5xl font-bold mb-8 mt-32 text-center">
+      <div className="text-xl lg:text-3xl font-bold mb-8 mt-32 text-center">
         <span className="text-blue-500">스프</span>
         에서 이렇게 
         <span className="text-blue-500"> 작업</span>했어요!</div>
@@ -401,12 +401,12 @@ export default function Home() {
         <ReviewBox />
 
       {/* 실시간 매칭 금액 섹션 */}
-    <div className="flex px-24 mt-32 max-w-[100rem] mx-auto flex-col gap-4">
+    <div className="flex px-24 mt-32 max-w-[90rem] mx-auto flex-col gap-4">
     <div className="flex items-center mb-8 gap-4">
-      <h2 className="text-2xl lg:text-4xl font-bold">
+      <h2 className="text-2xl font-semibold">
         실시간 매칭 금액
       </h2>
-      <span className="font-NanumGothicCoding text-xl font-bold text-white bg-blue-500/70 py-1 px-4 rounded-xl">추천</span>
+      <span className="font-NanumGothicCoding text-md font-semibold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">추천</span>
    
   </div>
   <div className="flex items-center justify-around">
@@ -458,11 +458,11 @@ export default function Home() {
       </div>
 
       {/* 무료 외주 등록 섹션 */}
-      <div className="flex px-24 mt-32 max-w-[100rem] mx-auto">
+      <div className="flex px-24 mt-32 max-w-[90rem] mx-auto">
         <EstimateBanner color="black" />
       </div>
 
-      <div className="flex gap-8 justify-between px-24 mt-32 max-w-[100rem] mx-auto">
+      <div className="flex gap-8 justify-between px-24 mt-32 max-w-[90rem] mx-auto">
         <div className="w-full bg-blue-400/10 rounded-xl p-16">
         <p className="text-2xl font-bold">외주를 등록하러 오셨나요?</p>
         <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
@@ -476,7 +476,7 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
 Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
         </div>
       </div>
-      <div className="flex px-24 my-32  max-w-[100rem] mx-auto">
+      <div className="flex px-24 my-32  max-w-[90rem] mx-auto">
         <EstimateBanner color="blue" />
       </div>
     </div>

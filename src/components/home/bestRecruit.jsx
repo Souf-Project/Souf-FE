@@ -95,7 +95,7 @@ export default function BestRecruit() {
                   <span className="font-NanumGothicCoding text-blue-500 text-lg font-normal bg-stone-50 rounded-[30px] px-4 py-1 text-center">
                       {calculateDday(recruit?.deadLine, recruit?.recruitable)}
                   </span>
-                  <span className="text-neutral-500 text-lg font-bold">
+                  <span className="text-neutral-500 text-md font-medium">
                     {getSecondCategoryNameById(recruit.secondCategory)}
                   </span>
                 </div>
@@ -103,10 +103,10 @@ export default function BestRecruit() {
                     {recruit.title}
                   </h3>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-neutral-500 text-lg font-bold">
+                  <p className="text-neutral-500 text-md font-semibold">
                     {recruit.nickname}
                   </p>
-                  <p className="text-neutral-500 text-lg font-bold">{recruit.maxPayment}</p>
+                  <p className="text-neutral-500 text-md font-semibold">{recruit.maxPayment}</p>
                   </div>
                 </div>
                 
