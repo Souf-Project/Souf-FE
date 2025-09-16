@@ -314,7 +314,7 @@ useEffect(() => {
               </button>
             
               <button
-                className="text-white bg-blue-main px-6 py-3 font-bold rounded-xl whitespace-nowrap shadow-md"
+                className="text-white bg-[#5185E6] px-6 py-3 font-bold rounded-xl whitespace-nowrap shadow-md"
                 onClick={() => handleNavigation("/join")}
               >
                 회원가입
@@ -347,14 +347,14 @@ useEffect(() => {
                 </ul>
               </div>
 
-              <div className="ml-4">
+              <div className="ml-10">
                 <h3 className="text-md font-bold text-gray-800 mb-4">대학생 피드보기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
                 </ul>
               </div>
 
-              <div className="ml-10">
+              <div className="ml-16">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 후기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
@@ -362,7 +362,7 @@ useEffect(() => {
                 </ul>
               </div>
 
-              <div className="ml-20">
+              <div className="ml-24">
                 <h3 className="text-md font-bold text-gray-800 mb-4">실험실</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 소개</button></li>
