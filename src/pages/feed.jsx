@@ -23,9 +23,6 @@ export default function Feed() {
   const [error, setError] = useState(null);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
 
-  const searchParams = new URLSearchParams(location.search);
-  const categoryParam = searchParams.get("category");
-
   // CategoryMenu에 전달할 데이터 준비
   const allSecondCategories = SecondCategory.second_category;
   const allThirdCategories = ThirdCategory;
@@ -45,19 +42,6 @@ export default function Feed() {
   };
 
   const { filteredSecondCategories, thirdCategories } = getFilteredCategories();
-
-  useEffect(() => {
-    if (categoryParam) {
-      const categoryArr = categoryParam.split(",").map(Number);
-      setSelectedCategory([
-        categoryArr[0] || 1,
-        categoryArr[1] || 1,
-        categoryArr[2] || 1,
-      ]);
-    } else {
-      setSelectedCategory([1, 1, 1]);
-    }
-  }, [categoryParam]);
 
   const handleSearch = (e) => {
     e.preventDefault();

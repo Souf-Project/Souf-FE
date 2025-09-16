@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import RecruitBlock from "../components/recruitBlock";
 import SearchBar from "../components/SearchBar";
@@ -13,7 +13,6 @@ import SEO from "../components/seo";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 
 export default function Recruit() {
-  const location = useLocation();
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
@@ -27,15 +26,6 @@ export default function Recruit() {
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const pageSize = 12;
 
-// useEffect(() => {
-//   const name = getFirstCategoryNameById(selectedCategory[0]);
-//   document.title = `${name} | 스프`;
-// }, [selectedCategory]);
-
-
-
-  const searchParams = new URLSearchParams(location.search);
-  const categoryParam = searchParams.get("category");
 //공고문
 
   // CategoryMenu에 전달할 데이터 준비
@@ -68,7 +58,7 @@ export default function Recruit() {
         firstCategory,
         secondCategory,
         thirdCategory,
-        recruitSearchReqDto: searchParams,
+        recruitSearchReqDto: {},
           page: currentPage,
           size: pageSize,
           sort: ["createdAt,desc"],
@@ -156,90 +146,8 @@ export default function Recruit() {
     searchType,
     currentPage,
     pageSize,
-    allSecondCategories,
-    categoryParam
+    allSecondCategories
   ]);
-useEffect(() => {
-  fetchRecruits();
-}, [selectedCategory, currentPage]);
-  /*
-  useEffect(() => {
-    if (categoryParam) {
-      
-      const categoryArr = categoryParam.split(",").map(Number);
-      const newSelectedCategory = [
-        categoryArr[0] || 0,
-        categoryArr[1] || 0,
-        categoryArr[2] || 0,
-      ];
-      setSelectedCategory(newSelectedCategory);
-      
-      
-      // URL 파라미터가 변경되면 즉시 데이터를 가져오기
-      const fetchDataWithNewCategory = async () => {
-        try {
-          setLoading(true);
-          setError(null);
-          setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
-
-          const [firstCategory, secondCategory, thirdCategory] = newSelectedCategory;
-
-          const response = await getRecruit({
-            firstCategory,
-            secondCategory,
-            thirdCategory,
-            recruitSearchReqDto: searchParams,
-            page: 0,
-            size: pageSize,
-            sort: ["createdAt,desc"],
-          });
-
-          if (response.data) {
-            const recruits = response.data.result?.content || [];
-            
-           
-            setFilteredRecruits(recruits);
-
-            const totalElements =
-              response.data.result?.page?.totalElements || recruits.length;
-            const totalPagesData = response.data.result?.page?.totalPages;
-            setTotalPages(totalPagesData);
-          } else {
-            console.log('리쿠르트 조회 실패: 응답 데이터 없음');
-            setFilteredRecruits([]);
-            setError("데이터를 불러오는데 실패했습니다.");
-          }
-        } catch (err) {
-          console.error("리쿠르트 조회 중 에러 발생:", err);
-          setError("서버 연결에 실패했습니다.");
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchDataWithNewCategory();
-       fetchRecruits();
-    } else {
-      
-      setSelectedCategory([0, 0, 0]);
-      // 기본 카테고리로 데이터 가져오기
-      fetchRecruits();
-    }
-  }, [categoryParam]);*/
-
-  useEffect(() => {
-  if (categoryParam) {
-    const categoryArr = categoryParam.split(",").map(Number);
-    setSelectedCategory([
-      categoryArr[0] || 0,
-      categoryArr[1] || 0,
-      categoryArr[2] || 0,
-    ]);
-  } else {
-      setSelectedCategory([0, 0, 0]);
-    }
-  }, [categoryParam]);
-
   // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
     // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);

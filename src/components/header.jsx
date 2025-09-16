@@ -99,26 +99,13 @@ useEffect(() => {
     setShowMobileMenu(false);
   };
 
-  const handleNavigationCategory = (categoryId) => {
-    if (location.pathname !== "/recruit") {
-      navigate(`/recruit?category=${categoryId}`);
-    } else {
-    
-      const newSearchParams = new URLSearchParams(location.search);
-      newSearchParams.set("category", categoryId);
-      navigate(`/recruit?${newSearchParams.toString()}`);
-    }
+  const handleNavigationCategory = () => {
+    navigate(`/recruit`);
     setShowMobileMenu(false);
   };
 
-  const handleNavigationFeedCategory = (categoryId) => {
-    if (location.pathname !== "/feed") {
-      navigate(`/feed?category=${categoryId}`);
-    } else {
-      const newSearchParams = new URLSearchParams(location.search);
-      newSearchParams.set("category", categoryId);
-      navigate(`/feed?${newSearchParams.toString()}`);
-    }
+  const handleNavigationFeedCategory = () => {
+    navigate(`/feed`);
     setShowMobileMenu(false);
   };
   const deleteCookie = (name) => {
@@ -198,15 +185,15 @@ useEffect(() => {
       className="fixed top-0 left-0 z-50 w-screen"
     >
       <header className="bg-white shadow-md">
-        <div className="flex items-center justify-between px-10 py-4 max-w-[100rem] mx-auto">
+        <div className="flex items-center justify-between px-10 py-3 max-w-[100rem] mx-auto">
       <div className="flex items-center gap-x-8">
-      <img src={SOUFLogo} alt="SouF" className="w-28 cursor-pointer" onClick={() => handleNavigation("/")}/>
+      <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
       
         <ul className="flex items-center gap-x-10 font-bold text-xl text-black cursor-pointer">
-          <li>외주 의뢰하기</li>
+          <li className="flex items-center gap-1">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span></li>
           <li className="flex items-center gap-2">외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
           <li>대학생 피드보기</li>
-          <li>외주 후기</li>
+          <li className="flex items-center gap-1">외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span></li>
           <li>실험실</li>
           
           <li className="text-gray-400 font-medium">|</li>
@@ -341,44 +328,32 @@ useEffect(() => {
       
       {/* 드롭다운 메뉴 */}
       {showDropdown && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-8">
+        <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-4">
           <div className="max-w-[100rem] mx-auto px-10">
             <div className="flex justify-start">
-              {/* 외주 의뢰하기 - 로고(112px) + gap(32px) = 144px */}
-              <div className="ml-36">
+
+              <div className="ml-32">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 의뢰하기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
                 </ul>
               </div>
-              {/* 외주 찾기 - 첫 번째 메뉴 + gap(40px) */}
-              <div className="ml-6">
+
+              <div className="ml-11">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 찾기</h3>
                 <ul className="space-y-2">
-                <h3 className="text-md font-bold text-gray-800 mb-4 flex items-center gap-2">카테고리별 외주<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></h3>
-                  <li><button onClick={() => handleNavigationCategory(1)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">순수 미술</button></li>
-                  <li><button onClick={() => handleNavigationCategory(2)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디자인</button></li>
-                  <li><button onClick={() => handleNavigationCategory(3)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">음악</button></li>
-                  <li><button onClick={() => handleNavigationCategory(4)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">촬영 및 편집</button></li>
-                  <li><button onClick={() => handleNavigationCategory(5)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디지털 콘텐츠</button></li>
-                  <li><button onClick={() => handleNavigationCategory(6)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">IT · 개발</button></li>
+                  <li><button onClick={() => handleNavigationCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 외주</button></li>
                 </ul>
               </div>
-              {/* 대학생 피드보기 - 두 번째 메뉴 + gap(40px) */}
+
               <div className="ml-4">
                 <h3 className="text-md font-bold text-gray-800 mb-4">대학생 피드보기</h3>
                 <ul className="space-y-2">
-                <h3 className="text-md font-bold text-gray-800 mb-4 flex items-center gap-2">카테고리별 피드<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></h3>
-                  <li><button onClick={() => handleNavigationFeedCategory(1)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">순수 미술</button></li>
-                  <li><button onClick={() => handleNavigationFeedCategory(2)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디자인</button></li>
-                  <li><button onClick={() => handleNavigationFeedCategory(3)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">음악</button></li>
-                  <li><button onClick={() => handleNavigationFeedCategory(4)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">촬영 및 편집</button></li>
-                  <li><button onClick={() => handleNavigationFeedCategory(5)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디지털 콘텐츠</button></li>
-                  <li><button onClick={() => handleNavigationFeedCategory(6)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">IT · 개발</button></li>
+                  <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
                 </ul>
               </div>
-              {/* 외주 후기 - 세 번째 메뉴 + gap(40px) */}
+
               <div className="ml-10">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 후기</h3>
                 <ul className="space-y-2">
@@ -386,8 +361,8 @@ useEffect(() => {
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
                 </ul>
               </div>
-              {/* 실험실 - 네 번째 메뉴 + gap(40px) */}
-              <div className="ml-12">
+
+              <div className="ml-20">
                 <h3 className="text-md font-bold text-gray-800 mb-4">실험실</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 소개</button></li>

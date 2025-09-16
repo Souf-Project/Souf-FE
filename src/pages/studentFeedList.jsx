@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Profile from "../components/studentProfile/profile";
 import Pagination from "../components/pagination";
 import { getFeed } from "../api/feed";
@@ -12,12 +12,8 @@ import SEO from "../components/seo";
 
 export default function StudentFeedList({firstCategoryId, secondCategoryId, thirdCategoryId ,keyword }) {
   const navigate = useNavigate();
-  const location = useLocation();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
-
-  const searchParams = new URLSearchParams(location.search);
-  const categoryParam = searchParams.get("category");
 
   //여기 나중에 무한스크롤로 바꿔야함 ..
   const pageable = {
@@ -59,11 +55,9 @@ const {
             });
           });
           
-          // 임시로 필터링 비활성화 - 모든 데이터 표시
-          // TODO: 실제 카테고리 구조 확인 후 필터링 로직 수정
-          /*
+          // 카테고리 필터링 로직
           // 대분류가 6인 경우 중분류로 필터링
-          if (firstCategoryId === 6 && secondCategoryId) {
+          if (firstCategoryId === 6 && secondCategoryId && secondCategoryId !== 0) {
             filteredContent = data.result.content.filter(feed => {
               const feedCategories = feed.categoryDtos || [];
               
@@ -92,7 +86,10 @@ const {
               );
             });
           }
-          */
+          // 대분류만 있는 경우 (모든 데이터 표시)
+          else {
+            filteredContent = data.result.content;
+          }
           
           console.log("필터링된 피드 데이터:", filteredContent);
           
