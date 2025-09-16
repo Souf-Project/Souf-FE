@@ -5,6 +5,7 @@ import Login from "../pages/login";
 import Redirect from "../pages/redirect";
 import VerifyStudent from "../pages/verifyStudent";
 import Recruit from "../pages/recruit";
+import Feed from "../pages/feed";
 import RecruitDetail from "../pages/recruitDetails";
 import RecruitsAll from "../pages/recruitsAll";
 import MyPage from "../pages/mypage";
@@ -42,6 +43,7 @@ function AppRouter() {
           <Route path="/oauth/google/callback" element={<Redirect />} />
           <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
+          <Route path="/feed" element={<Feed />} />
           <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
           <Route path="/recruitsAll" element={<RecruitsAll />} />
           <Route path="/mypage" element={<MyPage />} />

@@ -110,6 +110,17 @@ useEffect(() => {
     }
     setShowMobileMenu(false);
   };
+
+  const handleNavigationFeedCategory = (categoryId) => {
+    if (location.pathname !== "/feed") {
+      navigate(`/feed?category=${categoryId}`);
+    } else {
+      const newSearchParams = new URLSearchParams(location.search);
+      newSearchParams.set("category", categoryId);
+      navigate(`/feed?${newSearchParams.toString()}`);
+    }
+    setShowMobileMenu(false);
+  };
   const deleteCookie = (name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   };
@@ -191,7 +202,7 @@ useEffect(() => {
       <div className="flex items-center gap-x-8">
       <img src={SOUFLogo} alt="SouF" className="w-28 cursor-pointer" onClick={() => handleNavigation("/")}/>
       
-        <ul className="flex items-center gap-x-10 font-bold text-2xl text-black cursor-pointer">
+        <ul className="flex items-center gap-x-10 font-bold text-xl text-black cursor-pointer">
           <li>외주 의뢰하기</li>
           <li className="flex items-center gap-2">외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
           <li>대학생 피드보기</li>
@@ -307,7 +318,7 @@ useEffect(() => {
         ) : (
           // 로그아웃 상태
           <>
-            <div className="flex items-center text-2xl font-bold gap-x-4">
+            <div className="flex items-center text-lg font-bold gap-x-2">
               <button
                 className="w-20"
                 onClick={() => handleNavigation("/login")}
@@ -316,7 +327,7 @@ useEffect(() => {
               </button>
             
               <button
-                className="text-white bg-blue-main px-6 py-4 font-bold rounded-3xl whitespace-nowrap shadow-md"
+                className="text-white bg-blue-main px-6 py-3 font-bold rounded-xl whitespace-nowrap shadow-md"
                 onClick={() => handleNavigation("/join")}
               >
                 회원가입
@@ -335,17 +346,17 @@ useEffect(() => {
             <div className="flex justify-start">
               {/* 외주 의뢰하기 - 로고(112px) + gap(32px) = 144px */}
               <div className="ml-36">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">외주 의뢰하기</h3>
+                <h3 className="text-md font-bold text-gray-800 mb-4">외주 의뢰하기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
                 </ul>
               </div>
               {/* 외주 찾기 - 첫 번째 메뉴 + gap(40px) */}
-              <div className="ml-12">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">외주 찾기</h3>
+              <div className="ml-6">
+                <h3 className="text-md font-bold text-gray-800 mb-4">외주 찾기</h3>
                 <ul className="space-y-2">
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">카테고리별 외주<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></h3>
+                <h3 className="text-md font-bold text-gray-800 mb-4 flex items-center gap-2">카테고리별 외주<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></h3>
                   <li><button onClick={() => handleNavigationCategory(1)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">순수 미술</button></li>
                   <li><button onClick={() => handleNavigationCategory(2)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디자인</button></li>
                   <li><button onClick={() => handleNavigationCategory(3)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">음악</button></li>
@@ -356,24 +367,28 @@ useEffect(() => {
               </div>
               {/* 대학생 피드보기 - 두 번째 메뉴 + gap(40px) */}
               <div className="ml-4">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">대학생 피드보기</h3>
+                <h3 className="text-md font-bold text-gray-800 mb-4">대학생 피드보기</h3>
                 <ul className="space-y-2">
-                  <li><button onClick={() => handleNavigation("/studentProfileList")} className="text-gray-600 hover:text-blue-500">포트폴리오</button></li>
-                  <li><button onClick={() => handleNavigation("/studentFeedList")} className="text-gray-600 hover:text-blue-500">프로젝트 후기</button></li>
-                  <li><button onClick={() => handleNavigation("/studentProfileList")} className="text-gray-600 hover:text-blue-500">학생 프로필</button></li>
+                <h3 className="text-md font-bold text-gray-800 mb-4 flex items-center gap-2">카테고리별 피드<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></h3>
+                  <li><button onClick={() => handleNavigationFeedCategory(1)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">순수 미술</button></li>
+                  <li><button onClick={() => handleNavigationFeedCategory(2)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디자인</button></li>
+                  <li><button onClick={() => handleNavigationFeedCategory(3)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">음악</button></li>
+                  <li><button onClick={() => handleNavigationFeedCategory(4)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">촬영 및 편집</button></li>
+                  <li><button onClick={() => handleNavigationFeedCategory(5)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">디지털 콘텐츠</button></li>
+                  <li><button onClick={() => handleNavigationFeedCategory(6)} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">IT · 개발</button></li>
                 </ul>
               </div>
               {/* 외주 후기 - 세 번째 메뉴 + gap(40px) */}
-              <div className="ml-20">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">외주 후기</h3>
+              <div className="ml-10">
+                <h3 className="text-md font-bold text-gray-800 mb-4">외주 후기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
                 </ul>
               </div>
               {/* 실험실 - 네 번째 메뉴 + gap(40px) */}
-              <div className="ml-16">
-                <h3 className="text-lg font-bold text-gray-800 mb-4">실험실</h3>
+              <div className="ml-12">
+                <h3 className="text-md font-bold text-gray-800 mb-4">실험실</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 소개</button></li>
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 참여</button></li>
@@ -435,7 +450,7 @@ useEffect(() => {
 
 
   <div className="px-4 py-4">
-    <h3 className="text-lg font-bold text-gray-700 mb-3">카테고리</h3>
+    <h3 className="text-md font-bold text-gray-700 mb-3">카테고리</h3>
     <ul className="space-y-2">
       {categories.map((category) => (
         <li
@@ -451,7 +466,7 @@ useEffect(() => {
         </li>
       ))}
     </ul>
-    <h3 className="text-lg font-bold text-gray-700 my-3">로그인 메뉴</h3>
+    <h3 className="text-md font-bold text-gray-700 my-3">로그인 메뉴</h3>
     {/* 추가적인 메뉴 (로그인 상태에 따라) */}
     {memberId ? (
       <div className="mt-4 space-y-2">
@@ -488,13 +503,13 @@ useEffect(() => {
           대학생 인증
         </button>
         <button
-          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg text-md"
           onClick={() => handleNavigation("/login")}
         >
           로그인
         </button>
         <button
-          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg text-md"
           onClick={() => handleNavigation("/join")}
         >
           회원가입

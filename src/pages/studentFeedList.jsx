@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Profile from "../components/studentProfile/profile";
 import Pagination from "../components/pagination";
 import { getFeed } from "../api/feed";
@@ -10,8 +10,9 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import SEO from "../components/seo";
 
-export default function StudentFeedList({secondCategoryId, thirdCategoryId ,keyword }) {
+export default function StudentFeedList({firstCategoryId, secondCategoryId, thirdCategoryId ,keyword }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
 
@@ -37,16 +38,32 @@ const {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable],
+    queryKey: ["feed", firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable],
           queryFn: async () => {
-        const data = await getFeed(categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable);
-        // console.log("getFeed 결과:", data);
+        console.log("getFeed 호출 파라미터:", { firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable });
+        const data = await getFeed(firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable);
+        console.log("getFeed 결과:", data);
         
         if (data?.result?.content) {
+          console.log("원본 피드 데이터:", data.result.content);
           let filteredContent = data.result.content;
           
+          // 각 피드의 카테고리 정보 확인
+          data.result.content.forEach((feed, index) => {
+            console.log(`피드 ${index} 카테고리 정보:`, {
+              feedId: feed.feedId,
+              categoryDtos: feed.categoryDtos,
+              firstCategory: feed.firstCategory,
+              secondCategory: feed.secondCategory,
+              thirdCategory: feed.thirdCategory
+            });
+          });
+          
+          // 임시로 필터링 비활성화 - 모든 데이터 표시
+          // TODO: 실제 카테고리 구조 확인 후 필터링 로직 수정
+          /*
           // 대분류가 6인 경우 중분류로 필터링
-          if (categoryParam === "6" && secondCategoryId) {
+          if (firstCategoryId === 6 && secondCategoryId) {
             filteredContent = data.result.content.filter(feed => {
               const feedCategories = feed.categoryDtos || [];
               
@@ -55,8 +72,8 @@ const {
               );
             });
           }
-          // 대분류가 6이 아닌경우 선탯한 소분류로 필터링
-          else if (thirdCategoryId) {
+          // 대분류가 6이 아닌경우 선택한 소분류로 필터링
+          else if (thirdCategoryId && thirdCategoryId !== 0) {
             filteredContent = data.result.content.filter(feed => {
               const feedCategories = feed.categoryDtos || [];
               
@@ -65,6 +82,19 @@ const {
               );
             });
           }
+          // 소분류가 없고 중분류만 있는 경우
+          else if (secondCategoryId && secondCategoryId !== 0) {
+            filteredContent = data.result.content.filter(feed => {
+              const feedCategories = feed.categoryDtos || [];
+              
+              return feedCategories.some(category => 
+                category.secondCategory === secondCategoryId
+              );
+            });
+          }
+          */
+          
+          console.log("필터링된 피드 데이터:", filteredContent);
           
           return {
             ...data,
