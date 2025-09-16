@@ -323,7 +323,7 @@ export default function Home() {
         /> */}
 
      {/* 카테고리 섹션 */}
-     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-[#F5F9FF] py-8 lg:h-68 shadow-md px-4 lg:px-0">
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0">
        <div className="flex flex-col justify-center gap-2 items-center max-w-[90rem] mx-auto px-24">
        <span className="text-black text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
@@ -336,14 +336,14 @@ export default function Home() {
                    alt={category.name}
                    className="w-full h-full object-contain"
                  />
-               </div>
+              </div>
                <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
-             </div>
+              </div>
            ))}
-         </div>
-       </div>
-       </div>
-     </div>
+              </div>
+            </div>
+            </div>
+            </div>
      
 <div className="flex px-24 mt-32 max-w-[90rem] mx-auto">
 {/* 실시간 대학생 피드 섹션 */}
@@ -363,14 +363,14 @@ export default function Home() {
       <div className="flex items-center mb-8 gap-4">
         <h2 className="text-2xl font-semibold">
         진행 중인 외주 의뢰
-        </h2>
+          </h2>
       <span className="font-NanumGothicCoding text-lg font-bold text-white bg-orange-300 py-0.5 px-3 rounded-lg">BEST</span>
       </div>
           <BestRecruit />
           <div className="flex justify-center items-center gap-4 mt-4">
             <button className="bg-[#2582E0] text-white text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md">무료 외주 등록하기</button>
             <button className="bg-zinc-300 text-zinc-700 text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md">더 많은 외주 찾아보기</button>
-          </div>
+  </div>
       </div>
       </div>
     
@@ -390,7 +390,7 @@ export default function Home() {
 </div>
 
 </div>
-
+  
       <div className="text-xl lg:text-3xl font-bold mb-8 mt-32 text-center">
         <span className="text-blue-500">스프</span>
         에서 이렇게 
@@ -405,17 +405,17 @@ export default function Home() {
     <div className="flex items-center mb-8 gap-4">
       <h2 className="text-2xl font-semibold">
         실시간 매칭 금액
-      </h2>
+          </h2>
       <span className="font-NanumGothicCoding text-md font-semibold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">추천</span>
    
-  </div>
+              </div>
   <div className="flex items-center justify-around">
   <MatchingPrice price={300} category="웹사이트 제작" project="연계 IT 중앙동아리 프로젝트" />
   <MatchingPrice price={3} category="로고/브랜딩" project="연계 디자이너 프로젝트" />
   <MatchingPrice price={90} category="조형물 기획/제작" project="전공 연구실 견적" />
   <MatchingPrice price={30} category="브랜드 로고 디자인" type="satisfaction" />
-  </div>
- 
+              </div>
+             
       {/* <div className="flex flex-col gap-4 px-6 lg:px-24">
         {competitions.length === 0 ? (
           <Loading text="공모전 정보를 불러오는 중..." />

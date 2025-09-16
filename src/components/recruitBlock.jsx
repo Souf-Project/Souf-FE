@@ -154,28 +154,20 @@ export default function RecruitBlock({
     }
   };
 
-  // 더보기쪽 함수
-    const handlerFeedContent = (length, data) => {
-      if(data.length > length){
-        return data.slice(0, length) + "...";
-      }
-      return data;
-    }
-
-
   return (
     <div
       onClick={handleClick}
-      className="w-full bg-white rounded-[30px] px-10 shadow-sm p-6 mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
+      className="flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
-      <div className="flex items-center gap-2 mb-4">
+      {/* <div className="flex items-center gap-2 mb-4">
         <div className={getDdayStyle(deadLine, recruitable)}>{calculateDday(deadLine, recruitable)}</div>
         <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName + " " + cityDetailName}</div>
        
+      </div> */}
+      <div className="bg-gray-300 w-48 h-48 rounded-2xl">
       </div>
-      <div className="flex flex-col justify-between items-start mb-4">
-        <h2 className="text-xl lg:text-3xl font-semibold text-gray-800">{title}</h2>
-        <div className="flex flex-col text-base lg:text-2xl font-medium text-gray-500">
+      <div className="flex flex-col justify-between items-start px-6 py-2 flex-1">
+        <div className="flex text-neutral-600 text-base">
           {(() => {
           
             if (categoryDtoList && categoryDtoList.length > 0) {
@@ -200,15 +192,33 @@ export default function RecruitBlock({
             return null;
           })()}
         </div>
-      </div>
-      <p className="text-base lg:text-lg font-regular text-gray-600 mb-4">
-        {handlerFeedContent(maxLength,content) || "내용 없음"}
+        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+        <p className="text-zinc-500 text-base line-clamp-2">
+        {content || "내용 없음"}
       </p>
-
-      <div className="flex justify-between items-center">
+      <div className="text-base font-bold w-full border-t border-gray-300 pt-2">
+        관영컴퍼니
+      </div>
+        
+      </div>
+      <div className="w-[1px] bg-gray-200 self-stretch"></div>
+      <div className="flex flex-col items-start justify-center gap-2 w-1/5 px-2">
         <div className="flex items-center gap-4">
-          <span className="text-base lg:text-2xl font-regular text-black ">{payment}</span>
+          <span className="text-sm font-regular text-black ">견적 비용</span>
+          <span className="text-sm font-regular text-black ">{payment}</span>
         </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-regular text-black ">신청 인원</span>
+          <span className="text-sm font-regular text-black ">00명</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-regular text-black ">우대 전공</span>
+          <span className="text-sm font-regular text-black ">패션 디자인 / 조형 조소 / 회화과</span>
+        </div>
+         <div className="flex items-center gap-4">
+           <span className="text-sm font-regular text-black ">납기일</span>
+           <span className="text-sm font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
+         </div>
        
       </div>
       

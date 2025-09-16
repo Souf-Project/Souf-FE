@@ -190,7 +190,7 @@ export default function Recruit() {
   return (
     <>
     <SEO  title={getFirstCategoryNameById(selectedCategory[0]) +" - 기업 공고문"} description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 기업 공고문`} subTitle='스프' />
-    <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full ">
+    <div className="pt-12 md:px-6 md:w-4/5 px-2 w-full ">
       {/* 모바일 카테고리 메뉴 */}
       <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
         showMobileCategoryMenu 
@@ -198,9 +198,7 @@ export default function Recruit() {
           : "bg-gradient-to-b from-white to-transparent"
       }`}>
         <div className="pt-20">
-          {/* 헤더 높이만큼 padding 줌 */}
           <div className="flex justify-center items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-800">기업 공고문</h1>
 
             {/* 카테고리 메뉴 버튼 */}
             <button
@@ -244,17 +242,19 @@ export default function Recruit() {
       </div>
 
       {/* 데스크톱 헤더와 검색창 */}
-      <div className="hidden lg:flex justify-between items-center mb-8 w-full">
-        <div className="flex items-center gap-4">
-          <h1 className="text-3xl font-bold text-gray-800">기업 공고문</h1>
-        </div>
+      <div className="hidden lg:flex justify-between items-center mb-8 w-full border-b border-gray-200 pb-4">
+       <div className="flex items-center gap-4 text-md font-bold">
+        <button className="hover:text-blue-main transition-colors duration-200">외주 조회</button>
+        <button className="hover:text-blue-main transition-colors duration-200">이 가격에 해주세요</button>
+        <button className="hover:text-blue-main transition-colors duration-200">견적 내어주세요</button>
+       </div>
         <div className="flex items-center gap-4">
           <SearchDropdown onSelect={handleSearchTypeChange} />
           <SearchBar
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onSubmit={handleSearch}
-            placeholder="검색어를 입력하세요"
+            placeholder="어떤 외주를 찾는지 알려주세요!"
           />
         </div>
       </div>

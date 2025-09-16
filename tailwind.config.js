@@ -11,6 +11,7 @@ module.exports = {
         },
         blue: {
           main: "#5CA1E8",
+          bright: "#F5F9FF",
         },
         orange: {
           point: "#FF966D",

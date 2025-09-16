@@ -25,7 +25,7 @@ export default function SearchBar({ value, onChange, onSubmit, placeholder
                     onChange={(e) => onChange(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder={placeholder}
-                    className={`w-full pl-3 ${height} text-lg rounded-[30px] border border-gray-200 shadow-md focus:outline-none focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white`}
+                    className={`w-full pl-3 ${height} text-md rounded-[30px] border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-blue-bright`}
                 />
                 <button
                     type="submit"
