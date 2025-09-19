@@ -87,10 +87,7 @@ export default function RecruitUpload() {
         region: editData.cityDetailName || '',
         city: editData.cityName || '',
         deadline: dateTime.date,
-        deadlineTime: '00:00',
-        deadlineHour: dateTime.hour,
-        deadlineMinute: dateTime.minute,
-        deadlinePeriod: dateTime.period,
+        // 여기 기간으로 
         companyName: editData.nickname || nickname || '',
         minPayment: parsePayment(editData.minPayment),
         maxPayment: parsePayment(editData.maxPayment),
@@ -135,10 +132,6 @@ export default function RecruitUpload() {
         region: '',
         city: '',
     deadline: '',
-        deadlineTime: '00:00',
-        deadlineHour: '01',
-        deadlineMinute: '00',
-        deadlinePeriod: 'AM',
         companyName: nickname || '',
         minPayment: '',
         maxPayment: '',
@@ -225,19 +218,7 @@ export default function RecruitUpload() {
     { city_id: 1, name: "서울"},
     { city_id: 2, name: "경기"}
   ];
-  
-  // 12시간 형식을 24시간 형식으로 변환하는 함수
-  const convertTo24HourFormat = (hour, minute, period) => {
-    let hour24 = parseInt(hour);
-    
-    if (period === 'PM' && hour24 !== 12) {
-      hour24 += 12;
-    } else if (period === 'AM' && hour24 === 12) {
-      hour24 = 0;
-    }
-    
-    return `${hour24.toString().padStart(2, '0')}:${minute}`;
-  };
+
 
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
@@ -250,15 +231,7 @@ export default function RecruitUpload() {
         return;
       }
       
-      const validateFileSize = (file) => {
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        const isValid = file.size <= maxSize;
-            if (!isValid) {
-          alert(`${file.name}의 크기가 10MB를 초과합니다.`);
-            }
-        return isValid;
-          };
-
+     
       const validFiles = fileArray.filter(validateFileSize);
           setFormData(prev => ({
             ...prev,
@@ -335,7 +308,7 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
-      const deadlineDateTime = `${formData.deadline}T${convertTo24HourFormat(formData.deadlineHour, formData.deadlineMinute, formData.deadlinePeriod)}`;
+      const deadlineDateTime = `${formData.deadline}}`;
   
       const formDataToSend = {
         title: formData.title,
@@ -751,45 +724,7 @@ dtoList.forEach((dto, i) => {
                 placeholder="마감일"
               />
             </div>
-          <div>
-            <label className="block text-xl font-semibold text-black mb-2">
-              마감 시간
-            </label>
-            <div className="flex items-center gap-2">
-            <select
-                name="deadlinePeriod"
-                value={formData.deadlinePeriod}
-                onChange={handleChange}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-              >
-                <option value="AM">오전</option>
-                <option value="PM">오후</option>
-              </select>
-              <select
-                name="deadlineHour"
-                value={formData.deadlineHour}
-                onChange={handleChange}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-              <span className="text-gray-500">:</span>
-              <select
-                name="deadlineMinute"
-                value={formData.deadlineMinute}
-                onChange={handleChange}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-              >
-                <option value="00">00</option>
-                <option value="30">30</option>
-              </select>
-              
-            </div>
-          </div>
+          
         </div>
 
         <div className="grid grid-cols-2 gap-6">
