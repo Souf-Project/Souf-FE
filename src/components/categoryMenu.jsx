@@ -67,7 +67,7 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
 
   // PC 버전 카테고리 메뉴 (박스 형태)
 const DesktopCategoryMenu = () => (
-  <div className="hidden lg:block w-60 h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto">
+  <div className="hidden lg:block w-54 h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto mb-20">
     <h3 className="text-base font-bold text-gray-800 mb-4">카테고리</h3>
     
     {/* 대분류 섹션 */}
@@ -126,7 +126,7 @@ const DesktopCategoryMenu = () => (
               
               {/* 소분류 (IT·개발이 아닌 경우에만) */}
               {second.first_category_id !== 6 && (
-                <div className="ml-4 mt-1 border-l-2 border-gray-200 pl-3">
+                <div className="mb-1">
                   {thirdCategories.third_category
                     .filter(third => third.second_category_id === second.second_category_id)
                     .map((third) => {

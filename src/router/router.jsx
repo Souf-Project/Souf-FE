@@ -25,7 +25,6 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
-import FloatingActionButton from "../components/FloatingActionButton";
 import { HelmetProvider } from 'react-helmet-async';
 
 function AppRouter() {
@@ -67,7 +66,6 @@ function AppRouter() {
         </Routes>
       </main>
       {!isChatPage && <Footer />}
-      <FloatingActionButton />
     </div>
   );
 }

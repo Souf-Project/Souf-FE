@@ -11,6 +11,8 @@ import Pagination from "../components/pagination";
 import Loading from "../components/loading";
 import SEO from "../components/seo";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
+import EstimateBanner from "../components/home/EstimateBanner";
+import FilterDropdown from "../components/filterDropdown";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -24,7 +26,15 @@ export default function Recruit() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
+  const [sortBy, setSortBy] = useState('createdAt');
   const pageSize = 12;
+
+  // 필터 옵션
+  const filterOptions = [
+    { value: 'createdAt', label: '조회순' },
+    { value: 'maxPayment', label: '금액 높은 순' },
+    { value: 'minPayment', label: '금액 낮은 순' }
+  ];
 
 //공고문
 
@@ -61,7 +71,7 @@ export default function Recruit() {
         recruitSearchReqDto: {},
           page: currentPage,
           size: pageSize,
-          sort: ["createdAt,desc"],
+          sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
        
       });
 
@@ -116,7 +126,7 @@ export default function Recruit() {
         recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
           page: currentPage,
           size: pageSize,
-          sort: ["createdAt,desc"],
+          sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
       });
 
       console.log("검색 API 응답:", response);
@@ -146,13 +156,14 @@ export default function Recruit() {
     searchType,
     currentPage,
     pageSize,
+    sortBy,
     allSecondCategories
   ]);
   // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
     // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
     fetchRecruits();
-  }, [selectedCategory, currentPage, fetchRecruits]);
+  }, [selectedCategory, currentPage, sortBy, fetchRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -175,6 +186,11 @@ export default function Recruit() {
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
   };
 
+  const handleSortChange = (value) => {
+    setSortBy(value);
+    setCurrentPage(0); // 정렬 변경 시 첫 페이지로 이동
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -188,9 +204,9 @@ export default function Recruit() {
   }
 
   return (
-    <>
+    <div className="">
     <SEO  title={getFirstCategoryNameById(selectedCategory[0]) +" - 기업 공고문"} description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 기업 공고문`} subTitle='스프' />
-    <div className="pt-10 md:px-6 md:w-4/5 px-2 w-full ">
+    <div className="w-full">
       {/* 모바일 카테고리 메뉴 */}
       <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
         showMobileCategoryMenu 
@@ -242,7 +258,8 @@ export default function Recruit() {
       </div>
 
       {/* 데스크톱 헤더와 검색창 */}
-      <div className="hidden lg:flex justify-between items-center mb-8 w-full border-b border-gray-200 pb-4">
+      <div className="w-screen border-b border-gray-200 mb-4">
+      <div className="hidden lg:flex justify-between items-center my-2 w-full max-w-[70rem] mx-auto">
        <div className="flex items-center gap-4 text-md font-bold">
         <button className="hover:text-blue-main transition-colors duration-200">외주 조회</button>
         <button className="hover:text-blue-main transition-colors duration-200">이 가격에 해주세요</button>
@@ -258,8 +275,10 @@ export default function Recruit() {
           />
         </div>
       </div>
+      </div>
 
-      <div className="flex flex-col lg:flex-row">
+      <div className="max-w-[70rem] w-full mx-auto">
+        <div className="flex flex-col lg:flex-row max-w-[70rem] w-full">
         {/* 데스크톱 카테고리 메뉴 */}
         <div className="hidden lg:block">
           <CategoryMenu
@@ -275,10 +294,25 @@ export default function Recruit() {
         </div>
         
         {/* 공고문 목록 */}
-        <div className="w-full lg:w-3/4 mx-auto">
+        <div className="w-full ml-4">
+          <div className="mb-4 flex justify-between items-center ">
+            <div className="flex items-center gap-4">
+            <FilterDropdown
+              options={filterOptions}
+              selectedValue={sortBy}
+              onSelect={handleSortChange}
+              placeholder="정렬 기준"
+            />
+            <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button>
+            </div>
+
+            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md">외주 등록하기</button>
+            
+          </div>
+          
           {filteredRecruits.length > 0 ? (
             <>
-              {filteredRecruits.map((recruit) => {
+              {filteredRecruits.map((recruit, index) => {
                 const paymentString =
                   recruit.minPayment && recruit.maxPayment
                     ? recruit.minPayment === recruit.maxPayment
@@ -287,21 +321,28 @@ export default function Recruit() {
                     : recruit.minPayment || recruit.maxPayment || "금액 협의";
 
                 return (
-                  <RecruitBlock
-                    key={recruit.recruitId}
-                    id={recruit.recruitId}
-                    title={recruit.title}
-                    content={recruit.content}
-                    deadLine={recruit.deadLine}
-                    recruitable = {recruit.recruitable}
-                    payment={paymentString}
-                    minPayment={recruit.minPayment}
-                    maxPayment={recruit.maxPayment}
-                    cityName={recruit.cityName}
-                    cityDetailName={recruit.cityDetailName}
-                    secondCategory={recruit.secondCategory}
-                    categoryDtoList={recruit.categoryDtoList}
-                  />
+                  <div key={recruit.recruitId}>
+                    <RecruitBlock
+                      id={recruit.recruitId}
+                      title={recruit.title}
+                      content={recruit.content}
+                      deadLine={recruit.deadLine}
+                      recruitable = {recruit.recruitable}
+                      payment={paymentString}
+                      minPayment={recruit.minPayment}
+                      maxPayment={recruit.maxPayment}
+                      cityName={recruit.cityName}
+                      cityDetailName={recruit.cityDetailName}
+                      secondCategory={recruit.secondCategory}
+                      categoryDtoList={recruit.categoryDtoList}
+                    />
+                    {/* 3개마다 EstimateBanner 삽입 (첫 번째는 제외) */}
+                    {(index + 1) % 5 === 0 && index < filteredRecruits.length - 1 && (
+                      <div className="my-8">
+                        <EstimateBanner color="black" />
+                      </div>
+                    )}
+                  </div>
                 );
               })}
               <Pagination
@@ -318,8 +359,9 @@ export default function Recruit() {
             </div>
           )}
         </div>
+        </div>
       </div>
     </div>
-    </>
+    </div>
   );
 }

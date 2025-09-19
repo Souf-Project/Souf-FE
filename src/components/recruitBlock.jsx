@@ -5,6 +5,7 @@ import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { getRecruitDetail } from '../api/recruit';
 import AlertModal from './alertModal';
+import shareIco from '../assets/images/shareIco.svg';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return 0;
@@ -166,7 +167,8 @@ export default function RecruitBlock({
       </div> */}
       <div className="bg-gray-300 w-48 h-48 rounded-2xl">
       </div>
-      <div className="flex flex-col justify-between items-start px-6 py-2 flex-1">
+      <div className="flex flex-col px-6 py-3 flex-1 gap-2">
+        <div className="flex justify-between items-center">
         <div className="flex text-neutral-600 text-base">
           {(() => {
           
@@ -192,31 +194,35 @@ export default function RecruitBlock({
             return null;
           })()}
         </div>
-        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+        {/* <img src={shareIco} alt="shareIco" className="w-4 h-4 cursor-pointer" 
+        onClick={console.log("share")} /> */}
+        </div>
+        
+        <h2 className="text-xl font-semibold text-gray-800 line-clamp-1">{title}</h2>
         <p className="text-zinc-500 text-base line-clamp-2">
         {content || "내용 없음"}
       </p>
-      <div className="text-base font-bold w-full border-t border-gray-300 pt-2">
+      <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
         관영컴퍼니
       </div>
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch"></div>
-      <div className="flex flex-col items-start justify-center gap-2 w-1/5 px-2">
+      <div className="flex flex-col items-start justify-center gap-2 w-48 px-2">
         <div className="flex items-center gap-4">
-          <span className="text-sm font-regular text-black ">견적 비용</span>
+          <span className="text-sm font-bold text-black ">견적 비용</span>
           <span className="text-sm font-regular text-black ">{payment}</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm font-regular text-black ">신청 인원</span>
+          <span className="text-sm font-bold text-black ">신청 인원</span>
           <span className="text-sm font-regular text-black ">00명</span>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm font-regular text-black ">우대 전공</span>
+          <span className="text-sm font-bold text-black ">우대 전공</span>
           <span className="text-sm font-regular text-black ">패션 디자인 / 조형 조소 / 회화과</span>
         </div>
          <div className="flex items-center gap-4">
-           <span className="text-sm font-regular text-black ">납기일</span>
+           <span className="text-sm font-bold text-black ">납기일</span>
            <span className="text-sm font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
          </div>
        

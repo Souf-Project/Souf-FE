@@ -8,6 +8,7 @@ import { uploadRecruit, uploadToS3, postRecruitMedia, updateRecruit } from '../a
 import { UserStore } from '../store/userStore';
 import { filterEmptyCategories } from '../utils/filterEmptyCategories';
 import Loading from '../components/loading';
+import infoIcon from '../assets/images/infoIcon.svg';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -21,6 +22,9 @@ export default function RecruitUpload() {
   
   // 로딩 상태 추가
   const [isLoading, setIsLoading] = useState(false);
+  
+  // 견적 방식 상태 추가
+  const [estimateType, setEstimateType] = useState('fixed'); // 'fixed' 또는 'estimate'
   
   // 급여 파싱 함수
   const parsePayment = (paymentString) => {
@@ -230,6 +234,11 @@ export default function RecruitUpload() {
     }
   };
 
+  // 견적 방식 버튼 클릭 핸들러
+  const handleEstimateTypeChange = (type) => {
+    setEstimateType(type);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -418,24 +427,13 @@ dtoList.forEach((dto, i) => {
       <h1 className="text-3xl font-bold w-1/4 mx-auto whitespace-nowrap">
         {isEditMode ? '공고문 수정' :   '공고문 작성'}
       </h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            제목
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-            required
-          />
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+          STEP 1. 
         </div>
-
         <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            기업명
+          <label className="block text-xl font-semibold text-black mb-2">
+            기업 및 개인 명 작성
           </label>
           <input
             type="text"
@@ -448,55 +446,167 @@ dtoList.forEach((dto, i) => {
             disabled
           />
         </div>
-
         <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            급여
+          <label className="block text-xl font-semibold text-black mb-2">
+            로고 및 아이콘 등록
+          </label>
+          <input
+            type="text"
+            name="icon"
+            // 여기 밑에 함수 수정 필요
+            value={formData.title} 
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+            기업 및 개인 간략 소개
+          </label>
+           <textarea
+             name="icon"
+             // 여기 밑에 함수 수정 필요
+             value={formData.title} 
+             onChange={handleChange}
+             className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
+             required
+             placeholder="1000자 이내, 이미지 첨부 가능"
+             rows="8"
+           />
+        </div>
+
+        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+          STEP 2. 
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+            공고문 제목 작성
+          </label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+          공고 간략 소개(리스트 아래 들어갈 내용, 1~2줄)
+          </label>
+          <textarea
+             name="briefIntroduction"
+             // 여기 밑에 함수 수정 필요
+             value={formData.title} 
+             onChange={handleChange}
+             className="w-full h-36 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
+             required
+             rows="2"
+           />
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+            공고문 내용 작성
+          </label>
+          <textarea
+            name="content"
+            value={formData.content}
+            onChange={handleChange}
+            rows="6"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
+             placeholder="1500자 이내, 이미지 첨부 가능"
+            required
+          />
+        </div>
+       
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+            동영상 및 참고 파일 첨부
+          </label>
+          <input
+            type="file"
+            name="files"
+            onChange={handleChange}
+            multiple
+            accept="image/*"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+          />
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+              작업 기간
           </label>
           <div className="flex items-center gap-2">
-            <div className="flex-1">
-              <input
-                type="number"
-                name="minPayment"
-                value={formData.minPayment}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
-                  isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
-                required
-                disabled={isEditMode}
-                readOnly={isEditMode}
-              />
-            </div>
-            <span className="text-gray-500">~</span>
-            <div className="flex-1">
-              <input
-                type="number"
-                name="maxPayment"
-                value={formData.maxPayment}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
-                  isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
-                required
-                disabled={isEditMode}
-                readOnly={isEditMode}
-              />
-            </div>
-            <span className="text-gray-500 whitespace-nowrap">만원</span>
+          <input
+            type="date"
+            name="deadline"
+            value={formData.deadline}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            required
+          />
+          <input
+            type="date"
+            name="deadline"
+            value={formData.deadline}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            required
+          />
           </div>
-        </div>
+          <div>
+            <label className="block text-xl font-semibold text-black mb-2">
+              마감 시간
+            </label>
+            <div className="flex items-center gap-2">
+            <select
+                name="deadlinePeriod"
+                value={formData.deadlinePeriod}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+              >
+                <option value="AM">오전</option>
+                <option value="PM">오후</option>
+              </select>
+              <select
+                name="deadlineHour"
+                value={formData.deadlineHour}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+              <span className="text-gray-500">:</span>
+              <select
+                name="deadlineMinute"
+                value={formData.deadlineMinute}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+              >
+                <option value="00">00</option>
+                <option value="30">30</option>
+              </select>
+              
+            </div>
+          </div>
+          </div>
 
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-xl font-semibold text-black mb-2">
               근무 형태
             </label>
             <select
               name="workType"
               value={formData.workType}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
             >
               <option value="online">온라인</option>
               <option value="offline">오프라인</option>
@@ -504,7 +614,7 @@ dtoList.forEach((dto, i) => {
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xl font-semibold text-gray-700">
+              <label className="block text-xl font-semibold text-black">
                 지역
               </label>
               <div className="flex items-center gap-2">
@@ -513,7 +623,7 @@ dtoList.forEach((dto, i) => {
                   name="isregionIrrelevant"
                   checked={formData.isregionIrrelevant}
                   onChange={handleChange}
-                  className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded "
+                  className="w-4 h-4 text-yellow-point border-gray-300 rounded "
                 />
                 <label className="text-xl text-gray-600">지역 무관</label>
               </div>
@@ -524,7 +634,7 @@ dtoList.forEach((dto, i) => {
                 value={formData.city}
                 onChange={handleChange}
                 disabled={formData.isregionIrrelevant || isEditMode}
-                className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
+                className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
                   formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
                 }`}
                 required={!formData.isregionIrrelevant}
@@ -543,7 +653,7 @@ dtoList.forEach((dto, i) => {
               onChange={handleChange}
                 disabled={formData.isregionIrrelevant}
 
-                className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white ${
+                className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
                   formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
                 }`}
                 required={!formData.isregionIrrelevant}
@@ -560,92 +670,93 @@ dtoList.forEach((dto, i) => {
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-2 gap-6">
         <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-              마감 기한
-          </label>
-          <input
-            type="date"
-            name="deadline"
-            value={formData.deadline}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-            required
-          />
-          </div>
-          
-          <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
-              마감 시간
-            </label>
-            <div className="flex items-center gap-2">
-            <select
-                name="deadlinePeriod"
-                value={formData.deadlinePeriod}
-                onChange={handleChange}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              >
-                <option value="AM">오전</option>
-                <option value="PM">오후</option>
-              </select>
-              <select
-                name="deadlineHour"
-                value={formData.deadlineHour}
-                onChange={handleChange}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              >
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-              <span className="text-gray-500">:</span>
-              <select
-                name="deadlineMinute"
-                value={formData.deadlineMinute}
-                onChange={handleChange}
-                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              >
-                <option value="00">00</option>
-                <option value="30">30</option>
-              </select>
-              
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <input
-              type="checkbox"
-              name="hasPreference"
-              checked={formData.hasPreference}
-              onChange={handleChange}
-              className="w-4 h-4 text-yellow-point focus:ring-yellow-point border-gray-300 rounded"
-            />
-            <label className="text-xl font-semibold text-gray-700">
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-xl font-semibold text-black">
               우대사항 유무
             </label>
           </div>
-          {formData.hasPreference && (
             <textarea
               name="preferentialTreatment"
               value={formData.preferentialTreatment}
               onChange={handleChange}
               rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
             />
-          )}
         </div>
 
+        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+          STEP 3. 
+        </div>
         <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            카테고리
+          <label className="block text-xl font-semibold text-black mb-2">
+            견적 방식
           </label>
+           <div className="flex gap-2">
+           <button 
+             type="button"
+             onClick={() => handleEstimateTypeChange('fixed')}
+             className={`w-1/2 py-4 text-lg font-semibold rounded-md focus:ring-2 focus:border-transparent transition-colors ${
+               estimateType === 'fixed' 
+                 ? 'bg-blue-500 text-white' 
+                 : 'bg-neutral-100 text-black'
+             }`}
+           >
+             생각한 금액이 있어요.
+           </button>
+           <button 
+             type="button"
+             onClick={() => handleEstimateTypeChange('estimate')}
+             className={`w-1/2 py-4 text-lg font-semibold rounded-md focus:ring-2 focus:border-transparent transition-colors ${
+               estimateType === 'estimate' 
+                 ? 'bg-blue-500 text-white' 
+                 : 'bg-neutral-100 text-black'
+             }`}
+           >
+             견적 받아보고 싶어요.
+           </button>
+           </div>
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
+          <input
+            type="number"
+            name="estimatePayment"
+            value={formData.estimatePayment}
+            onChange={handleChange}
+            className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+          />
+          <span className="ml-4 text-gray-500 whitespace-nowrap">만원</span>
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-xl font-semibold text-black">
+              계약 방식
+            </label>
+          </div>
+            <textarea
+              name="preferentialTreatment"
+              value={formData.preferentialTreatment}
+              onChange={handleChange}
+              rows="3"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+              placeholder="Ex) 1. 매칭 성공 시, 계약서를 쓸게요. 
+     2. 추가로 얘기 후에 결정할게요.
+     3. 1차 선입금, 마무리 후 잔금 입금할게요.  "
+            />
+        </div>
+
+        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+          STEP 4. 
+        </div>
+        <div>
+          <label className="block text-xl font-semibold text-black mb-2">
+            공고에 맞는 카테고리 선택
+          </label>
+          <p className="flex items-center gap-2 mb-2 text-base">
+            <img src={infoIcon} alt="infoIcon" className="w-4 h-4" />
+            전공자들에게 AI 추천 방식 적용 및 공고 지원률 상승에 도움이 돼요!
+          </p>
           <div className="grid grid-cols-3 gap-4 mb-4">
             {formData?.categoryDtos?.map((category, index) => (
           <CategorySelectBox 
@@ -661,46 +772,17 @@ dtoList.forEach((dto, i) => {
             ))}
             </div>
         </div>
-
-        <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            내용
-          </label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            rows="6"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white"
-            required
-          />
+        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+          LAST STEP. 
         </div>
-
-        <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-            파일 첨부
-          </label>
-          <input
-            type="file"
-            name="files"
-            onChange={handleChange}
-            multiple
-            accept="image/*"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-          />
-          <p className="mt-1 text-sm text-gray-500">
-            파일 크기는 10MB 이하로 업로드해주세요.
-          </p>
-        </div>
-
         <div className="flex gap-4 items-center justify-center">
         <button
             type="submit"
             disabled={isLoading}
-            className={`px-6 py-3 rounded-lg font-bold transition-colors duration-200 ${
+            className={`px-8 py-4 rounded-lg font-bold text-2xl transition-colors duration-200 ${
               isLoading 
                 ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
-                : 'bg-yellow-main text-black hover:bg-yellow-point'
+                : 'bg-[#3E78E3] text-white'
             }`}
           >
             {isLoading ? '처리 중...' : (isEditMode ? '수정완료' : '업로드')}
@@ -709,7 +791,7 @@ dtoList.forEach((dto, i) => {
             type="button"
             onClick={() => navigate('/recruit?category=1')}
             disabled={isLoading}
-            className={`px-6 py-3 border border-gray-300 rounded-lg font-bold transition-colors duration-200 ${
+            className={`px-8 py-4 bg-zinc-300 rounded-lg font-bold text-2xl transition-colors duration-200 ${
               isLoading 
                 ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
                 : 'hover:bg-gray-50'

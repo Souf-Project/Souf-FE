@@ -24,7 +24,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #FCFCFC;
+  /* background-color: #FCFCFC; */
+  background-color: #ffffff;
   background-attachment: fixed;
   display: block !important;
   flex-direction: unset !important;
@@ -73,3 +74,20 @@ input {
 }
 
 
+.nanum-myeongjo-regular {
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nanum-myeongjo-bold {
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.nanum-myeongjo-extrabold {
+  font-family: "Nanum Myeongjo", serif;
+  font-weight: 800;
+  font-style: normal;
+}

@@ -120,12 +120,6 @@ export default function RecruitDetail() {
     return `${year}.${month}.${day} ${hours}:${minutes}`;
   };
 
-  // 닉네임 마스킹 함수
-  const maskNickname = (nickname) => {
-    if (!nickname || nickname.length <= 1) return nickname;
-    return nickname.charAt(0) + '*'.repeat(nickname.length - 1);
-  };
-
   const handleGoBack = () => {
     navigate(-1);
   };
@@ -250,7 +244,7 @@ export default function RecruitDetail() {
     content: displayData?.content,
   },
   {
-    maskNickname,
+    nickname: displayData?.nickname,
     formatDate,
   }
 );
@@ -265,12 +259,31 @@ export default function RecruitDetail() {
           content={seoContent}
         />
       )}
-     
-      <div className="pt-16 px-8 w-5/6 mx-auto">
-       {/* 데스크톱 헤더와 검색창 */}
-       <div className="hidden lg:flex justify-between items-center mb-8 w-full border-b border-gray-200 pb-4">
-        <div></div>
+     {/* 데스크톱 헤더와 검색창 */}
+     <div className="hidden lg:flex justify-between items-center mb-8 w-full border-b border-gray-200 pt-16 px-8 max-w-[80rem] mx-auto">
+       <div className="flex flex-col text-gray-600">
+            {categoryNames.map((category, index) => (
+              <div key={index} className="mb-1">
+                <span>{category.first}</span>
+                {category.second && (
+                  <>
+                <span className="mx-2">&gt;</span>
+                <span>{category.second}</span>
+                  </>
+                )}
+                {category.third && (
+                  <>
+                <span className="mx-2">&gt;</span>
+                <span className="font-medium text-black">{category.third}</span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
       </div>
+      <div className="flex w-full mx-auto max-w-[80rem]">
+        <div className="w-5/6 mx-auto">
+       
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -280,9 +293,13 @@ export default function RecruitDetail() {
         </button>
 
         <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
-          <div className="flex justify-between items-start">
-            <div>{maskNickname(displayData?.nickname)}</div>
-            {isAuthor ? (
+          <div className="flex justify-end items-start">
+            
+            
+          </div>
+          <div className="flex justify-between items-center">
+          <h1 className="text-xl font-bold">{displayData?.title}</h1>
+          {isAuthor ? (
               <div className="relative">
                 <button
                   onClick={toggleMenu}
@@ -317,64 +334,11 @@ export default function RecruitDetail() {
               />
             )}
           </div>
-          <h1 className="text-3xl font-semibold">{displayData?.title}</h1>
-          <div className="border-t border-gray-200 my-6"></div>
+         
+          <div className="text-base font-bold mt-6">{displayData?.nickname}</div>
           
-          <div className="flex flex-col text-gray-600 mb-6 mt-2">
-            {categoryNames.map((category, index) => (
-              <div key={index} className="mb-1">
-                <span>{category.first}</span>
-                {category.second && (
-                  <>
-                <span className="mx-2">&gt;</span>
-                <span>{category.second}</span>
-                  </>
-                )}
-                {category.third && (
-                  <>
-                <span className="mx-2">&gt;</span>
-                <span className="font-medium text-black">{category.third}</span>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 gap-8 my-6">
-            <div className="space-y-4">
-              <div>
-                <span className="text-black mb-1">급여</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">
-                  {minPrice && maxPrice
-                    ? `${minPrice.toLocaleString()}원 ~ ${maxPrice.toLocaleString()}원`
-                    : '금액 협의'}
-                </span>
-              </div>
-              <div>
-                <span className="text-black mb-1">기한</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">{formatDate(displayData?.deadline)}</span>
-              </div>
-              <div>
-                <span className="text-black mb-1">지역</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">{recruitDetail ? `${recruitDetail.cityName} ${recruitDetail.cityDetailName || ''}`.trim() : displayData?.location}</span>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <span className="text-black mb-1">우대사항</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium" style={{ whiteSpace: 'pre-wrap' }}>
-                  {recruitDetail?.preferentialTreatment
-                    ? recruitDetail.preferentialTreatment
-                    : (displayData?.preferMajor ? '전공자 우대' : '경력/경험 무관')}
-                </span>
-              </div>
-              
-            </div>
-          </div>
+          
+          
 
           <div className="border-t border-gray-200 my-6"></div>
           <div>
@@ -389,6 +353,7 @@ export default function RecruitDetail() {
           ) : (
             <></>
           )}
+          </div>
           </div>
 
         
@@ -406,6 +371,36 @@ export default function RecruitDetail() {
           )}
         </div>
         </div>
+        {/* 우측 외주 조건 */}
+        <div className="w-1/4 bg-[#FCFCFC] mt-10 p-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-black mb-1">급여</span>
+                <span className="font-medium">
+                  {minPrice && maxPrice
+                    ? `${minPrice.toLocaleString()}원 ~ ${maxPrice.toLocaleString()}원`
+                    : '금액 협의'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-black mb-1">기한</span>
+                <span className="font-medium">{formatDate(displayData?.deadline)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-black mb-1">지역</span>
+                <span className="font-medium">{recruitDetail ? `${recruitDetail.cityName} ${recruitDetail.cityDetailName || ''}`.trim() : displayData?.location}</span>
+              </div>
+            </div>
+              <div className="flex items-center justify-between">
+                <span className="">우대사항</span>
+                <span className="font-medium" style={{ whiteSpace: 'pre-wrap' }}>
+                  {recruitDetail?.preferentialTreatment
+                    ? recruitDetail.preferentialTreatment
+                    : (displayData?.preferMajor ? '전공자 우대' : '경력/경험 무관')}
+                </span>
+              
+            </div>
+          </div>
   {isApplyModalOpen && (
         <AlertModal
           type="warning"

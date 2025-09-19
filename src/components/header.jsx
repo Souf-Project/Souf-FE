@@ -226,14 +226,6 @@ useEffect(() => {
         {memberId ? (
           // 로그인 상태
           <div className="flex items-center gap-x-4">
-             
-            {roleType === "MEMBER" && 
-            <button
-              className="text-white bg-blue-main px-5 py-2 font-bold rounded-lg whitespace-nowrap shadow-md"
-              onClick={() => handleNavigation("/verifyStudent")}
-            >
-              대학생 인증
-            </button>}
             <button className="p-2" onClick={() => handleNavigation("/chat")}>
               <img src={ChatIcon} alt="chat" className="w-6 h-6" />
             </button>
@@ -471,12 +463,6 @@ useEffect(() => {
       </div>
     ) : (
       <div className="mt-4 space-y-2">
-        <button
-          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
-          onClick={() => handleNavigation("/verifyStudent")}
-        >
-          대학생 인증
-        </button>
         <button
           className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg text-md"
           onClick={() => handleNavigation("/login")}
