@@ -260,10 +260,10 @@ export default function RecruitUpload() {
           };
 
       const validFiles = fileArray.filter(validateFileSize);
-      setFormData(prev => ({
-        ...prev,
+          setFormData(prev => ({
+            ...prev,
         files: [...prev.files, ...validFiles]
-      }));
+          }));
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -279,22 +279,21 @@ export default function RecruitUpload() {
     }
   };
 
-  // 견적 방식 버튼 클릭 핸들러
   const handleEstimateTypeChange = (type) => {
     setEstimateType(type);
   };
 
-  // STEP 클릭 시 해당 섹션으로 스크롤
   const handleStepClick = (stepNumber) => {
-    console.log('STEP 클릭:', stepNumber);
     const stepElement = document.querySelector(`[data-step="${stepNumber}"]`);
-    console.log('찾은 요소:', stepElement);
     if (stepElement) {
-      stepElement.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      const headerHeight = 80; 
+      const elementPosition = stepElement.offsetTop - headerHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
       });
-      // 스크롤 후 현재 단계 업데이트
+
       setTimeout(() => {
         setCurrentStep(stepNumber);
       }, 100);
@@ -689,10 +688,10 @@ dtoList.forEach((dto, i) => {
             {/* 파일 첨부 버튼 - 3개 미만일 때만 표시 */}
             {formData.files.length < 3 && (
               <div className="relative">
-                <input
+              <input
                   type="file"
                   name="files"
-                  onChange={handleChange}
+                onChange={handleChange}
                   multiple
                   accept="image/*,video/*"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -717,7 +716,7 @@ dtoList.forEach((dto, i) => {
                   </svg>
                 
                 </label>
-              </div>
+            </div>
             )}
           </div>
           {/* 파일 개수 표시 */}
@@ -734,11 +733,11 @@ dtoList.forEach((dto, i) => {
               작업 기간
           </label>
           <div className="flex items-center gap-2">
-          <input
+              <input
             type="date"
             name="startDate"
             value={formData.startDate || ''}
-            onChange={handleChange}
+                onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
             placeholder="시작일"
           />
@@ -912,8 +911,8 @@ dtoList.forEach((dto, i) => {
            >
              견적 받아보고 싶어요.
            </button>
+            </div>
           </div>
-        </div>
         <div>
           <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
             <input
