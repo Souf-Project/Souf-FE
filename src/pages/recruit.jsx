@@ -306,7 +306,7 @@ export default function Recruit() {
             <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button>
             </div>
 
-            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md">외주 등록하기</button>
+            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md" onClick={() => navigate("/recruitUpload")}>외주 등록하기</button>
             
           </div>
           

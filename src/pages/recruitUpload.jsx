@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CategorySelectBox from '../components/categorySelectBox';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
@@ -8,32 +8,58 @@ import { uploadRecruit, uploadToS3, postRecruitMedia, updateRecruit } from '../a
 import { UserStore } from '../store/userStore';
 import { filterEmptyCategories } from '../utils/filterEmptyCategories';
 import Loading from '../components/loading';
+import StepIndicator from '../components/StepIndicator';
 import infoIcon from '../assets/images/infoIcon.svg';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
   const location = useLocation();
-  // 나중에 닉네임으로 바꾸기
   const { nickname } = UserStore();
   
-  // 수정 모드 확인
   const isEditMode = location.state?.isEditMode || false;
   const editData = location.state?.recruitDetail || location.state?.recruitData;
   
-  // 로딩 상태 추가
   const [isLoading, setIsLoading] = useState(false);
+  const [estimateType, setEstimateType] = useState('fixed');
+  const [currentStep, setCurrentStep] = useState(1);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const step1Element = document.querySelector('[data-step="1"]');
+      const step2Element = document.querySelector('[data-step="2"]');
+      const step3Element = document.querySelector('[data-step="3"]');
+      const step4Element = document.querySelector('[data-step="4"]');
+
+      if (step1Element && step2Element && step3Element && step4Element) {
+        const step1Rect = step1Element.getBoundingClientRect();
+        const step2Rect = step2Element.getBoundingClientRect();
+        const step3Rect = step3Element.getBoundingClientRect();
+        const step4Rect = step4Element.getBoundingClientRect();
+
+        if (step4Rect.top <= window.innerHeight * 0.4) {
+          setCurrentStep(4);
+        } else if (step3Rect.top <= window.innerHeight * 0.5) {
+          setCurrentStep(3);
+        } else if (step2Rect.top <= window.innerHeight * 0.5) {
+          setCurrentStep(2);
+        } else {
+          setCurrentStep(1);
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
-  // 견적 방식 상태 추가
-  const [estimateType, setEstimateType] = useState('fixed'); // 'fixed' 또는 'estimate'
-  
-  // 급여 파싱 함수
+
   const parsePayment = (paymentString) => {
     if (!paymentString || typeof paymentString !== 'string') return '';
     let numStr = paymentString.replace(/[^0-9.]/g, '');
     return numStr;
   };
 
-  // 날짜와 시간 파싱 함수
+
   const parseDateTime = (dateTimeString) => {
     if (!dateTimeString) return { date: '', hour: '01', minute: '00', period: 'AM' };
     
@@ -71,6 +97,13 @@ export default function RecruitUpload() {
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
         hasPreference: !!editData.preferentialTreatment,
+        logoUrl: editData.logoUrl || '',
+        logoFile: null,
+        companyDescription: editData.companyDescription || '',
+        briefIntroduction: editData.briefIntroduction || '',
+        estimatePayment: editData.estimatePayment || '',
+        contractMethod: editData.contractMethod || '',
+        startDate: editData.startDate || '',
         categoryDtos: editData.categoryDtoList?.map(cat => ({
           firstCategory: cat.firstCategory,
           secondCategory: cat.secondCategory,
@@ -112,6 +145,13 @@ export default function RecruitUpload() {
         isregionIrrelevant: false,
         preferentialTreatment: '',
         hasPreference: false,
+        logoUrl: '',
+        logoFile: null,
+        companyDescription: '',
+        briefIntroduction: '',
+        estimatePayment: '',
+        contractMethod: '',
+        startDate: '',
         categoryDtos: [
           {
             "firstCategory": null,
@@ -204,6 +244,12 @@ export default function RecruitUpload() {
     if (type === 'file') {
       const fileArray = Array.from(files);
       
+      // 최대 3개 파일 제한
+      if (formData.files.length + fileArray.length > 3) {
+        alert('최대 3개의 파일만 업로드할 수 있습니다.');
+        return;
+      }
+      
       const validateFileSize = (file) => {
         const maxSize = 10 * 1024 * 1024; // 10MB
         const isValid = file.size <= maxSize;
@@ -213,12 +259,11 @@ export default function RecruitUpload() {
         return isValid;
           };
 
-
       const validFiles = fileArray.filter(validateFileSize);
-          setFormData(prev => ({
-            ...prev,
-            files: validFiles
-          }));
+      setFormData(prev => ({
+        ...prev,
+        files: [...prev.files, ...validFiles]
+      }));
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -237,6 +282,23 @@ export default function RecruitUpload() {
   // 견적 방식 버튼 클릭 핸들러
   const handleEstimateTypeChange = (type) => {
     setEstimateType(type);
+  };
+
+  // STEP 클릭 시 해당 섹션으로 스크롤
+  const handleStepClick = (stepNumber) => {
+    console.log('STEP 클릭:', stepNumber);
+    const stepElement = document.querySelector(`[data-step="${stepNumber}"]`);
+    console.log('찾은 요소:', stepElement);
+    if (stepElement) {
+      stepElement.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+      // 스크롤 후 현재 단계 업데이트
+      setTimeout(() => {
+        setCurrentStep(stepNumber);
+      }, 100);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -411,7 +473,7 @@ dtoList.forEach((dto, i) => {
   const thirdCategories = thirdCategoryData.third_category || [];
 
   return (
-    <div className="pt-24 px-6 w-full lg:w-1/2  lg:max-w-5xl mx-auto mb-12">
+    <div className="pt-10 px-6 w-full lg:max-w-5xl mx-auto mb-12">
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white rounded-2xl p-8 px-12 shadow-2xl">
@@ -424,11 +486,14 @@ dtoList.forEach((dto, i) => {
           </div>
         </div>
       )}
-      <h1 className="text-3xl font-bold w-1/4 mx-auto whitespace-nowrap">
+      {/* <h1 className="text-3xl font-bold w-1/4 mx-auto whitespace-nowrap">
         {isEditMode ? '공고문 수정' :   '공고문 작성'}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+      </h1> */}
+
+      <div className="flex gap-8 max-w-[80rem] w-full mx-auto">
+      
+      <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
+        <div data-step="1" className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
           STEP 1. 
         </div>
         <div>
@@ -450,34 +515,97 @@ dtoList.forEach((dto, i) => {
           <label className="block text-xl font-semibold text-black mb-2">
             로고 및 아이콘 등록
           </label>
-          <input
-            type="text"
-            name="icon"
-            // 여기 밑에 함수 수정 필요
-            value={formData.title} 
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            required
-          />
+          <div className="flex gap-4">
+            {/* 로고 미리보기 */}
+            {formData.logoFile && (
+              <div className="relative group">
+                <div className="w-32 h-32 border-2 border-gray-300 rounded-lg overflow-hidden">
+                  <img 
+                    src={URL.createObjectURL(formData.logoFile)} 
+                    alt="로고 미리보기"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                {/* 삭제 버튼 */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, logoFile: null }));
+                  }}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            )}
+            
+            {/* 로고 첨부 버튼 - 로고가 없을 때만 표시 */}
+            {!formData.logoFile && (
+              <div className="relative">
+                <input
+                  type="file"
+                  name="logoFile"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      // 이미지 파일만 허용
+                      if (!file.type.startsWith('image/')) {
+                        alert('이미지 파일만 업로드할 수 있습니다.');
+                        return;
+                      }
+                      // 크기 제한 할지??
+                      // if (file.size > 5 * 1024 * 1024) {
+                      //   alert('파일 크기는 5MB를 초과할 수 없습니다.');
+                      //   return;
+                      // }
+                      setFormData(prev => ({ ...prev, logoFile: file }));
+                    }
+                  }}
+                  accept="image/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  id="logo-upload"
+                />
+                <label 
+                  htmlFor="logo-upload"
+                  className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors"
+                >
+                  <svg 
+                    className="w-8 h-8 text-gray-400 mb-2" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M12 4v16m8-8H4" 
+                    />
+                  </svg>
+                </label>
+              </div>
+            )}
+          </div>
         </div>
         <div>
           <label className="block text-xl font-semibold text-black mb-2">
             기업 및 개인 간략 소개
           </label>
            <textarea
-             name="icon"
-             // 여기 밑에 함수 수정 필요
-             value={formData.title} 
+             name="companyDescription"
+             value={formData.companyDescription || ''} 
              onChange={handleChange}
              className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-             required
              placeholder="1000자 이내, 이미지 첨부 가능"
              rows="8"
            />
         </div>
 
-        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+        <div data-step="2" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
           STEP 2. 
+          <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
         </div>
         <div>
           <label className="block text-xl font-semibold text-black mb-2">
@@ -498,11 +626,10 @@ dtoList.forEach((dto, i) => {
           </label>
           <textarea
              name="briefIntroduction"
-             // 여기 밑에 함수 수정 필요
-             value={formData.title} 
+             value={formData.briefIntroduction || ''} 
              onChange={handleChange}
              className="w-full h-36 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-             required
+             placeholder="공고의 간략한 소개를 입력하세요"
              rows="2"
            />
         </div>
@@ -515,24 +642,92 @@ dtoList.forEach((dto, i) => {
             value={formData.content}
             onChange={handleChange}
             rows="6"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
+            className="w-full h-52 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
              placeholder="1500자 이내, 이미지 첨부 가능"
             required
           />
         </div>
-       
+
         <div>
           <label className="block text-xl font-semibold text-black mb-2">
             동영상 및 참고 파일 첨부
           </label>
-          <input
-            type="file"
-            name="files"
-            onChange={handleChange}
-            multiple
-            accept="image/*"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-          />
+          <div className="flex gap-4 flex-wrap">
+            {/* 기존 파일 미리보기 */}
+            {formData.files && formData.files.map((file, index) => (
+              <div key={index} className="relative group">
+                <div className="w-32 h-32 border-2 border-gray-300 rounded-lg overflow-hidden">
+                  {file.type.startsWith('image/') ? (
+                    <img 
+                      src={URL.createObjectURL(file)} 
+                      alt={`미리보기 ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 4h6V3H9v1z" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newFiles = formData.files.filter((_, i) => i !== index);
+                    setFormData(prev => ({ ...prev, files: newFiles }));
+                  }}
+                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+            
+            {/* 파일 첨부 버튼 - 3개 미만일 때만 표시 */}
+            {formData.files.length < 3 && (
+              <div className="relative">
+                <input
+                  type="file"
+                  name="files"
+                  onChange={handleChange}
+                  multiple
+                  accept="image/*,video/*"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  id="file-upload"
+                />
+                <label 
+                  htmlFor="file-upload"
+                  className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors"
+                >
+                  <svg 
+                    className="w-8 h-8 text-gray-400 mb-2" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M12 4v16m8-8H4" 
+                    />
+                  </svg>
+                
+                </label>
+              </div>
+            )}
+          </div>
+          {/* 파일 개수 표시 */}
+          {formData.files.length > 0 && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-600">
+                {formData.files.length}/3개 파일 선택됨
+              </p>
+            </div>
+          )}
         </div>
         <div>
           <label className="block text-xl font-semibold text-black mb-2">
@@ -541,21 +736,22 @@ dtoList.forEach((dto, i) => {
           <div className="flex items-center gap-2">
           <input
             type="date"
-            name="deadline"
-            value={formData.deadline}
+            name="startDate"
+            value={formData.startDate || ''}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            required
+            placeholder="시작일"
           />
-          <input
+              <input
             type="date"
             name="deadline"
             value={formData.deadline}
-            onChange={handleChange}
+                onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            required
-          />
-          </div>
+                required
+                placeholder="마감일"
+              />
+            </div>
           <div>
             <label className="block text-xl font-semibold text-black mb-2">
               마감 시간
@@ -595,7 +791,7 @@ dtoList.forEach((dto, i) => {
               
             </div>
           </div>
-          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-6">
           <div>
@@ -674,24 +870,25 @@ dtoList.forEach((dto, i) => {
           <div className="flex items-center gap-2 mb-4">
             <label className="text-xl font-semibold text-black">
               우대사항 유무
-            </label>
+          </label>
           </div>
             <textarea
               name="preferentialTreatment"
               value={formData.preferentialTreatment}
-              onChange={handleChange}
+            onChange={handleChange}
               rows="3"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            />
-        </div>
-
-        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+          />
+          </div>
+          
+        <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
           STEP 3. 
+          <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
         </div>
-        <div>
+          <div>
           <label className="block text-xl font-semibold text-black mb-2">
             견적 방식
-          </label>
+            </label>
            <div className="flex gap-2">
            <button 
              type="button"
@@ -715,16 +912,17 @@ dtoList.forEach((dto, i) => {
            >
              견적 받아보고 싶어요.
            </button>
-           </div>
+          </div>
         </div>
         <div>
           <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
-          <input
+            <input
             type="number"
             name="estimatePayment"
-            value={formData.estimatePayment}
-            onChange={handleChange}
+            value={formData.estimatePayment || ''}
+              onChange={handleChange}
             className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            placeholder="견적 금액을 입력하세요"
           />
           <span className="ml-4 text-gray-500 whitespace-nowrap">만원</span>
         </div>
@@ -735,19 +933,20 @@ dtoList.forEach((dto, i) => {
             </label>
           </div>
             <textarea
-              name="preferentialTreatment"
-              value={formData.preferentialTreatment}
+              name="contractMethod"
+              value={formData.contractMethod || ''}
               onChange={handleChange}
               rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+              className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
               placeholder="Ex) 1. 매칭 성공 시, 계약서를 쓸게요. 
      2. 추가로 얘기 후에 결정할게요.
      3. 1차 선입금, 마무리 후 잔금 입금할게요.  "
             />
         </div>
 
-        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
+        <div data-step="4" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
           STEP 4. 
+          <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
         </div>
         <div>
           <label className="block text-xl font-semibold text-black mb-2">
@@ -772,8 +971,8 @@ dtoList.forEach((dto, i) => {
             ))}
             </div>
         </div>
-        <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] my-8 w-full text-left border-b-2 border-black pb-2">
-          LAST STEP. 
+                <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+                LAST STEP . 
         </div>
         <div className="flex gap-4 items-center justify-center">
         <button
@@ -802,6 +1001,8 @@ dtoList.forEach((dto, i) => {
           
         </div>
       </form>
+      <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
+      </div>
     </div>
   );
 } 
