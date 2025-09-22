@@ -98,6 +98,8 @@ export default function RecruitUpload() {
         maxPayment: parsePayment(editData.maxPayment),
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
+        preferentialKeyword1: editData.preferentialKeyword1 || '',
+        preferentialKeyword2: editData.preferentialKeyword2 || '',
         hasPreference: !!editData.preferentialTreatment,
         logoUrl: editData.logoUrl || '',
         logoFile: null,
@@ -142,6 +144,8 @@ export default function RecruitUpload() {
         maxPayment: '',
         isregionIrrelevant: false,
         preferentialTreatment: '',
+        preferentialKeyword1: '',
+        preferentialKeyword2: '',
         hasPreference: false,
         logoUrl: '',
         logoFile: null,
@@ -223,7 +227,7 @@ export default function RecruitUpload() {
     { city_id: 1, name: "서울"},
     { city_id: 2, name: "경기"}
   ];
-
+  
 
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
@@ -236,15 +240,15 @@ export default function RecruitUpload() {
         return;
       }
       
-     
+      
       const validateFileSize = (file) => {
         const maxSize = 10 * 1024 * 1024; // 10MB
         const isValid = file.size <= maxSize;
-        if (!isValid) {
+            if (!isValid) {
           alert(`${file.name}의 크기가 10MB를 초과합니다.`);
-        }
+            }
         return isValid;
-      };
+          };
 
       const validFiles = fileArray.filter(validateFileSize);
           setFormData(prev => ({
@@ -686,7 +690,7 @@ dtoList.forEach((dto, i) => {
           <textarea
              name="briefIntroduction"
              value={formData.briefIntroduction || ''} 
-             onChange={handleChange}
+                onChange={handleChange}
              className="w-full h-36 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
              placeholder="공고의 간략한 소개를 입력하세요"
              rows="2"
@@ -803,9 +807,9 @@ dtoList.forEach((dto, i) => {
               rows="12"
               className="w-full h-80 px-4 py-2 border-0 focus:ring-0 focus:outline-none resize-none"
               placeholder="1500자 이내"
-              required
-            />
-          </div>
+                required
+              />
+            </div>
           
           {showPreview && (
             <div className="mt-4 border border-gray-300 rounded-lg overflow-hidden">
@@ -1022,17 +1026,45 @@ dtoList.forEach((dto, i) => {
         <div>
           <div className="flex items-center gap-2 mb-4">
             <label className="text-xl font-semibold text-black">
-              우대사항 유무
+              우대사항 키워드
           </label>
+            <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
+          </div>
+          <div className="flex gap-2">
+          <input
+              type="text"
+              name="preferentialKeyword1"
+              value={formData.preferentialKeyword1 || ''}
+            onChange={handleChange}
+              maxLength={10}
+              placeholder="키워드 1 (10글자 이내)"
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            />
+            <input
+              type="text"
+              name="preferentialKeyword2"
+              value={formData.preferentialKeyword2 || ''}
+              onChange={handleChange}
+              maxLength={10}
+              placeholder="키워드 2 (10글자 이내)"
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+          />
+          </div>
+        </div>
+          <div>
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-xl font-semibold text-black">
+              우대사항 내용
+            </label>
           </div>
             <textarea
               name="preferentialTreatment"
               value={formData.preferentialTreatment}
-            onChange={handleChange}
+                onChange={handleChange}
               rows="3"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
           />
-          </div>
+        </div>
           
         <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
           STEP 3. 
@@ -1074,8 +1106,11 @@ dtoList.forEach((dto, i) => {
             name="estimatePayment"
             value={formData.estimatePayment || ''}
               onChange={handleChange}
-            className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            placeholder="견적 금액을 입력하세요"
+            disabled={estimateType === 'estimate'}
+            className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
+              estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
+            placeholder={estimateType === 'estimate' ? '견적 금액을 받습니다.' : '견적 금액을 입력하세요'}
           />
           <span className="ml-4 text-gray-500 whitespace-nowrap">만원</span>
         </div>
