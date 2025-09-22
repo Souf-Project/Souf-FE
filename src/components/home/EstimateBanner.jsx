@@ -1,7 +1,9 @@
 import freeImg from "../../assets/images/freeImg.png";
 import estimateImg2 from "../../assets/images/estimateImg2.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function FreeEstimate({color}) {
+  const navigate = useNavigate();
   return (
     <>
       {color=="black" && (
@@ -14,7 +16,8 @@ export default function FreeEstimate({color}) {
           </div>
           <div className="flex items-center gap-4">
               <img src={freeImg} alt="freeImg" className="absolute bottom-0 right-80 w-64" />
-              <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl">무료 외주 견적 받기</button>
+              <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl"
+              onClick={() => navigate("/recruitUpload")}>무료 외주 견적 받기</button>
           </div>
         </div>
       )}

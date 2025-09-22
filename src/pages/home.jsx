@@ -315,7 +315,8 @@ export default function Home() {
             <h3 className="text-lg font-semibold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
-              <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg">무료 외주 등록하기</button>
+              <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
+              onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
               <button className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg ">이용 가이드</button>
             </div>
             {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
@@ -397,8 +398,10 @@ export default function Home() {
       </div>
           <BestRecruit />
           <div className="flex justify-center items-center gap-4 mt-4">
-            <button className="bg-[#2582E0] text-white text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md">무료 외주 등록하기</button>
-            <button className="bg-zinc-300 text-zinc-700 text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md">더 많은 외주 찾아보기</button>
+            <button className="bg-[#2582E0] text-white text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md"
+            onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
+            <button className="bg-zinc-300 text-zinc-700 text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md"
+            onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
   </div>
       </div>
       </div>
