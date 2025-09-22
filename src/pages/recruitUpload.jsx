@@ -697,6 +697,48 @@ dtoList.forEach((dto, i) => {
            />
         </div>
         <div>
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-xl font-semibold text-black">
+              우대사항 키워드
+          </label>
+            <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
+          </div>
+          <div className="flex gap-2">
+          <input
+              type="text"
+              name="preferentialKeyword1"
+              value={formData.preferentialKeyword1 || ''}
+            onChange={handleChange}
+              maxLength={10}
+              placeholder="키워드 1 (10글자 이내)"
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+            />
+            <input
+              type="text"
+              name="preferentialKeyword2"
+              value={formData.preferentialKeyword2 || ''}
+              onChange={handleChange}
+              maxLength={10}
+              placeholder="키워드 2 (10글자 이내)"
+              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+          />
+          </div>
+        </div>
+          <div>
+          <div className="flex items-center gap-2 mb-4">
+            <label className="text-xl font-semibold text-black">
+              우대사항 내용
+            </label>
+          </div>
+            <textarea
+              name="preferentialTreatment"
+              value={formData.preferentialTreatment}
+                onChange={handleChange}
+              rows="3"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
+          />
+        </div>
+        <div>
           <label className="block text-xl font-semibold text-black mb-2">
             공고문 내용 작성
           </label>
@@ -1023,48 +1065,7 @@ dtoList.forEach((dto, i) => {
             </div>
           </div>
         </div>
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <label className="text-xl font-semibold text-black">
-              우대사항 키워드
-          </label>
-            <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
-          </div>
-          <div className="flex gap-2">
-          <input
-              type="text"
-              name="preferentialKeyword1"
-              value={formData.preferentialKeyword1 || ''}
-            onChange={handleChange}
-              maxLength={10}
-              placeholder="키워드 1 (10글자 이내)"
-              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            />
-            <input
-              type="text"
-              name="preferentialKeyword2"
-              value={formData.preferentialKeyword2 || ''}
-              onChange={handleChange}
-              maxLength={10}
-              placeholder="키워드 2 (10글자 이내)"
-              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-          />
-          </div>
-        </div>
-          <div>
-          <div className="flex items-center gap-2 mb-4">
-            <label className="text-xl font-semibold text-black">
-              우대사항 내용
-            </label>
-          </div>
-            <textarea
-              name="preferentialTreatment"
-              value={formData.preferentialTreatment}
-                onChange={handleChange}
-              rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-          />
-        </div>
+        
           
         <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
           STEP 3. 
