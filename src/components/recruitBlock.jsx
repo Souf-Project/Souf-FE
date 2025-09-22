@@ -6,6 +6,7 @@ import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { getRecruitDetail } from '../api/recruit';
 import AlertModal from './alertModal';
 import shareIco from '../assets/images/shareIco.svg';
+import basicLogoImg from '../assets/images/basicLogoImg.png';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return 0;
@@ -30,6 +31,7 @@ export default function RecruitBlock({
   cityDetailName,
   secondCategory,
   categoryDtoList,
+  imageUrl,
 }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const maxLength = 100;
@@ -165,8 +167,12 @@ export default function RecruitBlock({
         <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName + " " + cityDetailName}</div>
        
       </div> */}
-      <div className="bg-gray-300 w-48 h-48 rounded-2xl">
-      </div>
+      
+        {imageUrl ? (
+          <img src={imageUrl} alt="공고문 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+        ) : (
+          <img src={basicLogoImg} alt="기본 로고 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+        )}
       <div className="flex flex-col px-6 py-3 flex-1 gap-2">
         <div className="flex justify-between items-center">
         <div className="flex text-neutral-600 text-base">
@@ -213,13 +219,13 @@ export default function RecruitBlock({
           <span className="text-sm font-bold text-black ">견적 비용</span>
           <span className="text-sm font-regular text-black ">{payment}</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-bold text-black ">신청 인원</span>
-          <span className="text-sm font-regular text-black ">00명</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-bold text-black ">우대 전공</span>
-          <span className="text-sm font-regular text-black ">패션 디자인 / 조형 조소 / 회화과</span>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-bold text-black ">우대사항</span>
+          <ul className="text-sm font-regular text-black list-disc pl-4">
+            <li>패션 디자인 전공</li>
+            <li>조형 조소과</li>
+            <li>회화과</li>
+          </ul>
         </div>
          <div className="flex items-center gap-4">
            <span className="text-sm font-bold text-black ">납기일</span>
