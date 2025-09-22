@@ -10,7 +10,10 @@ import { UserStore } from '../store/userStore';
 import { closeRecruit, getRecruitDetail } from '../api/recruit';
 import SEO from '../components/seo';
 import { generateSeoContent } from '../utils/seo';
-import DeclareButton from '../components/declare/declareButton'
+import DeclareButton from '../components/declare/declareButton';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -260,8 +263,8 @@ export default function RecruitDetail() {
         />
       )}
      {/* 데스크톱 헤더와 검색창 */}
-     <div className="hidden lg:flex justify-between items-center mb-8 w-full border-b border-gray-200 pt-16 px-8 max-w-[80rem] mx-auto">
-       <div className="flex flex-col text-gray-600">
+     <div className="hidden lg:flex justify-between items-center w-full border-b border-gray-200 mt-6 px-8 max-w-[80rem] mx-auto">
+       <div className="flex text-gray-600 gap-4">
             {categoryNames.map((category, index) => (
               <div key={index} className="mb-1">
                 <span>{category.first}</span>
@@ -282,7 +285,7 @@ export default function RecruitDetail() {
           </div>
       </div>
       <div className="flex w-full mx-auto max-w-[80rem]">
-        <div className="w-5/6 mx-auto">
+        <div className="w-5/6 mx-auto p-8">
        
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
@@ -292,13 +295,8 @@ export default function RecruitDetail() {
           <span>목록으로 돌아가기</span>
         </button>
 
-        <div className="bg-white rounded-2xl border border-gray p-8 mb-8 mt-4">
-          <div className="flex justify-end items-start">
-            
-            
-          </div>
           <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">{displayData?.title}</h1>
+          <h1 className="text-2xl font-bold">{displayData?.title}</h1>
           {isAuthor ? (
               <div className="relative">
                 <button
@@ -335,14 +333,42 @@ export default function RecruitDetail() {
             )}
           </div>
          
-          <div className="text-base font-bold mt-6">{displayData?.nickname}</div>
+          <div className="text-xl font-bold my-4">{displayData?.nickname}</div>
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-700 text-lg font-bold">프로젝트 소개</span>
+            <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">팝업</div>
+            <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">패션디자인 전공</div>
+          </div>
           
           
           
 
           <div className="border-t border-gray-200 my-6"></div>
           <div>
-            <p className="text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
+             <p className="text-xl font-semibold text-black mb-4">
+               기업 소개
+             </p>
+             <div className="prose prose-lg max-w-none text-gray-800 mb-4">
+               <ReactMarkdown 
+                 remarkPlugins={[remarkGfm]}
+                 rehypePlugins={[rehypeRaw]}
+                 components={{
+                   u: ({children}) => <u>{children}</u>,
+                   strong: ({children}) => <strong>{children}</strong>,
+                   em: ({children}) => <em>{children}</em>,
+                   a: ({href, children}) => (
+                     <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                       {children}
+                     </a>
+                   ),
+                   img: ({src, alt}) => (
+                     <img src={src} alt={alt} className="max-w-full h-auto rounded-lg my-2" />
+                   )
+                 }}
+               >
+                 {displayData?.content || ''}
+               </ReactMarkdown>
+             </div>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
             <img
@@ -354,52 +380,36 @@ export default function RecruitDetail() {
             <></>
           )}
           </div>
-          </div>
-
-        
-
-        <div className="flex justify-center mt-8">
-          {isAuthor ? (
-            <></>
-          ) : (
-            <button 
-              className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-              onClick={handleApply}
-            >
-              지원하기
-            </button>
-          )}
-        </div>
         </div>
         {/* 우측 외주 조건 */}
-        <div className="w-1/4 bg-[#FCFCFC] mt-10 p-6">
+        <div className="sticky top-24 w-1/4 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-black mb-1">급여</span>
-                <span className="font-medium">
-                  {minPrice && maxPrice
-                    ? `${minPrice.toLocaleString()}원 ~ ${maxPrice.toLocaleString()}원`
+                <span className="text-neutral-600 mb-1">급여</span>
+                <span className="font-lg">
+                  {maxPrice
+                    ? `${maxPrice.toLocaleString()}원`
                     : '금액 협의'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-black mb-1">기한</span>
-                <span className="font-medium">{formatDate(displayData?.deadline)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-black mb-1">지역</span>
-                <span className="font-medium">{recruitDetail ? `${recruitDetail.cityName} ${recruitDetail.cityDetailName || ''}`.trim() : displayData?.location}</span>
+                <span className="text-neutral-600 mb-1">납기일</span>
+                <span className="font-lg">{formatDate(displayData?.deadline)}</span>
               </div>
             </div>
-              <div className="flex items-center justify-between">
-                <span className="">우대사항</span>
-                <span className="font-medium" style={{ whiteSpace: 'pre-wrap' }}>
-                  {recruitDetail?.preferentialTreatment
-                    ? recruitDetail.preferentialTreatment
-                    : (displayData?.preferMajor ? '전공자 우대' : '경력/경험 무관')}
-                </span>
-              
+            {isAuthor ? (
+            <></>
+          ) : (
+            <div className="flex justify-between gap-4 mt-6 mb-4">
+              <button className="bg-zinc-300 text-black w-1/2 py-2 rounded-lg text-lg font-bold">문의하기</button>
+              {recruitDetail?.recruitable ? (
+                <button className="bg-blue-main text-white w-1/2 py-2 rounded-lg text-lg font-bold">{maxPrice ? '지원하기' : '견적 보내기'}</button>
+              ) : (
+                <button className="bg-gray-400 text-black w-1/2 py-2 rounded-lg text-lg font-bold cursor-not-allowed" disabled>지원 마감</button>
+              )}
             </div>
+          )}
+          <span className="text-zinc-500">이 외주를 총 <span className="text-black font-bold">32명</span>이 조회하였습니다.</span>
           </div>
   {isApplyModalOpen && (
         <AlertModal

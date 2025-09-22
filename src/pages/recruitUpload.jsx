@@ -10,6 +10,9 @@ import { filterEmptyCategories } from '../utils/filterEmptyCategories';
 import Loading from '../components/loading';
 import StepIndicator from '../components/StepIndicator';
 import infoIcon from '../assets/images/infoIcon.svg';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -22,6 +25,8 @@ export default function RecruitUpload() {
   const [isLoading, setIsLoading] = useState(false);
   const [estimateType, setEstimateType] = useState('fixed');
   const [currentStep, setCurrentStep] = useState(1);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -232,6 +237,15 @@ export default function RecruitUpload() {
       }
       
      
+      const validateFileSize = (file) => {
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        const isValid = file.size <= maxSize;
+        if (!isValid) {
+          alert(`${file.name}의 크기가 10MB를 초과합니다.`);
+        }
+        return isValid;
+      };
+
       const validFiles = fileArray.filter(validateFileSize);
           setFormData(prev => ({
             ...prev,
@@ -254,6 +268,79 @@ export default function RecruitUpload() {
 
   const handleEstimateTypeChange = (type) => {
     setEstimateType(type);
+  };
+
+  // 공고문 내용에 사진 추가 -> API 변경 후 연동
+  const handleImageUpload = async () => {
+    // 파일 입력 요소 생성
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // 이미지 파일 검증
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드할 수 있습니다.');
+        return;
+      }
+
+      // 파일 크기 검증 (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('파일 크기는 5MB를 초과할 수 없습니다.');
+        return;
+      }
+
+      setIsUploadingImage(true);
+
+      // try {
+      
+        
+
+      //   if (dtoList && dtoList.length > 0) {
+      //     // S3에 파일 업로드
+      //     await uploadToS3(dtoList[0].presignedUrl, file);
+
+      //     // 파일 정보 추출
+      //     const fileUrl = dtoList[0].fileUrl;
+      //     const fileName = file.name;
+      //     const fileType = file.type.split("/")[1].toUpperCase();
+
+      //     // 미디어 정보 저장
+      //     await postRecruitMedia({
+      //       recruitId,
+      //       fileUrl: [fileUrl],
+      //       fileName: [fileName],
+      //       fileType: [fileType],
+      //     });
+
+      //     // 마크다운 형식으로 변환하여 textarea에 삽입
+      //     const textarea = document.querySelector('textarea[name="content"]');
+      //     const start = textarea.selectionStart;
+      //     const imageMarkdown = `![${fileName}](${fileUrl})`;
+      //     const newText = formData.content.substring(0, start) + imageMarkdown + formData.content.substring(start);
+          
+      //     setFormData(prev => ({ ...prev, content: newText }));
+          
+      //     // 커서를 이미지 마크다운 뒤로 이동
+      //     setTimeout(() => {
+      //       textarea.focus();
+      //       textarea.setSelectionRange(start + imageMarkdown.length, start + imageMarkdown.length);
+      //     }, 0);
+
+      //     alert('이미지가 성공적으로 업로드되었습니다.');
+      //   }
+      // } catch (error) {
+      //   console.error('이미지 업로드 실패:', error);
+      //   alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      // } finally {
+      //   setIsUploadingImage(false);
+      // }
+    };
+
+    input.click();
   };
 
   const handleStepClick = (stepNumber) => {
@@ -350,7 +437,7 @@ export default function RecruitUpload() {
               file.type.split("/")[1].toUpperCase()
             );
 
-            // S3 업로드 성공 후 미디어 정보 저장
+            // S3 업로드 x성공 후 미디어 정보 저장
             await Promise.all(
               dtoList.map(({ presignedUrl }, i) =>
                 postRecruitMedia({
@@ -609,15 +696,147 @@ dtoList.forEach((dto, i) => {
           <label className="block text-xl font-semibold text-black mb-2">
             공고문 내용 작성
           </label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            rows="6"
-            className="w-full h-52 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
-             placeholder="1500자 이내, 이미지 첨부 가능"
-            required
-          />
+          <div className="border border-gray-300 rounded-lg overflow-hidden">
+            <div className="bg-gray-50 px-4 py-2 border-b border-gray-300">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.querySelector('textarea[name="content"]');
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const selectedText = formData.content.substring(start, end);
+                      const newText = formData.content.substring(0, start) + `**${selectedText}**` + formData.content.substring(end);
+                      setFormData(prev => ({ ...prev, content: newText }));
+                      setTimeout(() => {
+                        textarea.focus();
+                        textarea.setSelectionRange(start + 2, end + 2);
+                      }, 0);
+                    }}
+                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
+                  >
+                    <strong>B</strong>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.querySelector('textarea[name="content"]');
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const selectedText = formData.content.substring(start, end);
+                      const newText = formData.content.substring(0, start) + `*${selectedText}*` + formData.content.substring(end);
+                      setFormData(prev => ({ ...prev, content: newText }));
+                      setTimeout(() => {
+                        textarea.focus();
+                        textarea.setSelectionRange(start + 1, end + 1);
+                      }, 0);
+                    }}
+                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
+                  >
+                    <em>I</em>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.querySelector('textarea[name="content"]');
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const selectedText = formData.content.substring(start, end);
+                      const newText = formData.content.substring(0, start) + `<u>${selectedText}</u>` + formData.content.substring(end);
+                      setFormData(prev => ({ ...prev, content: newText }));
+                      setTimeout(() => {
+                        textarea.focus();
+                        textarea.setSelectionRange(start + 3, end + 3);
+                      }, 0);
+                    }}
+                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
+                  >
+                    <u>U</u>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleImageUpload}
+                    disabled={isUploadingImage}
+                    className={`px-3 py-1 text-sm border border-gray-300 rounded transition-colors ${
+                      isUploadingImage 
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                        : 'bg-white hover:bg-gray-100'
+                    }`}
+                  >
+                    {isUploadingImage ? '업로드 중...' : '🖼️'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const textarea = document.querySelector('textarea[name="content"]');
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const selectedText = formData.content.substring(start, end);
+                      const newText = formData.content.substring(0, start) + `[${selectedText || '링크 텍스트'}](URL)` + formData.content.substring(end);
+                      setFormData(prev => ({ ...prev, content: newText }));
+                      setTimeout(() => {
+                        textarea.focus();
+                        const linkStart = start + 1;
+                        const linkEnd = selectedText ? start + selectedText.length + 1 : start + 5;
+                        textarea.setSelectionRange(linkStart, linkEnd);
+                      }, 0);
+                    }}
+                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
+                  >
+                    🔗
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPreview(!showPreview)}
+                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                >
+                  {showPreview ? '미리보기 숨기기' : '미리보기'}
+                </button>
+              </div>
+            </div>
+            <textarea
+              name="content"
+              value={formData.content}
+              onChange={handleChange}
+              rows="12"
+              className="w-full h-80 px-4 py-2 border-0 focus:ring-0 focus:outline-none resize-none"
+              placeholder="1500자 이내"
+              required
+            />
+          </div>
+          
+          {showPreview && (
+            <div className="mt-4 border border-gray-300 rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-4 py-2 border-b border-gray-300">
+                <h3 className="text-sm font-semibold text-gray-700">미리보기</h3>
+              </div>
+              <div className="p-4 bg-white">
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      u: ({children}) => <u>{children}</u>,
+                      strong: ({children}) => <strong>{children}</strong>,
+                      em: ({children}) => <em>{children}</em>,
+                      a: ({href, children}) => (
+                        <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                          {children}
+                        </a>
+                      ),
+                      img: ({src, alt}) => (
+                        <img src={src} alt={alt} className="max-w-full h-auto rounded-lg my-2" />
+                      )
+                    }}
+                  >
+                    {formData.content || '미리보기 내용이 없습니다.'}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
