@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import RecruitBlock from "../components/recruitBlock";
 import SearchBar from "../components/SearchBar";
@@ -16,8 +16,23 @@ import FilterDropdown from "../components/filterDropdown";
 
 export default function Recruit() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [selectedCategory, setSelectedCategory] = useState([null, null, null]);
+  // URL 파라미터에서 카테고리 정보 읽기
+  const getInitialCategory = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const firstCategory = searchParams.get('firstCategory');
+    const secondCategory = searchParams.get('secondCategory');
+    const thirdCategory = searchParams.get('thirdCategory');
+    
+    return [
+      firstCategory ? parseInt(firstCategory) : null,
+      secondCategory ? parseInt(secondCategory) : null,
+      thirdCategory ? parseInt(thirdCategory) : null
+    ];
+  };
+
+  const [selectedCategory, setSelectedCategory] = useState(getInitialCategory());
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
@@ -166,6 +181,13 @@ export default function Recruit() {
     sortBy,
     allSecondCategories
   ]);
+  
+  // URL 파라미터가 변경될 때 카테고리 업데이트
+  useEffect(() => {
+    const newCategory = getInitialCategory();
+    setSelectedCategory(newCategory);
+  }, [location.search]);
+  
   // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
     // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);

@@ -37,6 +37,12 @@ export default function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
+  // 카테고리 클릭 핸들러
+  const handleCategoryClick = (category) => {
+    // 해당 중분류가 선택된 상태로 외주 페이지로 이동
+    navigate(`/recruit?firstCategory=${category.first_category_id}&secondCategory=${category.second_category_id}`);
+  };
+
   const titletext = [
     "패션 브랜드 팝업 조형물",
     "애니메이션 영상 제작",
@@ -49,19 +55,15 @@ export default function Home() {
     const [isExiting, setIsExiting] = useState(false);
 
     useEffect(() => {
-      // 3초마다 텍스트 인덱스를 변경
       const interval = setInterval(() => {
         setIsExiting(true);
-        
-        // 애니메이션이 끝난 후 텍스트를 변경
         setTimeout(() => {
           setCurrentTextIndex((prevIndex) => (prevIndex + 1) % titletext.length);
           setIsExiting(false);
-        }, 700); // 1단계에서 정의한 애니메이션 시간(0.7초 = 700ms)과 동일하게 설정
+        }, 700);
         
-      }, 3000); // 3초마다 변경
+      }, 3000);
 
-      // 컴포넌트가 unmount될 때 interval 정리
       return () => clearInterval(interval);
     }, []);
 
@@ -204,11 +206,6 @@ export default function Home() {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
-  };
-  
-  const handleCategoryClick = (category) => {
-    //const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${category}`);
   };
 
   const showLoginModalHandler = () => {
@@ -357,8 +354,12 @@ export default function Home() {
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
          <div className="flex gap-6 items-center" style={{ width: 'max-content' }}>
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
-             <div key={category.second_category_id} className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-32">
-               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2">
+             <div 
+               key={category.second_category_id} 
+               className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-32 hover:scale-105 transition-transform duration-200"
+               onClick={() => handleCategoryClick(category)}
+             >
+               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2 hover:shadow-md transition-shadow duration-200">
                  <img 
                    src={getCategoryIcon(category.second_category_id)} 
                    alt={category.name}
