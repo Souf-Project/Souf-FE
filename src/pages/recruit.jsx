@@ -17,7 +17,7 @@ import FilterDropdown from "../components/filterDropdown";
 export default function Recruit() {
   const navigate = useNavigate();
 
-  const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
+  const [selectedCategory, setSelectedCategory] = useState([null, null, null]);
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
@@ -46,10 +46,10 @@ export default function Recruit() {
   const getFilteredCategories = () => {
     const selectedFirstCategory = selectedCategory[0];
 
-    // 선택된 대분류에 해당하는 중분류만 필터링
-    const filteredSecondCategories = allSecondCategories.filter(
-      (second) => second.first_category_id === selectedFirstCategory
-    );
+    // 선택된 대분류에 해당하는 중분류만 필터링 (대분류가 선택되지 않았으면 모든 중분류 표시)
+    const filteredSecondCategories = selectedFirstCategory 
+      ? allSecondCategories.filter((second) => second.first_category_id === selectedFirstCategory)
+      : allSecondCategories;
     return {
       filteredSecondCategories,
       thirdCategories: allThirdCategories,
@@ -64,10 +64,14 @@ export default function Recruit() {
       setError(null);
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
+      
+      // 카테고리가 모두 선택되지 않았을 때는 모든 공고문 조회
+      const hasSelectedCategory = firstCategory || secondCategory || thirdCategory;
+      
       const response = await getRecruit({
-        firstCategory,
-        secondCategory,
-        thirdCategory,
+        firstCategory: hasSelectedCategory ? firstCategory : null,
+        secondCategory: hasSelectedCategory ? secondCategory : null,
+        thirdCategory: hasSelectedCategory ? thirdCategory : null,
         recruitSearchReqDto: {},
           page: currentPage,
           size: pageSize,
@@ -106,6 +110,9 @@ export default function Recruit() {
       setError(null);
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
+      
+      // 카테고리가 모두 선택되지 않았을 때는 모든 공고문 조회
+      const hasSelectedCategory = firstCategory || secondCategory || thirdCategory;
 
        const recruitSearchReqDto = {};
       if (searchQuery.trim() !== "") {
@@ -120,9 +127,9 @@ export default function Recruit() {
       }
 
       const response = await getRecruit({
-        firstCategory,
-        secondCategory,
-        thirdCategory,
+        firstCategory: hasSelectedCategory ? firstCategory : null,
+        secondCategory: hasSelectedCategory ? secondCategory : null,
+        thirdCategory: hasSelectedCategory ? thirdCategory : null,
         recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
           page: currentPage,
           size: pageSize,

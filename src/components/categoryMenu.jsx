@@ -5,17 +5,27 @@ import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 import radioIcon from '../assets/images/radioIcon.svg';
 
 const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories }) => {
-  const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || 1);
+  const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || null);
   const [selectedSecondCategories, setSelectedSecondCategories] = useState(selectedCategories?.secondCategoryId ? [selectedCategories.secondCategoryId] : []);
   const [openSecondCategory, setOpenSecondCategory] = useState(null);
 
   const firstCategories = firstCategoryData.first_category;
 
   const handleFirstCategoryClick = (firstCategory) => {
-    setSelectedFirstCategory(firstCategory.first_category_id);
-    setSelectedSecondCategories([]); // 대분류 변경 시 중분류 선택 초기화
-    if (onSelect) {
-      onSelect(firstCategory.first_category_id, 0, 0);
+    const isCurrentlySelected = selectedFirstCategory === firstCategory.first_category_id;
+    
+    if (isCurrentlySelected) {
+      setSelectedFirstCategory(null);
+      setSelectedSecondCategories([]);
+      if (onSelect) {
+        onSelect(null, null, null);
+      }
+    } else {
+      setSelectedFirstCategory(firstCategory.first_category_id);
+      setSelectedSecondCategories([]); 
+      if (onSelect) {
+        onSelect(firstCategory.first_category_id, 0, 0);
+      }
     }
   };
 
@@ -23,27 +33,43 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
     const isSelected = selectedSecondCategories.includes(secondCategory.second_category_id);
     
     if (isSelected) {
-      // 이미 선택된 경우 제거
       const newSelected = selectedSecondCategories.filter(id => id !== secondCategory.second_category_id);
       setSelectedSecondCategories(newSelected);
+      
+      if (newSelected.length === 0) {
+        setSelectedFirstCategory(null);
+        if (onSelect) {
+          onSelect(null, null, null);
+        }
+      } else {
+        if (onSelect) {
+          onSelect(selectedFirstCategory, newSelected[0], 0);
+        }
+      }
     } else {
-      // 선택되지 않은 경우 추가
       const newSelected = [...selectedSecondCategories, secondCategory.second_category_id];
       setSelectedSecondCategories(newSelected);
-    }
-    
-    if (onSelect) {
-      onSelect(secondCategory.first_category_id, secondCategory.second_category_id, 0);
+      
+      if (onSelect) {
+        onSelect(secondCategory.first_category_id, secondCategory.second_category_id, 0);
+      }
     }
   };
 
   const handleThirdCategoryClick = (secondCategory, thirdCategory) => {
-    if (onSelect) {
-      onSelect(secondCategory.first_category_id, secondCategory.second_category_id, thirdCategory.third_category_id);
+    const isCurrentlySelected = selectedCategories?.thirdCategoryId === thirdCategory.third_category_id;
+    
+    if (isCurrentlySelected) {
+      if (onSelect) {
+        onSelect(secondCategory.first_category_id, secondCategory.second_category_id, null);
+      }
+    } else {
+      if (onSelect) {
+        onSelect(secondCategory.first_category_id, secondCategory.second_category_id, thirdCategory.third_category_id);
+      }
     }
   };
 
-  // selectedCategories가 변경될 때 selectedFirstCategory 동기화
   useEffect(() => {
     if (selectedCategories?.firstCategoryId) {
       setSelectedFirstCategory(selectedCategories.firstCategoryId);
@@ -53,10 +79,9 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
     }
   }, [selectedCategories?.firstCategoryId, selectedCategories?.secondCategoryId]);
 
-  // 선택된 대분류에 해당하는 중분류만 필터링
-  const filteredSecondCategories = secondCategories.filter(
-    (second) => second.first_category_id === selectedFirstCategory
-  );
+  const filteredSecondCategories = selectedFirstCategory 
+    ? secondCategories.filter((second) => second.first_category_id === selectedFirstCategory)
+    : secondCategories;
 
   if (!secondCategories || secondCategories.length === 0) {
     return (
@@ -66,9 +91,9 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
     );
   }
 
-  // PC 버전 카테고리 메뉴 (박스 형태)
+  // PC 버전 카테고리 메뉴
 const DesktopCategoryMenu = () => (
-  <div className="hidden lg:block w-54 h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto mb-20">
+  <div className="hidden lg:block min-w-44  h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto mb-20">
     <h3 className="text-base font-bold text-gray-800 mb-4">카테고리</h3>
     
     {/* 대분류 섹션 */}
@@ -158,7 +183,7 @@ const DesktopCategoryMenu = () => (
 );
 
 
-  // 모바일 버전 카테고리 메뉴 (좌우 반반)
+  // 모바일 버전 카테고리 메뉴
   const MobileCategoryMenu = () => {
     const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
 
