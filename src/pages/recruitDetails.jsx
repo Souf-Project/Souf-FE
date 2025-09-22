@@ -264,8 +264,9 @@ export default function RecruitDetail() {
       )}
      {/* 데스크톱 헤더와 검색창 */}
      <div className="hidden lg:flex justify-between items-center w-full border-b border-gray-200 mt-6 px-8 max-w-[80rem] mx-auto">
-       <div className="flex text-gray-600 gap-4">
-            {categoryNames.map((category, index) => (
+       <div className="flex flex-col text-gray-600 gap-4 my-3">
+        외주 찾기 &gt; 외주 상세 조회
+            {/* {categoryNames.map((category, index) => (
               <div key={index} className="mb-1">
                 <span>{category.first}</span>
                 {category.second && (
@@ -281,7 +282,7 @@ export default function RecruitDetail() {
                   </>
                 )}
               </div>
-            ))}
+            ))} */}
           </div>
       </div>
       <div className="flex w-full mx-auto max-w-[80rem]">
@@ -332,8 +333,22 @@ export default function RecruitDetail() {
               />
             )}
           </div>
+          <div className="flex items-center gap-2 my-2">
+          {categoryNames.map((category, index) => (
+        
+        <div key={index}>
+          {category.third ? (
+            <span className="font-medium text-black">#{category.third}</span>
+          ) : category.second ? (
+            <span>#{category.second}</span>
+          ) : (
+            <span>#{category.first}</span>
+          )}
+        </div>
+      ))}
+          </div>
          
-          <div className="text-xl font-bold my-4">{displayData?.nickname}</div>
+          <div className="text-xl font-bold mb-2">{displayData?.nickname}</div>
           <div className="flex items-center gap-2">
             <span className="text-zinc-700 text-lg font-bold">프로젝트 소개</span>
             <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">팝업</div>

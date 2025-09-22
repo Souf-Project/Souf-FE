@@ -25,6 +25,7 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
+import Review from "../pages/review";
 import { HelmetProvider } from 'react-helmet-async';
 
 function AppRouter() {
@@ -63,6 +64,7 @@ function AppRouter() {
           <Route path="/search" element={<Search />} />
           <Route path="/withdraw" element={<Withdraw/>} />
           <Route path="/forbidden" element={<Forbidden/>} />
+          <Route path="/review" element={<Review/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

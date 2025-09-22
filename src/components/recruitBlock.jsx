@@ -6,7 +6,7 @@ import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { getRecruitDetail } from '../api/recruit';
 import AlertModal from './alertModal';
 import shareIco from '../assets/images/shareIco.svg';
-import basicLogoImg from '../assets/images/basicLogoImg.png';
+import soufMockup from '../assets/images/soufMockup.png';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return 0;
@@ -171,7 +171,7 @@ export default function RecruitBlock({
         {imageUrl ? (
           <img src={imageUrl} alt="공고문 이미지" className="w-48 h-48 rounded-2xl object-cover" />
         ) : (
-          <img src={basicLogoImg} alt="기본 로고 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+          <img src={soufMockup} alt="기본 로고 이미지" className="w-48 h-48 rounded-2xl object-cover" />
         )}
       <div className="flex flex-col px-6 py-3 flex-1 gap-2">
         <div className="flex justify-between items-center">

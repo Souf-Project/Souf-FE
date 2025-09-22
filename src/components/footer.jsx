@@ -29,7 +29,7 @@ export default function Footer() {
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
           </div>
           <div className='flex items-center gap-2 cursor-pointer'>
-            Q&A
+            FAQ
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
           </div>
           <div className='flex items-center gap-2 cursor-pointer'>

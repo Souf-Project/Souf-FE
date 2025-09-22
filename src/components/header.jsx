@@ -213,9 +213,9 @@ const DesktopHeader = () => (
                   <UserTypeLabel />
                 </button>
                 {showUserMenu && (
-                  <div className="fixed right-10 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
+                  <div className="fixed right-40 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
                     <button
-                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                       onClick={() => handleNavigation("/mypage")}
                     >
                       마이페이지
@@ -223,13 +223,13 @@ const DesktopHeader = () => (
                     {roleType === "ADMIN" && (
                       <>
                         <button
-                          className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                          className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                           onClick={() => handleNavigation("/recruitUpload")}
                         >
                           공고문 작성하기
                         </button>
                         <button
-                          className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                          className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                           onClick={() => handleNavigation("/postUpload")}
                         >
                           피드 작성하기
@@ -238,7 +238,7 @@ const DesktopHeader = () => (
                     )}
                     {roleType === "MEMBER" && (
                       <button
-                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                         onClick={() => handleNavigation("/recruitUpload")}
                       >
                         공고문 작성하기
@@ -246,14 +246,14 @@ const DesktopHeader = () => (
                     )}
                     {roleType === "STUDENT" && (
                       <button
-                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                         onClick={() => handleNavigation("/postUpload")}
                       >
                         피드 작성하기
                       </button>
                     )}
                     <button
-                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                       onClick={toggleLogin}
                     >
                       로그아웃
@@ -310,7 +310,7 @@ const DesktopHeader = () => (
                 {/* 외주 후기 */}
                 <div>
                   <ul className="w-28 flex flex-col gap-2">
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
+                    <li><button onClick={() => handleNavigation("/review")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
                     <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
                   </ul>
                 </div>
