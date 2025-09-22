@@ -44,6 +44,36 @@ export default function Home() {
     "반응형 웹·앱 디자인",
     "SNS·썸네일 디자인",
   ]
+  const AnimatedTitle = () => {
+    const [currentTextIndex, setCurrentTextIndex] = useState(0);
+    const [isExiting, setIsExiting] = useState(false);
+
+    useEffect(() => {
+      // 3초마다 텍스트 인덱스를 변경
+      const interval = setInterval(() => {
+        setIsExiting(true);
+        
+        // 애니메이션이 끝난 후 텍스트를 변경
+        setTimeout(() => {
+          setCurrentTextIndex((prevIndex) => (prevIndex + 1) % titletext.length);
+          setIsExiting(false);
+        }, 700); // 1단계에서 정의한 애니메이션 시간(0.7초 = 700ms)과 동일하게 설정
+        
+      }, 3000); // 3초마다 변경
+
+      // 컴포넌트가 unmount될 때 interval 정리
+      return () => clearInterval(interval);
+    }, []);
+
+    return (
+      <h1 
+        className={`text-2xl lg:text-5xl font-bold text-blue-500 text-center lg:text-left transition-transform duration-700 ease-in-out
+          ${isExiting ? 'animate-slide-up' : 'animate-slide-down'}`}
+      >
+        {titletext[currentTextIndex]}
+      </h1>
+    );
+  };
 
   const getCategoryIcon = (categoryId) => {
     const iconMap = {
@@ -281,9 +311,7 @@ export default function Home() {
         <div className="flex justify-center items-start max-w-[90rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-28">
-            <h1 className="lg:block text-2xl lg:text-5xl font-bold mb-4 text-blue-main text-center lg:text-left">
-            패션 브랜드 팝업 조형물
-            </h1>
+          <AnimatedTitle />
             <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
               여기! 인재 매칭해드려요.
             </h2>
