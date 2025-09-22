@@ -177,196 +177,160 @@ useEffect(() => {
   };
 
   // PC 버전 헤더
-  const DesktopHeader = () => (
-    <div 
-      ref={headerRef}
-      onMouseEnter={handleHeaderMouseEnter}
-      onMouseLeave={handleHeaderMouseLeave}
-      className="fixed top-0 left-0 z-50 w-screen"
-    >
-      <header className="bg-white shadow-md">
-        <div className="flex items-center justify-between px-10 py-3 max-w-[80rem] mx-auto">
-      <div className="flex items-center gap-x-8">
-      <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
-      
-        <ul className="flex items-center gap-x-10 font-bold text-lg text-black cursor-pointer">
-          <li className="flex items-center gap-1">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span></li>
-          <li className={`flex items-center gap-2 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}>외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
-          <li>대학생 피드보기</li>
-          <li className="flex items-center gap-1">외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span></li>
-          <li>실험실</li>
-          
-          <li className="text-gray-400 font-medium">|</li>
-          <li>이용 가이드</li>
-          {/* <li
-            className={`px-2 cursor-pointer transition-colors duration-200 relative group whitespace-nowrap ${
-              activeCategory === "contests" ? "text-yellow-point" : ""
-            }`}
-            onClick={() => handleNavigation("/contests")}
-          >
-            <span>공모전&대외활동</span>
-            <span
-              className={`absolute bottom-0 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                activeCategory === "contests"
-                  ? "w-full"
-                  : "w-0 group-hover:w-full origin-left"
-              }`}
-            ></span>
-          </li> */}
-        </ul>
-      </div>
+const DesktopHeader = () => (
+  <div 
+    ref={headerRef}
+    onMouseEnter={handleHeaderMouseEnter}
+    onMouseLeave={handleHeaderMouseLeave}
+    className="fixed top-0 left-0 z-50 w-screen"
+  >
+    <header className="bg-white shadow-md">
+      <div className="relative flex items-center justify-between px-10 py-3 max-w-[80rem] mx-auto">
+        <div className="flex items-center gap-x-8">
+          <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
+          <ul className="flex items-center font-bold text-lg text-black cursor-pointer">
+            <li className="flex items-center gap-1 w-36">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span></li>
+            <li className={`flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}>외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
+            <li className="w-36">대학생 피드보기</li>
+            <li className="flex items-center gap-1 w-28">외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span></li>
+            <li className="text-gray-400 font-medium mx-4">|</li>
+            <li className="w-36">이용 가이드</li>
+          </ul>
+        </div>
 
-      <div className="flex items-center gap-x-4">
-      {/* <div
-            className="text-black bg-[#FFFBE5] px-5 py-2 font-bold rounded-lg whitespace-nowrap cursor-pointer shadow-md"
-            onClick={() => handleNavigation("/recruitsAll")}
-          >
-            <span>공고문 모아보기</span>
-          </div> */}
-        {memberId ? (
-          // 로그인 상태
-          <div className="flex items-center gap-x-4">
-            <button className="p-2" onClick={() => handleNavigation("/chat")}>
-              <img src={ChatIcon} alt="chat" className="w-6 h-6" />
-            </button>
-            <div className="relative user-menu-container">
-              <button
-                className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
-                onClick={toggleUserMenu}
-              >
-                <UserTypeLabel />
+        <div className="flex items-center gap-x-4">
+          {memberId ? (
+            // 로그인 상태
+            <div className="flex items-center gap-x-4">
+              <button className="p-2" onClick={() => handleNavigation("/chat")}>
+                <img src={ChatIcon} alt="chat" className="w-6 h-6" />
               </button>
-
-              {showUserMenu && (
-                <div className="fixed right-10 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
-                  <button
-                    className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
-                    onClick={() => handleNavigation("/mypage")}
-                  >
-                    마이페이지
-                  </button>
-                  
-                  {/* ADMIN인 경우 두 버튼 모두 표시 */}
-                  {roleType === "ADMIN" && (
-                    <>
+              <div className="relative user-menu-container">
+                <button
+                  className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
+                  onClick={toggleUserMenu}
+                >
+                  <UserTypeLabel />
+                </button>
+                {showUserMenu && (
+                  <div className="fixed right-10 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
+                    <button
+                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                      onClick={() => handleNavigation("/mypage")}
+                    >
+                      마이페이지
+                    </button>
+                    {roleType === "ADMIN" && (
+                      <>
+                        <button
+                          className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                          onClick={() => handleNavigation("/recruitUpload")}
+                        >
+                          공고문 작성하기
+                        </button>
+                        <button
+                          className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
+                          onClick={() => handleNavigation("/postUpload")}
+                        >
+                          피드 작성하기
+                        </button>
+                      </>
+                    )}
+                    {roleType === "MEMBER" && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
                         onClick={() => handleNavigation("/recruitUpload")}
                       >
                         공고문 작성하기
                       </button>
+                    )}
+                    {roleType === "STUDENT" && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
                         onClick={() => handleNavigation("/postUpload")}
                       >
                         피드 작성하기
                       </button>
-                    </>
-                  )}
-                  
-                  {/* MEMBER인 경우 공고문 작성 버튼만 표시 */}
-                  {roleType === "MEMBER" && (
+                    )}
                     <button
                       className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
-                      onClick={() => handleNavigation("/recruitUpload")}
+                      onClick={toggleLogin}
                     >
-                      공고문 작성하기
+                      로그아웃
                     </button>
-                  )}
-                  
-                  {/* STUDENT인 경우 피드 작성 버튼만 표시 */}
-                  {roleType === "STUDENT" && (
-                    <button
-                      className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
-                      onClick={() => handleNavigation("/postUpload")}
-                    >
-                      피드 작성하기
-                    </button>
-                  )}
-                  
-                  <button
-                    className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-yellow-point"
-                    onClick={toggleLogin}
-                  >
-                    로그아웃
-                  </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            // 로그아웃 상태
+            <>
+              <div className="flex items-center text-lg font-bold gap-x-2">
+                <button
+                  className="w-20"
+                  onClick={() => handleNavigation("/login")}
+                >
+                  로그인
+                </button>
+                <button
+                  className="text-white bg-[#5185E6] px-6 py-3 font-bold rounded-xl whitespace-nowrap shadow-md"
+                  onClick={() => handleNavigation("/join")}
+                >
+                  회원가입
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        
+        {/* 드롭다운 메뉴를 헤더의 div 안에 배치 */}
+        {showDropdown && (
+          <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-4">
+            <div className="max-w-[80rem] mx-auto px-10 ml-32">
+              <div className="flex ">
+                {/* 외주 의뢰하기 */}
+                <div>
+                  <ul className="w-36 flex flex-col gap-2">
+                    <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
+                  </ul>
                 </div>
-              )}
+                {/* 외주 찾기 */}
+                <div>
+                  <ul className="w-28">
+                    <li><button onClick={() => handleNavigationCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 외주</button></li>
+                  </ul>
+                </div>
+                {/* 대학생 피드보기 */}
+                <div>
+                  <ul className="w-36">
+                    <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
+                  </ul>
+                </div>
+                {/* 외주 후기 */}
+                <div>
+                  <ul className="w-28 flex flex-col gap-2">
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
+                  </ul>
+                </div>
+                {/* 이용 가이드 */}
+                <div>
+                  <ul className="w-36 flex flex-col gap-2 ml-8">
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">이용 가이드</button></li>
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">FAQ</button></li>
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">고객 센터</button></li>
+                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실</button></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
-        ) : (
-          // 로그아웃 상태
-          <>
-            <div className="flex items-center text-lg font-bold gap-x-2">
-              <button
-                className="w-20"
-                onClick={() => handleNavigation("/login")}
-              >
-                로그인
-              </button>
-            
-              <button
-                className="text-white bg-[#5185E6] px-6 py-3 font-bold rounded-xl whitespace-nowrap shadow-md"
-                onClick={() => handleNavigation("/join")}
-              >
-                회원가입
-              </button>
-            </div>
-          </>
         )}
       </div>
-      </div>
-      </header>
-      
-      {/* 드롭다운 메뉴 */}
-      {showDropdown && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-4">
-          <div className="max-w-[90rem] mx-auto px-10">
-            <div className="flex justify-start">
-
-              <div className="ml-52">
-                <h3 className="text-md font-bold text-gray-800 mb-4">외주 의뢰하기</h3>
-                <ul className="space-y-2">
-                  <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
-                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
-                </ul>
-              </div>
-
-              <div className="ml-6">
-                <h3 className="text-md font-bold text-gray-800 mb-4">외주 찾기</h3>
-                <ul className="space-y-2">
-                  <li><button onClick={() => handleNavigationCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 외주</button></li>
-                </ul>
-              </div>
-
-              <div className="ml-5">
-                <h3 className="text-md font-bold text-gray-800 mb-4">대학생 피드보기</h3>
-                <ul className="space-y-2">
-                  <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
-                </ul>
-              </div>
-
-              <div className="ml-10">
-                <h3 className="text-md font-bold text-gray-800 mb-4">외주 후기</h3>
-                <ul className="space-y-2">
-                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
-                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
-                </ul>
-              </div>
-
-              <div className="ml-20">
-                <h3 className="text-md font-bold text-gray-800 mb-4">실험실</h3>
-                <ul className="space-y-2">
-                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 소개</button></li>
-                  <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실 참여</button></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    </header>
+  </div>
+);
 
   // 모바일 버전 헤더
   const MobileHeader = () => (
