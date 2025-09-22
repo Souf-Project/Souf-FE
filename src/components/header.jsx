@@ -332,21 +332,21 @@ useEffect(() => {
                 </ul>
               </div>
 
-              <div className="ml-8">
+              <div className="ml-6">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 찾기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigationCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 외주</button></li>
                 </ul>
               </div>
 
-              <div className="ml-8">
+              <div className="ml-5">
                 <h3 className="text-md font-bold text-gray-800 mb-4">대학생 피드보기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
                 </ul>
               </div>
 
-              <div className="ml-12">
+              <div className="ml-10">
                 <h3 className="text-md font-bold text-gray-800 mb-4">외주 후기</h3>
                 <ul className="space-y-2">
                   <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>

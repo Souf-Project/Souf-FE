@@ -6,7 +6,7 @@ module.exports = {
       colors: {
         primary: "#000000",
         yellow: {
-          main: "#FFE58F",
+          main: "#F9D13B",
           point: "#FFC400",
         },
         blue: {

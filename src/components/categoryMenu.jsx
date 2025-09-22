@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
+import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 import radioIcon from '../assets/images/radioIcon.svg';
 
 const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories }) => {
@@ -87,11 +88,11 @@ const DesktopCategoryMenu = () => (
               }`}
               onClick={() => handleFirstCategoryClick(first)}
             >
-              <img 
-                src={radioIcon} 
-                alt="radio" 
-                className={`w-4 h-4 ${isSelectedFirst ? '' : 'brightness-0 opacity-50'}`}
-              />
+             <img 
+                  src={isSelectedFirst ? checkBoxIcon : notCheckBoxIcon} 
+                  alt="checkbox" 
+                  className={`w-4 h-4`}
+                />
               {first.name}
             </div>
           );
@@ -117,9 +118,9 @@ const DesktopCategoryMenu = () => (
                 onClick={() => handleSecondCategoryClick(second)}
               >
                 <img 
-                  src={checkBoxIcon} 
+                  src={isSelectedSecond ? checkBoxIcon : notCheckBoxIcon} 
                   alt="checkbox" 
-                  className={`w-4 h-4 ${isSelectedSecond ? '' : 'brightness-0 opacity-50'}`}
+                  className={`w-4 h-4`}
                 />
                 {second.name}
               </div>
