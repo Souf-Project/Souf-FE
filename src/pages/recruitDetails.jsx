@@ -14,6 +14,8 @@ import DeclareButton from '../components/declare/declareButton';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import PageHeader from "../components/pageHeader";
+
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return null;
@@ -262,31 +264,17 @@ export default function RecruitDetail() {
           content={seoContent}
         />
       )}
-     {/* 데스크톱 헤더와 검색창 */}
-     <div className="hidden lg:flex justify-between items-center w-full border-b border-gray-200 mt-6 px-8 max-w-[80rem] mx-auto">
-       <div className="flex flex-col text-gray-600 gap-4 my-3">
-        외주 찾기 &gt; 외주 상세 조회
-            {/* {categoryNames.map((category, index) => (
-              <div key={index} className="mb-1">
-                <span>{category.first}</span>
-                {category.second && (
-                  <>
-                <span className="mx-2">&gt;</span>
-                <span>{category.second}</span>
-                  </>
-                )}
-                {category.third && (
-                  <>
-                <span className="mx-2">&gt;</span>
-                <span className="font-medium text-black">{category.third}</span>
-                  </>
-                )}
-              </div>
-            ))} */}
-          </div>
-      </div>
+      <PageHeader
+        leftButtons={[
+          { text: `외주 찾기 > 외주 상세 조회`, onClick: () => {} }
+        ]}
+        showDropdown={false}
+        showSearchBar={false}
+      />
+     
+      
       <div className="flex w-full mx-auto max-w-[80rem]">
-        <div className="w-5/6 mx-auto p-8">
+        <div className="w-5/6 mx-auto p-8 pt-4">
        
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"

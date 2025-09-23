@@ -311,7 +311,6 @@ const DesktopHeader = () => (
                 <div>
                   <ul className="w-28 flex flex-col gap-2">
                     <li><button onClick={() => handleNavigation("/review")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">후기 작성</button></li>
                   </ul>
                 </div>
                 {/* 이용 가이드 */}

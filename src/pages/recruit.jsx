@@ -13,6 +13,7 @@ import SEO from "../components/seo";
 import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import EstimateBanner from "../components/home/EstimateBanner";
 import FilterDropdown from "../components/filterDropdown";
+import PageHeader from "../components/pageHeader";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -287,24 +288,20 @@ export default function Recruit() {
       </div>
 
       {/* 데스크톱 헤더와 검색창 */}
-      <div className="w-screen border-b border-gray-200 mb-4">
-      <div className="hidden lg:flex justify-between items-center my-2 w-full max-w-[70rem] mx-auto">
-       <div className="flex items-center gap-4 text-md font-bold">
-        <button className="hover:text-blue-main transition-colors duration-200">외주 조회</button>
-        <button className="hover:text-blue-main transition-colors duration-200">이 가격에 해주세요</button>
-        <button className="hover:text-blue-main transition-colors duration-200">견적 내어주세요</button>
-       </div>
-        <div className="flex items-center gap-4">
-          <SearchDropdown onSelect={handleSearchTypeChange} />
-          <SearchBar
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onSubmit={handleSearch}
-            placeholder="어떤 외주를 찾는지 알려주세요!"
-          />
-        </div>
-      </div>
-      </div>
+      <PageHeader
+        leftButtons={[
+          { text: "외주 조회", onClick: () => {} },
+          { text: "이 가격에 해주세요", onClick: () => {} },
+          { text: "견적 내어주세요", onClick: () => {} }
+        ]}
+        showDropdown={true}
+        showSearchBar={true}
+        onSearchTypeChange={handleSearchTypeChange}
+        searchQuery={searchQuery}
+        onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+        onSearch={handleSearch}
+        searchPlaceholder="어떤 외주를 찾는지 알려주세요!"
+      />
 
       <div className="max-w-[70rem] w-full mx-auto">
         <div className="flex flex-col lg:flex-row max-w-[70rem] w-full">

@@ -10,6 +10,7 @@ import StudentFeedList from "./studentFeedList";
 import Loading from "../components/loading";
 import SEO from "../components/seo";
 import { getFirstCategoryNameById, getNowPageByActiveTab } from "../utils/getCategoryById";
+import PageHeader from "../components/pageHeader";
 
 export default function Feed() {
   const location = useLocation();
@@ -146,43 +147,35 @@ export default function Feed() {
         </div>
 
         {/* 데스크톱 탭과 검색창 */}
-        <div className="hidden lg:flex justify-between items-center mb-8 w-full">
-          <div className="flex items-center gap-4">
-            <div className="flex">
-              {["feed", "profile"].map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-6 py-3 rounded-lg text-base md:text-2xl md:font-extrabold font-bold transition-colors duration-200 relative group ${
-                    activeTab === tab ? "text-yellow-point" : "text-gray-700"
-                  }`}
-                  onClick={() => {
-                    setActiveTab(tab);
-                    setSearchQuery("");
-                    setSelectedCategory(prev => [prev[0], 0, 0]);
-                  }}
-                >
-                  <span>
-                    {tab === "profile" ? "대학생 프로필" : "대학생 피드"}
-                  </span>
-                  <span
-                    className={`absolute bottom-2 left-1/2 transform -translate-x-1/2 h-[3px] bg-yellow-point transition-all duration-300 ease-out ${
-                      activeTab === tab ? "w-3/4" : "w-0 group-hover:w-3/4"
-                    }`}
-                  ></span>
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <SearchDropdown onSelect={handleSearchTypeChange} />
-            <SearchBar
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onSubmit={handleSearch}
-              placeholder="검색어를 입력하세요"
-            />
-          </div>
-        </div>
+        <PageHeader
+          leftButtons={[
+            { 
+              text: "대학생 피드", 
+              onClick: () => {
+                setActiveTab("feed");
+                setSearchQuery("");
+                setSelectedCategory(prev => [prev[0], 0, 0]);
+              }
+            },
+            { 
+              text: "대학생 프로필", 
+              onClick: () => {
+                setActiveTab("profile");
+                setSearchQuery("");
+                setSelectedCategory(prev => [prev[0], 0, 0]);
+              }
+            }
+          ]}
+          showDropdown={true}
+          showSearchBar={true}
+          onSearchTypeChange={handleSearchTypeChange}
+          searchQuery={searchQuery}
+          onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+          onSearch={handleSearch}
+          searchPlaceholder="검색어를 입력하세요"
+          activeButtonIndex={activeTab === "feed" ? 0 : 1}
+          isTabMode={true}
+        />
 
         <div className="flex flex-col lg:flex-row">
           {/* 데스크톱 카테고리 메뉴 */}
