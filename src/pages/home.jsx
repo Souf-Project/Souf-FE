@@ -305,7 +305,7 @@ export default function Home() {
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
         <div className="relative bg-[#FBFBFB] py-20 w-screen">
-        <div className="flex justify-center items-start max-w-[90rem] mx-auto">
+        <div className="flex justify-center items-start max-w-[80rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-28">
           <AnimatedTitle />
@@ -350,10 +350,10 @@ export default function Home() {
 
      {/* 카테고리 섹션 */}
      <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0">
-       <div className="flex flex-col justify-center gap-2 items-center max-w-[90rem] mx-auto px-24">
+       <div className="flex flex-col justify-center gap-2 items-center max-w-[60rem] mx-auto">
        <span className="text-black text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
-         <div className="flex gap-6 items-center" style={{ width: 'max-content' }}>
+         <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
              <div 
                key={category.second_category_id} 
@@ -375,7 +375,7 @@ export default function Home() {
             </div>
             </div>
      
-<div className="flex px-24 mt-32 max-w-[90rem] mx-auto">
+<div className="flex mt-32 max-w-[60rem] mx-auto">
 {/* 실시간 대학생 피드 섹션 */}
   <div className="relative w-2/3">
   <div className="flex items-center mb-8 gap-4">
@@ -389,7 +389,7 @@ export default function Home() {
         </div>
     
 {/* 진행 중인 외주 의뢰 섹션 */}
-      <div className="relative w-1/3">
+      <div className="relative w-1/3 ml-4">
       <div className="flex items-center mb-8 gap-4">
         <h2 className="text-2xl font-semibold">
         진행 중인 외주 의뢰
@@ -398,9 +398,9 @@ export default function Home() {
       </div>
           <BestRecruit />
           <div className="flex justify-center items-center gap-4 mt-4">
-            <button className="bg-[#2582E0] text-white text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md"
+            <button className="bg-[#2582E0] text-white text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
             onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
-            <button className="bg-zinc-300 text-zinc-700 text-md font-bold px-6 py-3 rounded-xl w-full hover:shadow-md"
+            <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
             onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
   </div>
       </div>
@@ -408,7 +408,7 @@ export default function Home() {
     
 {/* 스프 소개란 */}
 <div className="relative px-6 lg:px-24 mt-32 bg-[#2582E0BF]">
-<div className="max-w-[90rem] mx-auto flex justify-center items-center py-16">
+<div className="max-w-[60rem] mx-auto flex justify-center items-center py-16">
   <div className="flex flex-col items-start">
     <h2 className="my-8 text-white text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
@@ -433,7 +433,7 @@ export default function Home() {
         <ReviewBox />
 
       {/* 실시간 매칭 금액 섹션 */}
-    <div className="flex px-24 mt-32 max-w-[90rem] mx-auto flex-col gap-4">
+    <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4">
     <div className="flex items-center mb-8 gap-4">
       <h2 className="text-2xl font-semibold">
         실시간 매칭 금액
@@ -490,11 +490,11 @@ export default function Home() {
       </div>
 
       {/* 무료 외주 등록 섹션 */}
-      <div className="flex px-24 mt-32 max-w-[90rem] mx-auto">
+      <div className="flex mt-32 max-w-[60rem] mx-auto">
         <EstimateBanner color="black" />
       </div>
 
-      <div className="flex gap-8 justify-between px-24 mt-32 max-w-[90rem] mx-auto">
+      <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
         <div className="w-full bg-blue-400/10 rounded-xl p-16">
         <p className="text-2xl font-bold">외주를 등록하러 오셨나요?</p>
         <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
@@ -508,7 +508,7 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
 Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
         </div>
       </div>
-      <div className="flex px-24 my-32  max-w-[90rem] mx-auto">
+      <div className="flex my-32  max-w-[60rem] mx-auto">
         <EstimateBanner color="blue" />
       </div>
       

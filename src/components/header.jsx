@@ -185,7 +185,7 @@ const DesktopHeader = () => (
     className="fixed top-0 left-0 z-50 w-screen"
   >
     <header className="bg-white shadow-md">
-      <div className="relative flex items-center justify-between px-10 py-3 max-w-[80rem] mx-auto">
+      <div className="relative flex items-center justify-between py-3 max-w-[60rem] mx-auto">
         <div className="flex items-center gap-x-8">
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
           <ul className="flex items-center font-bold text-lg text-black cursor-pointer">
@@ -286,7 +286,7 @@ const DesktopHeader = () => (
         {/* 드롭다운 메뉴를 헤더의 div 안에 배치 */}
         {showDropdown && (
           <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-4">
-            <div className="max-w-[80rem] mx-auto px-10 ml-32">
+            <div className="max-w-[60rem] mx-auto px-10 ml-24">
               <div className="flex ">
                 {/* 외주 의뢰하기 */}
                 <div>

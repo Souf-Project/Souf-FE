@@ -303,8 +303,8 @@ export default function Recruit() {
         searchPlaceholder="어떤 외주를 찾는지 알려주세요!"
       />
 
-      <div className="max-w-[70rem] w-full mx-auto">
-        <div className="flex flex-col lg:flex-row max-w-[70rem] w-full">
+      <div className="max-w-[60rem] w-full mx-auto">
+        <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">
         {/* 데스크톱 카테고리 메뉴 */}
         <div className="hidden lg:block">
           <CategoryMenu

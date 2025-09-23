@@ -553,7 +553,7 @@ dtoList.forEach((dto, i) => {
         {isEditMode ? '공고문 수정' :   '공고문 작성'}
       </h1> */}
 
-      <div className="flex gap-8 max-w-[80rem] w-full mx-auto">
+      <div className="flex gap-8 max-w-[60rem] w-full mx-auto">
       
       <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
         <div data-step="1" className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">

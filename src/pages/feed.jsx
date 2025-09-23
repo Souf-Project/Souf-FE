@@ -76,78 +76,8 @@ export default function Feed() {
         description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 대학생 피드`} 
         subTitle='스프' 
       />
-      <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full">
-        {/* 모바일 탭 */}
-        <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
-          showMobileCategoryMenu 
-            ? "bg-white" 
-            : "bg-gradient-to-b from-white to-transparent"
-        }`}>
-          <div className="pt-20">
-            {/* 헤더 높이만큼 padding 줌 */}
-            <div className="flex justify-center items-center gap-3">
-              <div className="flex bg-gray-100/80 rounded-lg p-1">
-                {["feed", "profile"].map((tab) => (
-                  <button
-                    key={tab}
-                    className={`px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 ${
-                      activeTab === tab
-                        ? "bg-white text-yellow-point shadow-sm"
-                        : "text-gray-600 hover:text-gray-800"
-                    }`}
-                    onClick={() => {
-                      setActiveTab(tab);
-                      setSearchQuery("");
-                    }}
-                  >
-                    {tab === "profile" ? "대학생 프로필" : "대학생 피드"}
-                  </button>
-                ))}
-              </div>
-
-              {/* 카테고리 메뉴 버튼 */}
-              <button
-                onClick={() => setShowMobileCategoryMenu(!showMobileCategoryMenu)}
-                className="p-2 bg-gray-100/80 rounded-lg hover:bg-gray-200/80 transition-colors duration-200"
-              >
-                <svg
-                  className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
-                    showMobileCategoryMenu ? "rotate-180" : ""
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* 모바일 카테고리 메뉴 */}
-            {showMobileCategoryMenu && (
-              <div className="mt-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-                <CategoryMenu
-                  secondCategories={filteredSecondCategories}
-                  thirdCategories={thirdCategories}
-                  onSelect={handleCategorySelect}
-                  selectedCategories={{
-                    firstCategoryId: selectedCategory[0],
-                    secondCategoryId: selectedCategory[1],
-                    thirdCategoryId: selectedCategory[2]
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* 데스크톱 탭과 검색창 */}
-        <PageHeader
+      {/* 데스크톱 탭과 검색창 */}
+      <PageHeader
           leftButtons={[
             { 
               text: "대학생 피드", 
@@ -176,8 +106,37 @@ export default function Feed() {
           activeButtonIndex={activeTab === "feed" ? 0 : 1}
           isTabMode={true}
         />
+      <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full">
+        {/* 모바일 탭 */}
+        <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
+          showMobileCategoryMenu 
+            ? "bg-white" 
+            : "bg-gradient-to-b from-white to-transparent"
+        }`}>
+          <div className="pt-20">
+            
 
-        <div className="flex flex-col lg:flex-row">
+            {/* 모바일 카테고리 메뉴 */}
+            {showMobileCategoryMenu && (
+              <div className="mt-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+                <CategoryMenu
+                  secondCategories={filteredSecondCategories}
+                  thirdCategories={thirdCategories}
+                  onSelect={handleCategorySelect}
+                  selectedCategories={{
+                    firstCategoryId: selectedCategory[0],
+                    secondCategoryId: selectedCategory[1],
+                    thirdCategoryId: selectedCategory[2]
+                  }}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        
+
+        <div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row">
           {/* 데스크톱 카테고리 메뉴 */}
           <div className="hidden lg:block">
             <CategoryMenu

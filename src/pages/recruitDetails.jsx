@@ -273,8 +273,8 @@ export default function RecruitDetail() {
       />
      
       
-      <div className="flex w-full mx-auto max-w-[80rem]">
-        <div className="w-5/6 mx-auto p-8 pt-4">
+      <div className="flex w-full mx-auto max-w-[60rem]">
+        <div className="w-5/6 mx-auto pt-4 mr-4">
        
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"

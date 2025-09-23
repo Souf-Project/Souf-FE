@@ -112,7 +112,7 @@ const {
 
   return (
     <>
-    <div className="w-full flex flex-col items-center justify-center w-full">
+    <div className="w-full flex flex-col items-center justify-center">
       {feedData?.result?.content && feedData.result.content.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
           {feedData.result.content.map((data) => (
