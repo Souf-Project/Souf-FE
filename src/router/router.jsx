@@ -26,6 +26,7 @@ import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
 import Review from "../pages/review";
+import ReviewDetail from "../pages/reviewDetail";
 import { HelmetProvider } from 'react-helmet-async';
 
 function AppRouter() {
@@ -65,6 +66,7 @@ function AppRouter() {
           <Route path="/withdraw" element={<Withdraw/>} />
           <Route path="/forbidden" element={<Forbidden/>} />
           <Route path="/review" element={<Review/>} />
+          <Route path="/reviewDetail" element={<ReviewDetail/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}
