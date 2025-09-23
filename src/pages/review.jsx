@@ -124,7 +124,7 @@ export default function Review() {
                         <div className="w-full">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="w-full h-44 bg-neutral-50 rounded-lg shadow-md p-2 flex items-center gap-4 cursor-pointer" 
-                                onClick={() => navigate("/reviewDetail")}>
+                                onClick={() => navigate("/reviewDetail", {state: {firstCategory: "디지털 콘텐츠", secondCategory: "마케팅 디자인"}})}>
                                     <img src={soufMockup} alt="soufMockup" className="w-36 h-36 rounded-md" />
                                     <div className="flex flex-col gap-1">
                                         <span className="text-yellow-300 text-2xl font-bold">★★★★★</span>
@@ -166,7 +166,7 @@ export default function Review() {
                         <div className="w-full">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="w-full h-44 bg-neutral-50 rounded-lg shadow-md p-2 flex items-center gap-4 cursor-pointer" 
-                                onClick={() => navigate("/reviewDetail")}>
+                                onClick={() => navigate("/reviewDetail", {state: {firstCategory: "순수미술", secondCategory: "시제품 디자인"}})}>
                                     <img src={soufMockup} alt="soufMockup" className="w-36 h-36 rounded-md" />
                                     <div className="flex flex-col gap-1">
                                         <span className="text-yellow-300 text-2xl font-bold">★★★★★</span>
