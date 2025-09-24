@@ -12,103 +12,85 @@ export default function Input({
   isValidateTrigger = false,
   isConfirmed = undefined,
   subtitle = "",
-  value="", 
+  value = "",
   disabled = false,
 }) {
   const [inputValue, setInputValue] = useState(value);
-  const [message, setMessage] = useState("");
   const [hasInteracted, setHasInteracted] = useState(false);
-  const [isEdited, setIsEdited] = useState(false);
 
-  // value prop이 변경될 때 inputValue 상태 업데이트
+  // 외부에서 전달된 value prop이 변경될 때, 내부 inputValue 상태 업데이트
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
-  const isEmpty = inputValue.trim() === "";
-
-  // 버튼 클릭 시 (검증 트리거)
   useEffect(() => {
-    if (isValidateTrigger) {
-      const valid = !isEmpty;
-      setMessage(valid ? "" : essentialText);
-      onValidChange(valid);
-    }
-  }, [isValidateTrigger, inputValue]);
-
-  useEffect(() => {
-    if (isConfirmed !== undefined) {
-      if (isConfirmed === true) {
-        if (!isEmpty) setMessage(approveText);
-      } else if (isConfirmed === false) {
-        if (!isEmpty) setMessage(disapproveText);
-        else setMessage(essentialText);
-      }
-    }
-  }, [isConfirmed, inputValue]);
-
-  
-
-  const handleFocus = () => {
-    setIsEdited(true);
-  };
+    onValidChange(inputValue.trim() !== "");
+  }, [inputValue, onValidChange]);
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setInputValue(value);
+    const currentValue = e.target.value;
+    setInputValue(currentValue);
     setHasInteracted(true);
-    setIsEdited(true);
-
-    const valid = value.trim() !== "";
-
-    if (!valid) {
-      setMessage(essentialText);
-    } else {
-      setMessage("");
-    }
-
-    onValidChange(valid);
-    onChange(e);
+    onChange(e); // 부모 컴포넌트로 onChange 이벤트
   };
 
-  const isApproved = isConfirmed === true && !isEmpty;
-  const isDisapproved = isConfirmed === false && !isEmpty;
-  const isError =
-    (hasInteracted && isEmpty) ||
-    (isValidateTrigger && isEmpty && !isApproved && !isDisapproved);
+  const isEmpty = inputValue.trim() === "";
+  let validationType = "neutral"; // 'neutral', 'success', 'error' 세 가지 상태로 관리
+  let displayMessage = "";
 
-  const borderColor = isApproved
-    ? "border-[#00aa58]"
-    : isDisapproved || isError
-    ? "border-red-essential"
-    : "border-[#898989]";
+  if (isConfirmed === false) {
+    validationType = "error";
+    // 필드가 비어있다면 '필수' 메시지를, 아니라면 '불일치' 메시지
+    displayMessage = !isEmpty ? disapproveText : essentialText;
+  } else if (isConfirmed === true && !isEmpty) {
+    validationType = "success";
+    displayMessage = approveText;
+  } else if ((hasInteracted || isValidateTrigger) && isEmpty) {
+    validationType = "error";
+    displayMessage = essentialText;
+  }
+
+  const borderColor = {
+    neutral: "border-[#898989]",
+    success: "border-[#00aa58]",
+    error: "border-red-essential",
+  }[validationType];
+
+  const textColor = {
+    success: "text-[#00AA58]",
+    error: "text-red-essential",
+  }[validationType];
 
   return (
     <div className="w-full relative mb-8">
       {title && (
-        <div className="text-black text-lg md:text-2xl font-regular mb-2">{title}
-         {subtitle !== "" && <span className="text-gray-500 text-xs sm:text-sm"> ({subtitle})</span>}</div>
+        <div className="text-black text-lg md:text-2xl font-regular mb-2">
+          {title}
+          {subtitle !== "" && (
+            <span className="text-gray-500 text-xs sm:text-sm">
+              {" "}
+              ({subtitle})
+            </span>
+          )}
+        </div>
       )}
 
       <input
         type={type}
         className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md md:text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
-          isError ? "" : "focus:border-yellow-point"
+          validationType !== "error" ? "focus:border-yellow-point" : ""
         }`}
         placeholder={placeholder}
         value={inputValue}
         onChange={handleChange}
-        onFocus={handleFocus}
-        disabled={disabled}
+        onFocus={() => setHasInteracted(true)}
       />
 
-      {message && (
+      {displayMessage && (
         <p
-          className={`absolute left-0 top-full mt-1 text-xs md:text-sm font-medium ${
-            message === approveText ? "text-[#00AA58]" : "text-red-essential"
-          }`}
+          className={`absolute left-0 top-full mt-1 text-xs md:text-sm font-medium ${textColor}`}
         >
-          {message}
+          {displayMessage}
         </p>
       )}
     </div>
