@@ -21,6 +21,11 @@ const parsePayment = (paymentString) => {
   return isNaN(num) ? null : num;
 };
 
+const formatPayment = (paymentString) => {
+  if (!paymentString || typeof paymentString !== 'string') return '금액 협의';
+  return paymentString;
+};
+
 export default function RecruitDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -184,8 +189,7 @@ export default function RecruitDetail() {
   const categoryList = recruitDetail?.categoryDtoList || [];
   const mobileCategoryNames = getCategoryNames(categoryList);
   const categoryNames = getAllCategoryNames(categoryList);
-  const minPrice = parsePayment(recruitDetail?.minPayment);
-  const maxPrice = parsePayment(recruitDetail?.maxPayment);
+  const price = formatPayment(recruitDetail?.price);
   const isAuthor = memberId === recruitDetail?.memberId;
 
   // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
@@ -207,8 +211,7 @@ export default function RecruitDetail() {
     title: displayData?.title,
     nickname: displayData?.nickname,
     categoryNames,
-    minPrice,
-    maxPrice,
+    price,
     deadline: displayData?.deadline,
     location: displayData?.location,
     recruitDetail,
@@ -317,11 +320,7 @@ export default function RecruitDetail() {
               <div>
                 <span className="text-black mb-1">급여</span>
                 <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">
-                  {minPrice && maxPrice
-                    ? `${minPrice.toLocaleString()}원 ~ ${maxPrice.toLocaleString()}원`
-                    : '금액 협의'}
-                </span>
+                <span className="font-medium">{price}</span>
               </div>
               <div>
                 <span className="text-black mb-1">기한</span>
