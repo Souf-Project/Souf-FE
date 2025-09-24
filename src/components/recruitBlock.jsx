@@ -129,7 +129,7 @@ export default function RecruitBlock({
           content,
           cityName,
           cityDetailName,
-          price,
+          price: payment,
           deadline: deadLine,
           location: cityName,
           preferMajor: false, 
