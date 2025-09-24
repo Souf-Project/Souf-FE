@@ -23,9 +23,9 @@ export default function RecruitUpload() {
   const [isLoading, setIsLoading] = useState(false);
   
   // 급여 파싱 함수
-  const parsePayment = (paymentString) => {
-    if (!paymentString || typeof paymentString !== 'string') return '';
-    let numStr = paymentString.replace(/[^0-9.]/g, '');
+  const parsePrice = (priceString) => {
+    if (!priceString || typeof priceString !== 'string') return '';
+    let numStr = priceString.replace(/[^0-9.]/g, '');
     return numStr;
   };
 
@@ -50,20 +50,23 @@ export default function RecruitUpload() {
   
   const [formData, setFormData] = useState(() => {
     if (isEditMode && editData) {
-      const dateTime = parseDateTime(editData.deadline);
+      const startDateTime = parseDateTime(editData.startDate);
+      const deadlineDateTime = parseDateTime(editData.deadline);
       return {
         title: editData.title || '',
         content: editData.content || '',
         region: editData.cityDetailName || '',
         city: editData.cityName || '',
-        deadline: dateTime.date,
-        deadlineTime: '00:00',
-        deadlineHour: dateTime.hour,
-        deadlineMinute: dateTime.minute,
-        deadlinePeriod: dateTime.period,
+        startDate: startDateTime.date,
+        startDateHour: startDateTime.hour,
+        startDateMinute: startDateTime.minute,
+        startDatePeriod: startDateTime.period,
+        deadline: deadlineDateTime.date,
+        deadlineHour: deadlineDateTime.hour,
+        deadlineMinute: deadlineDateTime.minute,
+        deadlinePeriod: deadlineDateTime.period,
         companyName: editData.nickname || nickname || '',
-        minPayment: parsePayment(editData.minPayment),
-        maxPayment: parsePayment(editData.maxPayment),
+        price: parsePrice(editData.price),
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
         hasPreference: !!editData.preferentialTreatment,
@@ -93,18 +96,20 @@ export default function RecruitUpload() {
       };
     } else {
       return {
-    title: '',
+        title: '',
         content: '',
         region: '',
         city: '',
-    deadline: '',
-        deadlineTime: '00:00',
+        startDate: '',
+        startDateHour: '01',
+        startDateMinute: '00',
+        startDatePeriod: 'AM',
+        deadline: '',
         deadlineHour: '01',
         deadlineMinute: '00',
         deadlinePeriod: 'AM',
         companyName: nickname || '',
-        minPayment: '',
-        maxPayment: '',
+        price: '',
         isregionIrrelevant: false,
         preferentialTreatment: '',
         hasPreference: false,
@@ -265,6 +270,7 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
+      const startDateTime = `${formData.startDate}T${convertTo24HourFormat(formData.startDateHour, formData.startDateMinute, formData.startDatePeriod)}`;
       const deadlineDateTime = `${formData.deadline}T${convertTo24HourFormat(formData.deadlineHour, formData.deadlineMinute, formData.deadlinePeriod)}`;
   
       const formDataToSend = {
@@ -272,9 +278,9 @@ export default function RecruitUpload() {
         content: formData.content,
         cityId: cityId,
         cityDetailId: cityDetailId,
+        startDate: startDateTime,
         deadline: deadlineDateTime,
-        minPayment: `${formData.minPayment}만원`,
-        maxPayment: `${formData.maxPayment}만원`,
+        price: `${formData.price}만원`,
         preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
         categoryDtos: cleanedCategories,
         originalFileNames: formData.files.map((file) => file.name),
@@ -457,23 +463,8 @@ dtoList.forEach((dto, i) => {
             <div className="flex-1">
               <input
                 type="number"
-                name="minPayment"
-                value={formData.minPayment}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
-                  isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
-                }`}
-                required
-                disabled={isEditMode}
-                readOnly={isEditMode}
-              />
-            </div>
-            <span className="text-gray-500">~</span>
-            <div className="flex-1">
-              <input
-                type="number"
-                name="maxPayment"
-                value={formData.maxPayment}
+                name="price"
+                value={formData.price}
                 onChange={handleChange}
                 className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
                   isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
@@ -562,18 +553,73 @@ dtoList.forEach((dto, i) => {
         </div>
 
         <div className="grid grid-cols-2 gap-6">
-        <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-              마감 기한
-          </label>
-          <input
-            type="date"
-            name="deadline"
-            value={formData.deadline}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-            required
-          />
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              시작일
+            </label>
+            <input
+              type="date"
+              name="startDate"
+              value={formData.startDate}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              시작 시간
+            </label>
+            <div className="flex items-center gap-2">
+              <select
+                name="startDatePeriod"
+                value={formData.startDatePeriod}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                <option value="AM">오전</option>
+                <option value="PM">오후</option>
+              </select>
+              <select
+                name="startDateHour"
+                value={formData.startDateHour}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+              <span className="text-gray-500">:</span>
+              <select
+                name="startDateMinute"
+                value={formData.startDateMinute}
+                onChange={handleChange}
+                className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              >
+                <option value="00">00</option>
+                <option value="30">30</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              마감일
+            </label>
+            <input
+              type="date"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              required
+            />
           </div>
           
           <div>
@@ -581,7 +627,7 @@ dtoList.forEach((dto, i) => {
               마감 시간
             </label>
             <div className="flex items-center gap-2">
-            <select
+              <select
                 name="deadlinePeriod"
                 value={formData.deadlinePeriod}
                 onChange={handleChange}
@@ -612,7 +658,6 @@ dtoList.forEach((dto, i) => {
                 <option value="00">00</option>
                 <option value="30">30</option>
               </select>
-              
             </div>
           </div>
         </div>

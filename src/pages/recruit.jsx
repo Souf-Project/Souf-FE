@@ -431,13 +431,6 @@ useEffect(() => {
             {filteredRecruits.length > 0 ? (
               <>
                 {filteredRecruits.map((recruit) => {
-                  const paymentString =
-                    recruit.minPayment && recruit.maxPayment
-                      ? recruit.minPayment === recruit.maxPayment
-                        ? recruit.minPayment
-                        : `${recruit.minPayment} ~ ${recruit.maxPayment}`
-                      : recruit.minPayment || recruit.maxPayment || "금액 협의";
-
                   return (
                     <RecruitBlock
                       key={recruit.recruitId}
@@ -446,9 +439,7 @@ useEffect(() => {
                       content={recruit.content}
                       deadLine={recruit.deadLine}
                       recruitable = {recruit.recruitable}
-                      payment={paymentString}
-                      minPayment={recruit.minPayment}
-                      maxPayment={recruit.maxPayment}
+                      payment={recruit.price || "금액 협의"}
                       cityName={recruit.cityName}
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}
