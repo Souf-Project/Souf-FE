@@ -89,10 +89,9 @@ export default function Recruit() {
         secondCategory: hasSelectedCategory ? secondCategory : null,
         thirdCategory: hasSelectedCategory ? thirdCategory : null,
         recruitSearchReqDto: {},
-          page: currentPage,
-          size: pageSize,
-          sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
-       
+        page: currentPage,
+        size: pageSize,
+        sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
       });
 
       // console.log("API 응답:", response);
@@ -147,9 +146,9 @@ export default function Recruit() {
         secondCategory: hasSelectedCategory ? secondCategory : null,
         thirdCategory: hasSelectedCategory ? thirdCategory : null,
         recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
-          page: currentPage,
-          size: pageSize,
-          sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
+        page: currentPage,
+        size: pageSize,
+        sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
       });
 
       console.log("검색 API 응답:", response);

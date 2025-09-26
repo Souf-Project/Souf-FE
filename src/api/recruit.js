@@ -17,41 +17,67 @@ export const getPopularRecruit = async (pageable) => {
 
 export async function getRecruit(params = {}) {
     try {
-    const {
-      firstCategory = 1,
-      secondCategory ,
-      thirdCategory,
-      recruitSearchReqDto = {},
-      page = 0,
-      size = 10,
-      sort,
-    } = params;   
-    
-
-        const queryParams = {
+        const {
             firstCategory,
-            ...(secondCategory ? { secondCategory } : {}),
-            ...(thirdCategory ? { thirdCategory } : {}),
-            'page': page,
-            'size': size
+            secondCategory,
+            thirdCategory,
+            recruitSearchReqDto = {},
+            page = 0,
+            size = 10,
+            sort,
+        } = params;
+
+        // 카테고리 데이터 구성
+        let categories = null;
+        if (firstCategory || secondCategory || thirdCategory) {
+            categories = [[{
+                firstCategory: firstCategory || null,
+                secondCategory: secondCategory || null,
+                thirdCategory: thirdCategory || null
+            }]];
+        }
+
+        // 정렬 옵션 구성
+        let sortOption = {
+            sortKey: "RECENT",
+            sortDir: "DESC"
         };
 
-
-        if (recruitSearchReqDto.title?.trim()) {
-            queryParams['title'] = recruitSearchReqDto.title;
-        }
-        if (recruitSearchReqDto.content?.trim()) {
-            queryParams['content'] = recruitSearchReqDto.content;
-        }
-
         if (sort && sort.length > 0) {
-            queryParams['sort'] = sort?.join(',');
+            const sortString = sort[0];
+            if (sortString.includes('createdAt')) {
+                sortOption.sortKey = "RECENT";
+            } else if (sortString.includes('maxPayment')) {
+                sortOption.sortKey = "PAYMENT_HIGH";
+            } else if (sortString.includes('minPayment')) {
+                sortOption.sortKey = "PAYMENT_LOW";
+            }
+            
+            if (sortString.includes('desc')) {
+                sortOption.sortDir = "DESC";
+            } else if (sortString.includes('asc')) {
+                sortOption.sortDir = "ASC";
+            }
         }
+
+        // 요청 바디 구성
+        const requestBody = {
+            recruitSearchReqDto: {
+                title: recruitSearchReqDto.title?.trim() || null,
+                content: recruitSearchReqDto.content?.trim() || null,
+                categories: categories,
+                sortOption: sortOption
+            },
+            pageable: {
+                page: page,
+                size: size,
+                sort: sort || []
+            }
+        };
 
         // 토큰 확인
         const token = localStorage.getItem('accessToken');
-        const response = await client.get('/api/v1/recruit', {
-            params: queryParams,
+        const response = await client.post('/api/v1/recruit/search', requestBody, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
