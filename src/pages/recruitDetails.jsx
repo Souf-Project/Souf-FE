@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import backArrow from '../assets/images/backArrow.svg';
-import firstCategoryData from '../assets/categoryIndex/first_category.json';
-import secondCategoryData from '../assets/categoryIndex/second_category.json';
-import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import AlertModal from '../components/alertModal';
 import { postApplication } from '../api/application';
 import { UserStore } from '../store/userStore';
@@ -15,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import PageHeader from "../components/pageHeader";
+import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
 
 
 const parsePayment = (paymentString) => {
@@ -27,30 +25,16 @@ const parsePayment = (paymentString) => {
   return isNaN(num) ? null : num;
 };
 
-const getCategoryNames = (categoryDtoList) => {
-    if (!categoryDtoList || categoryDtoList.length === 0) {
-        return [];
-    }
+const formatPayment = (paymentString) => {
+  if (!paymentString || typeof paymentString !== 'string') return '금액 협의';
+  return paymentString;
+};
 
-    return categoryDtoList.map(dto => {
-        const firstCatId = dto.firstCategory;
-        const secondCatId = dto.secondCategory;
-        const thirdCatId = dto.thirdCategory;
-
-        const firstName = firstCategoryData.first_category.find(
-            cat => cat.first_category_id === firstCatId
-        )?.name || '';
-
-        const secondName = secondCategoryData.second_category.find(
-            cat => cat.second_category_id === secondCatId
-        )?.name || '';
-
-        const thirdName = thirdCategoryData.third_category.find(
-            cat => cat.third_category_id === thirdCatId
-        )?.name || '';
-
-        return { first: firstName, second: secondName, third: thirdName };
-    });
+// 닉네임 마스킹 함수
+const maskNickname = (nickname) => {
+  if (!nickname) return '';
+  if (nickname.length <= 2) return nickname;
+  return nickname.charAt(0) + '*'.repeat(nickname.length - 2) + nickname.charAt(nickname.length - 1);
 };
 
 export default function RecruitDetail() {
@@ -206,19 +190,12 @@ export default function RecruitDetail() {
     setIsApplySuccessModalOpen(true);
   };
 
-  // API에서 받은 상세 정보가 있으면 그것을 우선 사용, 없으면 기본 데이터 사용
-  // const displayData = recruitDetail || recruitData;
-  // const categoryList = recruitDetail?.categoryDtoList || recruitData?.categoryDtoList;
-  // const categoryNames = getCategoryNames(categoryList);
-
-  // const minPrice = recruitDetail ? parsePayment(recruitDetail.minPayment) : (displayData?.minPrice || null);
-  // const maxPrice = recruitDetail ? parsePayment(recruitDetail.maxPayment) : (displayData?.maxPrice || null);
-
   const displayData = recruitDetail;
   const categoryList = recruitDetail?.categoryDtoList || [];
-  const categoryNames = getCategoryNames(categoryList);
-  const minPrice = parsePayment(recruitDetail?.minPayment);
-  const maxPrice = parsePayment(recruitDetail?.maxPayment);
+  const mobileCategoryNames = getCategoryNames(categoryList);
+  const categoryNames = getAllCategoryNames(categoryList);
+  const price = formatPayment(recruitDetail?.price);
+  const maxPrice = parsePayment(recruitDetail?.price);
   const isAuthor = memberId === recruitDetail?.memberId;
 
   // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
@@ -240,8 +217,7 @@ export default function RecruitDetail() {
     title: displayData?.title,
     nickname: displayData?.nickname,
     categoryNames,
-    minPrice,
-    maxPrice,
+    price,
     deadline: displayData?.deadline,
     location: displayData?.location,
     recruitDetail,
@@ -275,7 +251,6 @@ export default function RecruitDetail() {
       
       <div className="flex w-full mx-auto max-w-[60rem]">
         <div className="w-5/6 mx-auto pt-4 mr-4">
-       
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -342,11 +317,8 @@ export default function RecruitDetail() {
             <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">팝업</div>
             <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">패션디자인 전공</div>
           </div>
-          
-          
-          
 
-          <div className="border-t border-gray-200 my-6"></div>
+          <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           <div>
              <p className="text-xl font-semibold text-black mb-4">
                기업 소개

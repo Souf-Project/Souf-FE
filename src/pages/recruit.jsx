@@ -354,9 +354,7 @@ export default function Recruit() {
                       content={recruit.content}
                       deadLine={recruit.deadLine}
                       recruitable = {recruit.recruitable}
-                      payment={paymentString}
-                      minPayment={recruit.minPayment}
-                      maxPayment={recruit.maxPayment}
+                      payment={recruit.price || "금액 협의"}
                       cityName={recruit.cityName}
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}

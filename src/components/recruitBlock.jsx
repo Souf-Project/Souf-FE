@@ -25,8 +25,6 @@ export default function RecruitBlock({
   deadLine,
   recruitable,
   payment,
-  minPayment,
-  maxPayment,
   cityName,
   cityDetailName,
   secondCategory,
@@ -122,9 +120,6 @@ export default function RecruitBlock({
   };
 
   const handleClick = async () => {
-    const minPrice = parsePayment(minPayment);
-    const maxPrice = parsePayment(maxPayment);
-    
     try {
       const response = await getRecruitDetail(id);
       console.log('Recruit detail response:', response);
@@ -137,8 +132,7 @@ export default function RecruitBlock({
           content,
           cityName,
           cityDetailName,
-          minPrice,
-          maxPrice,
+          price: payment,
           deadline: deadLine,
           location: cityName,
           preferMajor: false, 

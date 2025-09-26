@@ -23,47 +23,27 @@ export default function RecruitUpload() {
   const editData = location.state?.recruitDetail || location.state?.recruitData;
   
   const [isLoading, setIsLoading] = useState(false);
-  const [estimateType, setEstimateType] = useState('fixed');
   const [currentStep, setCurrentStep] = useState(1);
-  const [showPreview, setShowPreview] = useState(false);
+  const [estimateType, setEstimateType] = useState('fixed');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const step1Element = document.querySelector('[data-step="1"]');
-      const step2Element = document.querySelector('[data-step="2"]');
-      const step3Element = document.querySelector('[data-step="3"]');
-      const step4Element = document.querySelector('[data-step="4"]');
-
-      if (step1Element && step2Element && step3Element && step4Element) {
-        const step1Rect = step1Element.getBoundingClientRect();
-        const step2Rect = step2Element.getBoundingClientRect();
-        const step3Rect = step3Element.getBoundingClientRect();
-        const step4Rect = step4Element.getBoundingClientRect();
-
-        if (step4Rect.top <= window.innerHeight * 0.4) {
-          setCurrentStep(4);
-        } else if (step3Rect.top <= window.innerHeight * 0.5) {
-          setCurrentStep(3);
-        } else if (step2Rect.top <= window.innerHeight * 0.5) {
-          setCurrentStep(2);
-        } else {
-          setCurrentStep(1);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
   
-
-  const parsePayment = (paymentString) => {
-    if (!paymentString || typeof paymentString !== 'string') return '';
-    let numStr = paymentString.replace(/[^0-9.]/g, '');
+  // 급여 파싱 함수
+  const parsePrice = (priceString) => {
+    if (!priceString || typeof priceString !== 'string') return '';
+    let numStr = priceString.replace(/[^0-9.]/g, '');
     return numStr;
   };
 
+  // 12시간 형식을 24시간 형식으로 변환하는 함수
+  const convertTo24HourFormat = (hour, minute, period) => {
+    let hour24 = parseInt(hour);
+    if (period === 'PM' && hour24 !== 12) {
+      hour24 += 12;
+    } else if (period === 'AM' && hour24 === 12) {
+      hour24 = 0;
+    }
+    return `${hour24.toString().padStart(2, '0')}:${minute}`;
+  };
 
   const parseDateTime = (dateTimeString) => {
     if (!dateTimeString) return { date: '', hour: '01', minute: '00', period: 'AM' };
@@ -85,17 +65,23 @@ export default function RecruitUpload() {
   
   const [formData, setFormData] = useState(() => {
     if (isEditMode && editData) {
-      const dateTime = parseDateTime(editData.deadline);
+      const startDateTime = parseDateTime(editData.startDate);
+      const deadlineDateTime = parseDateTime(editData.deadline);
       return {
         title: editData.title || '',
         content: editData.content || '',
         region: editData.cityDetailName || '',
         city: editData.cityName || '',
-        deadline: dateTime.date,
-        // 여기 기간으로 
+        startDate: startDateTime.date,
+        startDateHour: startDateTime.hour,
+        startDateMinute: startDateTime.minute,
+        startDatePeriod: startDateTime.period,
+        deadline: deadlineDateTime.date,
+        deadlineHour: deadlineDateTime.hour,
+        deadlineMinute: deadlineDateTime.minute,
+        deadlinePeriod: deadlineDateTime.period,
         companyName: editData.nickname || nickname || '',
-        minPayment: parsePayment(editData.minPayment),
-        maxPayment: parsePayment(editData.maxPayment),
+        price: parsePrice(editData.price),
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
         preferentialKeyword1: editData.preferentialKeyword1 || '',
@@ -134,14 +120,20 @@ export default function RecruitUpload() {
       };
     } else {
       return {
-    title: '',
+        title: '',
         content: '',
         region: '',
         city: '',
-    deadline: '',
+        startDate: '',
+        startDateHour: '01',
+        startDateMinute: '00',
+        startDatePeriod: 'AM',
+        deadline: '',
+        deadlineHour: '01',
+        deadlineMinute: '00',
+        deadlinePeriod: 'AM',
         companyName: nickname || '',
-        minPayment: '',
-        maxPayment: '',
+        price: '',
         isregionIrrelevant: false,
         preferentialTreatment: '',
         preferentialKeyword1: '',
@@ -228,7 +220,6 @@ export default function RecruitUpload() {
     { city_id: 2, name: "경기"}
   ];
   
-
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
     if (type === 'file') {
@@ -240,21 +231,20 @@ export default function RecruitUpload() {
         return;
       }
       
-      
       const validateFileSize = (file) => {
         const maxSize = 10 * 1024 * 1024; // 10MB
         const isValid = file.size <= maxSize;
-            if (!isValid) {
+        if (!isValid) {
           alert(`${file.name}의 크기가 10MB를 초과합니다.`);
-            }
+        }
         return isValid;
-          };
+      };
 
       const validFiles = fileArray.filter(validateFileSize);
-          setFormData(prev => ({
-            ...prev,
+      setFormData(prev => ({
+        ...prev,
         files: [...prev.files, ...validFiles]
-          }));
+      }));
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -298,50 +288,6 @@ export default function RecruitUpload() {
       }
 
       setIsUploadingImage(true);
-
-      // try {
-      
-        
-
-      //   if (dtoList && dtoList.length > 0) {
-      //     // S3에 파일 업로드
-      //     await uploadToS3(dtoList[0].presignedUrl, file);
-
-      //     // 파일 정보 추출
-      //     const fileUrl = dtoList[0].fileUrl;
-      //     const fileName = file.name;
-      //     const fileType = file.type.split("/")[1].toUpperCase();
-
-      //     // 미디어 정보 저장
-      //     await postRecruitMedia({
-      //       recruitId,
-      //       fileUrl: [fileUrl],
-      //       fileName: [fileName],
-      //       fileType: [fileType],
-      //     });
-
-      //     // 마크다운 형식으로 변환하여 textarea에 삽입
-      //     const textarea = document.querySelector('textarea[name="content"]');
-      //     const start = textarea.selectionStart;
-      //     const imageMarkdown = `![${fileName}](${fileUrl})`;
-      //     const newText = formData.content.substring(0, start) + imageMarkdown + formData.content.substring(start);
-          
-      //     setFormData(prev => ({ ...prev, content: newText }));
-          
-      //     // 커서를 이미지 마크다운 뒤로 이동
-      //     setTimeout(() => {
-      //       textarea.focus();
-      //       textarea.setSelectionRange(start + imageMarkdown.length, start + imageMarkdown.length);
-      //     }, 0);
-
-      //     alert('이미지가 성공적으로 업로드되었습니다.');
-      //   }
-      // } catch (error) {
-      //   console.error('이미지 업로드 실패:', error);
-      //   alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
-      // } finally {
-      //   setIsUploadingImage(false);
-      // }
     };
 
     input.click();
@@ -399,16 +345,17 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
-      const deadlineDateTime = `${formData.deadline}}`;
+      const startDateTime = `${formData.startDate}T${convertTo24HourFormat(formData.startDateHour, formData.startDateMinute, formData.startDatePeriod)}`;
+      const deadlineDateTime = `${formData.deadline}T${convertTo24HourFormat(formData.deadlineHour, formData.deadlineMinute, formData.deadlinePeriod)}`;
   
       const formDataToSend = {
         title: formData.title,
         content: formData.content,
         cityId: cityId,
         cityDetailId: cityDetailId,
+        startDate: startDateTime,
         deadline: deadlineDateTime,
-        minPayment: `${formData.minPayment}만원`,
-        maxPayment: `${formData.maxPayment}만원`,
+        price: `${formData.price}만원`,
         preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
         categoryDtos: cleanedCategories,
         originalFileNames: formData.files.map((file) => file.name),
@@ -441,7 +388,7 @@ export default function RecruitUpload() {
               file.type.split("/")[1].toUpperCase()
             );
 
-            // S3 업로드 x성공 후 미디어 정보 저장
+            // S3 업로드 성공 후 미디어 정보 저장
             await Promise.all(
               dtoList.map(({ presignedUrl }, i) =>
                 postRecruitMedia({
@@ -458,17 +405,15 @@ export default function RecruitUpload() {
             alert('파일 업로드 중 오류가 발생했습니다.');
           }
         }
-        
-      
       } else {
         // 새 공고 작성 모드: uploadRecruit API 사용
         response = await uploadRecruit(formDataToSend);
         const { recruitId, dtoList } = response.data.result;
         
         console.log("📦 dtoList:", dtoList);
-dtoList.forEach((dto, i) => {
-  console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
-});
+        dtoList.forEach((dto, i) => {
+          console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
+        });
 
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
         if (formData.files.length > 0 && dtoList) {
@@ -504,7 +449,6 @@ dtoList.forEach((dto, i) => {
             alert('파일 업로드 중 오류가 발생했습니다.');
           }
         }
-        
       }
       
       navigate('/recruit?category=1');
@@ -517,7 +461,6 @@ dtoList.forEach((dto, i) => {
     }
   };
   
-
   const handleCategoryChange = (index) => (categoryData) => {
     setFormData((prev) => {
       const updatedCategories = prev.categoryDtos.map((cat, i) =>
@@ -549,578 +492,289 @@ dtoList.forEach((dto, i) => {
           </div>
         </div>
       )}
-      {/* <h1 className="text-3xl font-bold w-1/4 mx-auto whitespace-nowrap">
-        {isEditMode ? '공고문 수정' :   '공고문 작성'}
-      </h1> */}
 
       <div className="flex gap-8 max-w-[60rem] w-full mx-auto">
-      
-      <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
-        <div data-step="1" className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
-          STEP 1. 
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            기업 및 개인 명 작성
-          </label>
-          <input
-            type="text"
-            name="companyName"
-            value={formData.companyName}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
-            required
-            readOnly
-            disabled
-          />
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            로고 및 아이콘 등록
-          </label>
-          <div className="flex gap-4">
-            {/* 로고 미리보기 */}
-            {formData.logoFile && (
-              <div className="relative group">
-                <div className="w-32 h-32 border-2 border-gray-300 rounded-lg overflow-hidden">
-                  <img 
-                    src={URL.createObjectURL(formData.logoFile)} 
-                    alt="로고 미리보기"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                {/* 삭제 버튼 */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData(prev => ({ ...prev, logoFile: null }));
-                  }}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            )}
-            
-            {/* 로고 첨부 버튼 - 로고가 없을 때만 표시 */}
-            {!formData.logoFile && (
-              <div className="relative">
-                <input
-                  type="file"
-                  name="logoFile"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      // 이미지 파일만 허용
-                      if (!file.type.startsWith('image/')) {
-                        alert('이미지 파일만 업로드할 수 있습니다.');
-                        return;
-                      }
-                      // 크기 제한 할지??
-                      // if (file.size > 5 * 1024 * 1024) {
-                      //   alert('파일 크기는 5MB를 초과할 수 없습니다.');
-                      //   return;
-                      // }
-                      setFormData(prev => ({ ...prev, logoFile: file }));
-                    }
-                  }}
-                  accept="image/*"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  id="logo-upload"
-                />
-                <label 
-                  htmlFor="logo-upload"
-                  className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                >
-                  <svg 
-                    className="w-8 h-8 text-gray-400 mb-2" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M12 4v16m8-8H4" 
-                    />
-                  </svg>
-                </label>
-              </div>
-            )}
+        <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
+          <div data-step="1" className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
+            STEP 1. 
           </div>
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            기업 및 개인 간략 소개
-          </label>
-           <textarea
-             name="companyDescription"
-             value={formData.companyDescription || ''} 
-             onChange={handleChange}
-             className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-             placeholder="1000자 이내, 이미지 첨부 가능"
-             rows="8"
-           />
-        </div>
-
-        <div data-step="2" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
-          STEP 2. 
-          <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            공고문 제목 작성
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-          공고 간략 소개(리스트 아래 들어갈 내용, 1~2줄)
-          </label>
-          <textarea
-             name="briefIntroduction"
-             value={formData.briefIntroduction || ''} 
-                onChange={handleChange}
-             className="w-full h-36 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-             placeholder="공고의 간략한 소개를 입력하세요"
-             rows="2"
-           />
-        </div>
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <label className="text-xl font-semibold text-black">
-              우대사항 키워드
-          </label>
-            <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
-          </div>
-          <div className="flex gap-2">
-          <input
-              type="text"
-              name="preferentialKeyword1"
-              value={formData.preferentialKeyword1 || ''}
-            onChange={handleChange}
-              maxLength={10}
-              placeholder="키워드 1 (10글자 이내)"
-              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            />
+          
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              제목
+            </label>
             <input
               type="text"
-              name="preferentialKeyword2"
-              value={formData.preferentialKeyword2 || ''}
+              name="title"
+              value={formData.title}
               onChange={handleChange}
-              maxLength={10}
-              placeholder="키워드 2 (10글자 이내)"
-              className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-          />
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              required
+            />
           </div>
-        </div>
-          <div>
-          <div className="flex items-center gap-2 mb-4">
-            <label className="text-xl font-semibold text-black">
-              우대사항 내용
-            </label>
-          </div>
-            <textarea
-              name="preferentialTreatment"
-              value={formData.preferentialTreatment}
-                onChange={handleChange}
-              rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            공고문 내용 작성
-          </label>
-          <div className="border border-gray-300 rounded-lg overflow-hidden">
-            <div className="bg-gray-50 px-4 py-2 border-b border-gray-300">
-              <div className="flex justify-between items-center">
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.querySelector('textarea[name="content"]');
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const selectedText = formData.content.substring(start, end);
-                      const newText = formData.content.substring(0, start) + `**${selectedText}**` + formData.content.substring(end);
-                      setFormData(prev => ({ ...prev, content: newText }));
-                      setTimeout(() => {
-                        textarea.focus();
-                        textarea.setSelectionRange(start + 2, end + 2);
-                      }, 0);
-                    }}
-                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
-                  >
-                    <strong>B</strong>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.querySelector('textarea[name="content"]');
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const selectedText = formData.content.substring(start, end);
-                      const newText = formData.content.substring(0, start) + `*${selectedText}*` + formData.content.substring(end);
-                      setFormData(prev => ({ ...prev, content: newText }));
-                      setTimeout(() => {
-                        textarea.focus();
-                        textarea.setSelectionRange(start + 1, end + 1);
-                      }, 0);
-                    }}
-                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
-                  >
-                    <em>I</em>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.querySelector('textarea[name="content"]');
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const selectedText = formData.content.substring(start, end);
-                      const newText = formData.content.substring(0, start) + `<u>${selectedText}</u>` + formData.content.substring(end);
-                      setFormData(prev => ({ ...prev, content: newText }));
-                      setTimeout(() => {
-                        textarea.focus();
-                        textarea.setSelectionRange(start + 3, end + 3);
-                      }, 0);
-                    }}
-                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
-                  >
-                    <u>U</u>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleImageUpload}
-                    disabled={isUploadingImage}
-                    className={`px-3 py-1 text-sm border border-gray-300 rounded transition-colors ${
-                      isUploadingImage 
-                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                        : 'bg-white hover:bg-gray-100'
-                    }`}
-                  >
-                    {isUploadingImage ? '업로드 중...' : '🖼️'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const textarea = document.querySelector('textarea[name="content"]');
-                      const start = textarea.selectionStart;
-                      const end = textarea.selectionEnd;
-                      const selectedText = formData.content.substring(start, end);
-                      const newText = formData.content.substring(0, start) + `[${selectedText || '링크 텍스트'}](URL)` + formData.content.substring(end);
-                      setFormData(prev => ({ ...prev, content: newText }));
-                      setTimeout(() => {
-                        textarea.focus();
-                        const linkStart = start + 1;
-                        const linkEnd = selectedText ? start + selectedText.length + 1 : start + 5;
-                        textarea.setSelectionRange(linkStart, linkEnd);
-                      }, 0);
-                    }}
-                    className="px-3 py-1 text-sm bg-white border border-gray-300 rounded hover:bg-gray-100"
-                  >
-                    🔗
-                  </button>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                >
-                  {showPreview ? '미리보기 숨기기' : '미리보기'}
-                </button>
-              </div>
-            </div>
-            <textarea
-              name="content"
-              value={formData.content}
-              onChange={handleChange}
-              rows="12"
-              className="w-full h-80 px-4 py-2 border-0 focus:ring-0 focus:outline-none resize-none"
-              placeholder="1500자 이내"
-                required
-              />
-            </div>
-          
-          {showPreview && (
-            <div className="mt-4 border border-gray-300 rounded-lg overflow-hidden">
-              <div className="bg-gray-50 px-4 py-2 border-b border-gray-300">
-                <h3 className="text-sm font-semibold text-gray-700">미리보기</h3>
-              </div>
-              <div className="p-4 bg-white">
-                <div className="prose prose-sm max-w-none">
-                  <ReactMarkdown 
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      u: ({children}) => <u>{children}</u>,
-                      strong: ({children}) => <strong>{children}</strong>,
-                      em: ({children}) => <em>{children}</em>,
-                      a: ({href, children}) => (
-                        <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
-                          {children}
-                        </a>
-                      ),
-                      img: ({src, alt}) => (
-                        <img src={src} alt={alt} className="max-w-full h-auto rounded-lg my-2" />
-                      )
-                    }}
-                  >
-                    {formData.content || '미리보기 내용이 없습니다.'}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
 
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            동영상 및 참고 파일 첨부
-          </label>
-          <div className="flex gap-4 flex-wrap">
-            {/* 기존 파일 미리보기 */}
-            {formData.files && formData.files.map((file, index) => (
-              <div key={index} className="relative group">
-                <div className="w-32 h-32 border-2 border-gray-300 rounded-lg overflow-hidden">
-                  {file.type.startsWith('image/') ? (
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`미리보기 ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4zM9 4h6V3H9v1z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const newFiles = formData.files.filter((_, i) => i !== index);
-                    setFormData(prev => ({ ...prev, files: newFiles }));
-                  }}
-                  className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ))}
-            
-            {/* 파일 첨부 버튼 - 3개 미만일 때만 표시 */}
-            {formData.files.length < 3 && (
-              <div className="relative">
-              <input
-                  type="file"
-                  name="files"
-                onChange={handleChange}
-                  multiple
-                  accept="image/*,video/*"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  id="file-upload"
-                />
-                <label 
-                  htmlFor="file-upload"
-                  className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-colors"
-                >
-                  <svg 
-                    className="w-8 h-8 text-gray-400 mb-2" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
-                    <path 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      strokeWidth={2} 
-                      d="M12 4v16m8-8H4" 
-                    />
-                  </svg>
-                
-                </label>
-            </div>
-            )}
-          </div>
-          {/* 파일 개수 표시 */}
-          {formData.files.length > 0 && (
-            <div className="mt-2">
-              <p className="text-sm text-gray-600">
-                {formData.files.length}/3개 파일 선택됨
-              </p>
-            </div>
-          )}
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-              작업 기간
-          </label>
-          <div className="flex items-center gap-2">
-              <input
-            type="date"
-            name="startDate"
-            value={formData.startDate || ''}
-                onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-            placeholder="시작일"
-          />
-              <input
-            type="date"
-            name="deadline"
-            value={formData.deadline}
-                onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
-                required
-                placeholder="마감일"
-              />
-            </div>
-          
-        </div>
-
-        <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-xl font-semibold text-black mb-2">
-              근무 형태
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              기업명
             </label>
-            <select
-              name="workType"
-              value={formData.workType}
+            <textarea
+              name="briefIntroduction"
+              value={formData.briefIntroduction || ''} 
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
-            >
-              <option value="online">온라인</option>
-              <option value="offline">오프라인</option>
-            </select>
+              className="w-full h-36 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
+              placeholder="공고의 간략한 소개를 입력하세요"
+              rows="2"
+            />
           </div>
+          
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-xl font-semibold text-black">
-                지역
+            <div className="flex items-center gap-2 mb-4">
+              <label className="text-xl font-semibold text-black">
+                우대사항 키워드
               </label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  name="isregionIrrelevant"
-                  checked={formData.isregionIrrelevant}
-                  onChange={handleChange}
-                  className="w-4 h-4 text-yellow-point border-gray-300 rounded "
-                />
-                <label className="text-xl text-gray-600">지역 무관</label>
-              </div>
+              <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
             </div>
             <div className="flex gap-2">
-              <select
-                name="city"
-                value={formData.city}
+              <input
+                type="text"
+                name="companyName"
+                value={formData.companyName}
                 onChange={handleChange}
-                disabled={formData.isregionIrrelevant || isEditMode}
-                className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
-                  formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
-                }`}
-                required={!formData.isregionIrrelevant}
-              >
-                <option value="">시/도 선택</option>
-                {cityData.map(city => (
-                  <option key={city.city_id} value={city.name}>
-                    {city.name}
-                  </option>
-                ))}
-              </select>
-            <select
-                name="region"
-                value={formData.region}
-
-              onChange={handleChange}
-                disabled={formData.isregionIrrelevant}
-
-                className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
-                  formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
-                }`}
-                required={!formData.isregionIrrelevant}
-            >
-              <option value="">지역 선택</option>
-                {cityDetailData
-                  .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
-                  .map(detail => (
-                    <option key={detail.city_detail_id} value={detail.name}>
-                      {detail.name}
-                </option>
-              ))}
-            </select>
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
+                required
+                readOnly
+                disabled
+              />
             </div>
           </div>
-        </div>
-        
-          
-        <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
-          STEP 3. 
-          <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
-        </div>
+
           <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            견적 방식
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              급여
             </label>
-           <div className="flex gap-2">
-           <button 
-             type="button"
-             onClick={() => handleEstimateTypeChange('fixed')}
-             className={`w-1/2 py-4 text-lg font-semibold rounded-md focus:ring-2 focus:border-transparent transition-colors ${
-               estimateType === 'fixed' 
-                 ? 'bg-blue-500 text-white' 
-                 : 'bg-neutral-100 text-black'
-             }`}
-           >
-             생각한 금액이 있어요.
-           </button>
-           <button 
-             type="button"
-             onClick={() => handleEstimateTypeChange('estimate')}
-             className={`w-1/2 py-4 text-lg font-semibold rounded-md focus:ring-2 focus:border-transparent transition-colors ${
-               estimateType === 'estimate' 
-                 ? 'bg-blue-500 text-white' 
-                 : 'bg-neutral-100 text-black'
-             }`}
-           >
-             견적 받아보고 싶어요.
-           </button>
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
+                    isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
+                  }`}
+                  required
+                  disabled={isEditMode}
+                  readOnly={isEditMode}
+                />
+              </div>
+              <span className="text-gray-500 whitespace-nowrap">만원</span>
             </div>
           </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
-            <input
-            type="number"
-            name="estimatePayment"
-            value={formData.estimatePayment || ''}
-              onChange={handleChange}
-            disabled={estimateType === 'estimate'}
-            className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
-              estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
-            }`}
-            placeholder={estimateType === 'estimate' ? '견적 금액을 받습니다.' : '견적 금액을 입력하세요'}
-          />
-          <span className="ml-4 text-gray-500 whitespace-nowrap">만원</span>
-        </div>
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <label className="text-xl font-semibold text-black">
-              계약 방식
-            </label>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xl font-semibold text-black mb-2">
+                근무 형태
+              </label>
+              <select
+                name="workType"
+                value={formData.workType}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
+              >
+                <option value="online">온라인</option>
+                <option value="offline">오프라인</option>
+              </select>
+            </div>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xl font-semibold text-black">
+                  지역
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="isregionIrrelevant"
+                    checked={formData.isregionIrrelevant}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-yellow-point border-gray-300 rounded "
+                  />
+                  <label className="text-xl text-gray-600">지역 무관</label>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <select
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  disabled={formData.isregionIrrelevant || isEditMode}
+                  className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
+                    formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
+                  }`}
+                  required={!formData.isregionIrrelevant}
+                >
+                  <option value="">시/도 선택</option>
+                  {cityData.map(city => (
+                    <option key={city.city_id} value={city.name}>
+                      {city.name}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  name="region"
+                  value={formData.region}
+                  onChange={handleChange}
+                  disabled={formData.isregionIrrelevant}
+                  className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
+                    formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
+                  }`}
+                  required={!formData.isregionIrrelevant}
+                >
+                  <option value="">지역 선택</option>
+                  {cityDetailData
+                    .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
+                    .map(detail => (
+                      <option key={detail.city_detail_id} value={detail.name}>
+                        {detail.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xl font-semibold text-gray-700 mb-2">
+                시작일
+              </label>
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xl font-semibold text-gray-700 mb-2">
+                시작 시간
+              </label>
+              <div className="flex items-center gap-2">
+                <select
+                  name="startDatePeriod"
+                  value={formData.startDatePeriod}
+                  onChange={handleChange}
+                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                >
+                  <option value="AM">오전</option>
+                  <option value="PM">오후</option>
+                </select>
+                <select
+                  name="startDateHour"
+                  value={formData.startDateHour}
+                  onChange={handleChange}
+                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                      {i + 1}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-gray-500">:</span>
+                <select
+                  name="startDateMinute"
+                  value={formData.startDateMinute}
+                  onChange={handleChange}
+                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                >
+                  <option value="00">00</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xl font-semibold text-gray-700 mb-2">
+                마감일
+              </label>
+              <input
+                type="date"
+                name="deadline"
+                value={formData.deadline}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-xl font-semibold text-black mb-2">
+                견적 방식
+              </label>
+              <div className="flex items-center gap-2">
+                <select
+                  name="deadlinePeriod"
+                  value={formData.deadlinePeriod}
+                  onChange={handleChange}
+                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                >
+                  <option value="AM">오전</option>
+                  <option value="PM">오후</option>
+                </select>
+                <select
+                  name="deadlineHour"
+                  value={formData.deadlineHour}
+                  onChange={handleChange}
+                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                >
+                  {Array.from({ length: 12 }, (_, i) => (
+                    <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                      {i + 1}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-gray-500">:</span>
+                <select
+                  name="deadlineMinute"
+                  value={formData.deadlineMinute}
+                  onChange={handleChange}
+                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                >
+                  <option value="00">00</option>
+                  <option value="30">30</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
+            <input
+              type="number"
+              name="estimatePayment"
+              value={formData.estimatePayment || ''}
+              onChange={handleChange}
+              disabled={estimateType === 'estimate'}
+              className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
+                estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
+              }`}
+              placeholder={estimateType === 'estimate' ? '견적 금액을 받습니다.' : '견적 금액을 입력하세요'}
+            />
+            <span className="ml-4 text-gray-500 whitespace-nowrap">만원</span>
+          </div>
+          
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <label className="text-xl font-semibold text-black">
+                계약 방식
+              </label>
+            </div>
             <textarea
               name="contractMethod"
               value={formData.contractMethod || ''}
@@ -1128,70 +782,72 @@ dtoList.forEach((dto, i) => {
               rows="3"
               className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent"
               placeholder="Ex) 1. 매칭 성공 시, 계약서를 쓸게요. 
-     2. 추가로 얘기 후에 결정할게요.
-     3. 1차 선입금, 마무리 후 잔금 입금할게요.  "
+2. 추가로 얘기 후에 결정할게요.
+3. 1차 선입금, 마무리 후 잔금 입금할게요.  "
             />
-        </div>
+          </div>
 
-        <div data-step="4" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
-          STEP 4. 
-          <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
-        </div>
-        <div>
-          <label className="block text-xl font-semibold text-black mb-2">
-            공고에 맞는 카테고리 선택
-          </label>
-          <p className="flex items-center gap-2 mb-2 text-base">
-            <img src={infoIcon} alt="infoIcon" className="w-4 h-4" />
-            전공자들에게 AI 추천 방식 적용 및 공고 지원률 상승에 도움이 돼요!
-          </p>
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            {formData?.categoryDtos?.map((category, index) => (
-          <CategorySelectBox 
-                key={index}
-            title="카테고리 선택"
-            content=""
-                defaultValue={category}
-                type="text"
-            isEditing={!isEditMode}
-                onChange={handleCategoryChange(index)}
-                width="w-full"
-          />
-            ))}
-            </div>
-        </div>
-                <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
-                LAST STEP . 
-        </div>
-        <div className="flex gap-4 items-center justify-center">
-        <button
-            type="submit"
-            disabled={isLoading}
-            className={`px-8 py-4 rounded-lg font-bold text-2xl transition-colors duration-200 ${
-              isLoading 
-                ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
-                : 'bg-[#3E78E3] text-white'
-            }`}
-          >
-            {isLoading ? '처리 중...' : (isEditMode ? '수정완료' : '업로드')}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/recruit?category=1')}
-            disabled={isLoading}
-            className={`px-8 py-4 bg-zinc-300 rounded-lg font-bold text-2xl transition-colors duration-200 ${
-              isLoading 
-                ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
-                : 'hover:bg-gray-50'
-            }`}
-          >
-            취소
-          </button>
+          <div data-step="4" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+            STEP 4. 
+            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+          </div>
           
-        </div>
-      </form>
-      <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
+          <div>
+            <label className="block text-xl font-semibold text-black mb-2">
+              공고에 맞는 카테고리 선택
+            </label>
+            <p className="flex items-center gap-2 mb-2 text-base">
+              <img src={infoIcon} alt="infoIcon" className="w-4 h-4" />
+              전공자들에게 AI 추천 방식 적용 및 공고 지원률 상승에 도움이 돼요!
+            </p>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {formData?.categoryDtos?.map((category, index) => (
+                <CategorySelectBox 
+                  key={index}
+                  title="카테고리 선택"
+                  content=""
+                  defaultValue={category}
+                  type="text"
+                  isEditing={!isEditMode}
+                  onChange={handleCategoryChange(index)}
+                  width="w-full"
+                />
+              ))}
+            </div>
+          </div>
+          
+          <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+            LAST STEP . 
+          </div>
+          
+          <div className="flex gap-4 items-center justify-center">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`px-8 py-4 rounded-lg font-bold text-2xl transition-colors duration-200 ${
+                isLoading 
+                  ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
+                  : 'bg-[#3E78E3] text-white'
+              }`}
+            >
+              {isLoading ? '처리 중...' : (isEditMode ? '수정완료' : '업로드')}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/recruit?category=1')}
+              disabled={isLoading}
+              className={`px-8 py-4 bg-zinc-300 rounded-lg font-bold text-2xl transition-colors duration-200 ${
+                isLoading 
+                  ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
+                  : 'hover:bg-gray-50'
+              }`}
+            >
+              취소
+            </button>
+          </div>
+        </form>
+        <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
       </div>
     </div>
   );
-} 
+}
