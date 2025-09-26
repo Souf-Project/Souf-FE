@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CategorySelectBox from '../components/categorySelectBox';
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
@@ -26,6 +26,63 @@ export default function RecruitUpload() {
   const [currentStep, setCurrentStep] = useState(1);
   const [estimateType, setEstimateType] = useState('fixed');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const contentTextareaRef = useRef(null);
+  const imageInputRef = useRef(null);
+
+  const wrapSelection = (wrapStart, wrapEnd = wrapStart) => {
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+    const { selectionStart, selectionEnd, value } = textarea;
+    const selected = value.substring(selectionStart, selectionEnd) || '';
+    const before = value.substring(0, selectionStart);
+    const after = value.substring(selectionEnd);
+    const newValue = `${before}${wrapStart}${selected}${wrapEnd}${after}`;
+    setFormData(prev => ({ ...prev, content: newValue }));
+    // 커서/선택 유지
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const cursorPos = selectionStart + wrapStart.length + selected.length + wrapEnd.length;
+      textarea.setSelectionRange(cursorPos, cursorPos);
+    });
+  };
+
+  const handleBold = () => wrapSelection('**');
+  const handleItalic = () => wrapSelection('*');
+  const handleUnderline = () => wrapSelection('<u>', '</u>');
+  const handleToolbarImageClick = () => {
+    if (imageInputRef.current) imageInputRef.current.click();
+  };
+  const handleToolbarImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('이미지 파일 크기는 5MB를 초과할 수 없습니다.');
+      return;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    // 마크다운 이미지 구문 삽입
+    const textarea = contentTextareaRef.current;
+    const altText = 'image';
+    const md = `![${altText}](${objectUrl})`;
+    if (!textarea) return;
+    const { selectionStart, selectionEnd, value } = textarea;
+    const before = value.substring(0, selectionStart);
+    const after = value.substring(selectionEnd);
+    const newValue = `${before}${md}${after}`;
+    setFormData(prev => ({ ...prev, content: newValue }));
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const pos = before.length + md.length;
+      textarea.setSelectionRange(pos, pos);
+    });
+    // 동일 파일 다시 선택 가능하도록 값 초기화
+    e.target.value = '';
+  };
   
   // 급여 파싱 함수
   const parsePrice = (priceString) => {
@@ -223,28 +280,55 @@ export default function RecruitUpload() {
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
     if (type === 'file') {
-      const fileArray = Array.from(files);
-      
-      // 최대 3개 파일 제한
-      if (formData.files.length + fileArray.length > 3) {
-        alert('최대 3개의 파일만 업로드할 수 있습니다.');
-        return;
-      }
-      
-      const validateFileSize = (file) => {
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        const isValid = file.size <= maxSize;
-        if (!isValid) {
-          alert(`${file.name}의 크기가 10MB를 초과합니다.`);
+      if (name === 'logoFile') {
+        // 로고 파일 처리
+        const file = files[0];
+        if (file) {
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            alert('로고 파일 크기는 5MB를 초과할 수 없습니다.');
+            return;
+          }
+          
+          if (!file.type.startsWith('image/')) {
+            alert('이미지 파일만 업로드할 수 있습니다.');
+            return;
+          }
+          
+          setFormData(prev => ({
+            ...prev,
+            logoFile: file
+          }));
         }
-        return isValid;
-      };
-
-      const validFiles = fileArray.filter(validateFileSize);
-      setFormData(prev => ({
-        ...prev,
-        files: [...prev.files, ...validFiles]
-      }));
+      } else {
+        // 일반 파일 처리 (참고 파일들)
+        const file = files[0];
+        if (file) {
+          const maxSize = 10 * 1024 * 1024; // 10MB
+          if (file.size > maxSize) {
+            alert(`${file.name}의 크기가 10MB를 초과합니다.`);
+            return;
+          }
+          
+          // 현재 비어있는 첫 번째 슬롯에 파일 할당
+          const currentFiles = [...formData.files];
+          const emptySlotIndex = currentFiles.findIndex(f => f === null || f === undefined);
+          
+          if (emptySlotIndex !== -1) {
+            currentFiles[emptySlotIndex] = file;
+          } else if (currentFiles.length < 3) {
+            currentFiles.push(file);
+          } else {
+            alert('최대 3개의 파일만 업로드할 수 있습니다.');
+            return;
+          }
+          
+          setFormData(prev => ({
+            ...prev,
+            files: currentFiles
+          }));
+        }
+      }
     } else if (type === 'checkbox') {
       setFormData(prev => ({
         ...prev,
@@ -313,7 +397,6 @@ export default function RecruitUpload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 로딩 시작
     setIsLoading(true);
 
     try {
@@ -362,7 +445,7 @@ export default function RecruitUpload() {
         workType: formData.workType.toUpperCase(),
       };
   
-      console.log('Sending data:', formDataToSend);
+      // console.log('Sending data:', formDataToSend);
       
       let response;
       
@@ -495,18 +578,19 @@ export default function RecruitUpload() {
 
       <div className="flex gap-8 max-w-[60rem] w-full mx-auto">
         <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
-          <div data-step="1" className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
+          <div data-step="1" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
             STEP 1. 
+            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
           </div>
-          
+
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              제목
+              기업 또는 개인명
             </label>
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="companyName"
+              value={formData.companyName}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
               required
@@ -515,139 +599,285 @@ export default function RecruitUpload() {
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              기업명
+              로고 및 아이콘 등록
+            </label>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  type="file"
+                  name="logoFile"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  id="logo-upload"
+                />
+                <label
+                  htmlFor="logo-upload"
+                  className="w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-yellow-point hover:bg-yellow-50 transition-colors duration-200"
+                >
+                  {formData.logoUrl || (formData.logoFile && URL.createObjectURL(formData.logoFile)) ? (
+                    <img 
+                      src={formData.logoUrl || (formData.logoFile && URL.createObjectURL(formData.logoFile))} 
+                      alt="로고 미리보기" 
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <>
+                      <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      <span className="text-sm text-gray-500">로고 업로드</span>
+                    </>
+                  )}
+                </label>
+              </div>
+              <div className="flex-1">
+                {formData.logoFile && (
+                  <p className="text-xs text-green-600 mt-1">✓ {formData.logoFile.name}</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              기업 또는 간략 소개
             </label>
             <textarea
               name="briefIntroduction"
               value={formData.briefIntroduction || ''} 
               onChange={handleChange}
               className="w-full h-36 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-              placeholder="공고의 간략한 소개를 입력하세요"
-              rows="2"
+              placeholder="기업에 대한 간략한 소개를 입력하세요 (1000자 이내)"
+              rows="4"
+              maxLength="1000"
             />
+            <div className="text-right text-sm text-gray-500 mt-1">
+              {formData.briefIntroduction?.length || 0}/1000
+            </div>
           </div>
-          
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <label className="text-xl font-semibold text-black">
-                우대사항 키워드
-              </label>
-              <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                name="companyName"
-                value={formData.companyName}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed"
-                required
-                readOnly
-                disabled
-              />
-            </div>
+
+          <div data-step="2" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+            STEP 2. 
+            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
           </div>
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              급여
+              공고문 제목
             </label>
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <input
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleChange}
-                  className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent ${
-                    isEditMode ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
-                  required
-                  disabled={isEditMode}
-                  readOnly={isEditMode}
-                />
-              </div>
-              <span className="text-gray-500 whitespace-nowrap">만원</span>
-            </div>
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              placeholder="공고문 제목을 입력하세요"
+              required
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xl font-semibold text-black mb-2">
-                근무 형태
-              </label>
-              <select
-                name="workType"
-                value={formData.workType}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white"
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              공고 간략 소개 (1~2줄)
+            </label>
+            <textarea
+              name="companyDescription"
+              value={formData.companyDescription || ''} 
+              onChange={handleChange}
+              className="w-full h-20 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
+              placeholder="공고에 대한 간략한 소개를 1~2줄로 입력하세요"
+              rows="2"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              공고문 내용 (1500자 이내)
+            </label>
+            <div className="flex items-center gap-2 mb-2">
+              <button
+                type="button"
+                onClick={handleBold}
+                className="px-2 py-1 text-sm border rounded hover:bg-gray-50 font-bold"
+                title="Bold"
               >
-                <option value="online">온라인</option>
-                <option value="offline">오프라인</option>
-              </select>
+                B
+              </button>
+              <button
+                type="button"
+                onClick={handleItalic}
+                className="px-2 py-1 text-sm border rounded hover:bg-gray-50 italic"
+                title="Italic"
+              >
+                I
+              </button>
+              <button
+                type="button"
+                onClick={handleUnderline}
+                className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
+                title="Underline"
+              >
+                <span className="underline">U</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleToolbarImageClick}
+                className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
+                title="Insert image"
+              >
+                🖼️
+              </button>
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleToolbarImageChange}
+              />
             </div>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xl font-semibold text-black">
-                  지역
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="isregionIrrelevant"
-                    checked={formData.isregionIrrelevant}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-yellow-point border-gray-300 rounded "
-                  />
-                  <label className="text-xl text-gray-600">지역 무관</label>
+            <textarea
+              name="content"
+              value={formData.content}
+              onChange={handleChange}
+              ref={contentTextareaRef}
+              className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent resize-none"
+              placeholder="공고문의 상세 내용을 입력하세요 (1500자 이내)"
+              rows="8"
+              maxLength="1500"
+              required
+            />
+            <div className="text-right text-sm text-gray-500 mt-1">
+              {formData.content?.length || 0}/1500
+            </div>
+            
+            {/* 미리보기 토글 버튼 */}
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => setShowPreview(!showPreview)}
+                className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+              >
+                <svg className={`w-4 h-4 transition-transform duration-200 ${showPreview ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                미리보기 {showPreview ? '닫기' : ''}
+              </button>
+            </div>
+            
+            {/* 마크다운 미리보기 */}
+            {showPreview && (
+              <div className="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                <div className="text-sm font-medium text-gray-700 mb-2">미리보기:</div>
+                <div className="prose prose-sm max-w-none">
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {formData.content || '*내용이 없습니다.*'}
+                  </ReactMarkdown>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <select
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  disabled={formData.isregionIrrelevant || isEditMode}
-                  className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
-                    formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
-                  }`}
-                  required={!formData.isregionIrrelevant}
-                >
-                  <option value="">시/도 선택</option>
-                  {cityData.map(city => (
-                    <option key={city.city_id} value={city.name}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name="region"
-                  value={formData.region}
-                  onChange={handleChange}
-                  disabled={formData.isregionIrrelevant}
-                  className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
-                    formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
-                  }`}
-                  required={!formData.isregionIrrelevant}
-                >
-                  <option value="">지역 선택</option>
-                  {cityDetailData
-                    .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
-                    .map(detail => (
-                      <option key={detail.city_detail_id} value={detail.name}>
-                        {detail.name}
-                      </option>
-                    ))}
-                </select>
-              </div>
-            </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xl font-semibold text-gray-700 mb-2">
-                시작일
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              동영상 및 참고 파일 첨부 (최대 3개)
+            </label>
+            <div className="flex items-start gap-4 w-full">
+              <div className="grid grid-cols-3 gap-3">
+                {/* 파일 업로드 슬롯들 */}
+                {Array.from({ length: 3 }, (_, index) => (
+                  <div key={index} className="relative">
+                    <input
+                      type="file"
+                      name="files"
+                      onChange={handleChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      id={`file-upload-${index}`}
+                      disabled={formData.files.length > index}
+                    />
+                    <label
+                      htmlFor={`file-upload-${index}`}
+                      className={`w-24 h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${
+                        formData.files[index] 
+                          ? 'bg-green-50' 
+                          : 'border-gray-300 hover:border-yellow-point hover:bg-yellow-50'
+                      }`}
+                    >
+                      {formData.files[index] ? (
+                        <div className="w-full h-full relative">
+                          {formData.files[index].type.startsWith('image/') ? (
+                            <img 
+                              src={URL.createObjectURL(formData.files[index])} 
+                              alt="파일 미리보기" 
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 rounded-lg">
+                              <svg className="w-8 h-8 text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              <span className="text-xs text-gray-600 font-medium truncate px-1">
+                                {formData.files[index].name.split('.')[0]}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <svg className="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                          <span className="text-xs text-gray-500">파일 추가</span>
+                        </div>
+                      )}
+                    </label>
+                    {formData.files[index] && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newFiles = formData.files.filter((_, i) => i !== index);
+                          setFormData(prev => ({ ...prev, files: newFiles }));
+                        }}
+                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+            </div>
+            {formData.files.length > 0 && (
+                  <div className="space-y-2 mt-2">
+                    <p className="text-sm font-medium text-gray-700">첨부된 파일:</p>
+                    <ul className="space-y-1">
+                      {formData.files.map((file, index) => (
+                        <li key={index} className="text-sm text-gray-600 flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg">
+                          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="flex-1 truncate">{file.name}</span>
+                          <span className="text-xs text-gray-500">
+                            {(file.size / 1024 / 1024).toFixed(1)}MB
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+          </div>
+
+          <div className="flex flex-col gap-6">
+          <label className="block text-xl font-semibold text-gray-700">
+                작업 기간
               </label>
+              <div className="flex gap-2">
               <input
                 type="date"
                 name="startDate"
@@ -656,53 +886,6 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
-            </div>
-            
-            <div>
-              <label className="block text-xl font-semibold text-gray-700 mb-2">
-                시작 시간
-              </label>
-              <div className="flex items-center gap-2">
-                <select
-                  name="startDatePeriod"
-                  value={formData.startDatePeriod}
-                  onChange={handleChange}
-                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-                >
-                  <option value="AM">오전</option>
-                  <option value="PM">오후</option>
-                </select>
-                <select
-                  name="startDateHour"
-                  value={formData.startDateHour}
-                  onChange={handleChange}
-                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
-                      {i + 1}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-gray-500">:</span>
-                <select
-                  name="startDateMinute"
-                  value={formData.startDateMinute}
-                  onChange={handleChange}
-                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-                >
-                  <option value="00">00</option>
-                  <option value="30">30</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xl font-semibold text-gray-700 mb-2">
-                마감일
-              </label>
               <input
                 type="date"
                 name="deadline"
@@ -711,48 +894,156 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
-            </div>
-            
-            <div>
-              <label className="block text-xl font-semibold text-black mb-2">
-                견적 방식
+
+              </div>
+             
+          </div>
+
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              근무 형태
+            </label>
+            <select
+              name="workType"
+              value={formData.workType}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white"
+            >
+              <option value="online">온라인</option>
+              <option value="offline">오프라인</option>
+            </select>
+          </div>
+          <div>
+          <div className="flex items-center justify-between mb-2">
+              <label className="block text-xl font-semibold text-black">
+                지역
               </label>
               <div className="flex items-center gap-2">
-                <select
-                  name="deadlinePeriod"
-                  value={formData.deadlinePeriod}
+                <input
+                  type="checkbox"
+                  name="isregionIrrelevant"
+                  checked={formData.isregionIrrelevant}
                   onChange={handleChange}
-                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-                >
-                  <option value="AM">오전</option>
-                  <option value="PM">오후</option>
-                </select>
-                <select
-                  name="deadlineHour"
-                  value={formData.deadlineHour}
-                  onChange={handleChange}
-                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-                >
-                  {Array.from({ length: 12 }, (_, i) => (
-                    <option key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
-                      {i + 1}
-                    </option>
-                  ))}
-                </select>
-                <span className="text-gray-500">:</span>
-                <select
-                  name="deadlineMinute"
-                  value={formData.deadlineMinute}
-                  onChange={handleChange}
-                  className="w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-                >
-                  <option value="00">00</option>
-                  <option value="30">30</option>
-                </select>
+                  className="w-4 h-4 text-yellow-point border-gray-300 rounded "
+                />
+                <label className="text-xl text-gray-600">지역 무관</label>
               </div>
             </div>
+            <div className="flex gap-2">
+              <select
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+                disabled={formData.isregionIrrelevant || isEditMode}
+                className={`w-1/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
+                  formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
+                }`}
+                required={!formData.isregionIrrelevant}
+              >
+                <option value="">시/도 선택</option>
+                {cityData.map(city => (
+                  <option key={city.city_id} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                name="region"
+                value={formData.region}
+                onChange={handleChange}
+                disabled={formData.isregionIrrelevant}
+                className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
+                  formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
+                }`}
+                required={!formData.isregionIrrelevant}
+              >
+                <option value="">지역 선택</option>
+                {cityDetailData
+                  .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
+                  .map(detail => (
+                    <option key={detail.city_detail_id} value={detail.name}>
+                      {detail.name}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <label className="text-xl font-semibold text-black">
+                우대사항 키워드 (2개)
+              </label>
+              <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="text"
+                name="preferentialKeyword1"
+                value={formData.preferentialKeyword1}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                placeholder="우대사항 키워드 1"
+                maxLength="10"
+              />
+              <input
+                type="text"
+                name="preferentialKeyword2"
+                value={formData.preferentialKeyword2}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                placeholder="우대사항 키워드 2"
+                maxLength="10"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xl font-semibold text-gray-700 mb-2">
+              우대사항 설명
+            </label>
+            <textarea
+              name="preferentialTreatment"
+              value={formData.preferentialTreatment}
+              onChange={handleChange}
+              className="w-full h-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent resize-none"
+              placeholder="우대사항에 대한 상세 설명을 입력하세요"
+              rows="4"
+            />
           </div>
           
+          <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+            STEP 3. 
+            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+          </div>
+           <div>
+             <label className="block text-xl font-semibold text-gray-700 mb-2">견적 방식</label>
+             <div className="flex gap-4">
+               <button 
+                 type="button"
+                 onClick={() => setEstimateType('fixed')}
+                 className={`rounded-lg px-6 py-2 font-bold text-lg transition-all duration-200 ${
+                   estimateType === 'fixed' 
+                     ? 'bg-[#3E78E3] text-white shadow-md' 
+                     : 'bg-neutral-100 hover:shadow-md'
+                 }`}
+               >
+                 생각한 금액이 있어요.
+               </button>
+               <button 
+                 type="button"
+                 onClick={() => setEstimateType('estimate')}
+                 className={`rounded-lg px-6 py-2 font-bold text-lg transition-all duration-200 ${
+                   estimateType === 'estimate' 
+                     ? 'bg-[#3E78E3] text-white shadow-md' 
+                     : 'bg-neutral-100 hover:shadow-md'
+                 }`}
+               >
+                 견적 받아보고 싶어요.
+               </button>
+             </div>
+           </div>
+
           <div>
             <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
             <input
@@ -764,7 +1055,7 @@ export default function RecruitUpload() {
               className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
                 estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
               }`}
-              placeholder={estimateType === 'estimate' ? '견적 금액을 받습니다.' : '견적 금액을 입력하세요'}
+              placeholder={estimateType === 'estimate' ? '견적 금액을 제시 받습니다.' : '견적 금액을 입력하세요'}
             />
             <span className="ml-4 text-gray-500 whitespace-nowrap">만원</span>
           </div>
@@ -816,8 +1107,9 @@ export default function RecruitUpload() {
             </div>
           </div>
           
-          <div className="text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+          <div className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             LAST STEP . 
+            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
           </div>
           
           <div className="flex gap-4 items-center justify-center">

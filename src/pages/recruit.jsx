@@ -44,7 +44,7 @@ export default function Recruit() {
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [sortBy, setSortBy] = useState('RECENT_DESC');
-  const pageSize = 12;
+  const pageSize = 10;
 
   // 필터 옵션
   const filterOptions = [
@@ -122,7 +122,7 @@ export default function Recruit() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, selectedCategories, currentPage, pageSize]);
+  }, [selectedCategory, selectedCategories, currentPage, pageSize, sortBy]);
 
   const performSearch = useCallback(async () => {
     try {
@@ -157,7 +157,7 @@ export default function Recruit() {
         sort: [sortBy],
       });
 
-      console.log("검색 API 응답:", response);
+      // console.log("검색 API 응답:", response);
 
       if (response.data) {
         // 백엔드에서 필터링된 데이터

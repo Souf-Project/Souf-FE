@@ -33,15 +33,15 @@ export async function getRecruit(params = {}) {
         
         // 새로운 다중 카테고리 선택이 있는 경우
         if (selectedCategories && selectedCategories.length > 0) {
-            categories = [selectedCategories];
+            categories = selectedCategories;
         }
         // 기존 단일 카테고리 선택이 있는 경우 (selectedCategories가 없을 때만)
         else if ((firstCategory || secondCategory || thirdCategory) && (!selectedCategories || selectedCategories.length === 0)) {
-            categories = [[{
+            categories = [{
                 firstCategory: firstCategory || null,
                 secondCategory: secondCategory || null,
                 thirdCategory: thirdCategory || null
-            }]];
+            }];
         }
 
         // 정렬 옵션 구성
@@ -71,28 +71,24 @@ export async function getRecruit(params = {}) {
 
         // 요청 바디 구성
         const requestBody = {
-            recruitSearchReqDto: {
                 title: recruitSearchReqDto.title?.trim() || null,
                 content: recruitSearchReqDto.content?.trim() || null,
                 categories: categories,
                 sortOption: sortOption
-            },
-            pageable: {
-                page: page,
-                size: size,
-                sort: sort || []
-            }
         };
-
         // 토큰 확인
         const token = localStorage.getItem('accessToken');
         const response = await client.post('/api/v1/recruit/search', requestBody, {
+            params: {
+                page: page,
+                size: size,
+            },
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         });
-        
+          
         return response;
     } catch (error) {
         console.error('Recruit API 오류 발생:', error);
