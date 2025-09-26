@@ -34,6 +34,7 @@ export default function Recruit() {
   };
 
   const [selectedCategory, setSelectedCategory] = useState(getInitialCategory());
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [filteredRecruits, setFilteredRecruits] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
@@ -88,6 +89,7 @@ export default function Recruit() {
         firstCategory: hasSelectedCategory ? firstCategory : null,
         secondCategory: hasSelectedCategory ? secondCategory : null,
         thirdCategory: hasSelectedCategory ? thirdCategory : null,
+        selectedCategories: selectedCategories.length > 0 ? selectedCategories : null,
         recruitSearchReqDto: {},
         page: currentPage,
         size: pageSize,
@@ -117,7 +119,7 @@ export default function Recruit() {
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, currentPage, pageSize]);
+  }, [selectedCategory, selectedCategories, currentPage, pageSize]);
 
   const performSearch = useCallback(async () => {
     try {
@@ -145,6 +147,7 @@ export default function Recruit() {
         firstCategory: hasSelectedCategory ? firstCategory : null,
         secondCategory: hasSelectedCategory ? secondCategory : null,
         thirdCategory: hasSelectedCategory ? thirdCategory : null,
+        selectedCategories: selectedCategories.length > 0 ? selectedCategories : null,
         recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
         page: currentPage,
         size: pageSize,
@@ -174,6 +177,7 @@ export default function Recruit() {
     }
   }, [
     selectedCategory,
+    selectedCategories,
     searchQuery,
     searchType,
     currentPage,
@@ -192,7 +196,7 @@ export default function Recruit() {
   useEffect(() => {
     // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
     fetchRecruits();
-  }, [selectedCategory, currentPage, sortBy, fetchRecruits]);
+  }, [selectedCategory, selectedCategories, currentPage, sortBy, fetchRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -212,6 +216,12 @@ export default function Recruit() {
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
     // console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
+    setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+  };
+
+  const handleCategoryApply = (categories) => {
+    console.log("적용된 카테고리들:", categories);
+    setSelectedCategories(categories);
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
   };
 
@@ -275,6 +285,7 @@ export default function Recruit() {
                 secondCategories={filteredSecondCategories}
                 thirdCategories={thirdCategories}
                 onSelect={handleCategorySelect}
+                onApply={handleCategoryApply}
                 selectedCategories={{
                   firstCategoryId: selectedCategory[0],
                   secondCategoryId: selectedCategory[1],
@@ -310,6 +321,7 @@ export default function Recruit() {
             secondCategories={filteredSecondCategories}
             thirdCategories={thirdCategories}
             onSelect={handleCategorySelect}
+            onApply={handleCategoryApply}
             selectedCategories={{
               firstCategoryId: selectedCategory[0],
               secondCategoryId: selectedCategory[1],

@@ -21,6 +21,7 @@ export async function getRecruit(params = {}) {
             firstCategory,
             secondCategory,
             thirdCategory,
+            selectedCategories,
             recruitSearchReqDto = {},
             page = 0,
             size = 10,
@@ -29,7 +30,13 @@ export async function getRecruit(params = {}) {
 
         // 카테고리 데이터 구성
         let categories = null;
-        if (firstCategory || secondCategory || thirdCategory) {
+        
+        // 새로운 다중 카테고리 선택이 있는 경우
+        if (selectedCategories && selectedCategories.length > 0) {
+            categories = [selectedCategories];
+        }
+        // 기존 단일 카테고리 선택이 있는 경우
+        else if (firstCategory || secondCategory || thirdCategory) {
             categories = [[{
                 firstCategory: firstCategory || null,
                 secondCategory: secondCategory || null,
@@ -87,20 +94,6 @@ export async function getRecruit(params = {}) {
         return response;
     } catch (error) {
         console.error('Recruit API 오류 발생:', error);
-        
-        if (error.response?.status === 403) {
-            console.error('403 Forbidden - 권한이 없습니다.');
-            console.error('Response data:', error.response.data);
-            
-            // 토큰이 만료되었거나 유효하지 않은 경우
-            if (error.response.data?.message?.includes('token') || 
-                error.response.data?.message?.includes('unauthorized')) {
-                console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
-                localStorage.removeItem('accessToken');
-                window.location.href = '/login';
-                return;
-            }
-        }
         
         throw error;
     }
