@@ -84,6 +84,7 @@ export default function Input({
         value={inputValue}
         onChange={handleChange}
         onFocus={() => setHasInteracted(true)}
+        disabled={disabled}
       />
 
       {displayMessage && (
