@@ -35,8 +35,8 @@ export async function getRecruit(params = {}) {
         if (selectedCategories && selectedCategories.length > 0) {
             categories = [selectedCategories];
         }
-        // 기존 단일 카테고리 선택이 있는 경우
-        else if (firstCategory || secondCategory || thirdCategory) {
+        // 기존 단일 카테고리 선택이 있는 경우 (selectedCategories가 없을 때만)
+        else if ((firstCategory || secondCategory || thirdCategory) && (!selectedCategories || selectedCategories.length === 0)) {
             categories = [[{
                 firstCategory: firstCategory || null,
                 secondCategory: secondCategory || null,
@@ -52,17 +52,19 @@ export async function getRecruit(params = {}) {
 
         if (sort && sort.length > 0) {
             const sortString = sort[0];
-            if (sortString.includes('createdAt')) {
+            
+            // 새로운 정렬 옵션 처리
+            if (sortString.includes('RECENT')) {
                 sortOption.sortKey = "RECENT";
-            } else if (sortString.includes('maxPayment')) {
-                sortOption.sortKey = "PAYMENT_HIGH";
-            } else if (sortString.includes('minPayment')) {
-                sortOption.sortKey = "PAYMENT_LOW";
+            } else if (sortString.includes('VIEWS')) {
+                sortOption.sortKey = "VIEWS";
+            } else if (sortString.includes('PAYMENT')) {
+                sortOption.sortKey = "PAYMENT";
             }
             
-            if (sortString.includes('desc')) {
+            if (sortString.includes('_DESC')) {
                 sortOption.sortDir = "DESC";
-            } else if (sortString.includes('asc')) {
+            } else if (sortString.includes('_ASC')) {
                 sortOption.sortDir = "ASC";
             }
         }

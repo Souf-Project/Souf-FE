@@ -43,14 +43,17 @@ export default function Recruit() {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
-  const [sortBy, setSortBy] = useState('createdAt');
+  const [sortBy, setSortBy] = useState('RECENT_DESC');
   const pageSize = 12;
 
   // 필터 옵션
   const filterOptions = [
-    { value: 'createdAt', label: '조회순' },
-    { value: 'maxPayment', label: '금액 높은 순' },
-    { value: 'minPayment', label: '금액 낮은 순' }
+    { value: 'RECENT_DESC', label: '최신순' },
+    { value: 'RECENT_ASC', label: '오래된순' },
+    { value: 'VIEWS_DESC', label: '조회 높은 순' },
+    { value: 'VIEWS_ASC', label: '조회 낮은 순' },
+    { value: 'PAYMENT_DESC', label: '금액 높은 순' },
+    { value: 'PAYMENT_ASC', label: '금액 낮은 순' }
   ];
 
 //공고문
@@ -86,14 +89,14 @@ export default function Recruit() {
       const hasSelectedCategory = firstCategory || secondCategory || thirdCategory;
       
       const response = await getRecruit({
-        firstCategory: hasSelectedCategory ? firstCategory : null,
-        secondCategory: hasSelectedCategory ? secondCategory : null,
-        thirdCategory: hasSelectedCategory ? thirdCategory : null,
+        firstCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? firstCategory : null),
+        secondCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? secondCategory : null),
+        thirdCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? thirdCategory : null),
         selectedCategories: selectedCategories.length > 0 ? selectedCategories : null,
         recruitSearchReqDto: {},
         page: currentPage,
         size: pageSize,
-        sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
+        sort: [sortBy],
       });
 
       // console.log("API 응답:", response);
@@ -144,14 +147,14 @@ export default function Recruit() {
       }
 
       const response = await getRecruit({
-        firstCategory: hasSelectedCategory ? firstCategory : null,
-        secondCategory: hasSelectedCategory ? secondCategory : null,
-        thirdCategory: hasSelectedCategory ? thirdCategory : null,
+        firstCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? firstCategory : null),
+        secondCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? secondCategory : null),
+        thirdCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? thirdCategory : null),
         selectedCategories: selectedCategories.length > 0 ? selectedCategories : null,
         recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
         page: currentPage,
         size: pageSize,
-        sort: [`${sortBy},${sortBy === 'createdAt' ? 'desc' : 'desc'}`],
+        sort: [sortBy],
       });
 
       console.log("검색 API 응답:", response);
@@ -222,6 +225,8 @@ export default function Recruit() {
   const handleCategoryApply = (categories) => {
     console.log("적용된 카테고리들:", categories);
     setSelectedCategories(categories);
+    // 새로운 다중 카테고리 선택 시 기존 단일 카테고리 선택 초기화
+    setSelectedCategory([null, null, null]);
     setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
   };
 
@@ -340,7 +345,7 @@ export default function Recruit() {
               onSelect={handleSortChange}
               placeholder="정렬 기준"
             />
-            <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button>
+            {/* <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button> */}
             </div>
 
             <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md" onClick={() => navigate("/recruitUpload")}>외주 등록하기</button>

@@ -189,12 +189,37 @@ const DesktopHeader = () => (
         <div className="flex items-center gap-x-8">
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
           <ul className="flex items-center font-bold text-lg text-black cursor-pointer">
-            <li className="flex items-center gap-1 w-36">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span></li>
-            <li className={`flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}>외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" /></li>
-            <li className="w-36">대학생 피드보기</li>
-            <li className="flex items-center gap-1 w-28">외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span></li>
+            <li 
+              className={`flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
+              onClick={() => navigate("/recruitUpload")}
+            >
+              외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span>
+            </li>
+            <li 
+              className={`flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}
+              onClick={() => navigate("/recruit")}
+            >
+              외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" />
+            </li>
+            <li 
+              className={`w-36 ${location.pathname === "/feed" ? "text-orange-point" : ""}`}
+              onClick={() => navigate("/feed")}
+            >
+              대학생 피드보기
+            </li>
+            <li 
+              className={`flex items-center gap-1 w-28 ${location.pathname === "/review" ? "text-orange-point" : ""}`}
+              onClick={() => navigate("/review")}
+            >
+              외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
+            </li>
             <li className="text-gray-400 font-medium mx-4">|</li>
-            <li className="w-36">이용 가이드</li>
+            <li 
+              className={`w-36 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
+              onClick={() => navigate("/guide")}
+            >
+              이용 가이드
+            </li>
           </ul>
         </div>
 
