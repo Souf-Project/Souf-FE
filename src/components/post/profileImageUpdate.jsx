@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import SouFLogo from '../../assets/images/SouFLogo.png';
+import SouFLogo from '../../assets/images/SouFLogo.svg';
 
 
 export default function ProfileImageUpdate({
@@ -41,7 +41,7 @@ export default function ProfileImageUpdate({
   };
 
   return (
-    <div className="flex items-center space-x-6 m-5">
+    <div className="flex items-center space-x-6">
       <div 
         className={`w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden relative ${isEditing ? 'cursor-pointer' : ''}`}
         onClick={handleClick}

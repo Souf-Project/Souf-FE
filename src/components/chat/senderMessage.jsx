@@ -21,7 +21,7 @@ export default function SenderMessage({ content, createdTime, isPending = false,
         <span className="text-xs text-gray-500 block text-right mt-1">
           {isPending ? getCurrentTime() : formatTime(createdTime)}
         </span>
-      <div className="max-w-xs bg-yellow-main text-gray-800 px-4 py-2 rounded-lg rounded-br-none shadow">
+      <div className="max-w-xs bg-blue-300 text-gray-800 px-4 py-2 rounded-lg rounded-br-none shadow">
         {type === "IMAGE" ? (
           <img 
             src={S3_BUCKET_URL + content} 

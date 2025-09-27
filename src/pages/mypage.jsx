@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
-import profileImgOff from '../assets/images/profileImgOff.svg'
-import applyImgOff from '../assets/images/applyImgOff.svg'
-import starImgOn from "../assets/images/starImgOn.png"
-import feedImgOn from "../assets/images/feedImgOn.png"
-// import recruitImgOn from "../assets/images/recruitImgOn.png"
+import profileIcon from '../assets/images/profileIcon.svg'
+import starIcon from '../assets/images/starIcon.svg'
+import applyIcon from '../assets/images/applyIcon.svg'
+import feedIcon from '../assets/images/feedIcon.svg'
 
-import profileImgOn from '../assets/images/profileImgOn.svg'
-import applyImgOn from '../assets/images/applyImgOn.svg'
-import starImgOff from "../assets/images/starImgOff.png"
-import feedImgOff from "../assets/images/feedImgOff.png"
-// import recruitImgOff from "../assets/images/recruitImgOff.png"
-
-// 분리된 컴포넌트 import
 import ProfileEditContent from '../components/ProfileEditContent';
 import ApplicationsContent from '../components/ApplicationsContent';
 import FavoritesContent from '../components/FavoritesContent';
@@ -22,8 +14,8 @@ import MyFeed from '../components/myFeed';
 
 export default function MyPage() {
   // const navigate = useNavigate();
-  const [activeSubmenu, setActiveSubmenu] = useState('profileEdit'); // 기본 서브메뉴
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 모바일 사이드바 토글 상태
+  const [activeSubmenu, setActiveSubmenu] = useState('profileEdit');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
   const { roleType } = UserStore();
 
   // 서브메뉴 변경 핸들러
@@ -57,14 +49,12 @@ export default function MyPage() {
       {
         id: 'profileEdit',
         label: '프로필 수정',
-        iconOn: profileImgOn,
-        iconOff: profileImgOff
+        icon: profileIcon
       },
       {
         id: 'favorites',
         label: '내 즐겨찾기',
-        iconOn: starImgOn,
-        iconOff: starImgOff
+        icon: starIcon
       }
     ];
 
@@ -75,14 +65,12 @@ export default function MyPage() {
       roleSpecificMenus.push({
         id: 'studentApplications',
         label: '지원 내역',
-        iconOn: applyImgOn,
-        iconOff: applyImgOff
+        icon: applyIcon
       });
       roleSpecificMenus.push({
         id: 'myFeed',
         label: '내 피드',
-        iconOn: feedImgOn,
-        iconOff: feedImgOff
+        icon: feedIcon
       });
     }
     
@@ -91,8 +79,7 @@ export default function MyPage() {
       roleSpecificMenus.push({
         id: 'companyApplications',
         label: '지원 내역',
-        iconOn: applyImgOn,
-        iconOff: applyImgOff
+        icon: applyIcon
       });
      
     }
@@ -102,20 +89,17 @@ export default function MyPage() {
       roleSpecificMenus.push({
         id: 'studentApplications',
         label: '학생 지원 내역',
-        iconOn: applyImgOn,
-        iconOff: applyImgOff
+        icon: applyIcon
       });
       roleSpecificMenus.push({
         id: 'companyApplications',
         label: '기업 지원 내역',
-        iconOn: applyImgOn,
-        iconOff: applyImgOff
+        icon: applyIcon
       });
       roleSpecificMenus.push({
         id: 'myFeed',
         label: '내 피드',
-        iconOn: feedImgOn,
-        iconOff: feedImgOff
+        icon: feedIcon
       });
       
     }
@@ -126,7 +110,7 @@ export default function MyPage() {
   const menuItems = renderMenuItems();
 
   return (
-    <div className="min-h-screen w-screen px-4 lg:px-0 lg:w-full flex pt-24 bg-yellow-main">
+    <div className="min-h-screen w-screen bg-blue-bright pb-24">
       {/* 모바일 메뉴 버튼 */}
       <button
         className="lg:hidden fixed top-20 left-4 z-30 p-2 bg-white rounded-lg shadow-md"
@@ -145,27 +129,30 @@ export default function MyPage() {
         />
       )}
 
-      {/* 사이드바 */}
-      <div className={`w-64 fixed z-40 lg:z-30 left-0 top-16 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
-        isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      {/* 모바일 사이드바 */}
+      <div className={`lg:hidden fixed w-60 z-40 left-0 top-0 bottom-0 bg-white p-6 overflow-y-auto transition-transform duration-300 ${
+        isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
-        
-        <div className="mt-4">
+        <div className="mt-20">
           <ul className="ml-2 space-y-2">
             {menuItems.map((item) => (
               <li key={item.id} className='mb-4'>
               <button 
                 className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
                     activeSubmenu === item.id 
-                    ? 'shadow-[0px_0px_5px_3px_rgba(255,229,143)] text-yellow-point font-medium' 
+                    ? 'shadow-[0px_0px_5px_3px_rgba(92,161,232,1.00)] text-blue-main font-medium' 
                     : 'text-black hover:bg-gray-50'
                 }`}
                   onClick={() => handleSubmenuChange(item.id)}
               >
                 <img 
-                    src={activeSubmenu === item.id ? item.iconOn : item.iconOff} 
+                    src={item.icon} 
                     alt={item.label} 
-                  className="w-5 h-5 mr-2"
+                    className={`w-5 h-5 mr-2 ${
+                      activeSubmenu === item.id 
+                        ? '' 
+                        : 'brightness-0'
+                    }`}
                 />
                   {item.label}
               </button>
@@ -174,16 +161,61 @@ export default function MyPage() {
           </ul>
         </div>
       </div>
-      
-      {/* 컨텐츠 영역 (메인 컨텐츠) */}
-      <div className="lg:ml-64 flex-1 p-4 lg:p-10 w-full">
+
+      {/* PC 레이아웃 */}
+      <div className="hidden lg:flex w-full max-w-[60rem] mx-auto pt-12">
+        {/* PC 사이드바 */}
+        <div className="w-52 bg-white p-6 mr-6 rounded-2xl shadow-md h-fit">
+          <ul className="space-y-2">
+            {menuItems.map((item) => (
+              <li key={item.id} className='mb-4'>
+              <button 
+                className={`w-full text-left py-3 px-3 rounded-lg transition-all flex items-center ${
+                    activeSubmenu === item.id 
+                    ? 'shadow-[0px_0px_5px_3px_rgba(92,161,232,1.00)] text-blue-main font-medium' 
+                    : 'text-black hover:bg-gray-50'
+                }`}
+                  onClick={() => handleSubmenuChange(item.id)}
+              >
+                <img 
+                    src={item.icon} 
+                    alt={item.label} 
+                    className={`w-5 h-5 mr-2 ${
+                      activeSubmenu === item.id 
+                        ? '' 
+                        : 'brightness-0'
+                    }`}
+                />
+                  {item.label}
+              </button>
+            </li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* PC 컨텐츠 영역 */}
+        <div className="flex-1">
+          {/* {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium mb-4">프로필 수정</h3>}
+          {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium mb-4">개인정보 수정</h3>}
+          {activeSubmenu === 'studentApplications' && <h3 className="text-4xl font-medium mb-4">학생 지원 내역</h3>}
+          {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium mb-4">기업 지원 내역</h3>}
+          {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium mb-4">즐겨찾기</h3>}
+          {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium mb-4">내 피드</h3>} */}
+          <div className="bg-white rounded-2xl shadow-md p-8">
+            {renderContent()}
+          </div>
+        </div>
+      </div>
+
+      {/* 모바일 컨텐츠 영역 */}
+      <div className="lg:hidden w-full px-4 pt-24">
         <div className="max-w-4xl mx-auto">
-          {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium  mb-4">프로필 수정</h3>}
-          {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium  mb-4">개인정보 수정</h3>}
-          {activeSubmenu === 'studentApplications' && <h3 className="text-4xl font-medium  mb-4">학생 지원 내역</h3>}
-          {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium  mb-4">기업 지원 내역</h3>}
-          {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium  mb-4">즐겨찾기</h3>}
-          {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium  mb-4">내 피드</h3>}
+          {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium mb-4">프로필 수정</h3>}
+          {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium mb-4">개인정보 수정</h3>}
+          {activeSubmenu === 'studentApplications' && <h3 className="text-4xl font-medium mb-4">학생 지원 내역</h3>}
+          {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium mb-4">기업 지원 내역</h3>}
+          {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium mb-4">즐겨찾기</h3>}
+          {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium mb-4">내 피드</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>

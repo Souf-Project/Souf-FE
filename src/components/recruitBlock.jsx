@@ -5,6 +5,8 @@ import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { getRecruitDetail } from '../api/recruit';
 import AlertModal from './alertModal';
+import shareIco from '../assets/images/shareIco.svg';
+import soufMockup from '../assets/images/soufMockup.png';
 
 const parsePayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return 0;
@@ -27,6 +29,7 @@ export default function RecruitBlock({
   cityDetailName,
   secondCategory,
   categoryDtoList,
+  imageUrl,
 }) {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const maxLength = 100;
@@ -148,28 +151,25 @@ export default function RecruitBlock({
     }
   };
 
-  // 더보기쪽 함수
-    const handlerFeedContent = (length, data) => {
-      if(data.length > length){
-        return data.slice(0, length) + "...";
-      }
-      return data;
-    }
-
-
   return (
     <div
       onClick={handleClick}
-      className="w-full bg-white rounded-[30px] px-10 shadow-sm p-6 mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
+      className="flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
-      <div className="flex items-center gap-2 mb-4">
+      {/* <div className="flex items-center gap-2 mb-4">
         <div className={getDdayStyle(deadLine, recruitable)}>{calculateDday(deadLine, recruitable)}</div>
         <div className='font-regular text-base bg-[#DFDFDF] text-gray-500 rounded-lg px-4 py-1'>{cityName + " " + cityDetailName}</div>
        
-      </div>
-      <div className="flex flex-col justify-between items-start mb-4">
-        <h2 className="text-xl lg:text-3xl font-semibold text-gray-800">{title}</h2>
-        <div className="flex flex-col text-base lg:text-2xl font-medium text-gray-500">
+      </div> */}
+      
+        {imageUrl ? (
+          <img src={imageUrl} alt="공고문 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+        ) : (
+          <img src={soufMockup} alt="기본 로고 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+        )}
+      <div className="flex flex-col px-6 py-3 flex-1 gap-2">
+        <div className="flex justify-between items-center">
+        <div className="flex text-neutral-600 text-base">
           {(() => {
           
             if (categoryDtoList && categoryDtoList.length > 0) {
@@ -194,15 +194,37 @@ export default function RecruitBlock({
             return null;
           })()}
         </div>
-      </div>
-      <p className="text-base lg:text-lg font-regular text-gray-600 mb-4">
-        {handlerFeedContent(maxLength,content) || "내용 없음"}
-      </p>
-
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <span className="text-base lg:text-2xl font-regular text-black ">{payment}</span>
+        {/* <img src={shareIco} alt="shareIco" className="w-4 h-4 cursor-pointer" 
+        onClick={console.log("share")} /> */}
         </div>
+        
+        <h2 className="text-xl font-semibold text-gray-800 line-clamp-1">{title}</h2>
+        <p className="text-zinc-500 text-base line-clamp-2">
+        {content || "내용 없음"}
+      </p>
+      <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+        관영컴퍼니
+      </div>
+        
+      </div>
+      <div className="w-[1px] bg-gray-200 self-stretch"></div>
+      <div className="flex flex-col items-start justify-center gap-2 w-48 px-2">
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-bold text-black ">견적 비용</span>
+          <span className="text-sm font-regular text-black ">{payment}</span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-bold text-black ">우대사항</span>
+          <ul className="text-sm font-regular text-black list-disc pl-4">
+            <li>패션 디자인 전공</li>
+            <li>조형 조소과</li>
+            <li>회화과</li>
+          </ul>
+        </div>
+         <div className="flex items-center gap-4">
+           <span className="text-sm font-bold text-black ">납기일</span>
+           <span className="text-sm font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
+         </div>
        
       </div>
       

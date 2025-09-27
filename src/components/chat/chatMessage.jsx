@@ -19,7 +19,7 @@ import chatImgIcon from "../../assets/images/chatImgIcon.png"
 import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
-import SouFLogo from "../../assets/images/SouFLogo.png";
+import SouFLogo from "../../assets/images/SouFLogo.svg";
 import outIcon from "../../assets/images/outIcon.svg";
 
 
@@ -497,13 +497,13 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       <input
         type="text"
         placeholder="메시지를 입력하세요"
-        className="flex-grow px-3 lg:px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-yellow-point text-sm lg:text-base"
+        className="flex-grow px-3 lg:px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:border-blue-main text-sm lg:text-base"
         value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
       />
       <button 
-        className="bg-yellow-point text-white px-4 lg:px-6 py-2 rounded-lg font-bold hover:bg-yellow-600 transition-colors duration-200 text-sm lg:text-base"
+        className="bg-blue-main text-white px-4 lg:px-6 py-2 rounded-lg font-bold hover:bg-blue-600 transition-colors duration-200 text-sm lg:text-base"
         onClick={handleSend}
       >
         전송
@@ -539,7 +539,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
         </button> */}
         <button 
-          className="bg-yellow-300 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-yellow-400 transition-colors duration-200 text-sm lg:text-base"
+          className="bg-blue-300 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-blue-400 transition-colors duration-200 text-sm lg:text-base"
           onClick={handleButton3Click}
         >
           SouF 온도 남기기 

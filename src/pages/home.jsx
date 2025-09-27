@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import searchIco from "../assets/images/searchIco.svg";
-import cate1Img from "../assets/images/cate1Img.png";
-import cate2Img from "../assets/images/cate2Img.png";
-import cate3Img from "../assets/images/cate3Img.png";
-import cate4Img from "../assets/images/cate4Img.png";
-import cate5Img from "../assets/images/cate5Img.png";
-import cate6Img from "../assets/images/cate6Img.png";
-import Background from "../assets/images/background.png";
-
+import loginImg from "../assets/images/loginImg.svg";
+import secondCategoryData from "../assets/categoryIndex/second_category.json";
 import { usePopularRecruit } from "../hooks/usePopularRecruit";
-import MobileSwiper from "../components/home/mobileSwiper";
-import FeedSwiper from "../components/home/feedSwiper";
-import InfoBox from "../components/home/infoBox";
-import StatisticsSection from "../components/home/StatisticsSection";
-import ContestSection from "../components/home/ContestSection";
-import SmallContestSection from "../components/home/smallContestSection";
+import { 
+  BestRecruit, 
+  FeedGrid, 
+  ReviewBox, 
+  InfoBox, 
+  MatchingPrice, 
+  StatisticsSection, 
+  ContestSection, 
+  SmallContestSection ,
+  EstimateBanner
+} from "../components/home";
 import { getContests } from "../api/contest";
 import { getMainViewCount } from "../api/home";
 import { UserStore } from "../store/userStore";
@@ -38,18 +37,80 @@ export default function Home() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
 
-  const categories = [
-    "순수미술",
-    "공예",
-    "음악",
-    "촬영 및 편집",
-    "디지털 콘텐츠",
-    "IT · 개발"
+  // 카테고리 클릭 핸들러
+  const handleCategoryClick = (category) => {
+    // 해당 중분류가 선택된 상태로 외주 페이지로 이동
+    navigate(`/recruit?firstCategory=${category.first_category_id}&secondCategory=${category.second_category_id}`);
+  };
+
+  const titletext = [
+    "패션 브랜드 팝업 조형물",
+    "애니메이션 영상 제작",
+    "브랜드 로고 디자인",
+    "반응형 웹·앱 디자인",
+    "SNS·썸네일 디자인",
   ]
+  const AnimatedTitle = () => {
+    const [currentTextIndex, setCurrentTextIndex] = useState(0);
+    const [isExiting, setIsExiting] = useState(false);
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setIsExiting(true);
+        setTimeout(() => {
+          setCurrentTextIndex((prevIndex) => (prevIndex + 1) % titletext.length);
+          setIsExiting(false);
+        }, 700);
+        
+      }, 3000);
+
+      return () => clearInterval(interval);
+    }, []);
+
+    return (
+      <h1 
+        className={`text-2xl lg:text-5xl font-bold text-blue-500 text-center lg:text-left transition-transform duration-700 ease-in-out
+          ${isExiting ? 'animate-slide-up' : 'animate-slide-down'}`}
+      >
+        {titletext[currentTextIndex]}
+      </h1>
+    );
+  };
+
+  const getCategoryIcon = (categoryId) => {
+    const iconMap = {
+      1: "/src/assets/images/categoryIcons/cateIcon11.png", // 일러스트·캐릭터 디자인
+      2: "/src/assets/images/categoryIcons/cateIcon12.png", // 글자 디자인
+      3: "/src/assets/images/categoryIcons/cateIcon13.png", // 순수 미술
+      4: "/src/assets/images/categoryIcons/cateIcon24.png", // 시제품 디자인
+      5: "/src/assets/images/categoryIcons/cateIcon25.png", // 산업·제품 디자인
+      6: "/src/assets/images/categoryIcons/cateIcon26.png", // 패션·텍스타일 디자인
+      7: "/src/assets/images/categoryIcons/cateIcon27.png", // 조형 예술
+      8: "/src/assets/images/categoryIcons/cateIcon38.png", // 음향
+      9: "/src/assets/images/categoryIcons/cateIcon49.png", // 사진
+      10: "/src/assets/images/categoryIcons/cateIcon410.png", // 영상
+      11: "/src/assets/images/categoryIcons/cateIcon411.png", // 영화
+      12: "/src/assets/images/categoryIcons/cateIcon512.png", // 브랜드 디자인
+      13: "/src/assets/images/categoryIcons/cateIcon513.png", // 산업 디자인
+      14: "/src/assets/images/categoryIcons/cateIcon514.png", // 웹·모바일 디자인
+      15: "/src/assets/images/categoryIcons/cateIcon515.png", // 마케팅 디자인
+      16: "/src/assets/images/categoryIcons/cateIcon516.png", // 컴퓨터 그래픽·모션 그래픽
+      17: "/src/assets/images/categoryIcons/cateIcon517.png", // 게임 디자인
+      18: "/src/assets/images/categoryIcons/cateIcon518.png", // 애니메이션
+      19: "/src/assets/images/categoryIcons/cateIcon619.png", // 웹사이트
+      20: "/src/assets/images/categoryIcons/cateIcon620.png", // 안드로이드
+      21: "/src/assets/images/categoryIcons/cateIcon621.png", // IOS
+      22: "/src/assets/images/categoryIcons/cateIcon622.png", // 게임 프로그래밍
+    };
+    return iconMap[categoryId] || "/src/assets/images/categoryIcons/cateIcon11.png";
+  };
+
+
+  const categoryItems = secondCategoryData.second_category;
+
   // 이미지 URL 생성 함수
   const getImageUrl = (imagePath) => {
-    // console.log('getImageUrl called with:', imagePath);
-    
+
     if (!imagePath) return null;
     
     // 이미 전체 URL인 경우 (상세내용_이미지)
@@ -145,11 +206,6 @@ export default function Home() {
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
-  };
-  
-  const handleCategoryClick = (category) => {
-    //const encoded = encodeURIComponent(category);
-    navigate(`/recruit?category=${category}`);
   };
 
   const showLoginModalHandler = () => {
@@ -248,21 +304,22 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-        <div className="relative flex justify-center items-start pt-20 px-8 max-w-[100rem] mx-auto">
-          <img src={Background} alt="background" className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"></img>
+        <div className="relative bg-[#FBFBFB] py-20 w-screen">
+        <div className="flex justify-center items-start max-w-[80rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-52 lg:ml-20">
-            <h1 className="hidden lg:block text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
-              필요한 일을, 필요한 사람에게
-            </h1>
-            <h1 className="block lg:hidden text-4xl lg:text-5xl font-semibold mb-4 text-black text-center lg:text-left">
-              필요한 일을,<br/> 필요한 사람에게
-            </h1>
-            <h2 className="text-6xl lg:text-8xl font-bold text-black mb-12 text-center lg:text-left">
-              지금 바로 SouF!
+          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-28">
+          <AnimatedTitle />
+            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
+              여기! 인재 매칭해드려요.
             </h2>
-
-            <form onSubmit={handleSearch} className="w-full lg:mt-20">
+            <h3 className="text-lg font-semibold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
+            스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
+            <div className="flex justify-center lg:justify-start gap-4">
+              <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
+              onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
+              <button className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg ">이용 가이드</button>
+            </div>
+            {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
               <div className="relative w-full max-w-2xl lg:max-w-3xl">
                 <input
                   type="text"
@@ -278,248 +335,125 @@ export default function Home() {
                   <img src={searchIco} alt="search" className="w-4 h-4 lg:w-6 lg:h-6" />
                 </button>
               </div>
-            </form>
+            </form> */}
             
           </div>
           {/* 오른쪽: 팝업 가이드 박스 */}
           <InfoBox />
-
+          </div>
         </div>
-        <StatisticsSection 
+        {/* <StatisticsSection 
           viewCount={viewCount}
           userCount={userCount}
           recruitCount={recruitCount}
-        />
+        /> */}
 
-{/* 인기 공고문  */}
-      <div className="relative mt-16 px-6 lg:px-24">
-        <div className="relative flex flex-col mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-            <span className="relative inline-block ">
-              <span className="relative z-10 ">인기있는 공고문</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">모집 보러가기</span>
+     {/* 카테고리 섹션 */}
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0">
+       <div className="flex flex-col justify-center gap-2 items-center max-w-[60rem] mx-auto">
+       <span className="text-black text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+       <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
+         <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
+           {Array.isArray(categoryItems) && categoryItems.map((category) => (
+             <div 
+               key={category.second_category_id} 
+               className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-32 hover:scale-105 transition-transform duration-200"
+               onClick={() => handleCategoryClick(category)}
+             >
+               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2 hover:shadow-md transition-shadow duration-200">
+                 <img 
+                   src={getCategoryIcon(category.second_category_id)} 
+                   alt={category.name}
+                   className="w-full h-full object-contain"
+                 />
+              </div>
+               <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
+              </div>
+           ))}
+              </div>
+            </div>
+            </div>
+            </div>
+     
+<div className="flex mt-32 max-w-[60rem] mx-auto">
+{/* 실시간 대학생 피드 섹션 */}
+  <div className="relative w-2/3">
+  <div className="flex items-center mb-8 gap-4">
+  <h2 className="text-2xl font-semibold">
+        실시간 대학생 피드
           </h2>
-          <MobileSwiper />
+    <span className="font-NanumGothicCoding text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
+  </div>
+       
+          <FeedGrid />
         </div>
+    
+{/* 진행 중인 외주 의뢰 섹션 */}
+      <div className="relative w-1/3 ml-4">
+      <div className="flex items-center mb-8 gap-4">
+        <h2 className="text-2xl font-semibold">
+        진행 중인 외주 의뢰
+          </h2>
+      <span className="font-NanumGothicCoding text-lg font-bold text-white bg-orange-300 py-0.5 px-3 rounded-lg">BEST</span>
       </div>
-
-      {/* 인기 피드 섹션 */}
-      <div className="relative lg:mt-16 px-6 lg:px-24">
-        <div className="relative flex flex-col  mx-auto lg:px-6 py-16 overflow-x-hidden">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-            <span className="relative inline-block ">
-              <span className="relative z-10 ">인기있는 피드</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">구경하러 가기</span>
-          </h2>
-          <FeedSwiper />
-        </div>
+          <BestRecruit />
+          <div className="flex justify-center items-center gap-4 mt-4">
+            <button className="bg-[#2582E0] text-white text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
+            onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
+            <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
+            onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
+  </div>
       </div>
+      </div>
+    
+{/* 스프 소개란 */}
+<div className="relative px-6 lg:px-24 mt-32 bg-[#2582E0BF]">
+<div className="max-w-[60rem] mx-auto flex justify-center items-center py-16">
+  <div className="flex flex-col items-start">
+    <h2 className="my-8 text-white text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
+      왜 스프일까요?<br/>
+    왜 대학생 인재를 발굴할까요?</h2>
+    <p className="my-2 text-stone-50 text-2xl font-bold">기업 외주비용 “너무 비싸요..”</p>
+    <p className="my-2 text-stone-50 text-xl font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
+    <p className="text-stone-50 text-xl font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
+  </div>
+  
+<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="w-[24rem] ml-12"/>
+</div>
 
-       {/* 카테고리 섹션 */}
-       <div className="relative px-6 lg:px-24 ">
-       <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-       <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-            <span className="relative inline-block">
-              <span className="relative z-10">관심있는 주제 피드</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-            <span className="ml-2">더보기</span>
+</div>
+  
+      <div className="text-xl lg:text-3xl font-bold mb-8 mt-32 text-center">
+        <span className="text-blue-500">스프</span>
+        에서 이렇게 
+        <span className="text-blue-500"> 작업</span>했어요!</div>
+
+{/* 후기 섹션 */}
+
+        <ReviewBox />
+
+      {/* 실시간 매칭 금액 섹션 */}
+    <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4">
+    <div className="flex items-center mb-8 gap-4">
+      <h2 className="text-2xl font-semibold">
+        실시간 매칭 금액
           </h2>
-            <div className="flex flex-col md:flex-row md:flex-nowrap md:justify-between w-full lg:px-24 mt-20">
-              <div className="flex justify-center md:hidden mb-4">
-                {categories.slice(0, 3).map((category, index) => {
-                  const categoryImages = [
-                    cate1Img,
-                    cate2Img,
-                    cate3Img,
-                    cate4Img,
-                    cate5Img,
-                    cate6Img,
-                  ];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => handleCategoryClick(index + 1)}
-                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                    >
-                      <img
-                        src={categoryImages[index]}
-                        alt={category}
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
-                        {category}
-                      </span>
-                    </button>
-                  );
-                })}
+      <span className="font-NanumGothicCoding text-md font-semibold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">추천</span>
+   
               </div>
-              <div className="flex justify-center md:hidden">
-                {categories.slice(3, 6).map((category, index) => {
-                  const categoryImages = [
-                    cate1Img,
-                    cate2Img,
-                    cate3Img,
-                    cate4Img,
-                    cate5Img,
-                    cate6Img,
-                  ];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => handleCategoryClick(index + 4)}
-                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 w-24 h-24 sm:w-28 sm:h-28 mx-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                    >
-                      <img
-                        src={categoryImages[index + 3]}
-                        alt={category}
-                        className="w-10 h-10 sm:w-12 sm:h-12 object-cover mb-1"
-                      />
-                      <span className="text-xs sm:text-sm font-semibold text-gray-700 text-center break-words">
-                        {category}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              {/* 데스크톱 버전 */}
-              <div className="hidden md:flex md:flex-nowrap md:justify-between w-full max-w-7xl mx-auto">
-                {categories.map((category, index) => {
-                  const categoryImages = [
-                    cate1Img,
-                    cate2Img,
-                    cate3Img,
-                    cate4Img,
-                    cate5Img,
-                    cate6Img,
-                  ];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => handleCategoryClick(index + 1)}
-                      className="glass flex flex-col items-center justify-center gap-1 sm:gap-2 flex-1 sm:flex-none sm:w-auto lg:w-48 lg:h-48 px-1 sm:px-2 transform transition-transform duration-300 hover:-translate-y-2 rounded-xl hover:shadow-[0_8px_25px_rgba(255,193,7,0.3)]"
-                    >
-                      <img
-                        src={categoryImages[index]}
-                        alt={category}
-                        className="w-12 h-12 sm:w-16 sm:h-16 lg:w-20 lg:h-20 object-cover mb-1 sm:mb-2"
-                      />
-                      <span className="text-sm sm:text-sm lg:text-2xl font-semibold text-gray-700 text-center break-words">
-                        {category}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            </div>
-            </div>
-{/* 광고 배너 div */}
-{/* <div className="relative px-6 lg:px-24 ">
-  광고 배너
-</div> */}
-
-{/* 추천 공고 (광고) */}
-{/* <div className="relative px-6 lg:px-24 ">
-       <div className="relative items-center  mx-auto px-4 sm:px-6 py-16">
-       <h2 className="text-2xl lg:text-3xl font-bold mb-8">
-            <span className="relative inline-block">
-              <span className="relative z-10">스프 추천 공고</span>
-              <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-            </span>
-          </h2>
-            <div className="flex w-full justify-around">
-              <div className="flex flex-col gap-4"> 
-              <h3 className="text-2xl lg:text-3xl font-bold">외주 공고</h3>
-              <div>내용</div>
-              </div>
-
-              <div className="flex flex-col gap-4"> 
-              <h3 className="text-2xl lg:text-3xl font-bold">외주 공고</h3>
-              <div>내용</div>
-              </div>
-
-              <div className="flex flex-col gap-4"> 
-              <h3 className="text-2xl lg:text-3xl font-bold">외주 공고</h3>
-              <div>내용</div>
+  <div className="flex items-center justify-around">
+  <MatchingPrice price={300} category="웹사이트 제작" project="연계 IT 중앙동아리 프로젝트" />
+  <MatchingPrice price={3} category="로고/브랜딩" project="연계 디자이너 프로젝트" />
+  <MatchingPrice price={90} category="조형물 기획/제작" project="전공 연구실 견적" />
+  <MatchingPrice price={30} category="브랜드 로고 디자인" type="satisfaction" />
               </div>
              
-            </div>
-            </div>
-            </div> */}
-{/* 공모전 정보 스키마 */}
-      {/* {competitions.map((competition, index) => {
-        const schema = {
-          "@context": "https://schema.org",
-          "@type": "Event",
-          "name": competition.제목,
-          "startDate": competition.접수기간.시작일,
-          "endDate": competition.접수기간.마감일,
-          "eventStatus": "https://schema.org/EventScheduled",
-          "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-          "location": {
-            "@type": "Place",
-            "name": competition.온라인가능 ? "온라인" : "오프라인",
-            "address": competition.온라인가능
-              ? { "@type": "PostalAddress", "addressCountry": "KR" }
-              : {
-                  "@type": "PostalAddress",
-                  "streetAddress": competition.장소?.주소,
-                  "addressLocality": competition.장소?.시,
-                  "addressCountry": "KR"
-                }
-          },
-          "image": getImageUrl(competition.썸네일),
-          "description": `주최: ${competition.주최}, 대상: ${competition.참여대상}, 분야: ${competition.공모분야?.join(', ')}`,
-          "organizer": {
-            "@type": "Organization",
-            "name": competition.주최
-          },
-          "offers": {
-            "@type": "Offer",
-            "url": `${window.location.origin}/contests/${competition.categoryID[0]}/${competition.contestID}`,
-            "price": competition.유료여부 ? competition.참가비 : "0",
-            "priceCurrency": "KRW",
-            "availability": "https://schema.org/InStock",
-            "validFrom": competition.접수기간.시작일
-          },
-          "eventCategory": competition.공모분야,
-          "audience": {
-            "@type": "EducationalAudience",
-            "educationalRole": competition.참여대상
-          }
-        };
-
-        return (
-          <script
-            key={`schema-${index}`}
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-          />
-        );
-      })}' */}
-      {/* 공모전 정보 섹션 */}
-      <div className="relative px-6 lg:px-24  mx-auto py-16">
-      <div className="flex justify-between items-center px-4 sm:px-6 ">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-8 px-6 lg:px-24">
-          <span className="relative inline-block">
-            <span className="relative z-10">금주 인기 공모전</span>
-            <div className="absolute bottom-1 left-0 w-full h-3 bg-yellow-300 opacity-60 -z-10"></div>
-          </span>
-          <span className="ml-2">모아보기</span>
-        </h2>
-       
-      </div>
-      <div className="flex flex-col gap-4 px-6 lg:px-24">
+      {/* <div className="flex flex-col gap-4 px-6 lg:px-24">
         {competitions.length === 0 ? (
           <Loading text="공모전 정보를 불러오는 중..." />
         ) : (
-          <>
-            <ContestSection 
+          <> */}
+            {/* <ContestSection 
               competitions={competitions}
               imageLoadingStates={imageLoadingStates}
               getImageUrl={getImageUrl}
@@ -539,8 +473,32 @@ export default function Home() {
                 </button>
           </>
         )}
+      </div> */}
       </div>
+
+      {/* 무료 외주 등록 섹션 */}
+      <div className="flex mt-32 max-w-[60rem] mx-auto">
+        <EstimateBanner color="black" />
       </div>
+
+      <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
+        <div className="w-full bg-blue-400/10 rounded-xl p-16">
+        <p className="text-2xl font-bold">외주를 등록하러 오셨나요?</p>
+        <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
+
+Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
+        </div>
+        <div className="w-full bg-amber-300/10 rounded-xl p-16">
+        <p className="text-2xl font-bold">작업을 하러 오셨나요?</p>
+        <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
+
+Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
+        </div>
+      </div>
+      <div className="flex my-32  max-w-[60rem] mx-auto">
+        <EstimateBanner color="blue" />
+      </div>
+      
     </div>
     </>
   );

@@ -157,8 +157,8 @@ export default function CategorySelectBox({
   const getOptionButtonStyle = (option) => {
     if (selectedOption?.id === option.id) {
       return selectedSubOption || selectedSubSubOption
-        ? "bg-yellow-main text-black"
-        : "bg-yellow-point text-white";
+        ? "bg-blue-200 text-black"
+        : "bg-blue-main text-white";
     }
     return "hover:bg-gray-100 border border-grey-border";
   };
@@ -166,15 +166,15 @@ export default function CategorySelectBox({
   const getSubOptionButtonStyle = (subOption) => {
     if (selectedSubOption?.id === subOption.id) {
       return selectedSubSubOption
-        ? "bg-yellow-main text-black"
-        : "bg-yellow-point text-white";
+        ? "bg-blue-200 text-black"
+        : "bg-blue-main text-white";
     }
     return "hover:bg-gray-100 border border-grey-border";
   };
 
   const getSubSubOptionButtonStyle = (subSubOption) => {
     if (selectedSubSubOption?.id === subSubOption.id) {
-      return "bg-yellow-point text-white";
+      return "bg-blue-main text-white";
     }
     return "hover:bg-gray-100 border border-grey-border";
   };
@@ -337,7 +337,7 @@ export default function CategorySelectBox({
                 취소
               </button>
               <button
-                className={`bg-yellow-point text-white px-4 py-2 rounded-md ${
+                className={`bg-blue-main text-white px-4 py-2 rounded-md ${
                   !getValueToSave() ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={handleSave}

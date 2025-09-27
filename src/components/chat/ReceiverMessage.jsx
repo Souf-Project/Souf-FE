@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import SouFLogo from "../../assets/images/SouFLogo.png";
+import SouFLogo from "../../assets/images/SouFLogo.svg";
 
 export default function ReceiverMessage({ content, createdTime, opponentProfileImageUrl, type = "TALK", onImageClick, onFileClick, opponentId, opponentRole }) {
   const navigate = useNavigate();

@@ -7,8 +7,12 @@ import { UserStore } from '../store/userStore';
 import { closeRecruit, getRecruitDetail } from '../api/recruit';
 import SEO from '../components/seo';
 import { generateSeoContent } from '../utils/seo';
+import DeclareButton from '../components/declare/declareButton';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import PageHeader from "../components/pageHeader";
 import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
-import DeclareButton from '../components/declare/declareButton'
 
 
 const parsePayment = (paymentString) => {
@@ -24,6 +28,13 @@ const parsePayment = (paymentString) => {
 const formatPayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return '금액 협의';
   return paymentString;
+};
+
+// 닉네임 마스킹 함수
+const maskNickname = (nickname) => {
+  if (!nickname) return '';
+  if (nickname.length <= 2) return nickname;
+  return nickname.charAt(0) + '*'.repeat(nickname.length - 2) + nickname.charAt(nickname.length - 1);
 };
 
 export default function RecruitDetail() {
@@ -96,12 +107,6 @@ export default function RecruitDetail() {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${year}.${month}.${day} ${hours}:${minutes}`;
-  };
-
-  // 닉네임 마스킹 함수
-  const maskNickname = (nickname) => {
-    if (!nickname || nickname.length <= 1) return nickname;
-    return nickname.charAt(0) + '*'.repeat(nickname.length - 1);
   };
 
   const handleGoBack = () => {
@@ -190,6 +195,7 @@ export default function RecruitDetail() {
   const mobileCategoryNames = getCategoryNames(categoryList);
   const categoryNames = getAllCategoryNames(categoryList);
   const price = formatPayment(recruitDetail?.price);
+  const maxPrice = parsePayment(recruitDetail?.price);
   const isAuthor = memberId === recruitDetail?.memberId;
 
   // 현재 로그인한 사용자가 공고 작성자인지 확인 (memberId로 비교)
@@ -219,7 +225,7 @@ export default function RecruitDetail() {
     content: displayData?.content,
   },
   {
-    maskNickname,
+    nickname: displayData?.nickname,
     formatDate,
   }
 );
@@ -234,7 +240,17 @@ export default function RecruitDetail() {
           content={seoContent}
         />
       )}
-      <div className="w-full px-4 pt-12 sm:pt-16 sm:px-8 sm:w-5/6 mx-auto">
+      <PageHeader
+        leftButtons={[
+          { text: `외주 찾기 > 외주 상세 조회`, onClick: () => {} }
+        ]}
+        showDropdown={false}
+        showSearchBar={false}
+      />
+     
+      
+      <div className="flex w-full mx-auto max-w-[60rem]">
+        <div className="w-5/6 mx-auto pt-4 mr-4">
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -243,10 +259,9 @@ export default function RecruitDetail() {
           <span>목록으로 돌아가기</span>
         </button>
 
-        <div className="bg-white rounded-2xl border border-gray p-5 sm:p-8 mb-8 mt-4">
-          <div className="flex justify-between items-start">
-            <div>{maskNickname(displayData?.nickname)}</div>
-            {isAuthor ? (
+          <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">{displayData?.title}</h1>
+          {isAuthor ? (
               <div className="relative">
                 <button
                   onClick={toggleMenu}
@@ -281,76 +296,54 @@ export default function RecruitDetail() {
               />
             )}
           </div>
-          <h1 className="text-xl sm:text-3xl font-semibold">{displayData?.title}</h1>
-          <div className="border-t border-gray-200 my-4 sm:my-6">
+          <div className="flex items-center gap-2 my-2">
+          {categoryNames.map((category, index) => (
+        
+        <div key={index}>
+          {category.third ? (
+            <span className="font-medium text-black">#{category.third}</span>
+          ) : category.second ? (
+            <span>#{category.second}</span>
+          ) : (
+            <span>#{category.first}</span>
+          )}
+        </div>
+      ))}
           </div>
-          <div className="hidden sm:flex flex-col text-gray-600 mb-6 mt-2">
-            {categoryNames.map((category, index) => (
-              <div key={index} className="mb-1">
-                <span>{category.first}</span>
-                {category.second && (
-                  <>
-                <span className="mx-2">&gt;</span>
-                <span>{category.second}</span>
-                  </>
-                )}
-                {category.third && (
-                  <>
-                <span className="mx-2">&gt;</span>
-                <span className="font-medium text-black">{category.third}</span>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="grid sm:grid-cols-2 gap-2 sm:gap-8 my-4 sm:my-6 max-w-sm:text-sm ">
-             <div className="sm:hidden flex items-center flex-wrap">
-              <div className="flex flex-wrap gap-2">
-                {mobileCategoryNames.map((name, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 rounded-md bg-gray-100 text-gray-700 text-sm font-medium"
-                  >
-                    {name}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-2 sm:space-y-4 ">
-              <div>
-                <span className="text-black mb-1">급여</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">{price}</span>
-              </div>
-              <div>
-                <span className="text-black mb-1">기한</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">{formatDate(displayData?.deadline)}</span>
-              </div>
-              <div>
-                <span className="text-black mb-1">지역</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium">{recruitDetail ? `${recruitDetail.cityName} ${recruitDetail.cityDetailName || ''}`.trim() : displayData?.location}</span>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <span className="text-black mb-1">우대사항</span>
-                <span className="text-gray-500 mx-2">|</span>
-                <span className="font-medium" style={{ whiteSpace: 'pre-wrap' }}>
-                  {recruitDetail?.preferentialTreatment
-                    ? recruitDetail.preferentialTreatment
-                    : (displayData?.preferMajor ? '전공자 우대' : '경력/경험 무관')}
-                </span>
-              </div>
-              
-            </div>
+         
+          <div className="text-xl font-bold mb-2">{displayData?.nickname}</div>
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-700 text-lg font-bold">프로젝트 소개</span>
+            <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">팝업</div>
+            <div className="text-white font-semibold bg-blue-main px-3 py-1 rounded-md">패션디자인 전공</div>
           </div>
 
           <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           <div>
-            <p className="text-lg sm:text-2xl font-regular text-gray-800 mb-4"  style={{ whiteSpace: 'pre-wrap' }}>{displayData?.content}</p>
+             <p className="text-xl font-semibold text-black mb-4">
+               기업 소개
+             </p>
+             <div className="prose prose-lg max-w-none text-gray-800 mb-4">
+               <ReactMarkdown 
+                 remarkPlugins={[remarkGfm]}
+                 rehypePlugins={[rehypeRaw]}
+                 components={{
+                   u: ({children}) => <u>{children}</u>,
+                   strong: ({children}) => <strong>{children}</strong>,
+                   em: ({children}) => <em>{children}</em>,
+                   a: ({href, children}) => (
+                     <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+                       {children}
+                     </a>
+                   ),
+                   img: ({src, alt}) => (
+                     <img src={src} alt={alt} className="max-w-full h-auto rounded-lg my-2" />
+                   )
+                 }}
+               >
+                 {displayData?.content || ''}
+               </ReactMarkdown>
+             </div>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
             <img
@@ -362,22 +355,37 @@ export default function RecruitDetail() {
             <></>
           )}
           </div>
-
-        
-
-        <div className="flex justify-center mt-8">
-          {isAuthor ? (
+        </div>
+        {/* 우측 외주 조건 */}
+        <div className="sticky top-24 w-1/4 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-600 mb-1">급여</span>
+                <span className="font-lg">
+                  {maxPrice
+                    ? `${maxPrice.toLocaleString()}원`
+                    : '금액 협의'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-600 mb-1">납기일</span>
+                <span className="font-lg">{formatDate(displayData?.deadline)}</span>
+              </div>
+            </div>
+            {isAuthor ? (
             <></>
           ) : (
-            <button 
-              className="bg-yellow-main text-black w-1/2 py-3 rounded-lg text-lg font-bold hover:opacity-90 transition-opacity"
-              onClick={handleApply}
-            >
-              지원하기
-            </button>
+            <div className="flex justify-between gap-4 mt-6 mb-4">
+              <button className="bg-zinc-300 text-black w-1/2 py-2 rounded-lg text-lg font-bold">문의하기</button>
+              {recruitDetail?.recruitable ? (
+                <button className="bg-blue-main text-white w-1/2 py-2 rounded-lg text-lg font-bold">{maxPrice ? '지원하기' : '견적 보내기'}</button>
+              ) : (
+                <button className="bg-gray-400 text-black w-1/2 py-2 rounded-lg text-lg font-bold cursor-not-allowed" disabled>지원 마감</button>
+              )}
+            </div>
           )}
-        </div>
-        </div>
+          <span className="text-zinc-500">이 외주를 총 <span className="text-black font-bold">32명</span>이 조회하였습니다.</span>
+          </div>
   {isApplyModalOpen && (
         <AlertModal
           type="warning"

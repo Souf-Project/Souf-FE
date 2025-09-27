@@ -41,10 +41,10 @@ export default function ButtonInput({
           <button
             onClick={onClick}
             disabled={isLoading || btnDisabled}
-            className={`h-[48px] md:h-[52px] px-6 whitespace-nowrap rounded-[10px] text-black text-lg md:text-xl font-semibold bg-yellow-main ${
+            className={`h-[48px] md:h-[52px] px-6 whitespace-nowrap rounded-[10px] text-white text-lg md:text-xl font-semibold bg-blue-main ${
               isLoading || btnDisabled
                 ? "opacity-75 cursor-not-allowed"
-                : "bg-yellow-main hover:bg-yellow-point transition-colors duration-200"
+                : "bg-blue-main hover:shadow-md transition-colors duration-200"
             }`}
           >
             {isLoading ? "전송 중..." : btnText}

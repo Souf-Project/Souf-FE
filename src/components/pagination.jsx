@@ -36,7 +36,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 className={`w-[20px] h-[20px] flex items-center justify-center text-sm ${
                     currentPage === 0
                         ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-700 hover:text-yellow-point'
+                        : 'text-gray-700 hover:text-orange-point'
                 }`}
             >
                 &lt;
@@ -48,8 +48,8 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                     onClick={() => onPageChange(number - 1)}
                     className={`w-[20px] h-[20px] flex items-center justify-center text-sm ${
                         currentPage === number - 1
-                            ? 'text-yellow-point font-bold'
-                            : 'text-gray-700 hover:text-yellow-point'
+                            ? 'text-orange-point font-bold'
+                            : 'text-gray-700 hover:text-orange-point'
                     }`}
                 >
                     {number}
@@ -62,7 +62,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
                 className={`w-[20px] h-[20px] flex items-center justify-center text-sm ${
                     currentPage === totalPages - 1
                         ? 'text-gray-400 cursor-not-allowed'
-                        : 'text-gray-700 hover:text-yellow-point'
+                        : 'text-gray-700 hover:text-orange-point'
                 }`}
             >
                 &gt;
