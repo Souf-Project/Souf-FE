@@ -19,7 +19,6 @@ export default function Recruit() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // URL 파라미터에서 카테고리 정보 읽기
   const getInitialCategory = () => {
     const searchParams = new URLSearchParams(location.search);
     const firstCategory = searchParams.get('firstCategory');
@@ -46,7 +45,7 @@ export default function Recruit() {
   const [sortBy, setSortBy] = useState('RECENT_DESC');
   const pageSize = 10;
 
-  // 필터 옵션
+
   const filterOptions = [
     { value: 'RECENT_DESC', label: '최신순' },
     { value: 'RECENT_ASC', label: '오래된순' },
@@ -56,17 +55,13 @@ export default function Recruit() {
     { value: 'PAYMENT_ASC', label: '금액 낮은 순' }
   ];
 
-//공고문
 
-  // CategoryMenu에 전달할 데이터 준비
   const allSecondCategories = SecondCategory.second_category;
   const allThirdCategories = ThirdCategory;
 
-  // 선택된 대분류에 따라 중분류와 소분류 필터링
   const getFilteredCategories = () => {
     const selectedFirstCategory = selectedCategory[0];
 
-    // 선택된 대분류에 해당하는 중분류만 필터링 (대분류가 선택되지 않았으면 모든 중분류 표시)
     const filteredSecondCategories = selectedFirstCategory 
       ? allSecondCategories.filter((second) => second.first_category_id === selectedFirstCategory)
       : allSecondCategories;
@@ -131,17 +126,13 @@ export default function Recruit() {
 
       const [firstCategory, secondCategory, thirdCategory] = selectedCategory;
       
-      // 카테고리가 모두 선택되지 않았을 때는 모든 공고문 조회
       const hasSelectedCategory = firstCategory || secondCategory || thirdCategory;
 
        const recruitSearchReqDto = {};
       if (searchQuery.trim() !== "") {
         if (searchType === "title") {
           recruitSearchReqDto.title = searchQuery.trim();
-
-        } else if (searchType === "titleContent") {
-
-          //recruitSearchReqDto.title = searchQuery.trim();
+        } else if (searchType === "content") {
           recruitSearchReqDto.content = searchQuery.trim();
         }
       }
@@ -151,18 +142,14 @@ export default function Recruit() {
         secondCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? secondCategory : null),
         thirdCategory: selectedCategories.length > 0 ? null : (hasSelectedCategory ? thirdCategory : null),
         selectedCategories: selectedCategories.length > 0 ? selectedCategories : null,
-        recruitSearchReqDto, // 구성된 recruitSearchReqDto 객체를 getRecruit 함수에 전달
+        recruitSearchReqDto,
         page: currentPage,
         size: pageSize,
         sort: [sortBy],
       });
 
-      // console.log("검색 API 응답:", response);
-
       if (response.data) {
-        // 백엔드에서 필터링된 데이터
         const recruits = response.data.result?.content || [];
-        console.log("검색된 공고문 데이터:", recruits);
         setFilteredRecruits(recruits);
 
         const totalElements = response.data.result?.page?.totalElements || 0;
@@ -189,27 +176,24 @@ export default function Recruit() {
     allSecondCategories
   ]);
   
-  // URL 파라미터가 변경될 때 카테고리 업데이트
   useEffect(() => {
     const newCategory = getInitialCategory();
     setSelectedCategory(newCategory);
   }, [location.search]);
   
-  // selectedCategory나 currentPage가 변경될 때 실행
   useEffect(() => {
-    // console.log("useEffect 실행 - selectedCategory:", selectedCategory, "currentPage:", currentPage);
     fetchRecruits();
   }, [selectedCategory, selectedCategories, currentPage, sortBy, fetchRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setCurrentPage(0); // 검색 시 첫 페이지로 이동
+    setCurrentPage(0);
     performSearch();
   };
 
   const handleSearchTypeChange = (type) => {
     setSearchType(type);
-    setCurrentPage(0); // 검색 타입 변경 시 첫 페이지로 이동
+    setCurrentPage(0); 
   };
 
   const handlePageChange = (newPage) => {
@@ -217,22 +201,19 @@ export default function Recruit() {
   };
 
   const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
-    // console.log("카테고리 선택:", firstCategoryId, secondCategoryId, thirdCategoryId);
     setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
-    setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+    setCurrentPage(0); 
   };
 
   const handleCategoryApply = (categories) => {
-    console.log("적용된 카테고리들:", categories);
     setSelectedCategories(categories);
-    // 새로운 다중 카테고리 선택 시 기존 단일 카테고리 선택 초기화
     setSelectedCategory([null, null, null]);
-    setCurrentPage(0); // 카테고리 변경 시 첫 페이지로 이동
+    setCurrentPage(0); 
   };
 
   const handleSortChange = (value) => {
     setSortBy(value);
-    setCurrentPage(0); // 정렬 변경 시 첫 페이지로 이동
+    setCurrentPage(0); 
   };
 
   if (loading) {

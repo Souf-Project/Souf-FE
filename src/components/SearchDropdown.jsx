@@ -6,7 +6,7 @@ export default function SearchDropdown({ onSelect }) {
 
     const options = [
         { value: 'title', label: '제목' },
-        { value: 'titleContent', label: '내용' },
+        { value: 'content', label: '내용' },
     ];
 
     const handleSelect = (option) => {
