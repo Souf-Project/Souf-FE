@@ -394,6 +394,33 @@ export default function RecruitUpload() {
     }
   };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const steps = [1, 2, 3, 4];
+      const headerHeight = 80;
+      const viewportHeight = window.innerHeight;
+      
+      for (let i = steps.length - 1; i >= 0; i--) {
+        const stepElement = document.querySelector(`[data-step="${steps[i]}"]`);
+        if (stepElement) {
+          const elementTop = stepElement.offsetTop - headerHeight;
+          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          
+          // 이전 스텝의 50% 지점에서 다음 스텝으로 전환
+          const triggerPoint = elementTop - (viewportHeight * 0.2);
+          
+          if (scrollTop >= triggerPoint) {
+            setCurrentStep(steps[i]);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -693,7 +720,7 @@ export default function RecruitUpload() {
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              공고문 내용 (1500자 이내)
+              공고문 내용
             </label>
             <div className="flex items-center gap-2 mb-2">
               <button
@@ -761,14 +788,13 @@ export default function RecruitUpload() {
                 <svg className={`w-4 h-4 transition-transform duration-200 ${showPreview ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
-                미리보기 {showPreview ? '닫기' : ''}
+                {showPreview ? '닫기' : '미리보기'}
               </button>
             </div>
             
             {/* 마크다운 미리보기 */}
             {showPreview && (
               <div className="mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                <div className="text-sm font-medium text-gray-700 mb-2">미리보기:</div>
                 <div className="prose prose-sm max-w-none">
                   <ReactMarkdown 
                     remarkPlugins={[remarkGfm]}
@@ -787,7 +813,6 @@ export default function RecruitUpload() {
             </label>
             <div className="flex items-start gap-4 w-full">
               <div className="grid grid-cols-3 gap-3">
-                {/* 파일 업로드 슬롯들 */}
                 {Array.from({ length: 3 }, (_, index) => (
                   <div key={index} className="relative">
                     <input
@@ -877,7 +902,7 @@ export default function RecruitUpload() {
           <label className="block text-xl font-semibold text-gray-700">
                 작업 기간
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 items-center">
               <input
                 type="date"
                 name="startDate"
@@ -886,6 +911,7 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
+              <p>~</p>
               <input
                 type="date"
                 name="deadline"
@@ -1022,7 +1048,7 @@ export default function RecruitUpload() {
                <button 
                  type="button"
                  onClick={() => setEstimateType('fixed')}
-                 className={`rounded-lg px-6 py-2 font-bold text-lg transition-all duration-200 ${
+                 className={`rounded-md px-8 py-3 font-semibold text-md transition-all duration-200 ${
                    estimateType === 'fixed' 
                      ? 'bg-[#3E78E3] text-white shadow-md' 
                      : 'bg-neutral-100 hover:shadow-md'
@@ -1033,7 +1059,7 @@ export default function RecruitUpload() {
                <button 
                  type="button"
                  onClick={() => setEstimateType('estimate')}
-                 className={`rounded-lg px-6 py-2 font-bold text-lg transition-all duration-200 ${
+                 className={`rounded-md px-8 py-3 font-semibold text-md transition-all duration-200 ${
                    estimateType === 'estimate' 
                      ? 'bg-[#3E78E3] text-white shadow-md' 
                      : 'bg-neutral-100 hover:shadow-md'
@@ -1116,7 +1142,7 @@ export default function RecruitUpload() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`px-8 py-4 rounded-lg font-bold text-2xl transition-colors duration-200 ${
+              className={`px-16 py-4 rounded-lg font-bold text-xl transition-colors duration-200 ${
                 isLoading 
                   ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
                   : 'bg-[#3E78E3] text-white'
@@ -1128,13 +1154,13 @@ export default function RecruitUpload() {
               type="button"
               onClick={() => navigate('/recruit?category=1')}
               disabled={isLoading}
-              className={`px-8 py-4 bg-zinc-300 rounded-lg font-bold text-2xl transition-colors duration-200 ${
+              className={`px-8 py-4 bg-zinc-300 text-black/70 rounded-lg font-bold text-xl transition-colors duration-200 ${
                 isLoading 
                   ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
                   : 'hover:bg-gray-50'
               }`}
             >
-              취소
+              작성 초기화/취소
             </button>
           </div>
         </form>

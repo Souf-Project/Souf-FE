@@ -32,8 +32,8 @@ export default function StepIndicator({ currentStep, totalSteps = 3, onStepClick
                 
                 {/* 단계 텍스트 */}
                 <div className="flex-1">
-                  <div className={`text-base font-bold text-black transition-all duration-500 ease-in-out ${
-                    isActive ? 'ml-10' : 'ml-12'
+                  <div className={`text-base text-black transition-all duration-500 ease-in-out ${
+                    isActive ? 'ml-10 font-bold' : 'ml-12 font-medium'
                   }`}>
                     {stepNumber === 1 && '개인 및 회사 정보 작성'}
                     {stepNumber === 2 && '프로젝트 [외주] 공고 작성'}
