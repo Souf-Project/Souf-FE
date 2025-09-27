@@ -317,7 +317,7 @@ const DesktopHeader = () => (
                 <div>
                   <ul className="w-36 flex flex-col gap-2">
                     <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
+                    <li><button onClick={() => navigate("/recruitUpload", { state: { estimateType: 'estimate' } })} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
                   </ul>
                 </div>
                 {/* 외주 찾기 */}

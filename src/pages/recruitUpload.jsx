@@ -18,10 +18,11 @@ export default function RecruitUpload() {
   
   const isEditMode = location.state?.isEditMode || false;
   const editData = location.state?.recruitDetail || location.state?.recruitData;
+  const initialEstimateType = location.state?.estimateType || 'fixed';
   
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [estimateType, setEstimateType] = useState('fixed');
+  const [estimateType, setEstimateType] = useState(initialEstimateType);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const contentTextareaRef = useRef(null);
