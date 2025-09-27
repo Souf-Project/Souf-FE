@@ -121,7 +121,7 @@ export default function Chat() {
           {/* 데스크톱 버전 (lg 이상) */}
           <div className="hidden lg:grid lg:grid-cols-12 h-full">
             {/* 채팅 목록 */}
-            <div className="col-span-4 bg-yellow-main h-full">
+            <div className="col-span-4 bg-blue-200 h-full">
               <div className="flex justify-between items-center mt-4 p-4">
                 <h1 className="text-2xl font-bold ">SouF 채팅</h1>
                 <SearchBar
@@ -131,7 +131,7 @@ export default function Chat() {
                   placeholder="검색어를 입력하세요"
                 />
               </div>
-              <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] ">
+              <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(600px-0px)] shadow-md">
 
                 {filteredChatList?.map((chat,i) => (
                   <div
@@ -162,7 +162,7 @@ export default function Chat() {
                            chat.lastMessage}
                         </p>
                         {chat.unreadCount > 0 && (
-                          <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full">
+                          <span className="bg-blue-main text-white text-xs px-2 py-1 rounded-full">
                             {chat.unreadCount}
                           </span>
                         )}
@@ -203,7 +203,7 @@ export default function Chat() {
           <div className="lg:hidden h-full">
             {showChatList ? (
               // 채팅 목록 화면
-              <div className="h-full bg-yellow-main">
+              <div className="h-full bg-blue-bright">
                 <div className="flex justify-between items-center mt-4 p-4">
                   <h1 className="text-xl font-bold">SouF 채팅</h1>
                   <SearchBar
@@ -213,7 +213,7 @@ export default function Chat() {
                     placeholder="검색어를 입력하세요"
                   />
                 </div>
-                <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(100vh-64px-120px)]">
+                <div className="bg-white mx-4 rounded-2xl overflow-y-auto h-[calc(100vh-64px-120px)] shadow-md">
                   {filteredChatList?.map((chat,i) => (
                     <div
                     key={i} 
@@ -243,7 +243,7 @@ export default function Chat() {
                              chat.lastMessage}
                           </p>
                           {chat.unreadCount > 0 && (
-                            <span className="bg-yellow-point text-white text-xs px-2 py-1 rounded-full ml-2">
+                            <span className="bg-blue-main text-white text-xs px-2 py-1 rounded-full ml-2">
                               {chat.unreadCount}
                             </span>
                           )}
