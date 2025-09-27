@@ -207,19 +207,19 @@ const DesktopHeader = () => (
             >
               대학생 피드보기
             </li>
-            <li 
+            {/* <li 
               className={`flex items-center gap-1 w-28 ${location.pathname === "/review" ? "text-orange-point" : ""}`}
               onClick={() => navigate("/review")}
             >
               외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
-            </li>
-            <li className="text-gray-400 font-medium mx-4">|</li>
-            <li 
+            </li> */}
+            {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
+            {/* <li 
               className={`w-36 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
               onClick={() => navigate("/guide")}
             >
               이용 가이드
-            </li>
+            </li> */}
           </ul>
         </div>
 
@@ -333,20 +333,20 @@ const DesktopHeader = () => (
                   </ul>
                 </div>
                 {/* 외주 후기 */}
-                <div>
+                {/* <div>
                   <ul className="w-28 flex flex-col gap-2">
                     <li><button onClick={() => handleNavigation("/review")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
                   </ul>
-                </div>
+                </div> */}
                 {/* 이용 가이드 */}
-                <div>
+                {/* <div>
                   <ul className="w-36 flex flex-col gap-2 ml-8">
                     <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">이용 가이드</button></li>
                     <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">FAQ</button></li>
                     <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">고객 센터</button></li>
                     <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실</button></li>
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

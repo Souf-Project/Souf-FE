@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import CategorySelectBox from '../components/categorySelectBox';
-import firstCategoryData from '../assets/categoryIndex/first_category.json';
-import secondCategoryData from '../assets/categoryIndex/second_category.json';
-import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 import { uploadRecruit, uploadToS3, postRecruitMedia, updateRecruit } from '../api/recruit';
 import { UserStore } from '../store/userStore';
 import { filterEmptyCategories } from '../utils/filterEmptyCategories';
@@ -546,7 +543,7 @@ dtoList.forEach((dto, i) => {
         <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
           <div data-step="1" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
           STEP 1. 
-            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+            {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
         </div>
 
         <div>
@@ -625,7 +622,7 @@ dtoList.forEach((dto, i) => {
 
           <div data-step="2" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             STEP 2. 
-            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+            {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
           </div>
 
           <div>
@@ -977,7 +974,7 @@ dtoList.forEach((dto, i) => {
           
           <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             STEP 3. 
-            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+            {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
           </div>
            <div>
              <label className="block text-xl font-semibold text-gray-700 mb-2">견적 방식</label>
@@ -1043,7 +1040,7 @@ dtoList.forEach((dto, i) => {
 
           <div data-step="4" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             STEP 4. 
-            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+            {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
         </div>
 
         <div>
@@ -1072,7 +1069,7 @@ dtoList.forEach((dto, i) => {
 
           <div className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             LAST STEP . 
-            <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
+            {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
         </div>
 
         <div className="flex gap-4 items-center justify-center">
