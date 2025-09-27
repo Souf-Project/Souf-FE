@@ -16,9 +16,8 @@ import AlertModal from "../alertModal";
 import { filterEmptyCategories } from "../../utils/filterEmptyCategories";
 import { useSignupMutations } from "../../hooks/join/join";
 import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
-import dayjs from "dayjs";
-import noneCheckBox from "../../assets/images/noneCheckBox.png";
-import fillCheckBox from "../../assets/images/fillCheckBox.png";
+import checkBoxIcon from '../../assets/images/checkBoxIcon.svg';
+import notCheckBoxIcon from '../../assets/images/notCheckBoxIcon.svg';
 import backArrow from "../../assets/images/backArrow.svg";
 export default function JoinForm({ socialLoginInfo }) {
   const [email, setEmail] = useState("");
@@ -27,9 +26,7 @@ export default function JoinForm({ socialLoginInfo }) {
   const [verificationCheck, setVerificationCheck] = useState(undefined);
   
   const [emailVerification, setEmailVerification] = useState(undefined);
-  const [approveText,setApproveText] = useState("");
-  
-
+ 
   const [checkResult, setCheckResult] = useState(undefined);
   const [nicknameModal, setNicknameModal] = useState(false);
   const [emailModal, setEmailModal] = useState(false);
@@ -450,7 +447,7 @@ export default function JoinForm({ socialLoginInfo }) {
             className="flex items-center gap-3"
           >
             <img 
-              src={privacyAgreement && serviceAgreement && thirdPartyAgreement && marketingAgreement ? fillCheckBox : noneCheckBox} 
+              src={privacyAgreement && serviceAgreement && thirdPartyAgreement && marketingAgreement ? checkBoxIcon : notCheckBoxIcon} 
               alt="전체 선택" 
               className="w-5 h-5"
             />
@@ -468,7 +465,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={privacyAgreement ? fillCheckBox : noneCheckBox} 
+                src={privacyAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="개인정보 동의" 
                 className="w-5 h-5"
               />
@@ -485,7 +482,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={thirdPartyAgreement ? fillCheckBox : noneCheckBox} 
+                src={thirdPartyAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="제3자 제공 동의" 
                 className="w-5 h-5"
               />
@@ -587,7 +584,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={serviceAgreement ? fillCheckBox : noneCheckBox} 
+                src={serviceAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="서비스 이용 약관 동의" 
                 className="w-5 h-5"
               />
@@ -709,7 +706,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                src={marketingAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="마케팅 수신 동의" 
                 className="w-5 h-5"
               />

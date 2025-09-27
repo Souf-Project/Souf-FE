@@ -98,12 +98,12 @@ export default function Login() {
   return (
     <>
       <SEO title="로그인" description="스프 SouF 로그인" subTitle="스프" />
-      <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-yellow-main">
+      <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-blue-main">
         {/* PC 버전 스프 설명 */}
-        <div className="hidden lg:block lg:w-1/2 my-auto  bg-[#FFE681] flex flex-col px-16 justify-center">
+        <div className="hidden lg:block lg:w-1/2 my-auto flex flex-col px-16 justify-center">
           <div className="my-auto ">
-            <h1 className="text-8xl font-bold mb-6">SouF</h1>
-            <p className="text-4xl font-bold leading-relaxed text-gray-800 mb-10">
+            <h1 className="text-8xl font-bold mb-6 text-white">SouF</h1>
+            <p className="text-4xl font-bold leading-relaxed text-white mb-10">
               합리적인 비용으로
               <br />
               필요한 인재를 만나보세요!
@@ -117,10 +117,10 @@ export default function Login() {
         </div>
         {/* 모바일 버전 스프 설명 */}
         <div className="lg:hidden flex justify-center items-center mt-24 mb-8 ">
-          <h1 className="text-3xl font-bold">SouF</h1>
+          <h1 className="text-3xl font-bold text-white">SouF</h1>
           <span className="w-[2px] h-20 bg-black mx-4"></span>
 
-          <p className="text-xl font-bold leading-relaxed text-gray-800">
+          <p className="text-xl font-bold leading-relaxed text-white">
             합리적인 비용으로
             <br />
             필요한 인재를 만나보세요!
@@ -173,7 +173,7 @@ export default function Login() {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="bg-yellow-main mx-auto w-36 py-2 rounded-xl text-2xl font-semibold mt-4"
+                className="bg-blue-main text-white mx-auto w-36 py-2 rounded-xl text-2xl font-semibold mt-4"
               >
                 로그인
               </button>
