@@ -39,7 +39,6 @@ export default function RecruitUpload() {
     const after = value.substring(selectionEnd);
     const newValue = `${before}${wrapStart}${selected}${wrapEnd}${after}`;
     setFormData(prev => ({ ...prev, content: newValue }));
-    // 커서/선택 유지
     requestAnimationFrame(() => {
       textarea.focus();
       const cursorPos = selectionStart + wrapStart.length + selected.length + wrapEnd.length;
@@ -60,12 +59,8 @@ export default function RecruitUpload() {
       alert('이미지 파일만 업로드할 수 있습니다.');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      alert('이미지 파일 크기는 5MB를 초과할 수 없습니다.');
-      return;
-    }
+
     const objectUrl = URL.createObjectURL(file);
-    // 마크다운 이미지 구문 삽입
     const textarea = contentTextareaRef.current;
     const altText = 'image';
     const md = `![${altText}](${objectUrl})`;
@@ -80,44 +75,26 @@ export default function RecruitUpload() {
       const pos = before.length + md.length;
       textarea.setSelectionRange(pos, pos);
     });
-    // 동일 파일 다시 선택 가능하도록 값 초기화
     e.target.value = '';
   };
   
-  // 급여 파싱 함수
   const parsePrice = (priceString) => {
     if (!priceString || typeof priceString !== 'string') return '';
     let numStr = priceString.replace(/[^0-9.]/g, '');
     return numStr;
   };
 
-  // 12시간 형식을 24시간 형식으로 변환하는 함수
-  const convertTo24HourFormat = (hour, minute, period) => {
-    let hour24 = parseInt(hour);
-    if (period === 'PM' && hour24 !== 12) {
-      hour24 += 12;
-    } else if (period === 'AM' && hour24 === 12) {
-      hour24 = 0;
-    }
-    return `${hour24.toString().padStart(2, '0')}:${minute}`;
-  };
-
   const parseDateTime = (dateTimeString) => {
-    if (!dateTimeString) return { date: '', hour: '01', minute: '00', period: 'AM' };
+    if (!dateTimeString) return { date: '' };
     
     const date = new Date(dateTimeString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
     
     const dateStr = `${year}-${month}-${day}`;
-    const hourStr = hours === 0 ? '12' : hours > 12 ? String(hours - 12).padStart(2, '0') : String(hours).padStart(2, '0');
-    const minuteStr = String(Math.floor(minutes / 5) * 5).padStart(2, '0');
-    const period = hours >= 12 ? 'PM' : 'AM';
     
-    return { date: dateStr, hour: hourStr, minute: minuteStr, period };
+    return { date: dateStr };
   };
   
   const [formData, setFormData] = useState(() => {
@@ -130,13 +107,7 @@ export default function RecruitUpload() {
         region: editData.cityDetailName || '',
         city: editData.cityName || '',
         startDate: startDateTime.date,
-        startDateHour: startDateTime.hour,
-        startDateMinute: startDateTime.minute,
-        startDatePeriod: startDateTime.period,
         deadline: deadlineDateTime.date,
-        deadlineHour: deadlineDateTime.hour,
-        deadlineMinute: deadlineDateTime.minute,
-        deadlinePeriod: deadlineDateTime.period,
         companyName: editData.nickname || nickname || '',
         price: parsePrice(editData.price),
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
@@ -150,7 +121,6 @@ export default function RecruitUpload() {
         briefIntroduction: editData.briefIntroduction || '',
         estimatePayment: editData.estimatePayment || '',
         contractMethod: editData.contractMethod || '',
-        startDate: editData.startDate || '',
         categoryDtos: editData.categoryDtoList?.map(cat => ({
           firstCategory: cat.firstCategory,
           secondCategory: cat.secondCategory,
@@ -177,18 +147,12 @@ export default function RecruitUpload() {
       };
     } else {
       return {
-        title: '',
+    title: '',
         content: '',
         region: '',
         city: '',
         startDate: '',
-        startDateHour: '01',
-        startDateMinute: '00',
-        startDatePeriod: 'AM',
-        deadline: '',
-        deadlineHour: '01',
-        deadlineMinute: '00',
-        deadlinePeriod: 'AM',
+    deadline: '',
         companyName: nickname || '',
         price: '',
         isregionIrrelevant: false,
@@ -202,7 +166,6 @@ export default function RecruitUpload() {
         briefIntroduction: '',
         estimatePayment: '',
         contractMethod: '',
-        startDate: '',
         categoryDtos: [
           {
             "firstCategory": null,
@@ -276,20 +239,14 @@ export default function RecruitUpload() {
     { city_id: 1, name: "서울"},
     { city_id: 2, name: "경기"}
   ];
-  
+
   const handleChange = (e) => {
     const { name, value, type, files, checked } = e.target;
     if (type === 'file') {
       if (name === 'logoFile') {
-        // 로고 파일 처리
         const file = files[0];
         if (file) {
-          const maxSize = 5 * 1024 * 1024; // 5MB
-          if (file.size > maxSize) {
-            alert('로고 파일 크기는 5MB를 초과할 수 없습니다.');
-            return;
-          }
-          
+       
           if (!file.type.startsWith('image/')) {
             alert('이미지 파일만 업로드할 수 있습니다.');
             return;
@@ -301,16 +258,14 @@ export default function RecruitUpload() {
           }));
         }
       } else {
-        // 일반 파일 처리 (참고 파일들)
         const file = files[0];
         if (file) {
-          const maxSize = 10 * 1024 * 1024; // 10MB
-          if (file.size > maxSize) {
-            alert(`${file.name}의 크기가 10MB를 초과합니다.`);
-            return;
-          }
+        // const maxSize = 10 * 1024 * 1024;
+        //   if (file.size > maxSize) {
+        //   alert(`${file.name}의 크기가 10MB를 초과합니다.`);
+        //     return;
+        //   }
           
-          // 현재 비어있는 첫 번째 슬롯에 파일 할당
           const currentFiles = [...formData.files];
           const emptySlotIndex = currentFiles.findIndex(f => f === null || f === undefined);
           
@@ -333,7 +288,6 @@ export default function RecruitUpload() {
       setFormData(prev => ({
         ...prev,
         [name]: checked,
-        // 지역 무관 체크 시 지역 선택 초기화
         ...(name === 'isregionIrrelevant' && checked ? { region: '' } : {})
       }));
     } else {
@@ -344,13 +298,8 @@ export default function RecruitUpload() {
     }
   };
 
-  const handleEstimateTypeChange = (type) => {
-    setEstimateType(type);
-  };
 
-  // 공고문 내용에 사진 추가 -> API 변경 후 연동
   const handleImageUpload = async () => {
-    // 파일 입력 요소 생성
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -359,17 +308,15 @@ export default function RecruitUpload() {
       const file = e.target.files[0];
       if (!file) return;
 
-      // 이미지 파일 검증
       if (!file.type.startsWith('image/')) {
         alert('이미지 파일만 업로드할 수 있습니다.');
         return;
       }
 
-      // 파일 크기 검증 (5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('파일 크기는 5MB를 초과할 수 없습니다.');
-        return;
-      }
+      // if (file.size > 5 * 1024 * 1024) {
+      //   alert('파일 크기는 5MB를 초과할 수 없습니다.');
+      //   return;
+      // }
 
       setIsUploadingImage(true);
     };
@@ -441,7 +388,6 @@ export default function RecruitUpload() {
       let cityDetailId = null;
   
       if (formData.isregionIrrelevant) {
-        // 지역무관 선택 시
         cityId = 3;
         cityDetailId = 43;
       } else {
@@ -455,8 +401,8 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
-      const startDateTime = `${formData.startDate}T${convertTo24HourFormat(formData.startDateHour, formData.startDateMinute, formData.startDatePeriod)}`;
-      const deadlineDateTime = `${formData.deadline}T${convertTo24HourFormat(formData.deadlineHour, formData.deadlineMinute, formData.deadlinePeriod)}`;
+      const startDateTime = new Date(formData.startDate).toISOString();
+      const deadlineDateTime = new Date(formData.deadline).toISOString();
   
       const formDataToSend = {
         title: formData.title,
@@ -516,14 +462,13 @@ export default function RecruitUpload() {
           }
         }
       } else {
-        // 새 공고 작성 모드: uploadRecruit API 사용
         response = await uploadRecruit(formDataToSend);
         const { recruitId, dtoList } = response.data.result;
         
         console.log("📦 dtoList:", dtoList);
-        dtoList.forEach((dto, i) => {
-          console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
-        });
+dtoList.forEach((dto, i) => {
+  console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
+});
 
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
         if (formData.files.length > 0 && dtoList) {
@@ -570,7 +515,7 @@ export default function RecruitUpload() {
       setIsLoading(false);
     }
   };
-  
+
   const handleCategoryChange = (index) => (categoryData) => {
     setFormData((prev) => {
       const updatedCategories = prev.categoryDtos.map((cat, i) =>
@@ -582,12 +527,6 @@ export default function RecruitUpload() {
       };
     });
   };
-
-  // 카테고리 데이터 배열 추출
-  const firstCategories = firstCategoryData.first_category || [];
-  const secondCategories = secondCategoryData.second_category || [];
-  const thirdCategories = thirdCategoryData.third_category || [];
-
   return (
     <div className="pt-10 px-6 w-full lg:max-w-5xl mx-auto mb-12">
       {isLoading && (
@@ -606,26 +545,26 @@ export default function RecruitUpload() {
       <div className="flex gap-8 max-w-[60rem] w-full mx-auto">
         <form onSubmit={handleSubmit} className="w-[38rem] flex flex-col gap-6 mb-20">
           <div data-step="1" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4">
-            STEP 1. 
+          STEP 1. 
             <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
-          </div>
+        </div>
 
-          <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
               기업 또는 개인명
-            </label>
-            <input
-              type="text"
+          </label>
+          <input
+            type="text"
               name="companyName"
               value={formData.companyName}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
-              required
-            />
-          </div>
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
               로고 및 아이콘 등록
             </label>
             <div className="flex items-center gap-4">
@@ -692,22 +631,22 @@ export default function RecruitUpload() {
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
               공고문 제목
-            </label>
-            <input
-              type="text"
+          </label>
+          <input
+            type="text"
               name="title"
               value={formData.title}
-              onChange={handleChange}
+            onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
               placeholder="공고문 제목을 입력하세요"
-              required
-            />
-          </div>
+            required
+          />
+        </div>
 
-          <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+        <div>
+          <label className="block text-xl font-semibold text-gray-700 mb-2">
               공고 간략 소개 (1~2줄)
-            </label>
+          </label>
             <textarea
               name="companyDescription"
               value={formData.companyDescription || ''} 
@@ -766,14 +705,14 @@ export default function RecruitUpload() {
             <textarea
               name="content"
               value={formData.content}
-              onChange={handleChange}
+                onChange={handleChange}
               ref={contentTextareaRef}
               className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent resize-none"
               placeholder="공고문의 상세 내용을 입력하세요 (1500자 이내)"
               rows="8"
               maxLength="1500"
-              required
-            />
+                required
+              />
             <div className="text-right text-sm text-gray-500 mt-1">
               {formData.content?.length || 0}/1500
             </div>
@@ -815,10 +754,10 @@ export default function RecruitUpload() {
               <div className="grid grid-cols-3 gap-3">
                 {Array.from({ length: 3 }, (_, index) => (
                   <div key={index} className="relative">
-                    <input
+              <input
                       type="file"
                       name="files"
-                      onChange={handleChange}
+                onChange={handleChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       id={`file-upload-${index}`}
                       disabled={formData.files.length > index}
@@ -847,9 +786,9 @@ export default function RecruitUpload() {
                               <span className="text-xs text-gray-600 font-medium truncate px-1">
                                 {formData.files[index].name.split('.')[0]}
                               </span>
-                            </div>
+            </div>
                           )}
-                        </div>
+          </div>
                       ) : (
                         <div className="text-center">
                           <svg className="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -875,7 +814,7 @@ export default function RecruitUpload() {
                     )}
                   </div>
                 ))}
-              </div>
+        </div>
 
             </div>
             {formData.files.length > 0 && (
@@ -899,10 +838,10 @@ export default function RecruitUpload() {
           </div>
 
           <div className="flex flex-col gap-6">
-          <label className="block text-xl font-semibold text-gray-700">
-                작업 기간
-              </label>
-              <div className="flex gap-2 items-center">
+            <label className="block text-xl font-semibold text-gray-700">
+              작업 기간
+            </label>
+            <div className="flex gap-2 items-center">
               <input
                 type="date"
                 name="startDate"
@@ -920,9 +859,7 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
-
-              </div>
-             
+            </div>
           </div>
 
           <div>
@@ -940,7 +877,7 @@ export default function RecruitUpload() {
             </select>
           </div>
           <div>
-          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2">
               <label className="block text-xl font-semibold text-black">
                 지역
               </label>
@@ -973,42 +910,42 @@ export default function RecruitUpload() {
                   </option>
                 ))}
               </select>
-              <select
+            <select
                 name="region"
                 value={formData.region}
-                onChange={handleChange}
+              onChange={handleChange}
                 disabled={formData.isregionIrrelevant}
                 className={`w-2/3 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent bg-white ${
                   formData.isregionIrrelevant || isEditMode ? 'bg-gray-100' : ''
                 }`}
                 required={!formData.isregionIrrelevant}
-              >
-                <option value="">지역 선택</option>
+            >
+              <option value="">지역 선택</option>
                 {cityDetailData
                   .filter(detail => detail.city_id === cityData.find(city => city.name === formData.city)?.city_id)
                   .map(detail => (
                     <option key={detail.city_detail_id} value={detail.name}>
                       {detail.name}
-                    </option>
-                  ))}
-              </select>
-            </div>
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
 
-          <div>
+        <div>
             <div className="flex items-center gap-2 mb-4">
               <label className="text-xl font-semibold text-black">
                 우대사항 키워드 (2개)
-              </label>
+          </label>
               <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <input
+          <input
                 type="text"
                 name="preferentialKeyword1"
                 value={formData.preferentialKeyword1}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 placeholder="우대사항 키워드 1"
                 maxLength="10"
               />
@@ -1023,7 +960,7 @@ export default function RecruitUpload() {
               />
             </div>
           </div>
-
+          
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
               우대사항 설명
@@ -1031,7 +968,7 @@ export default function RecruitUpload() {
             <textarea
               name="preferentialTreatment"
               value={formData.preferentialTreatment}
-              onChange={handleChange}
+                onChange={handleChange}
               className="w-full h-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent resize-none"
               placeholder="우대사항에 대한 상세 설명을 입력하세요"
               rows="4"
@@ -1067,10 +1004,10 @@ export default function RecruitUpload() {
                >
                  견적 받아보고 싶어요.
                </button>
-             </div>
-           </div>
+          </div>
+        </div>
 
-          <div>
+        <div>
             <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
             <input
               type="number"
@@ -1090,8 +1027,8 @@ export default function RecruitUpload() {
             <div className="flex items-center gap-2 mb-4">
               <label className="text-xl font-semibold text-black">
                 계약 방식
-              </label>
-            </div>
+            </label>
+          </div>
             <textarea
               name="contractMethod"
               value={formData.contractMethod || ''}
@@ -1107,65 +1044,65 @@ export default function RecruitUpload() {
           <div data-step="4" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             STEP 4. 
             <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
-          </div>
-          
-          <div>
+        </div>
+
+        <div>
             <label className="block text-xl font-semibold text-black mb-2">
               공고에 맞는 카테고리 선택
-            </label>
+          </label>
             <p className="flex items-center gap-2 mb-2 text-base">
               <img src={infoIcon} alt="infoIcon" className="w-4 h-4" />
               전공자들에게 AI 추천 방식 적용 및 공고 지원률 상승에 도움이 돼요!
             </p>
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              {formData?.categoryDtos?.map((category, index) => (
-                <CategorySelectBox 
-                  key={index}
-                  title="카테고리 선택"
-                  content=""
-                  defaultValue={category}
-                  type="text"
-                  isEditing={!isEditMode}
-                  onChange={handleCategoryChange(index)}
-                  width="w-full"
-                />
-              ))}
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            {formData?.categoryDtos?.map((category, index) => (
+          <CategorySelectBox 
+                key={index}
+            title="카테고리 선택"
+            content=""
+                defaultValue={category}
+                type="text"
+            isEditing={!isEditMode}
+                onChange={handleCategoryChange(index)}
+                width="w-full"
+          />
+            ))}
             </div>
-          </div>
-          
+        </div>
+
           <div className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             LAST STEP . 
             <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" />
-          </div>
-          
-          <div className="flex gap-4 items-center justify-center">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`px-16 py-4 rounded-lg font-bold text-xl transition-colors duration-200 ${
-                isLoading 
-                  ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
+        </div>
+
+        <div className="flex gap-4 items-center justify-center">
+        <button
+            type="submit"
+            disabled={isLoading}
+              className={`px-16 py-4 rounded-lg font-bold text-xl transition-all duration-200 hover:shadow-md ${
+              isLoading 
+                ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
                   : 'bg-[#3E78E3] text-white'
-              }`}
-            >
-              {isLoading ? '처리 중...' : (isEditMode ? '수정완료' : '업로드')}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/recruit?category=1')}
-              disabled={isLoading}
-              className={`px-8 py-4 bg-zinc-300 text-black/70 rounded-lg font-bold text-xl transition-colors duration-200 ${
-                isLoading 
-                  ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
-                  : 'hover:bg-gray-50'
-              }`}
-            >
+            }`}
+          >
+            {isLoading ? '처리 중...' : (isEditMode ? '수정완료' : '업로드')}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/recruit?category=1')}
+            disabled={isLoading}
+              className={`px-8 py-4 bg-zinc-300 text-black/70 rounded-lg font-bold text-xl transition-all duration-200 hover:shadow-md ${
+              isLoading 
+                ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
+                  : ''
+            }`}
+          >
               작성 초기화/취소
-            </button>
-          </div>
-        </form>
+          </button>
+        </div>
+      </form>
         <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
       </div>
     </div>
   );
-}
+} 
