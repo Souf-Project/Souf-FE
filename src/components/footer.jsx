@@ -4,7 +4,7 @@ import backArrow from '../assets/images/backArrow.svg';
 
 export default function Footer() {
   return (
-    <footer className="w-full z-30 bg-[#FCFEFF] border-t border-gray-200 mt-auto py-8">
+    <footer className="w-full z-30 bg-[#FCFEFF] border-t border-gray-200 py-8">
       <div className="flex gap-8 justify-center items-center w-full max-w-[60rem] mx-auto">
        <div className='flex flex-col gap-10 justify-between items-start w-1/2'>
         <div>

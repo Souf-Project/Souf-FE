@@ -129,7 +129,7 @@ export default function Login() {
           </p>
         </div>
         <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
-          <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto text-white">
+          <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto">
             로그인
           </h2>
           <form

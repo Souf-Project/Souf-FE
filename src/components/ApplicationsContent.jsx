@@ -190,7 +190,7 @@ export default function ApplicationsContent() {
         </div>
       ) : (
         <div className="text-center py-8 bg-gray-50 rounded-lg">
-          <p className="text-gray-500">아직 지원한 프로젝트가 없습니다.</p>
+          <p className="text-gray-500">아직 지원한 외주가 없습니다.</p>
         </div>
       )}
       {showAlertModal && (
