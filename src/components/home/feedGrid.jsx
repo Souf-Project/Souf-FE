@@ -16,7 +16,7 @@ export default function FeedGrid() {
 
   useEffect(() => {
     setFeedData(data?.result || []);
-    console.log(data?.result);
+    // console.log(data?.result);
   }, [data]);
 
   useEffect(() => {
