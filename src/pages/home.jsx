@@ -21,6 +21,28 @@ import { UserStore } from "../store/userStore";
 import useCountUp from "../hooks/useCountUp";
 import SEO from "../components/seo";
 import Loading from "../components/loading";
+import cateIcon11 from "../assets/images/categoryIcons/cateIcon11.png";
+import cateIcon12 from "../assets/images/categoryIcons/cateIcon12.png";
+import cateIcon13 from "../assets/images/categoryIcons/cateIcon13.png";
+import cateIcon24 from "../assets/images/categoryIcons/cateIcon24.png";
+import cateIcon25 from "../assets/images/categoryIcons/cateIcon25.png";
+import cateIcon26 from "../assets/images/categoryIcons/cateIcon26.png";
+import cateIcon27 from "../assets/images/categoryIcons/cateIcon27.png";
+import cateIcon38 from "../assets/images/categoryIcons/cateIcon38.png";
+import cateIcon49 from "../assets/images/categoryIcons/cateIcon49.png";
+import cateIcon410 from "../assets/images/categoryIcons/cateIcon410.png";
+import cateIcon411 from "../assets/images/categoryIcons/cateIcon411.png";
+import cateIcon512 from "../assets/images/categoryIcons/cateIcon512.png";
+import cateIcon513 from "../assets/images/categoryIcons/cateIcon513.png";
+import cateIcon514 from "../assets/images/categoryIcons/cateIcon514.png";
+import cateIcon515 from "../assets/images/categoryIcons/cateIcon515.png";
+import cateIcon516 from "../assets/images/categoryIcons/cateIcon516.png";
+import cateIcon517 from "../assets/images/categoryIcons/cateIcon517.png";
+import cateIcon518 from "../assets/images/categoryIcons/cateIcon518.png";
+import cateIcon619 from "../assets/images/categoryIcons/cateIcon619.png";
+import cateIcon620 from "../assets/images/categoryIcons/cateIcon620.png";
+import cateIcon621 from "../assets/images/categoryIcons/cateIcon621.png";
+import cateIcon622 from "../assets/images/categoryIcons/cateIcon622.png";
 
 
 export default function Home() {
@@ -79,28 +101,28 @@ export default function Home() {
 
   const getCategoryIcon = (categoryId) => {
     const iconMap = {
-      1: "/src/assets/images/categoryIcons/cateIcon11.png", // 일러스트·캐릭터 디자인
-      2: "/src/assets/images/categoryIcons/cateIcon12.png", // 글자 디자인
-      3: "/src/assets/images/categoryIcons/cateIcon13.png", // 순수 미술
-      4: "/src/assets/images/categoryIcons/cateIcon24.png", // 시제품 디자인
-      5: "/src/assets/images/categoryIcons/cateIcon25.png", // 산업·제품 디자인
-      6: "/src/assets/images/categoryIcons/cateIcon26.png", // 패션·텍스타일 디자인
-      7: "/src/assets/images/categoryIcons/cateIcon27.png", // 조형 예술
-      8: "/src/assets/images/categoryIcons/cateIcon38.png", // 음향
-      9: "/src/assets/images/categoryIcons/cateIcon49.png", // 사진
-      10: "/src/assets/images/categoryIcons/cateIcon410.png", // 영상
-      11: "/src/assets/images/categoryIcons/cateIcon411.png", // 영화
-      12: "/src/assets/images/categoryIcons/cateIcon512.png", // 브랜드 디자인
-      13: "/src/assets/images/categoryIcons/cateIcon513.png", // 산업 디자인
-      14: "/src/assets/images/categoryIcons/cateIcon514.png", // 웹·모바일 디자인
-      15: "/src/assets/images/categoryIcons/cateIcon515.png", // 마케팅 디자인
-      16: "/src/assets/images/categoryIcons/cateIcon516.png", // 컴퓨터 그래픽·모션 그래픽
-      17: "/src/assets/images/categoryIcons/cateIcon517.png", // 게임 디자인
-      18: "/src/assets/images/categoryIcons/cateIcon518.png", // 애니메이션
-      19: "/src/assets/images/categoryIcons/cateIcon619.png", // 웹사이트
-      20: "/src/assets/images/categoryIcons/cateIcon620.png", // 안드로이드
-      21: "/src/assets/images/categoryIcons/cateIcon621.png", // IOS
-      22: "/src/assets/images/categoryIcons/cateIcon622.png", // 게임 프로그래밍
+      1: cateIcon11,
+      2: cateIcon12,
+      3: cateIcon13,
+      4: cateIcon24,
+      5: cateIcon25,
+      6: cateIcon26,
+      7: cateIcon27,
+      8: cateIcon38,
+      9: cateIcon49,
+      10: cateIcon410,
+      11: cateIcon411,
+      12: cateIcon512,
+      13: cateIcon513,
+      14: cateIcon514,
+      15: cateIcon515,
+      16: cateIcon516,
+      17: cateIcon517,
+      18: cateIcon518,
+      19: cateIcon619,
+      20: cateIcon620,
+      21: cateIcon621,
+      22: cateIcon622,
     };
     return iconMap[categoryId] || "/src/assets/images/categoryIcons/cateIcon11.png";
   };
@@ -480,8 +502,8 @@ export default function Home() {
       <div className="flex mt-32 max-w-[60rem] mx-auto">
         <EstimateBanner color="black" />
       </div>
-{/* 
-      <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
+
+      {/* <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
         <div className="w-full bg-blue-400/10 rounded-xl p-16">
         <p className="text-2xl font-bold">외주를 등록하러 오셨나요?</p>
         <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
@@ -494,7 +516,7 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
 
 Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
         </div>
-      </div>
+      </div> */}
       <div className="flex my-32  max-w-[60rem] mx-auto">
         <EstimateBanner color="blue" />
       </div> */}
