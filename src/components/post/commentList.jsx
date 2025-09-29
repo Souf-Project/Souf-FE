@@ -5,20 +5,22 @@ import { useState, useEffect } from "react";
 import { getComment, postComment, deleteComment, postAdditionalComment, getAdditionalComment } from "../../api/additionalFeed";
 import { UserStore } from "../../store/userStore";
 import { useParams } from "react-router-dom";
+import AlertModal from "../../components/alertModal";
 import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
 
 export default function commentList() {
     const [commentList, setCommentList] = useState([]);
-    const [replyComments, setReplyComments] = useState({}); // { commentId: [replies] }
-    const [showReplies, setShowReplies] = useState({}); // { commentId: boolean }
-    const [commentsWithReplies, setCommentsWithReplies] = useState({}); // { commentId: boolean }
+    const [replyComments, setReplyComments] = useState({});
+    const [showReplies, setShowReplies] = useState({});
+    const [commentsWithReplies, setCommentsWithReplies] = useState({});
     const [commentContent, setCommentContent] = useState("");
     const [replyMode, setReplyMode] = useState(false);
     const [replyToComment, setReplyToComment] = useState(null);
-    const [replyPages, setReplyPages] = useState({}); // { commentId: currentPage }
-    const [hasMoreReplies, setHasMoreReplies] = useState({}); // { commentId: boolean }
+    const [replyPages, setReplyPages] = useState({});
+    const [hasMoreReplies, setHasMoreReplies] = useState({});
     const { id, worksId } = useParams();
     const { memberId } = UserStore();
+    const [showLoginModal, setShowLoginModal] = useState(false);
 
     const fetchComments = async () => {
         try {
@@ -55,7 +57,7 @@ export default function commentList() {
         try {
             const response = await getAdditionalComment(worksId, commentId, { page: page, size: 5 });
             
-            console.log(`대댓글 조회 - 댓글ID: ${commentId}, 페이지: ${page}`, response);
+            // console.log(`대댓글 조회 - 댓글ID: ${commentId}, 페이지: ${page}`, response);
             
             if (response?.result?.content && response.result.content.length > 0) {
                 // 첫 번째 대댓글은 댓글이라 지움
@@ -65,7 +67,6 @@ export default function commentList() {
                 
                 if (actualReplies.length > 0) {
                     if (isLoadMore) {
-                        // 더보기: 기존 대댓글에 추가
                         setReplyComments(prev => ({
                             ...prev,
                             [commentId]: [...(prev[commentId] || []), ...actualReplies]
@@ -181,6 +182,9 @@ export default function commentList() {
             fetchComments();
             }
         } catch (error) {
+            if (error.response.status === 403) {
+                setShowLoginModal(true);
+            }
             console.error("댓글 작성 에러:", error);
         }
     };
@@ -247,9 +251,9 @@ export default function commentList() {
     };
 
     return (
-        <div className="flex flex-col rounded-2xl border border-gray-200 px-6 py-6 w-full shadow-sm max-w-4xl mx-auto mt-4 mb-24">
+        <div className="flex flex-col w-full mx-auto mt-4 mb-24">
             {/* 댓글 목록 */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 border-y border-gray-400 py-4">
                 {commentList?.length > 0 ? (
                     commentList?.map((comment) => (
                         <div key={comment.commentId}>
@@ -307,19 +311,34 @@ export default function commentList() {
             {/* 댓글 입력칸 */}
             <div className="flex items-center gap-2 mt-4">
                 <input 
-                    className="w-full h-10 rounded-full border border-gray-200 px-4 py-2 transition-all duration-200 focus:outline-none focus:shadow-sm focus:ring-2 focus:ring-yellow-point focus:border-transparent" 
+                    className="w-full h-10 rounded-xl px-4 py-2 bg-blue-bright transition-all duration-200 focus:outline-none focus:shadow-sm focus:ring-2 focus:ring-blue-main focus:border-transparent" 
                     placeholder={replyMode ? "답글을 입력해주세요." : "댓글을 입력해주세요."}
                     value={commentContent}
                     onChange={(e) => setCommentContent(e.target.value)}
                     onKeyPress={handleKeyPress}
                 />
                 <button 
-                    className="w-16 h-10 rounded-full bg-yellow-point flex items-center justify-center"
+                    className="w-16 h-10 rounded-full bg-blue-main flex items-center justify-center"
                     onClick={handleCommentSubmit}
                 >
-                    <img src={sendIco} alt="sendIco" className="w-10 h-10" />
+                    <img src={sendIco} alt="sendIco" className="w-4 h-4" />
                 </button>
             </div>
+            {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 회원만 댓글을 작성할 수 있습니다!"
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
         </div>
+        
     )
 }
