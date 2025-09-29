@@ -121,7 +121,7 @@ export default function RecruitBlock({
         ) : (
           <img src={soufMockup} alt="기본 로고 이미지" className="w-40 h-40 rounded-2xl object-cover" />
         )}
-      <div className="flex flex-col px-6 py-3 flex-1 gap-2">
+      <div className="flex flex-col px-4 py-3 flex-1 gap-2 max-w-[26rem]">
         <div className="flex justify-between items-center">
         <div className="flex text-blue-600 text-sm">
           {(() => {
