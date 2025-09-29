@@ -17,64 +17,81 @@ export const getPopularRecruit = async (pageable) => {
 
 export async function getRecruit(params = {}) {
     try {
-    const {
-      firstCategory = 1,
-      secondCategory ,
-      thirdCategory,
-      recruitSearchReqDto = {},
-      page = 0,
-      size = 10,
-      sort,
-    } = params;   
-    
-
-        const queryParams = {
+        const {
             firstCategory,
-            ...(secondCategory ? { secondCategory } : {}),
-            ...(thirdCategory ? { thirdCategory } : {}),
-            'page': page,
-            'size': size
+            secondCategory,
+            thirdCategory,
+            selectedCategories,
+            recruitSearchReqDto = {},
+            page = 0,
+            size = 10,
+            sort,
+        } = params;
+
+        // 카테고리 데이터 구성
+        let categories = null;
+        
+        // 새로운 다중 카테고리 선택이 있는 경우
+        if (selectedCategories && selectedCategories.length > 0) {
+            categories = selectedCategories;
+        }
+        // 기존 단일 카테고리 선택이 있는 경우 (selectedCategories가 없을 때만)
+        else if ((firstCategory || secondCategory || thirdCategory) && (!selectedCategories || selectedCategories.length === 0)) {
+            categories = [{
+                firstCategory: firstCategory || null,
+                secondCategory: secondCategory || null,
+                thirdCategory: thirdCategory || null
+            }];
+        }
+
+        // 정렬 옵션 구성
+        let sortOption = {
+            sortKey: "RECENT",
+            sortDir: "DESC"
         };
 
-
-        if (recruitSearchReqDto.title?.trim()) {
-            queryParams['title'] = recruitSearchReqDto.title;
-        }
-        if (recruitSearchReqDto.content?.trim()) {
-            queryParams['content'] = recruitSearchReqDto.content;
-        }
-
         if (sort && sort.length > 0) {
-            queryParams['sort'] = sort?.join(',');
+            const sortString = sort[0];
+            
+            // 새로운 정렬 옵션 처리
+            if (sortString.includes('RECENT')) {
+                sortOption.sortKey = "RECENT";
+            } else if (sortString.includes('VIEWS')) {
+                sortOption.sortKey = "VIEWS";
+            } else if (sortString.includes('PAYMENT')) {
+                sortOption.sortKey = "PAYMENT";
+            }
+            
+            if (sortString.includes('_DESC')) {
+                sortOption.sortDir = "DESC";
+            } else if (sortString.includes('_ASC')) {
+                sortOption.sortDir = "ASC";
+            }
         }
 
+        // 요청 바디 구성
+        const requestBody = {
+                title: recruitSearchReqDto.title?.trim() || null,
+                content: recruitSearchReqDto.content?.trim() || null,
+                categories: categories,
+                sortOption: sortOption
+        };
         // 토큰 확인
         const token = localStorage.getItem('accessToken');
-        const response = await client.get('/api/v1/recruit', {
-            params: queryParams,
+        const response = await client.post('/api/v1/recruit/search', requestBody, {
+            params: {
+                page: page,
+                size: size,
+            },
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         });
-        
+          
         return response;
     } catch (error) {
         console.error('Recruit API 오류 발생:', error);
-        
-        if (error.response?.status === 403) {
-            console.error('403 Forbidden - 권한이 없습니다.');
-            console.error('Response data:', error.response.data);
-            
-            // 토큰이 만료되었거나 유효하지 않은 경우
-            if (error.response.data?.message?.includes('token') || 
-                error.response.data?.message?.includes('unauthorized')) {
-                console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
-                localStorage.removeItem('accessToken');
-                window.location.href = '/login';
-                return;
-            }
-        }
         
         throw error;
     }

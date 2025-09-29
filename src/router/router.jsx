@@ -5,6 +5,7 @@ import Login from "../pages/login";
 import Redirect from "../pages/redirect";
 import VerifyStudent from "../pages/verifyStudent";
 import Recruit from "../pages/recruit";
+import Feed from "../pages/feed";
 import RecruitDetail from "../pages/recruitDetails";
 import RecruitsAll from "../pages/recruitsAll";
 import MyPage from "../pages/mypage";
@@ -24,7 +25,8 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
-import FloatingActionButton from "../components/FloatingActionButton";
+import Review from "../pages/review";
+import ReviewDetail from "../pages/reviewDetail";
 import Inspection from "../pages/inspection";
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -34,16 +36,17 @@ function AppRouter() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* <Header /> */}
+      <Header />
       <main className="flex-grow w-full mt-16">
         <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/" element={<Inspection />} />
-          {/* <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Inspection />} /> */}
+         <Route path="/login" element={<Login />} />
           <Route path="/oauth/kakao/callback" element={<Redirect />} />
           <Route path="/oauth/google/callback" element={<Redirect />} />
           <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
+          <Route path="/feed" element={<Feed />} />
           <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
           <Route path="/recruitsAll" element={<RecruitsAll />} />
           <Route path="/mypage" element={<MyPage />} />
@@ -63,11 +66,10 @@ function AppRouter() {
           <Route path="/contests/:category/:id" element={<ContestDetail />} />
           <Route path="/search" element={<Search />} />
           <Route path="/withdraw" element={<Withdraw/>} />
-          <Route path="/forbidden" element={<Forbidden/>} /> */}
+          <Route path="/forbidden" element={<Forbidden/>} />
         </Routes>
       </main>
-      {/* {!isChatPage && <Footer />}
-      <FloatingActionButton /> */}
+      {!isChatPage && <Footer />}
     </div>
   );
 }

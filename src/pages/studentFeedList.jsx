@@ -10,13 +10,10 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
 import SEO from "../components/seo";
 
-export default function StudentFeedList({secondCategoryId, thirdCategoryId ,keyword }) {
+export default function StudentFeedList({firstCategoryId, secondCategoryId, thirdCategoryId ,keyword }) {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
-
-  const searchParams = new URLSearchParams(location.search);
-  const categoryParam = searchParams.get("category");
 
   //여기 나중에 무한스크롤로 바꿔야함 ..
   const pageable = {
@@ -37,16 +34,30 @@ const {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable],
+    queryKey: ["feed", firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable],
           queryFn: async () => {
-        const data = await getFeed(categoryParam, secondCategoryId, thirdCategoryId, keyword, pageable);
-        // console.log("getFeed 결과:", data);
+        console.log("getFeed 호출 파라미터:", { firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable });
+        const data = await getFeed(firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable);
+        console.log("getFeed 결과:", data);
         
         if (data?.result?.content) {
+          console.log("원본 피드 데이터:", data.result.content);
           let filteredContent = data.result.content;
           
+          // 각 피드의 카테고리 정보 확인
+          data.result.content.forEach((feed, index) => {
+            console.log(`피드 ${index} 카테고리 정보:`, {
+              feedId: feed.feedId,
+              categoryDtos: feed.categoryDtos,
+              firstCategory: feed.firstCategory,
+              secondCategory: feed.secondCategory,
+              thirdCategory: feed.thirdCategory
+            });
+          });
+          
+          // 카테고리 필터링 로직
           // 대분류가 6인 경우 중분류로 필터링
-          if (categoryParam === "6" && secondCategoryId) {
+          if (firstCategoryId === 6 && secondCategoryId && secondCategoryId !== 0) {
             filteredContent = data.result.content.filter(feed => {
               const feedCategories = feed.categoryDtos || [];
               
@@ -55,8 +66,8 @@ const {
               );
             });
           }
-          // 대분류가 6이 아닌경우 선탯한 소분류로 필터링
-          else if (thirdCategoryId) {
+          // 대분류가 6이 아닌경우 선택한 소분류로 필터링
+          else if (thirdCategoryId && thirdCategoryId !== 0) {
             filteredContent = data.result.content.filter(feed => {
               const feedCategories = feed.categoryDtos || [];
               
@@ -65,6 +76,22 @@ const {
               );
             });
           }
+          // 소분류가 없고 중분류만 있는 경우
+          else if (secondCategoryId && secondCategoryId !== 0) {
+            filteredContent = data.result.content.filter(feed => {
+              const feedCategories = feed.categoryDtos || [];
+              
+              return feedCategories.some(category => 
+                category.secondCategory === secondCategoryId
+              );
+            });
+          }
+          // 대분류만 있는 경우 (모든 데이터 표시)
+          else {
+            filteredContent = data.result.content;
+          }
+          
+          console.log("필터링된 피드 데이터:", filteredContent);
           
           return {
             ...data,
@@ -85,7 +112,7 @@ const {
 
   return (
     <>
-    <div className="w-full flex flex-col items-center justify-center w-full">
+    <div className="w-full flex flex-col items-center justify-center">
       {feedData?.result?.content && feedData.result.content.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full max-w-7xl">
           {feedData.result.content.map((data) => (
