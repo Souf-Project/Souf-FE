@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
 import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
-import radioIcon from '../assets/images/radioIcon.svg';
 
 const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories, onApply }) => {
   const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || null);
