@@ -15,7 +15,6 @@ export default function StudentFeedList({firstCategoryId, secondCategoryId, thir
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
 
-  //여기 나중에 무한스크롤로 바꿔야함 ..
   const pageable = {
     page: 0,
     size: 12,
@@ -36,23 +35,23 @@ const {
   } = useQuery({
     queryKey: ["feed", firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable],
           queryFn: async () => {
-        console.log("getFeed 호출 파라미터:", { firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable });
+        // console.log("getFeed 호출 파라미터:", { firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable });
         const data = await getFeed(firstCategoryId, secondCategoryId, thirdCategoryId, keyword, pageable);
-        console.log("getFeed 결과:", data);
+        // console.log("getFeed 결과:", data);
         
         if (data?.result?.content) {
-          console.log("원본 피드 데이터:", data.result.content);
+          // console.log("원본 피드 데이터:", data.result.content);
           let filteredContent = data.result.content;
           
           // 각 피드의 카테고리 정보 확인
           data.result.content.forEach((feed, index) => {
-            console.log(`피드 ${index} 카테고리 정보:`, {
-              feedId: feed.feedId,
-              categoryDtos: feed.categoryDtos,
-              firstCategory: feed.firstCategory,
-              secondCategory: feed.secondCategory,
-              thirdCategory: feed.thirdCategory
-            });
+            // console.log(`피드 ${index} 카테고리 정보:`, {
+            //   feedId: feed.feedId,
+            //   categoryDtos: feed.categoryDtos,
+            //   firstCategory: feed.firstCategory,
+            //   secondCategory: feed.secondCategory,
+            //   thirdCategory: feed.thirdCategory
+            // });
           });
           
           // 카테고리 필터링 로직

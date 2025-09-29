@@ -249,19 +249,16 @@ const handleDeleteClick = () => {
       
       </div>
       <div className="flex flex-col max-w-[60rem] w-full mx-auto">
-        <div className="flex justify-between">
-          <button
-            className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
+      <button
+            className="flex items-center text-gray-600 hover:text-black transition-colors"
             onClick={handleGoBack}
           >
-            <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
+            <img src={backArrow} alt="뒤로가기" className="w-6 h-6" />
             <span>뒤로가기</span>
           </button>
 
-        </div>
-
-        <div className="w-2/3 pt-4 mr-4">
-          <div className="flex flex-col p-2 w-full">
+        <div className="w-full flex">
+          <div className="flex flex-col p-2 w-full w-2/3 mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
@@ -476,12 +473,12 @@ const handleDeleteClick = () => {
               </div>
             </div>
           </div>
-         
+          <CommentList />
         </div>
-        <CommentList />
+        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full">
         </div>
        
-        <div className="w-1/3">
+       
 
 </div>
       </div>

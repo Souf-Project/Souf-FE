@@ -1,9 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import StudentProfileList from "./studentProfileList";
-import SearchBar from "../components/SearchBar";
-import SearchDropdown from "../components/SearchDropdown";
 import CategoryMenu from "../components/categoryMenu";
+import FirstCategory from "../assets/categoryIndex/first_category.json";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
 import ThirdCategory from "../assets/categoryIndex/third_category.json";
 import StudentFeedList from "./studentFeedList";
@@ -11,6 +10,8 @@ import Loading from "../components/loading";
 import SEO from "../components/seo";
 import { getFirstCategoryNameById, getNowPageByActiveTab } from "../utils/getCategoryById";
 import PageHeader from "../components/pageHeader";
+import FilterDropdown from "../components/filterDropdown";
+import Carousel from "../components/home/carousel";
 
 export default function Feed() {
   const location = useLocation();
@@ -23,16 +24,20 @@ export default function Feed() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
-
-  // CategoryMenu에 전달할 데이터 준비
+  const [selectedFirstCategory, setSelectedFirstCategory] = useState(null);
+  const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
+  const firstCategoryOptions = FirstCategory.first_category;
+  
+  const filteredSecondCategoryOptions = selectedFirstCategory 
+    ? SecondCategory.second_category.filter(category => category.first_category_id === selectedFirstCategory)
+    : [];
+  
   const allSecondCategories = SecondCategory.second_category;
   const allThirdCategories = ThirdCategory;
 
-  // 선택된 대분류에 따라 중분류와 소분류 필터링
   const getFilteredCategories = () => {
     const selectedFirstCategory = selectedCategory[0];
 
-    // 선택된 대분류에 해당하는 중분류만 필터링
     const filteredSecondCategories = allSecondCategories.filter(
       (second) => second.first_category_id === selectedFirstCategory
     );
@@ -44,18 +49,30 @@ export default function Feed() {
 
   const { filteredSecondCategories, thirdCategories } = getFilteredCategories();
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // 검색 로직은 필요에 따라 추가
+  const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
+    setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
   };
 
   const handleSearchTypeChange = (type) => {
     setSearchType(type);
   };
 
-  const handleCategorySelect = (firstCategoryId, secondCategoryId, thirdCategoryId) => {
-    setSelectedCategory([firstCategoryId, secondCategoryId, thirdCategoryId]);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
+
+  const handleFirstCategoryChange = (categoryId) => {
+    setSelectedFirstCategory(categoryId);
+    setSelectedSecondCategory(null);
+    setSelectedCategory([categoryId, null, null]);
+  };
+
+  const handleSecondCategoryChange = (categoryId) => {
+    setSelectedSecondCategory(categoryId);
+    setSelectedCategory([selectedFirstCategory, categoryId, null]);
+  };
+
+
 
   if (loading) {
     return <Loading />;
@@ -76,26 +93,10 @@ export default function Feed() {
         description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 대학생 피드`} 
         subTitle='스프' 
       />
+      
       {/* 데스크톱 탭과 검색창 */}
       <PageHeader
-          leftButtons={[
-            { 
-              text: "대학생 피드", 
-              onClick: () => {
-                setActiveTab("feed");
-                setSearchQuery("");
-                setSelectedCategory(prev => [prev[0], 0, 0]);
-              }
-            },
-            { 
-              text: "대학생 프로필", 
-              onClick: () => {
-                setActiveTab("profile");
-                setSearchQuery("");
-                setSelectedCategory(prev => [prev[0], 0, 0]);
-              }
-            }
-          ]}
+          leftText="대학생 피드"
           showDropdown={true}
           showSearchBar={true}
           onSearchTypeChange={handleSearchTypeChange}
@@ -106,6 +107,10 @@ export default function Feed() {
           activeButtonIndex={activeTab === "feed" ? 0 : 1}
           isTabMode={true}
         />
+        <div className="w-screen ">
+        <Carousel />
+        </div>
+         
       <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full">
         {/* 모바일 탭 */}
         <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
@@ -134,42 +139,46 @@ export default function Feed() {
           </div>
         </div>
 
+        <div className="w-full mx-auto">
+          <p className="text-base font-bold border-b border-gray-500 pb-4">카테고리 별</p>
+          <div className="flex justify-between items-center mt-6">
+                     <div className="flex items-center gap-4">
+                         <FilterDropdown
+                             options={firstCategoryOptions}
+                             selectedValue={selectedFirstCategory}
+                             onSelect={handleFirstCategoryChange}
+                             placeholder="대분류 선택"
+                         />
+                         <FilterDropdown
+                             options={filteredSecondCategoryOptions}
+                             selectedValue={selectedSecondCategory}
+                             onSelect={handleSecondCategoryChange}
+                             placeholder="중분류 선택"
+                             width="w-52"
+                         />
+                     </div>
+                 </div>
+        <StudentProfileList 
+                secondCategoryId={selectedCategory[1]} 
+                thirdCategoryId={selectedCategory[2]} 
+                keyword={searchQuery}
+              />
+              </div>
+        {/* <div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row">
         
-
-        <div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row">
-          {/* 데스크톱 카테고리 메뉴 */}
-          <div className="hidden lg:block">
-            <CategoryMenu
-              secondCategories={filteredSecondCategories}
-              thirdCategories={thirdCategories}
-              onSelect={handleCategorySelect}
-              selectedCategories={{
-                firstCategoryId: selectedCategory[0],
-                secondCategoryId: selectedCategory[1],
-                thirdCategoryId: selectedCategory[2]
-              }}
-            />
-          </div>
-          
-          {activeTab === "feed" ? (
-            <div className="w-full lg:w-3/4 mx-auto">
+          <div className="w-full mx-auto">
               <StudentFeedList 
                 firstCategoryId={selectedCategory[0]}
                 secondCategoryId={selectedCategory[1]} 
                 thirdCategoryId={selectedCategory[2]} 
                 keyword={searchQuery} 
               />
+               <div className="bg-white rounded-lg shadow-sm w-full mx-auto mb-20">
+             
             </div>
-          ) : (
-            <div className="bg-white rounded-lg shadow-sm w-full lg:w-3/4 mx-auto mb-20">
-              <StudentProfileList 
-                secondCategoryId={selectedCategory[1]} 
-                thirdCategoryId={selectedCategory[2]} 
-                keyword={searchQuery}
-              />
             </div>
-          )}
-        </div>
+         
+        </div> */}
       </div>
     </>
   );
