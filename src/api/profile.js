@@ -18,7 +18,7 @@ export const getProfile = async (
       ...(keyword ? { keyword } : {}),
     };
 
-    const response = await client.get("/api/v1/member", { params });
+    const response = await client.get("/api/v1/member");
     return response.data;
   } catch (error) {
     console.error("프로필 조회 에러:", error);
