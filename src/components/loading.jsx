@@ -8,7 +8,7 @@ const sizeMap = {
   xl: 'h-16 w-16',
 };
 
-export default function Loading({ size = 'lg', full = true, text, color = 'yellow-point' }) {
+export default function Loading({ size = 'lg', full = true, text, color = 'blue-main' }) {
   return (
     <div className={`flex flex-col justify-center items-center ${full ? 'h-screen' : 'py-6'}`}>
       <div

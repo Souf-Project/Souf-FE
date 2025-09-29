@@ -12,11 +12,11 @@ export default function Button({
     <button
       disabled={disabled}
       onClick={onClick}
-      className={`h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-black text-xl font-semibold bg-yellow-main  ${width}
+      className={`h-[52px] px-6 mt-2 whitespace-nowrap rounded-[10px] text-white text-xl font-semibold bg-blue-main  ${width}
       ${
         disabled
           ? "opacity-75 cursor-not-allowed"
-          : "hover:bg-yellow-point transition-colors duration-200"
+          : "shadow-md"
       }`}
     >
       {btnText}

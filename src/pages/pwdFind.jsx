@@ -166,7 +166,7 @@ export default function PwdFind({}) {
         subTitle="스프"
       />
       <div className="flex items-center justify-center my-20 w-full">
-        <div className="w-full max-w-[1000px] px-4">
+        <div className="w-full max-w-[60rem] px-4">
           <div className="max-sm:pl-4 font-semibold text-3xl sm:text-[48px] md:text-[60px] mt-12 sm:mb-6">
             비밀번호 재설정
           </div>

@@ -64,7 +64,7 @@ export default function Input({
   return (
     <div className="w-full relative mb-8">
       {title && (
-        <div className="text-black text-lg md:text-2xl font-regular mb-2">
+        <div className="text-black text-lg md:text-xl font-regular mb-2">
           {title}
           {subtitle !== "" && (
             <span className="text-gray-500 text-xs sm:text-sm">
@@ -77,8 +77,8 @@ export default function Input({
 
       <input
         type={type}
-        className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md md:text-lg border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
-          validationType !== "error" ? "focus:border-yellow-point" : ""
+        className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
+          validationType !== "error" ? "focus:border-blue-main" : ""
         }`}
         placeholder={placeholder}
         value={inputValue}
@@ -89,7 +89,7 @@ export default function Input({
 
       {displayMessage && (
         <p
-          className={`absolute left-0 top-full mt-1 text-xs md:text-sm font-medium ${textColor}`}
+          className={`absolute left-0 top-full mt-1 text-xs font-medium ${textColor}`}
         >
           {displayMessage}
         </p>
