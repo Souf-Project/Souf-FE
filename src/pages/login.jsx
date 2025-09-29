@@ -98,12 +98,12 @@ export default function Login() {
   return (
     <>
       <SEO title="로그인" description="스프 SouF 로그인" subTitle="스프" />
-      <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-blue-main">
+      <div className="w-screen lg:h-screen h-full flex flex-col lg:flex-row bg-[#D2E4FF]">
         {/* PC 버전 스프 설명 */}
-        <div className="hidden lg:block lg:w-1/2 my-auto flex flex-col px-16 justify-center">
-          <div className="my-auto ">
-            <h1 className="text-5xl font-bold mb-6 text-white">SouF</h1>
-            <p className="text-2xl font-bold leading-relaxed text-white mb-10">
+        <div className="hidden lg:block lg:w-1/2 my-auto flex flex-col justify-center">
+          <div className="my-auto max-w-[30rem] ml-auto mr-8">
+            <h1 className="text-7xl font-bold mb-6 text-black">SouF</h1>
+            <p className="text-3xl font-bold leading-relaxed text-black mb-10">
               합리적인 비용으로
               <br />
               필요한 인재를 만나보세요!
@@ -129,12 +129,13 @@ export default function Login() {
           </p>
         </div>
         <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
-          <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto">
+        <div className="max-w-[20rem] lg:ml-20 lg:mr-auto mx-auto w-full">
+          <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto w-fit">
             로그인
           </h2>
           <form
             onSubmit={handleSubmit}
-            className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow"
+            className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow-md"
           >
             <Input
               title="이메일"
@@ -212,6 +213,7 @@ export default function Login() {
               </div>
             </div>
           </form>
+        </div>
         </div>
         <div className="mt-10  lg:hidden flex justify-center">
           <img src={loginImg} className=" w-1/2" />

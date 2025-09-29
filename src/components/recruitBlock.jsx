@@ -163,13 +163,13 @@ export default function RecruitBlock({
       </div> */}
       
         {imageUrl ? (
-          <img src={imageUrl} alt="공고문 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+          <img src={imageUrl} alt="공고문 이미지" className="w-40 h-40 rounded-2xl object-cover" />
         ) : (
-          <img src={soufMockup} alt="기본 로고 이미지" className="w-48 h-48 rounded-2xl object-cover" />
+          <img src={soufMockup} alt="기본 로고 이미지" className="w-40 h-40 rounded-2xl object-cover" />
         )}
       <div className="flex flex-col px-6 py-3 flex-1 gap-2">
         <div className="flex justify-between items-center">
-        <div className="flex text-neutral-600 text-base">
+        <div className="flex text-blue-600 text-sm">
           {(() => {
           
             if (categoryDtoList && categoryDtoList.length > 0) {
@@ -208,13 +208,13 @@ export default function RecruitBlock({
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch"></div>
-      <div className="flex flex-col items-start justify-center gap-2 w-48 px-2">
+      <div className="flex flex-col items-start justify-center gap-2 max-w-48 px-2">
         <div className="flex items-center gap-4">
-          <span className="text-sm font-bold text-black ">견적 비용</span>
+          <span className="text-xs font-medium text-black ">견적 비용</span>
           <span className="text-sm font-regular text-black ">{payment}</span>
         </div>
         {/* <div className="flex flex-col gap-1">
-          <span className="text-sm font-bold text-black ">우대사항</span>
+          <span className="text-xs font-medium text-black ">우대사항</span>
           <ul className="text-sm font-regular text-black list-disc pl-4">
             <li>패션 디자인 전공</li>
             <li>조형 조소과</li>
@@ -222,7 +222,7 @@ export default function RecruitBlock({
           </ul>
         </div> */}
          <div className="flex items-center gap-4">
-           <span className="text-sm font-bold text-black ">납기일</span>
+           <span className="text-xs font-medium text-black ">납기일</span>
            <span className="text-sm font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
          </div>
        
