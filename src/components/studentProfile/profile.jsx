@@ -54,11 +54,15 @@ export default function Profile({
 
   return (
     <div
-      className="flex relative flex-col items-center justify-center w-full border border-[#D4D4D4] rounded-[30px] p-8 gap-2 cursor-pointer hover:shadow-md transition-all"
+      className="flex relative items-center justify-center w-[70%] bg-blue-bright rounded-[20px] p-2 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
-      <img className="absolute top-4 right-4 w-11 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
-      <div className="flex flex-col items-center justify-center"
+      <div className="absolute top-4 right-4 bg-blue-main p-2 rounded-lg">
+      <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
+      </div>
+      
+      <div className="flex items-center justify-center gap-8"
       onClick={() => clickHandler(memberId)}>
+        <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8">
         <img 
           src={profileImageUrl || getDefaultImage()} 
           className="rounded-full w-24 h-24 border border-gray-200 " 
@@ -68,10 +72,11 @@ export default function Profile({
           }}
         />
         {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
-        <div className="font-semibold text-sm lg:text-[14px] mt-2 text-gray-500">스프 온도 36.5도</div>
+        <div className="text-base font-semibold">{userName}</div>
+        <div className="text-blue-500 text-[10px]">스프 온도 36.5도</div>
         <div className="flex flex-col justify-center">
-          <div className="font-semibold text-base lg:text-2xl my-2">{userName}</div>
-          <div className="text-[#5B5B5B]">{userDetail}</div>
+         
+          </div>
         </div>
         {popularFeeds && popularFeeds.length > 0 ? (
           <div className="grid grid-cols-3 justify-center gap-2">
