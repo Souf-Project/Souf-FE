@@ -26,10 +26,20 @@ export default function Feed() {
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [selectedFirstCategory, setSelectedFirstCategory] = useState(null);
   const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
-  const firstCategoryOptions = FirstCategory.first_category;
+  
+  // 카테고리 데이터를 FilterDropdown 형식으로 변환
+  const firstCategoryOptions = FirstCategory.first_category.map(category => ({
+    value: category.first_category_id,
+    label: category.name
+  }));
   
   const filteredSecondCategoryOptions = selectedFirstCategory 
-    ? SecondCategory.second_category.filter(category => category.first_category_id === selectedFirstCategory)
+    ? SecondCategory.second_category
+        .filter(category => category.first_category_id === selectedFirstCategory)
+        .map(category => ({
+          value: category.second_category_id,
+          label: category.name
+        }))
     : [];
   
   const allSecondCategories = SecondCategory.second_category;
@@ -71,8 +81,6 @@ export default function Feed() {
     setSelectedSecondCategory(categoryId);
     setSelectedCategory([selectedFirstCategory, categoryId, null]);
   };
-
-
 
   if (loading) {
     return <Loading />;
