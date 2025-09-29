@@ -162,7 +162,7 @@ export default function RecruitBlock({
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch"></div>
-      <div className="flex flex-col items-start justify-center gap-2 max-w-40 w-full px-2">
+      <div className="flex flex-col items-start justify-center gap-2 max-w-44 w-full px-2">
         <div className="flex items-center gap-4">
           <span className="text-xs font-medium text-black ">견적 비용</span>
           <span className="text-sm font-regular text-black ">{price}</span>
