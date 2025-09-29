@@ -2,9 +2,9 @@ import axios from "axios";
 import client from "./client";
 
 /* 지원하기 */
-export async function postApplication(recruitId) {
+export async function postApplication(recruitId, requestBody) {
     const accessToken = localStorage.getItem('accessToken');
-    const response = await client.post(`/api/v1/applications/${recruitId}/apply`, {}, {
+    const response = await client.post(`/api/v1/applications/${recruitId}/apply`, requestBody, {
         headers: {
             Authorization: `Bearer ${accessToken}`,
         }

@@ -43,7 +43,7 @@ export default function Recruit() {
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [sortBy, setSortBy] = useState('RECENT_DESC');
-  const pageSize = 10;
+  const pageSize = 12;
 
 
   const filterOptions = [
@@ -98,10 +98,9 @@ export default function Recruit() {
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log("공고문 데이터:", recruits);
+        // console.log("공고문 데이터:", recruits);
        
         setFilteredRecruits(recruits);
-
         const totalElements =
           response.data.result?.page?.totalElements || recruits.length;
         const totalPagesData = response.data.result?.page?.totalPages;
@@ -336,12 +335,6 @@ export default function Recruit() {
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
-                const paymentString =
-                  recruit.minPayment && recruit.maxPayment
-                    ? recruit.minPayment === recruit.maxPayment
-                      ? recruit.minPayment
-                      : `${recruit.minPayment} ~ ${recruit.maxPayment}`
-                    : recruit.minPayment || recruit.maxPayment || "금액 협의";
 
                 return (
                   <div key={recruit.recruitId}>
@@ -350,8 +343,9 @@ export default function Recruit() {
                       title={recruit.title}
                       content={recruit.content}
                       deadLine={recruit.deadLine}
+                      startDate={recruit.startDate}
                       recruitable = {recruit.recruitable}
-                      payment={recruit.price || "금액 협의"}
+                      price={recruit.price || "견적 희망"}
                       cityName={recruit.cityName}
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}
