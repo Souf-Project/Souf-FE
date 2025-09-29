@@ -359,12 +359,7 @@ const DesktopHeader = () => (
   // 모바일 버전 헤더
   const MobileHeader = () => (
     <header className="fixed top-0 left-0 z-50 w-full flex items-center justify-between px-4 py-4 bg-white border-b border-grey-border">
-      <div
-        className="text-2xl font-bold text-black cursor-pointer"
-        onClick={() => handleNavigation("/")}
-      >
-        SouF
-      </div>
+       <img src={SOUFLogo} alt="SouF" className="w-16 cursor-pointer" onClick={() => handleNavigation("/")} />
 
       <div className="flex items-center gap-x-2">
   {memberId && (

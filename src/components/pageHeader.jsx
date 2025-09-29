@@ -15,7 +15,7 @@ const PageHeader = ({
   isTabMode = false
 }) => {
   return (
-    <div className="w-screen border-b border-gray-200 mb-4 py-4 pt-8">
+    <div className="w-screen border-b border-gray-200 mb-4 py-4 pt-4">
       <div className="hidden lg:flex justify-between items-center w-full max-w-[60rem] mx-auto">
         <div className="flex items-center gap-4 text-md font-bold">
           {leftText && (

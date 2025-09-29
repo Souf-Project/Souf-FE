@@ -15,7 +15,7 @@ export default function FreeEstimate({color}) {
             <h3 className="text-white text-md font-semibold mt-4">연계 학교 단체 / 개인의 다양한 견적</h3>
           </div>
           <div className="flex items-center gap-4">
-              <img src={freeImg} alt="freeImg" className="absolute bottom-0 right-80 w-52" />
+              <img src={freeImg} alt="freeImg" className="absolute bottom-0 right-60 w-52" />
               <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl"
               onClick={() => navigate("/recruitUpload")}>무료 외주 견적 받기</button>
           </div>
@@ -27,7 +27,8 @@ export default function FreeEstimate({color}) {
             <h2 className="text-orange-100 text-xl font-bold">웹사이트 제작<span className="text-white"> 견적을 무료로 받아보세요!</span></h2>
             <h3 className="text-white text-xl font-bold mt-2">인증된 전문가들이 견적을 보내요</h3>
           </div>
-          <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl">무료로 프로젝트 등록</button>
+          <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl"
+          onClick={() => navigate("/recruitUpload")}>무료로 프로젝트 등록</button>
         </div>
       )}
       {color=="yellow" && (

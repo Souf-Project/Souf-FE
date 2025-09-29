@@ -88,7 +88,7 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
         <div>
            <div className="flex items-center gap-4 justify-between">
             <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full border-[0.5px] border-gray-200">
+            <div className="w-12 h-12 rounded-full border-[0.5px] border-gray-200 mb-auto">
                 {comment.profileUrl ? (
                     <img src={comment.profileUrl} alt="profile" className="w-full h-full rounded-full" />
                 ) : (

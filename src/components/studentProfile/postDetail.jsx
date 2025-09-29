@@ -23,6 +23,7 @@ import Loading from "../loading";
 import SEO from "../seo";
 import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
+import PageHeader from "../pageHeader";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -58,7 +59,7 @@ export default function PostDetail() {
       const data = await getFeedDetail(id,worksId);
       // console.log("좋아요 상태:", data.result.liked);
       // console.log("응답:", data.result);
-      // console.log("피드 디테일응답:", data.result);
+      console.log("피드 디테일응답:", data.result);
 
       data.result.mediaResDtos?.forEach((media, index) => {
       });
@@ -236,22 +237,28 @@ const handleDeleteClick = () => {
     <>
       <SEO  title={worksData.topic} description={`스프 SouF - ${worksData.topic} 피드`} subTitle='스프'
       content={worksData.content} />
-      <div className="flex flex-col pt-16 px-4 max-w-4xl w-full mx-auto">
-        <div className="flex justify-between">
-          <button
-            className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
+      <div className="w-full">
+      <PageHeader
+        leftButtons={[
+          { text: `피드 상세 조회 : ${worksData.topic}`}
+        ]}
+        backButton={true}
+        backButtonText="뒤로가기"
+        backButtonClick={handleGoBack}
+      />
+      
+      </div>
+      <div className="flex flex-col max-w-[60rem] w-full mx-auto">
+      <button
+            className="flex items-center text-gray-600 hover:text-black transition-colors"
             onClick={handleGoBack}
           >
-            <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
+            <img src={backArrow} alt="뒤로가기" className="w-6 h-6" />
             <span>뒤로가기</span>
           </button>
 
-          <p className="text-sm text-gray-500 pr-6">
-            누적 조회 수 {worksData.view}회
-          </p>
-        </div>
-
-        <div className="flex flex-col rounded-2xl border border-gray-200 p-6 w-full shadow-sm">
+        <div className="w-full flex">
+          <div className="flex flex-col p-2 w-full w-2/3 mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
@@ -262,8 +269,18 @@ const handleDeleteClick = () => {
             </p>
           </div>
           
-          <div className="flex flex-col lg:flex-row w-full">
-            <div className="flex w-full lg:w-[65%] h-full relative order-2 lg:order-1">
+          <div className="flex flex-col w-full">
+            <div className="flex justify-between items-center">
+          
+          <div className="w-full text-xl font-semibold leading-snug text-black py-3 lg:block hidden">
+                      {worksData.topic}
+                    </div>
+                    <p className="text-sm text-gray-500 whitespace-nowrap">
+            조회 수 {worksData.view}회
+          </p>
+            </div>
+         
+            <div className="flex  w-full h-full relative">
               <Swiper
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
@@ -322,49 +339,13 @@ const handleDeleteClick = () => {
               )}
             </div>
             
-            <div className="w-full lg:max-w-[35%] lg:pl-6 relative order-1 lg:order-2 mb-6 lg:mb-0">
+            <div className="w-full relative order-1 lg:order-2 mb-6 lg:mb-0">
               <div className="flex flex-col justify-between h-full">
                 {/* 상단: 프로필 + 제목 + 내용 */}
                 <div>
                   <div className="flex items-center justify-between mb-4 w-full">
                    
-                    <div 
-                      className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => navigate(`/profileDetail/${id}`)}
-                    >
-                      {worksData.profileImageUrl ? (
-                        <img
-                          src={worksData.profileImageUrl}
-                          alt="프로필 이미지"
-                          className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
-                          onError={(e) => {
-                            e.target.src = BasicProfileImg1;
-                          }}
-                        />
-                      ) : showProfileSkeleton ? (
-                        <div className="w-12 h-12 rounded-full bg-gray-200 mr-3 animate-pulse"></div>
-                      ) : (
-                        <img
-                          src={BasicProfileImg1}
-                          alt="기본 프로필 이미지"
-                          className="w-12 h-12 rounded-full object-cover mr-3 border border-gray-200"
-                        />
-                      )}
-                      <div className="flex flex-col">
-                        {worksData.nickname ? (
-                          <>
-                            <span className="font-semibold text-md text-gray-800">{worksData.nickname}</span>
-                            <p className="text-gray-500">{getFormattedDate(worksData.lastModifiedTime)}</p>
-                          </>
-                        ) : (
-                          <>
-                            <div className="h-6 bg-gray-200 rounded animate-pulse mb-1 w-24"></div>
-                            <div className="h-4 bg-gray-200 rounded animate-pulse w-16"></div>
-                          </>
-                        )}
-                      </div>
-                     
-                    </div>
+                    
                     
                     {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
                     {Number(id) === memberId && (
@@ -401,16 +382,15 @@ const handleDeleteClick = () => {
                     )}
                   </div>
 
-                  <div className="w-full">
-                    <div className="w-full text-xl font-semibold leading-snug text-black py-3 lg:block hidden">
-                      {worksData.topic}
-                    </div>
-                    <div className="w-full text-sm text-gray-600">
-                      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed text-md w-full break-words overflow-hidden">
+
+                  
+                    <div className="w-full">
+                      <p className="text-xs font-semibold mb-2">작품 소개</p>
+                      <p className="whitespace-pre-wrap text-sm font-medium leading-relaxed break-words overflow-hidden">
                         {worksData.content}
                       </p>
-                    </div>
-                  </div>
+                      </div>
+
                 </div>
 
                 <div className="flex items-center justify-between gap-2 mt-4">
@@ -493,8 +473,14 @@ const handleDeleteClick = () => {
               </div>
             </div>
           </div>
+          <CommentList />
         </div>
-        <CommentList />
+        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full">
+        </div>
+       
+       
+
+</div>
       </div>
       
       {showDeleteModal && (
