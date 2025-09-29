@@ -16,9 +16,8 @@ import AlertModal from "../alertModal";
 import { filterEmptyCategories } from "../../utils/filterEmptyCategories";
 import { useSignupMutations } from "../../hooks/join/join";
 import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
-import dayjs from "dayjs";
-import noneCheckBox from "../../assets/images/noneCheckBox.png";
-import fillCheckBox from "../../assets/images/fillCheckBox.png";
+import checkBoxIcon from '../../assets/images/checkBoxIcon.svg';
+import notCheckBoxIcon from '../../assets/images/notCheckBoxIcon.svg';
 import backArrow from "../../assets/images/backArrow.svg";
 export default function JoinForm({ socialLoginInfo }) {
   const [email, setEmail] = useState("");
@@ -27,9 +26,7 @@ export default function JoinForm({ socialLoginInfo }) {
   const [verificationCheck, setVerificationCheck] = useState(undefined);
   
   const [emailVerification, setEmailVerification] = useState(undefined);
-  const [approveText,setApproveText] = useState("");
-  
-
+ 
   const [checkResult, setCheckResult] = useState(undefined);
   const [nicknameModal, setNicknameModal] = useState(false);
   const [emailModal, setEmailModal] = useState(false);
@@ -41,6 +38,7 @@ export default function JoinForm({ socialLoginInfo }) {
   const [isNameConfirm, setIsNameConfirm] = useState(undefined);
   const [passwordValidation, setPasswordValidation] = useState(undefined);
   const [passwordCheckValidation, setpasswordCheckValidation] = useState(undefined);
+  const [userType, setUserType] = useState('student');
 
   const [errors, setErrors] = useState({
     username: false,
@@ -314,7 +312,33 @@ export default function JoinForm({ socialLoginInfo }) {
 
   return (
     <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
-      {/* STEP 2: 회원가입 폼 */}
+      <div className="w-full flex flex-col items-center justify-between mb-6 gap-2">
+        <p className="text-black text-lg md:text-xl font-regular mr-auto">회원 가입 유형</p>
+        <div className="flex gap-6 mr-auto">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="userType"
+              value="student"
+              checked={userType === 'student'}
+              onChange={(e) => setUserType(e.target.value)}
+              className="w-4 h-4 text-blue-main focus:ring-blue-main"
+            />
+            <span className="text-lg">학생</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="userType"
+              value="company"
+              checked={userType === 'company'}
+              onChange={(e) => setUserType(e.target.value)}
+              className="w-4 h-4 text-blue-main focus:ring-blue-main"
+            />
+            <span className="text-lg">일반</span>
+          </label>
+        </div>
+      </div>
       <Input
         title="이름"
         name="username"
@@ -450,7 +474,7 @@ export default function JoinForm({ socialLoginInfo }) {
             className="flex items-center gap-3"
           >
             <img 
-              src={privacyAgreement && serviceAgreement && thirdPartyAgreement && marketingAgreement ? fillCheckBox : noneCheckBox} 
+              src={privacyAgreement && serviceAgreement && thirdPartyAgreement && marketingAgreement ? checkBoxIcon : notCheckBoxIcon} 
               alt="전체 선택" 
               className="w-5 h-5"
             />
@@ -468,7 +492,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={privacyAgreement ? fillCheckBox : noneCheckBox} 
+                src={privacyAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="개인정보 동의" 
                 className="w-5 h-5"
               />
@@ -485,7 +509,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={thirdPartyAgreement ? fillCheckBox : noneCheckBox} 
+                src={thirdPartyAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="제3자 제공 동의" 
                 className="w-5 h-5"
               />
@@ -587,7 +611,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={serviceAgreement ? fillCheckBox : noneCheckBox} 
+                src={serviceAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="서비스 이용 약관 동의" 
                 className="w-5 h-5"
               />
@@ -709,7 +733,7 @@ export default function JoinForm({ socialLoginInfo }) {
               className="flex items-center gap-3"
             >
               <img 
-                src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                src={marketingAgreement ? checkBoxIcon : notCheckBoxIcon} 
                 alt="마케팅 수신 동의" 
                 className="w-5 h-5"
               />

@@ -6,8 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import ProfileImageUpdate from './post/profileImageUpdate';
 import { UserStore } from '../store/userStore';
 import { useNavigate } from 'react-router-dom';
-import noneCheckBox from "../assets/images/noneCheckBox.png";
-import fillCheckBox from "../assets/images/fillCheckBox.png";
+import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
+import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 import Loading from './loading';
 import kakaoLogo from "../assets/images/kakaoLogo.png"
 import googleLogo from "../assets/images/googleLogo.png"
@@ -262,9 +262,9 @@ export default function ProfileEditContent() {
 
   return (
     <div>
-      <div className="grid grid-cols-1 gap-6 relative">
-       
-        <ProfileImageUpdate
+      <div className="grid grid-cols-1 gap-2 relative">
+            <div className="flex items-center justify-between gap-4 w-full pr-8 m-5">
+            <ProfileImageUpdate
             isEditing={isEditing}
             initialImageUrl={formData.profileImageUrl ? `${formData.profileImageUrl}` : null}
             onFileSelect={handleFileSelect}
@@ -272,17 +272,13 @@ export default function ProfileEditContent() {
          <div className="absolute top-[40px] left-[225px]">
             <h1 className="text-4xl font-bold ">{formData.nickname}</h1>
         </div>
-        
-            <div className="flex items-center justify-between gap-4 w-full">
-            {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="w-40 py-4 bg-yellow-main text-black rounded-xl font-bold transition-colors">수정하기</button>}
-           
-             
+            {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="px-6 py-4 bg-blue-main text-white rounded-xl font-bold transition-colors mb-auto">수정하기</button>}
+
             </div>
 
-        
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-2">
             <EditBox 
               title="이름" 
               value={formData.username}
@@ -297,13 +293,11 @@ export default function ProfileEditContent() {
               onChange={handleChange('nickname')}
               isEditing={isEditing}
             />
-              <div className="m-4">
-                <div className="flex items-center gap-2 justify-end w-full">
-                  <button
+                 <button
                     type="button"
                     onClick={handleNicknameVerify}
                     disabled={!isEditing || verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname}
-                    className={`px-6 py-5 rounded-md font-bold transition-colors mt-10 ${
+                    className={`p-4 rounded-md font-bold text-lg transition-colors mt-10 ml-2 ${
                       !isEditing
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname
@@ -313,8 +307,6 @@ export default function ProfileEditContent() {
                   >
                     {verifyingNickname ? '확인 중...' : '중복확인'}
                   </button>
-                </div>
-              </div>
               </div>
               <span className="text-sm text-left ml-4">{verificationMessage}</span>
             </div>
@@ -329,7 +321,7 @@ export default function ProfileEditContent() {
         {roleType === "STUDENT" &&
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">프로필 정보</h2>
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-4">
             <EditBox 
               title="자기소개" 
               value={formData.intro}
@@ -398,7 +390,7 @@ export default function ProfileEditContent() {
                 }`}
               >
                 <img 
-                  src={marketingAgreement ? fillCheckBox : noneCheckBox} 
+                  src={marketingAgreement ? checkBoxIcon : notCheckBoxIcon} 
                   alt="마케팅 수신 동의" 
                   className="w-5 h-5"
                 />
@@ -411,7 +403,7 @@ export default function ProfileEditContent() {
           {isEditing ? (
             <>
                 <button onClick={handleCancel} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-white text-gray-700 rounded-lg font-bold transition-colors border border-gray-300">취소</button>
-                <button onClick={handleSave} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-yellow-main text-black rounded-lg font-bold transition-colors">
+                <button onClick={handleSave} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-blue-main text-black rounded-lg font-bold transition-colors">
                   {profileUpdateMutation.isPending ? '저장 중...' : '수정완료'}
                 </button>
             </>
