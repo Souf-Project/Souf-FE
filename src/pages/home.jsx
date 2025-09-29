@@ -519,7 +519,7 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
       </div> */}
       <div className="flex my-32  max-w-[60rem] mx-auto">
         <EstimateBanner color="blue" />
-      </div> */}
+      </div>
       
     </div>
     </>

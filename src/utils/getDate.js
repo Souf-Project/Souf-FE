@@ -8,23 +8,30 @@ export const getFormattedDate = (lastModifiedTime) => {
 
 //d-day 함수
 export const calculateDday = (deadline, recruitable) => {
-  // recruitable이 false이면 마감
+
   if (recruitable === false) return "마감";
   
-  // deadline이 없으면 마감
   if (!deadline) return "마감";
+  
+  // deadline이 숫자인 경우 직접 처리 (음수는 절댓값으로 처리)
+  if (typeof deadline === 'number') {
+    const daysLeft = Math.abs(deadline);
+    if (daysLeft <= 0) {
+      return "마감";
+    } else {
+      return `D-${daysLeft}`;
+    }
+  }
   
   const today = new Date();
   const deadlineDate = new Date(deadline);
   
-  // 시간을 제거하고 날짜만 비교
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const deadlineDateOnly = new Date(deadlineDate.getFullYear(), deadlineDate.getMonth(), deadlineDate.getDate());
   
   const timeDiff = deadlineDateOnly - todayDate;
   const dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
   
-  // deadline이 지났으면 마감
   if (dayDiff <= 0) {
     return "마감";
   } else {
