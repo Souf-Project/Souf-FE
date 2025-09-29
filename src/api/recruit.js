@@ -23,8 +23,8 @@ export async function getRecruit(params = {}) {
             thirdCategory,
             selectedCategories,
             recruitSearchReqDto = {},
-            page = 0,
-            size = 10,
+            page = page,
+            size = size,
             sort,
         } = params;
 
@@ -100,14 +100,8 @@ export async function getRecruit(params = {}) {
 export async function getRecruitDetail(recruitId) {
     try {
         const token = localStorage.getItem('accessToken');
-        console.log("Token exists:", !!token);
-        if (token) {
-            console.log("Token preview:", token.substring(0, 20) + "...");
-        }
-
         const url = `/api/v1/recruit/${recruitId}`;
      
-
         const response = await client.get(url, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -115,7 +109,7 @@ export async function getRecruitDetail(recruitId) {
             }
         });
         
-        console.log("API Response:", response);
+        // console.log("API Response:", response);
         return response;
     } catch (error) {
         console.error('Recruit Detail API 오류 발생:', error);
