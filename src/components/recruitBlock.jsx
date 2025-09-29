@@ -202,9 +202,9 @@ export default function RecruitBlock({
         <p className="text-zinc-500 text-base line-clamp-2">
         {content || "내용 없음"}
       </p>
-      <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+      {/* <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
         관영컴퍼니
-      </div>
+      </div> */}
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch"></div>
@@ -213,14 +213,14 @@ export default function RecruitBlock({
           <span className="text-sm font-bold text-black ">견적 비용</span>
           <span className="text-sm font-regular text-black ">{payment}</span>
         </div>
-        <div className="flex flex-col gap-1">
+        {/* <div className="flex flex-col gap-1">
           <span className="text-sm font-bold text-black ">우대사항</span>
           <ul className="text-sm font-regular text-black list-disc pl-4">
             <li>패션 디자인 전공</li>
             <li>조형 조소과</li>
             <li>회화과</li>
           </ul>
-        </div>
+        </div> */}
          <div className="flex items-center gap-4">
            <span className="text-sm font-bold text-black ">납기일</span>
            <span className="text-sm font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
