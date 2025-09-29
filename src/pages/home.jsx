@@ -423,18 +423,18 @@ export default function Home() {
 
 </div>
   
-      <div className="text-xl lg:text-3xl font-bold mb-8 mt-32 text-center">
+      {/* <div className="text-xl lg:text-3xl font-bold mb-8 mt-32 text-center">
         <span className="text-blue-500">스프</span>
         에서 이렇게 
-        <span className="text-blue-500"> 작업</span>했어요!</div>
+        <span className="text-blue-500"> 작업</span>했어요!</div> */}
 
 {/* 후기 섹션 */}
 
-        <ReviewBox />
+        {/* <ReviewBox /> */}
 
       {/* 실시간 매칭 금액 섹션 */}
     <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4">
-    <div className="flex items-center mb-8 gap-4">
+    {/* <div className="flex items-center mb-8 gap-4">
       <h2 className="text-2xl font-semibold">
         실시간 매칭 금액
           </h2>
@@ -447,7 +447,7 @@ export default function Home() {
   <MatchingPrice price={90} category="조형물 기획/제작" project="전공 연구실 견적" />
   <MatchingPrice price={30} category="브랜드 로고 디자인" type="satisfaction" />
               </div>
-             
+              */}
       {/* <div className="flex flex-col gap-4 px-6 lg:px-24">
         {competitions.length === 0 ? (
           <Loading text="공모전 정보를 불러오는 중..." />
@@ -481,7 +481,7 @@ export default function Home() {
         <EstimateBanner color="black" />
       </div>
 
-      <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
+      {/* <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
         <div className="w-full bg-blue-400/10 rounded-xl p-16">
         <p className="text-2xl font-bold">외주를 등록하러 오셨나요?</p>
         <p className="text-lg font-bold">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis luctus nisl quis ex porta, quis tristique sapien venenatis. Morbi aliquet ipsum tortor, non volutpat elit feugiat quis. Sed in magna lectus. Pellentesque quis condimentum lectus. Donec in lobortis sem, a viverra enim. In non justo eleifend, volutpat dolor eget, consequat ante. In a lorem nec mi ultrices porta id nec odio. Duis mattis ligula tellus, eu convallis ligula faucibus quis. Nam consequat tristique orci, ac laoreet nibh tempor ut. Etiam lobortis lorem ac ullamcorper interdum. Cras dolor sem, fringilla at vestibulum vitae, feugiat quis augue. Aliquam erat volutpat. Suspendisse scelerisque laoreet risus non lobortis. Proin dignissim, ex eget imperdiet blandit, urna lorem luctus nunc, nec eleifend nisi erat a sapien.
@@ -494,7 +494,7 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
 
 Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
         </div>
-      </div>
+      </div> */}
       <div className="flex my-32  max-w-[60rem] mx-auto">
         <EstimateBanner color="blue" />
       </div>
