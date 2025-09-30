@@ -54,7 +54,7 @@ export default function Profile({
 
   return (
     <div
-      className="flex relative items-center justify-center w-[70%] bg-blue-bright rounded-[20px] p-2 gap-2 cursor-pointer hover:shadow-md transition-all"
+      className="flex relative items-center justify-start w-[70%] bg-blue-bright rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
       <div className="absolute top-4 right-4 bg-blue-main p-2 rounded-lg">
       <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
@@ -65,7 +65,7 @@ export default function Profile({
         <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8">
         <img 
           src={profileImageUrl || getDefaultImage()} 
-          className="rounded-full w-24 h-24 border border-gray-200 " 
+          className="rounded-full min-w-24 h-24 border border-gray-200 " 
           alt={userName || "프로필 이미지"}
           onError={(e) => {
             e.target.src = getDefaultImage();
@@ -93,8 +93,8 @@ export default function Profile({
             ))}
           </div>
         ) : (
-          <div className="w-full h-32 flex flex-col items-center justify-center">
-            <img src={SoufLogoBlack} alt="SouF 로고" className="w-24 h-24 object-contain" />
+          <div className="flex items-center justify-center gap-4">
+            <img src={SoufLogoBlack} alt="SouF 로고" className="w-32 h-32 object-contain rounded-lg" />
             <span className="text-gray-500 text-sm">작성된 피드가 없습니다.</span>
           </div>
         )}
