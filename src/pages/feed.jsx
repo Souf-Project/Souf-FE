@@ -102,7 +102,7 @@ export default function Feed() {
   return (
     <>
       <SEO 
-        title={getFirstCategoryNameById(selectedCategory[0]) + " - 대학생 피드"} 
+        title="대학생 피드"
         description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 대학생 피드`} 
         subTitle='스프' 
       />
