@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getPopularRecruit } from "../../api/recruit";
+import soufMockup from "../../assets/images/soufMockup.png";
 import Loading from "../loading";
 
 export default function RecommendRecruit() {
@@ -45,7 +46,7 @@ export default function RecommendRecruit() {
               {recruitData.map((recruit) => (
                 <img 
                   key={recruit.recruitId}
-                  src={recruit.imageUrl} 
+                  src={recruit.imageUrl? recruit.imageUrl : soufMockup} 
                   alt={recruit.title} 
                   className="w-40 h-40 rounded-md cursor-pointer" 
                   onClick={() => navigate(`/recruitDetails/${recruit.recruitId}`)}
