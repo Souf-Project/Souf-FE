@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import PageHeader from "../components/pageHeader";
 import soufMockup from "../assets/images/soufMockup.png";
+import RecommendRecruit from "../components/recruit/recommendRecruit";
 
 export default function ReviewDetail() {
     const navigate = useNavigate();

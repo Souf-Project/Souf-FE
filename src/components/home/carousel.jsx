@@ -106,15 +106,28 @@ export default function FeedSwiper() {
                 <div className="h-full bg-white hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
                 {/* 피드 이미지 */}
                 {feed.mediaResDto?.fileUrl && (
-                  <div className="w-full bg-gray-100 overflow-hidden">
+                  <div className="w-full bg-gray-100 overflow-hidden relative group">
                     <img 
                       src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`} 
                       alt="피드 이미지"
-                      className="w-full h-full object-cover aspect-[4/3]"
+                      className="w-full h-full object-cover aspect-[4/3] transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         e.target.style.display = 'none';
                       }}
                     />
+                    {/* 호버 오버레이 */}
+                    <div className="absolute bottom-0 left-0 right-0 h-0 group-hover:h-[30%] transition-all duration-300 overflow-hidden">
+                      <div className="w-full h-full bg-gradient-to-t from-black/50 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                        <div className="transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                          <h3 className="text-white text-lg font-bold mb-1 line-clamp-2">
+                            {feed.title || '제목 없음'}
+                          </h3>
+                          <p className="text-white text-sm opacity-90">
+                            {feed.nickname || '작성자'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
                 {/* 카드 내용 */}

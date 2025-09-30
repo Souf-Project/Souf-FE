@@ -24,6 +24,7 @@ import SEO from "../seo";
 import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
+import RecommendRecruit from "../recruit/recommendRecruit";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -293,7 +294,6 @@ const handleDeleteClick = () => {
               >
                 {mediaData?.map((data, i) => {
                   const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
-
                   return (
                     <SwiperSlide key={i} className="flex justify-center items-center">
                       <div className="flex justify-center items-center h-auto w-full">
@@ -474,6 +474,10 @@ const handleDeleteClick = () => {
             </div>
           </div>
           <CommentList />
+          <div className="mb-12">
+          <RecommendRecruit />
+          </div>
+        
         </div>
         <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full">
         </div>

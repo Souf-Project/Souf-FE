@@ -13,6 +13,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import PageHeader from "../components/pageHeader";
 import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
+import RecommendRecruit from "../components/recruit/recommendRecruit";
 
 
 const formatPayment = (paymentString) => {
