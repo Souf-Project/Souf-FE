@@ -162,24 +162,24 @@ export default function RecruitBlock({
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch"></div>
-      <div className="flex flex-col items-start justify-center gap-2 max-w-40 w-full px-2">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col items-start justify-center gap-2 w-44 px-2">
+        <div className="flex items-center gap-4 justify-between w-full">
           <span className="text-xs font-medium text-black ">견적 비용</span>
-          <span className="text-sm font-regular text-black ">{price}</span>
+          <span className="text-xs font-regular text-black ">{price}</span>
         </div>
         {/* <div className="flex flex-col gap-1">
           <span className="text-xs font-medium text-black ">우대사항</span>
-          <ul className="text-sm font-regular text-black list-disc pl-4">
+          <ul className="text-xs font-regular text-black list-disc pl-4">
             <li>패션 디자인 전공</li>
             <li>조형 조소과</li>
             <li>회화과</li>
           </ul>
         </div> */}
-         <div className="flex items-center gap-4">
-         <span className="text-xs font-medium text-black ">납기일</span>
+         <div className="flex items-center gap-4 justify-between w-full">
+         <span className="text-xs font-medium text-black whitespace-nowrap">납기일</span>
           <div className="flex flex-col items-end text-right">
-          <span className="text-sm font-regular text-black ">{startDate ? startDate : ''}</span>
-          <span className="text-sm font-regular text-black ">~ {deadLine ? deadLine : ''}</span>
+          <span className="text-xs font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}</span>
+          <span className="text-xs font-regular text-black ">~ {deadLine ? deadLine.split(' ')[0] : ''}</span>
           </div>
           
           

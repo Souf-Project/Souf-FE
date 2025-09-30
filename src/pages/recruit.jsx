@@ -1,8 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
 import RecruitBlock from "../components/recruit/recruitBlock";
-import SearchBar from "../components/SearchBar";
-import SearchDropdown from "../components/SearchDropdown";
 import { getRecruit } from "../api/recruit";
 import CategoryMenu from "../components/categoryMenu";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
@@ -14,6 +12,7 @@ import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import EstimateBanner from "../components/home/EstimateBanner";
 import FilterDropdown from "../components/filterDropdown";
 import PageHeader from "../components/pageHeader";
+import RecommendRecruit from "../components/recruit/recommendRecruit";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -335,6 +334,10 @@ export default function Recruit() {
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
+                // 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시
+                const shouldShowRandomComponent = index >= 3 && Math.random() < 0.3; // 30% 확률
+                const showEstimateBanner = shouldShowRandomComponent && Math.random() < 0.5; // 50% 확률로 EstimateBanner
+                const showRecommendRecruit = shouldShowRandomComponent && !showEstimateBanner; // 나머지 50% 확률로 RecommendRecruit
 
                 return (
                   <div key={recruit.recruitId}>
@@ -351,10 +354,16 @@ export default function Recruit() {
                       secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
                     />
-                    {/* 3개마다 EstimateBanner 삽입 (첫 번째는 제외) */}
-                    {(index + 1) % 5 === 0 && index < filteredRecruits.length - 1 && (
+                    
+                    {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}
+                    {showEstimateBanner && (
                       <div className="my-8">
                         <EstimateBanner color="black" />
+                      </div>
+                    )}
+                    {showRecommendRecruit && (
+                      <div className="my-8">
+                        <RecommendRecruit />
                       </div>
                     )}
                   </div>
