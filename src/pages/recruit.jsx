@@ -13,6 +13,8 @@ import EstimateBanner from "../components/home/EstimateBanner";
 import FilterDropdown from "../components/filterDropdown";
 import PageHeader from "../components/pageHeader";
 import RecommendRecruit from "../components/recruit/recommendRecruit";
+import AlertModal from "../components/alertModal";
+import { UserStore } from "../store/userStore";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -42,7 +44,9 @@ export default function Recruit() {
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [sortBy, setSortBy] = useState('RECENT_DESC');
+  const [showAlertModal, setShowAlertModal] = useState(false);
   const pageSize = 12;
+  const { memberId, roleType } = UserStore();
 
 
   const filterOptions = [
@@ -214,6 +218,24 @@ export default function Recruit() {
     setCurrentPage(0); 
   };
 
+  const checkRecruitUploadAccess = () => {
+    if (!memberId) {
+      setShowAlertModal(true);
+      return false;
+    }
+    if (roleType !== "MEMBER" && roleType !== "ADMIN") {
+      setShowAlertModal(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleRecruitUploadClick = () => {
+    if (checkRecruitUploadAccess()) {
+      navigate("/recruitUpload");
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -327,7 +349,7 @@ export default function Recruit() {
             {/* <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button> */}
             </div>
 
-            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md" onClick={() => navigate("/recruitUpload")}>외주 등록하기</button>
+            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md" onClick={handleRecruitUploadClick}>외주 등록하기</button>
             
           </div>
           
@@ -385,6 +407,22 @@ export default function Recruit() {
         </div>
         </div>
       </div>
+
+      {/* Alert Modal */}
+      {showAlertModal && (
+        <AlertModal
+          type="simple"
+          title="로그인 후 이용해주세요."
+          description="외주 등록은 일반 회원만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowAlertModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowAlertModal(false)}
+        />
+      )}
     </div>
     </div>
   );

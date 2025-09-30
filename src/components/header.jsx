@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
 import SOUFLogo from "../assets/images/SouFLogo.svg";
 import backArrow from "../assets/images/backArrow.svg";
+import AlertModal from "./alertModal";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function Header() {
   const [userName, setUserName] = useState("");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showAlertModal, setShowAlertModal] = useState(false);
   const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
@@ -97,6 +99,24 @@ useEffect(() => {
     navigate(path);
     setShowUserMenu(false);
     setShowMobileMenu(false);
+  };
+
+  const checkRecruitUploadAccess = () => {
+    if (!memberId) {
+      setShowAlertModal(true);
+      return false;
+    }
+    if (roleType !== "MEMBER" && roleType !== "ADMIN") {
+      setShowAlertModal(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleRecruitUploadClick = () => {
+    if (checkRecruitUploadAccess()) {
+      navigate("/recruitUpload");
+    }
   };
 
   const handleNavigationCategory = () => {
@@ -191,7 +211,7 @@ const DesktopHeader = () => (
           <ul className="flex items-center font-bold text-lg text-black cursor-pointer">
             <li 
               className={`flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
-              onClick={() => navigate("/recruitUpload")}
+              onClick={handleRecruitUploadClick}
             >
               외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span>
             </li>
@@ -249,7 +269,7 @@ const DesktopHeader = () => (
                       <>
                         <button
                           className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
-                          onClick={() => handleNavigation("/recruitUpload")}
+                          onClick={handleRecruitUploadClick}
                         >
                           공고문 작성하기
                         </button>
@@ -264,7 +284,7 @@ const DesktopHeader = () => (
                     {roleType === "MEMBER" && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
-                        onClick={() => handleNavigation("/recruitUpload")}
+                        onClick={handleRecruitUploadClick}
                       >
                         공고문 작성하기
                       </button>
@@ -316,8 +336,12 @@ const DesktopHeader = () => (
                 {/* 외주 의뢰하기 */}
                 <div>
                   <ul className="w-36 flex flex-col gap-2">
-                    <li><button onClick={() => handleNavigation("/recruitUpload")} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
-                    <li><button onClick={() => navigate("/recruitUpload", { state: { estimateType: 'estimate' } })} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
+                    <li><button onClick={handleRecruitUploadClick} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
+                    <li><button onClick={() => {
+                      if (checkRecruitUploadAccess()) {
+                        navigate("/recruitUpload", { state: { estimateType: 'estimate' } });
+                      }
+                    }} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
                   </ul>
                 </div>
                 {/* 외주 찾기 */}
@@ -478,6 +502,22 @@ const DesktopHeader = () => (
       <div className="block lg:hidden">
         <MobileHeader />
       </div>
+
+      {/* Alert Modal */}
+      {showAlertModal && (
+        <AlertModal
+          type="simple"
+          title="로그인 후 이용해주세요."
+          description="외주 등록은 일반 회원만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowAlertModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowAlertModal(false)}
+        />
+      )}
     </>
   );
 }
