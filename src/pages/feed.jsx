@@ -17,7 +17,7 @@ export default function Feed() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
+  const [selectedCategory, setSelectedCategory] = useState([null, null, null]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
@@ -78,6 +78,13 @@ export default function Feed() {
   const handleSecondCategoryChange = (categoryId) => {
     setSelectedSecondCategory(categoryId);
     setSelectedCategory([selectedFirstCategory, categoryId, null]);
+  };
+
+  // 필터 초기화 함수
+  const handleResetFilters = () => {
+    setSelectedFirstCategory(null);
+    setSelectedSecondCategory(null);
+    setSelectedCategory([null, null, null]);
   };
 
   if (loading) {
@@ -160,12 +167,19 @@ export default function Feed() {
                              placeholder="중분류 선택"
                              width="w-52"
                          />
+                         {(selectedFirstCategory || selectedSecondCategory) && (
+                           <button
+                             onClick={handleResetFilters}
+                             className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                           >
+                             필터 초기화
+                           </button>
+                         )}
                      </div>
                  </div>
         <StudentProfileList 
+                firstCategoryId={selectedCategory[0]} 
                 secondCategoryId={selectedCategory[1]} 
-                thirdCategoryId={selectedCategory[2]} 
-                keyword={searchQuery}
               />
               </div>
         {/* <div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row">
