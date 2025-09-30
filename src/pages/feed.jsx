@@ -18,7 +18,6 @@ export default function Feed() {
   const navigate = useNavigate();
 
   const [selectedCategory, setSelectedCategory] = useState([1, 1, 1]);
-  const [activeTab, setActiveTab] = useState("feed");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("title");
   const [loading, setLoading] = useState(false);
@@ -27,7 +26,6 @@ export default function Feed() {
   const [selectedFirstCategory, setSelectedFirstCategory] = useState(null);
   const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
   
-  // 카테고리 데이터를 FilterDropdown 형식으로 변환
   const firstCategoryOptions = FirstCategory.first_category.map(category => ({
     value: category.first_category_id,
     label: category.name
@@ -97,7 +95,7 @@ export default function Feed() {
   return (
     <>
       <SEO 
-        title={getFirstCategoryNameById(selectedCategory[0]) + " - " + getNowPageByActiveTab(activeTab)} 
+        title={getFirstCategoryNameById(selectedCategory[0]) + " - 대학생 피드"} 
         description={`스프 SouF - ${getFirstCategoryNameById(selectedCategory[0])} 대학생 피드`} 
         subTitle='스프' 
       />
@@ -105,15 +103,13 @@ export default function Feed() {
       {/* 데스크톱 탭과 검색창 */}
       <PageHeader
           leftText="대학생 피드"
-          showDropdown={true}
-          showSearchBar={true}
+          showDropdown={false}
+          showSearchBar={false}
           onSearchTypeChange={handleSearchTypeChange}
           searchQuery={searchQuery}
           onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
           onSearch={handleSearch}
           searchPlaceholder="검색어를 입력하세요"
-          activeButtonIndex={activeTab === "feed" ? 0 : 1}
-          isTabMode={true}
         />
         <div className="w-screen ">
         <Carousel />
@@ -147,10 +143,10 @@ export default function Feed() {
           </div>
         </div>
 
-        <div className="w-full mx-auto">
+        <div className="w-full mx-auto max-w-[60rem]">
           <p className="text-base font-bold border-b border-gray-500 pb-4">카테고리 별</p>
           <div className="flex justify-between items-center mt-6">
-                     <div className="flex items-center gap-4">
+                     <div className="flex items-center gap-4 relative z-10">
                          <FilterDropdown
                              options={firstCategoryOptions}
                              selectedValue={selectedFirstCategory}

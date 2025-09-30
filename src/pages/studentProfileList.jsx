@@ -28,7 +28,8 @@ export default function StudentProfileList({secondCategoryId, thirdCategoryId ,k
     queryKey: ["profile", firstCategory, secondCategoryId, thirdCategoryId, keyword, currentPage],
     queryFn: async () => {
       const data = await getProfile(firstCategory, secondCategoryId, thirdCategoryId, keyword, pageable);
-      setTotalPages(data.result.page.totalPages); // 페이지 수 갱신
+      setTotalPages(data.result.page.totalPages);
+      // console.log("data", data);
       return data;
     },
     keepPreviousData: true,

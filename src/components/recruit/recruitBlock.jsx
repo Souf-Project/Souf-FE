@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import firstCategoryData from '../assets/categoryIndex/first_category.json';
-import secondCategoryData from '../assets/categoryIndex/second_category.json';
-import thirdCategoryData from '../assets/categoryIndex/third_category.json';
-import { getRecruitDetail } from '../api/recruit';
-import AlertModal from './alertModal';
-import shareIco from '../assets/images/shareIco.svg';
-import soufMockup from '../assets/images/soufMockup.png';
+import firstCategoryData from '../../assets/categoryIndex/first_category.json';
+import secondCategoryData from '../../assets/categoryIndex/second_category.json';
+import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
+import { getRecruitDetail } from '../../api/recruit';
+import AlertModal from '../alertModal';
+import shareIco from '../../assets/images/shareIco.svg';
+import soufMockup from '../../assets/images/soufMockup.png';
 
 
 export default function RecruitBlock({
@@ -178,8 +178,8 @@ export default function RecruitBlock({
          <div className="flex items-center gap-4">
          <span className="text-xs font-medium text-black ">납기일</span>
           <div className="flex flex-col items-end text-right">
-          <span className="text-sm font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}</span>
-          <span className="text-sm font-regular text-black ">~ {deadLine ? deadLine.split(' ')[0] : ''}</span>
+          <span className="text-sm font-regular text-black ">{startDate ? startDate : ''}</span>
+          <span className="text-sm font-regular text-black ">~ {deadLine ? deadLine : ''}</span>
           </div>
           
           
