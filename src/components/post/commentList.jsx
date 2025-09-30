@@ -251,7 +251,7 @@ export default function commentList() {
     };
 
     return (
-        <div className="flex flex-col w-full mx-auto mt-4 mb-24">
+        <div className="flex flex-col w-full mx-auto mt-4 mb-12">
             {/* 댓글 목록 */}
             <div className="flex flex-col gap-4 border-y border-gray-400 py-4">
                 {commentList?.length > 0 ? (

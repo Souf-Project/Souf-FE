@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import RecruitBlock from "../components/recruitBlock";
+import RecruitBlock from "../components/recruit/recruitBlock";
 import { getRecruit } from "../api/recruit";
 import Pagination from "../components/pagination";
 import Loading from "../components/loading";

@@ -1,8 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useCallback } from "react";
-import RecruitBlock from "../components/recruitBlock";
-import SearchBar from "../components/SearchBar";
-import SearchDropdown from "../components/SearchDropdown";
+import RecruitBlock from "../components/recruit/recruitBlock";
 import { getRecruit } from "../api/recruit";
 import CategoryMenu from "../components/categoryMenu";
 import SecondCategory from "../assets/categoryIndex/second_category.json";
@@ -14,6 +12,9 @@ import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import EstimateBanner from "../components/home/EstimateBanner";
 import FilterDropdown from "../components/filterDropdown";
 import PageHeader from "../components/pageHeader";
+import RecommendRecruit from "../components/recruit/recommendRecruit";
+import AlertModal from "../components/alertModal";
+import { UserStore } from "../store/userStore";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -43,7 +44,9 @@ export default function Recruit() {
   const [totalPages, setTotalPages] = useState(1);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [sortBy, setSortBy] = useState('RECENT_DESC');
+  const [showAlertModal, setShowAlertModal] = useState(false);
   const pageSize = 12;
+  const { memberId, roleType } = UserStore();
 
 
   const filterOptions = [
@@ -215,6 +218,24 @@ export default function Recruit() {
     setCurrentPage(0); 
   };
 
+  const checkRecruitUploadAccess = () => {
+    if (!memberId) {
+      setShowAlertModal(true);
+      return false;
+    }
+    if (roleType !== "MEMBER" && roleType !== "ADMIN") {
+      setShowAlertModal(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleRecruitUploadClick = () => {
+    if (checkRecruitUploadAccess()) {
+      navigate("/recruitUpload");
+    }
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -328,13 +349,17 @@ export default function Recruit() {
             {/* <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button> */}
             </div>
 
-            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md" onClick={() => navigate("/recruitUpload")}>외주 등록하기</button>
+            <button className="text-sm bg-blue-main text-white font-bold px-6 py-2 rounded-lg hover:shadow-md" onClick={handleRecruitUploadClick}>외주 등록하기</button>
             
           </div>
           
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
+                // 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시
+                const shouldShowRandomComponent = index >= 3 && Math.random() < 0.3; // 30% 확률
+                const showEstimateBanner = shouldShowRandomComponent && Math.random() < 0.5; // 50% 확률로 EstimateBanner
+                const showRecommendRecruit = shouldShowRandomComponent && !showEstimateBanner; // 나머지 50% 확률로 RecommendRecruit
 
                 return (
                   <div key={recruit.recruitId}>
@@ -351,10 +376,16 @@ export default function Recruit() {
                       secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
                     />
-                    {/* 3개마다 EstimateBanner 삽입 (첫 번째는 제외) */}
-                    {(index + 1) % 5 === 0 && index < filteredRecruits.length - 1 && (
+                    
+                    {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}
+                    {showEstimateBanner && (
                       <div className="my-8">
                         <EstimateBanner color="black" />
+                      </div>
+                    )}
+                    {showRecommendRecruit && (
+                      <div className="my-8">
+                        <RecommendRecruit />
                       </div>
                     )}
                   </div>
@@ -376,6 +407,22 @@ export default function Recruit() {
         </div>
         </div>
       </div>
+
+      {/* Alert Modal */}
+      {showAlertModal && (
+        <AlertModal
+          type="simple"
+          title="로그인 후 이용해주세요."
+          description="외주 등록은 일반 회원만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowAlertModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowAlertModal(false)}
+        />
+      )}
     </div>
     </div>
   );

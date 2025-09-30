@@ -21,6 +21,7 @@ import { UserStore } from "../store/userStore";
 import useCountUp from "../hooks/useCountUp";
 import SEO from "../components/seo";
 import Loading from "../components/loading";
+import AlertModal from "../components/alertModal";
 import cateIcon11 from "../assets/images/categoryIcons/cateIcon11.png";
 import cateIcon12 from "../assets/images/categoryIcons/cateIcon12.png";
 import cateIcon13 from "../assets/images/categoryIcons/cateIcon13.png";
@@ -48,6 +49,7 @@ import cateIcon622 from "../assets/images/categoryIcons/cateIcon622.png";
 export default function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showAlertModal, setShowAlertModal] = useState(false);
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
   const [statsData, setStatsData] = useState({
@@ -58,6 +60,24 @@ export default function Home() {
 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId, roleType } = UserStore();
+
+  const checkRecruitUploadAccess = () => {
+    if (!memberId) {
+      setShowAlertModal(true);
+      return false;
+    }
+    if (roleType !== "MEMBER" && roleType !== "ADMIN") {
+      setShowAlertModal(true);
+      return false;
+    }
+    return true;
+  };
+
+  const handleRecruitUploadClick = () => {
+    if (checkRecruitUploadAccess()) {
+      navigate("/recruitUpload");
+    }
+  };
 
   // 카테고리 클릭 핸들러
   const handleCategoryClick = (category) => {
@@ -327,9 +347,9 @@ export default function Home() {
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
         <div className="relative bg-[#FBFBFB] py-20 w-screen">
-        <div className="flex justify-center items-start max-w-[80rem] mx-auto">
+        <div className="flex justify-center items-start max-w-[70rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-3xl lg:mt-28 lg:ml-28">
+          <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-28">
           <AnimatedTitle />
             <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
               여기! 인재 매칭해드려요.
@@ -338,7 +358,7 @@ export default function Home() {
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
-              onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
+              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
               <button className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg ">이용 가이드</button>
             </div>
             {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
@@ -421,7 +441,7 @@ export default function Home() {
           <BestRecruit />
           <div className="flex justify-center items-center gap-4 mt-4">
             <button className="bg-[#2582E0] text-white text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
-            onClick={() => navigate("/recruitUpload")}>무료 외주 등록하기</button>
+            onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
             <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
             onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
   </div>
@@ -520,6 +540,22 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
       <div className="flex my-32  max-w-[60rem] mx-auto">
         <EstimateBanner color="blue" />
       </div>
+
+      {/* Alert Modal */}
+      {showAlertModal && (
+        <AlertModal
+          type="simple"
+          title="로그인 후 이용해주세요."
+          description="외주 등록은 일반 회원만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowAlertModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowAlertModal(false)}
+        />
+      )}
       
     </div>
     </>

@@ -3,8 +3,6 @@ import client from "./client";
 export const getProfile = async (
   firstCategory,
   secondCategory,
-  thirdCategory,
-  keyword,
   pageable
 ) => {
   try {
@@ -14,11 +12,9 @@ export const getProfile = async (
       size: pageable.size,
       ...(firstCategory ? { firstCategory } : {}),
       ...(secondCategory ? { secondCategory } : {}),
-      ...(thirdCategory ? { thirdCategory } : {}),
-      ...(keyword ? { keyword } : {}),
     };
 
-    const response = await client.get("/api/v1/member");
+    const response = await client.get("/api/v1/member", { params });
     return response.data;
   } catch (error) {
     console.error("프로필 조회 에러:", error);
