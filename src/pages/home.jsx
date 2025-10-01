@@ -395,27 +395,27 @@ export default function Home() {
        <div className="flex flex-col justify-center gap-2 items-center max-w-[60rem] mx-auto">
        <div className="flex items-center justify-between w-full">
          <span className="text-black text-2xl font-bold">어떤 아이디어/프로젝트가 필요하세요?</span>
-         <div className="flex items-center gap-2">
-           <span className="text-gray-700 text-sm font-light">좌우로 슬라이드해보세요</span>
-           <div className="flex items-center gap-1">
-             
-             {/* 우측 화살표 */}
+       </div>
+       <div className="flex items-center justify-between w-full">
+        {/* 좌측 화살표 */}
+        <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
              <svg 
-               className="w-4 h-4 text-gray-500" 
+               className="w-5 h-5 text-gray-400" 
                fill="none" 
                stroke="currentColor" 
                viewBox="0 0 24 24"
                style={{
-                 animation: 'bounceRight 1.5s ease-in-out infinite'
+                 animation: 'bounceLeft 1.5s ease-in-out infinite'
                }}
              >
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
              </svg>
            </div>
-         </div>
-       </div>
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
+         
          <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
+          
+           
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
              <div 
                key={category.second_category_id} 
@@ -432,7 +432,26 @@ export default function Home() {
                <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
               </div>
            ))}
-              </div>
+           
+          
+         </div>
+        
+       </div>
+         {/* 우측 화살표 */}
+         <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
+             <svg 
+               className="w-5 h-5 text-gray-400" 
+               fill="none" 
+               stroke="currentColor" 
+               viewBox="0 0 24 24"
+               style={{
+                 animation: 'bounceRight 1.5s ease-in-out infinite'
+               }}
+             >
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+             </svg>
+           </div>
+       
             </div>
             </div>
             </div>
