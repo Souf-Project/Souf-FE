@@ -415,7 +415,7 @@ export default function RecruitUpload() {
         cityDetailId: cityDetailId,
         startDate: startDateTime,
         deadline: deadlineDateTime,
-        price: `${formData.price}만원`,
+        price: estimateType === 'fixed' && formData.estimatePayment ? `${formData.estimatePayment}만원` : '',
         preferentialTreatment: formData.hasPreference && formData.preferentialTreatment ? [formData.preferentialTreatment] : [],
         categoryDtos: cleanedCategories,
         // existingImageUrls: [],
@@ -1018,8 +1018,17 @@ dtoList.forEach((dto, i) => {
               type="number"
               name="estimatePayment"
               value={formData.estimatePayment || ''}
-              onChange={handleChange}
+              onChange={(e) => {
+                // 숫자만 입력 허용
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                setFormData(prev => ({
+                  ...prev,
+                  estimatePayment: value
+                }));
+              }}
               disabled={estimateType === 'estimate'}
+              min="0"
+              step="1"
               className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
                 estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
               }`}
