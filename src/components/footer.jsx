@@ -19,7 +19,11 @@ export default function Footer() {
         </div>
        
        </div>
-        <div className="flex flex-col gap-2 font-semibold text-md w-1/2">
+       <div className="mt-auto">
+              <p>이메일</p>
+            <p className='font-medium text-sm '>souf-official@souf.co.kr</p>
+            </div>
+        {/* <div className="flex flex-col gap-2 font-semibold text-md w-1/2">
           <div className='flex items-center gap-2 cursor-pointer'>
             스프 서비스 소개
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
@@ -51,7 +55,7 @@ export default function Footer() {
             </div>
             
           </div>
-        </div>
+        </div> */}
         
       </div>
      
