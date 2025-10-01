@@ -136,7 +136,6 @@ export async function getRecruitDetail(recruitId) {
 }
 
 export async function uploadRecruit(data) {
-    console.log("Uploading recruit:", data);
     try {
         const response = await client.post('/api/v1/recruit', data, {
             headers: {
