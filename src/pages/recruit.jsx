@@ -101,7 +101,7 @@ export default function Recruit() {
 
       if (response.data) {
         const recruits = response.data.result?.content || [];
-        console.log("공고문 데이터:", recruits);
+        // console.log("공고문 데이터:", recruits);
        
         setFilteredRecruits(recruits);
         const totalElements =
