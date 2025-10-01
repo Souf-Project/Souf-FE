@@ -13,13 +13,17 @@ export default function Footer() {
         </div>
         <div className='text-neutral-400 text-md font-semibold '>
           <p>한규탁</p>
-          <p>사업자 번호 : 123-456-789</p>
+          <p>사업자 번호 : 508-24-95706</p>
           <p>(주) 스프 | 통신판매업</p>
           <p>서울특별시 광진구 자양로 585 2층</p>
         </div>
        
        </div>
-        <div className="flex flex-col gap-2 font-semibold text-md w-1/2">
+       <div className="mt-auto">
+              <p>이메일</p>
+            <p className='font-medium text-sm '>souf-official@souf.co.kr</p>
+            </div>
+        {/* <div className="flex flex-col gap-2 font-semibold text-md w-1/2">
           <div className='flex items-center gap-2 cursor-pointer'>
             스프 서비스 소개
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
@@ -51,7 +55,7 @@ export default function Footer() {
             </div>
             
           </div>
-        </div>
+        </div> */}
         
       </div>
      

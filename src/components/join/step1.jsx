@@ -313,7 +313,7 @@ export default function JoinForm({ socialLoginInfo }) {
   return (
     <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
       <div className="w-full flex flex-col items-center justify-between mb-6 gap-2">
-        <p className="text-black text-lg md:text-xl font-regular mr-auto">회원 가입 유형</p>
+        {/* <p className="text-black text-lg md:text-xl font-regular mr-auto">회원 가입 유형</p>
         <div className="flex gap-6 mr-auto">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -337,7 +337,7 @@ export default function JoinForm({ socialLoginInfo }) {
             />
             <span className="text-lg">일반</span>
           </label>
-        </div>
+        </div> */}
       </div>
       <Input
         title="이름"

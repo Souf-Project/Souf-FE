@@ -17,8 +17,9 @@ export default function Header() {
   const [userType, setUserType] = useState("");
   const [userName, setUserName] = useState("");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(true);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
   //const roleType = UserStore((state) => state.roleType);
@@ -168,6 +169,14 @@ useEffect(() => {
     setShowDropdown(false);
   };
 
+  const handleDropdownEnter = (dropdownType) => {
+    setActiveDropdown(dropdownType);
+  };
+
+  const handleDropdownLeave = () => {
+    setActiveDropdown(null);
+  };
+
   const categories = firstCategoryData.first_category;
 
 
@@ -189,7 +198,7 @@ useEffect(() => {
     } else {
       return (
         <div>
-          <span className="font-bold">기업</span>
+          <span className="font-bold">일반</span>
           <span className="font-normal ml-1">{nickname}</span>
         </div>
       );
@@ -205,37 +214,85 @@ const DesktopHeader = () => (
     className="fixed top-0 left-0 z-50 w-screen"
   >
     <header className="bg-white shadow-md">
-      <div className="relative flex items-center justify-between py-3 max-w-[60rem] mx-auto">
+      <div className="relative flex items-center justify-between max-w-[60rem] mx-auto">
         <div className="flex items-center gap-x-8">
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
-          <ul className="flex items-center font-bold text-lg text-black cursor-pointer">
+          <ul className="flex items-center font-bold text-xl text-black cursor-pointer gap-1">
             <li 
-              className={`flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
-              onClick={handleRecruitUploadClick}
+              className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('recruit')}
+              onMouseLeave={handleDropdownLeave}
             >
-              외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm">★</span>
+              <span className="cursor-pointer">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm ml-2">★</span></span>
+              {/* 외주 의뢰하기 드롭다운 */}
+              {activeDropdown === 'recruit' && (
+                 <div 
+                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
+                   onMouseEnter={() => handleDropdownEnter('recruit')}
+                   onMouseLeave={handleDropdownLeave}
+                 >
+                   <ul className="flex flex-col gap-1">
+                     <li><button onClick={handleRecruitUploadClick} className="w-full flex justify-center items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">무료 외주 등록/제안</button></li>
+                     <li><button onClick={() => {
+                       if (checkRecruitUploadAccess()) {
+                         navigate("/recruitUpload", { state: { estimateType: 'estimate' } });
+                       }
+                     }} className="w-full flex justify-center items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">무료 외주 견적 받기</button></li>
+                   </ul>
+                 </div>
+              )}
             </li>
             <li 
-              className={`flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}
-              onClick={() => navigate("/recruit")}
+              className={`relative py-5 flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('find')}
+              onMouseLeave={handleDropdownLeave}
             >
-              외주 찾기<img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg]" />
+              <div className="flex items-center gap-1">
+              <span className="cursor-pointer" onClick={() => navigate("/recruit")}>외주 찾기</span>
+              <img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg] ml-2" />
+              </div>
+             
+              {/* 외주 찾기 드롭다운 */}
+              {activeDropdown === 'find' && (
+                 <div 
+                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
+                   onMouseEnter={() => handleDropdownEnter('find')}
+                   onMouseLeave={handleDropdownLeave}
+                 >
+                   <ul className="flex flex-col gap-1">
+                     <li><button onClick={() => handleNavigationCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">카테고리별 외주</button></li>
+                   </ul>
+                 </div>
+              )}
             </li>
             <li 
-              className={`w-36 ${location.pathname === "/feed" ? "text-orange-point" : ""}`}
-              onClick={() => navigate("/feed")}
+              className={`relative py-5 w-36 ${location.pathname === "/feed" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('feed')}
+              onMouseLeave={handleDropdownLeave}
             >
-              대학생 피드보기
+              <span className="cursor-pointer" onClick={() => navigate("/feed")}>대학생 피드보기</span>
+              {/* 대학생 피드보기 드롭다운 */}
+              {activeDropdown === 'feed' && (
+                 <div 
+                   className="absolute top-[3rem] left-[-0.5rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
+                   onMouseEnter={() => handleDropdownEnter('feed')}
+                   onMouseLeave={handleDropdownLeave}
+                 >
+                   <ul className="flex flex-col gap-1">
+                     <li><button onClick={() => handleNavigationFeedCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">카테고리별 피드</button></li>
+                   </ul>
+                 </div>
+              )}
             </li>
             {/* <li 
-              className={`flex items-center gap-1 w-28 ${location.pathname === "/review" ? "text-orange-point" : ""}`}
+              className={`flex items-center gap-1  ${location.pathname === "/review" ? "text-orange-point" : ""}`}
               onClick={() => navigate("/review")}
             >
               외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
             {/* <li 
-              className={`w-36 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
+              className={` ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
               onClick={() => navigate("/guide")}
             >
               이용 가이드
@@ -250,6 +307,11 @@ const DesktopHeader = () => (
               <button className="p-2" onClick={() => handleNavigation("/chat")}>
                 <img src={ChatIcon} alt="chat" className="w-6 h-6" />
               </button>
+              {roleType === "MEMBER" && (
+                <button className="px-4 py-2 text-blue-main font-bold border border-blue-200 rounded-lg hover:shadow-[0px_0px_5px_3px_rgba(92,161,232,0.5)] transition-all duration-300" onClick={() => handleNavigation("/verifyStudent")}>
+               대학생 인증
+                </button>
+              )}
               <div className="relative user-menu-container">
                 <button
                   className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
@@ -328,53 +390,6 @@ const DesktopHeader = () => (
           )}
         </div>
         
-        {/* 드롭다운 메뉴를 헤더의 div 안에 배치 */}
-        {showDropdown && (
-          <div className="absolute top-full left-0 w-full bg-white shadow-lg border-t border-gray-200 py-4">
-            <div className="max-w-[60rem] mx-auto px-10 ml-24">
-              <div className="flex ">
-                {/* 외주 의뢰하기 */}
-                <div>
-                  <ul className="w-36 flex flex-col gap-2">
-                    <li><button onClick={handleRecruitUploadClick} className="text-gray-600 hover:text-blue-500">무료 외주 등록/제안</button></li>
-                    <li><button onClick={() => {
-                      if (checkRecruitUploadAccess()) {
-                        navigate("/recruitUpload", { state: { estimateType: 'estimate' } });
-                      }
-                    }} className="text-gray-600 hover:text-blue-500">무료 외주 견적 받기</button></li>
-                  </ul>
-                </div>
-                {/* 외주 찾기 */}
-                <div>
-                  <ul className="w-28">
-                    <li><button onClick={() => handleNavigationCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 외주</button></li>
-                  </ul>
-                </div>
-                {/* 대학생 피드보기 */}
-                <div>
-                  <ul className="w-36">
-                    <li><button onClick={() => handleNavigationFeedCategory()} className="text-gray-600 hover:text-blue-500 flex items-center gap-2 font-medium">카테고리별 피드</button></li>
-                  </ul>
-                </div>
-                {/* 외주 후기 */}
-                {/* <div>
-                  <ul className="w-28 flex flex-col gap-2">
-                    <li><button onClick={() => handleNavigation("/review")} className="text-gray-600 hover:text-blue-500">후기 보기</button></li>
-                  </ul>
-                </div> */}
-                {/* 이용 가이드 */}
-                {/* <div>
-                  <ul className="w-36 flex flex-col gap-2 ml-8">
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">이용 가이드</button></li>
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">FAQ</button></li>
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">고객 센터</button></li>
-                    <li><button onClick={() => handleNavigation("/")} className="text-gray-600 hover:text-blue-500">실험실</button></li>
-                  </ul>
-                </div> */}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </header>
   </div>
@@ -415,7 +430,7 @@ const DesktopHeader = () => (
 <div
   ref={mobileMenuRef}
   className={`
-    absolute top-full left-0 w-full bg-white border-b border-grey-border shadow-lg z-50
+    absolute top-[2.2rem] left-[-1rem] w-full bg-white border-b border-grey-border shadow-lg z-50
     transition-all duration-300 ease-in-out overflow-hidden
     ${showMobileMenu ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"}
   `}
