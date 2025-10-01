@@ -404,8 +404,9 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
-      const startDateTime = new Date(formData.startDate).toISOString();
-      const deadlineDateTime = new Date(formData.deadline).toISOString();
+      // yyyy-MM-ddTHH:mm 형식으로 변환
+      const startDateTime = new Date(formData.startDate).toISOString().slice(0, 16);
+      const deadlineDateTime = new Date(formData.deadline).toISOString().slice(0, 16);
   
       const formDataToSend = {
         title: formData.title,
@@ -415,7 +416,7 @@ export default function RecruitUpload() {
         startDate: startDateTime,
         deadline: deadlineDateTime,
         price: `${formData.price}만원`,
-        preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
+        preferentialTreatment: formData.hasPreference && formData.preferentialTreatment ? [formData.preferentialTreatment] : [],
         categoryDtos: cleanedCategories,
         // existingImageUrls: [],
         originalFileNames: formData.files.map((file) => file.name),
