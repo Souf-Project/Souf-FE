@@ -198,7 +198,7 @@ useEffect(() => {
     } else {
       return (
         <div>
-          <span className="font-bold">기업</span>
+          <span className="font-bold">일반</span>
           <span className="font-normal ml-1">{nickname}</span>
         </div>
       );
@@ -307,6 +307,11 @@ const DesktopHeader = () => (
               <button className="p-2" onClick={() => handleNavigation("/chat")}>
                 <img src={ChatIcon} alt="chat" className="w-6 h-6" />
               </button>
+              {roleType === "MEMBER" && (
+                <button className="px-4 py-2 text-blue-main font-bold border border-blue-200 rounded-lg hover:shadow-[0px_0px_5px_3px_rgba(92,161,232,0.5)] transition-all duration-300" onClick={() => handleNavigation("/verifyStudent")}>
+               대학생 인증
+                </button>
+              )}
               <div className="relative user-menu-container">
                 <button
                   className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"

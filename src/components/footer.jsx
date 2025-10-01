@@ -13,7 +13,7 @@ export default function Footer() {
         </div>
         <div className='text-neutral-400 text-md font-semibold '>
           <p>한규탁</p>
-          <p>사업자 번호 : 123-456-789</p>
+          <p>사업자 번호 : 508-24-95706</p>
           <p>(주) 스프 | 통신판매업</p>
           <p>서울특별시 광진구 자양로 585 2층</p>
         </div>
