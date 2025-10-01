@@ -368,19 +368,24 @@ export default function RecruitUpload() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    // 로딩 중이면 중복 실행 방지
+    if (isLoading) {
+      return;
+    }
+
+    // 카테고리 검증 (업로드 버튼 클릭 시에만 실행)
+    const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+    
+    if (cleanedCategories.length === 0) {
+      alert("최소 1개 이상의 카테고리를 선택해주세요.");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
-      // 카테고리 검증
-      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
-      if (cleanedCategories.length === 0) {
-        alert("최소 1개 이상의 카테고리를 선택해주세요.");
-        setIsLoading(false);
-        return;
-      }
-
-      console.log('Selected categories:', cleanedCategories);
 
       let cityId = null;
       let cityDetailId = null;
@@ -412,6 +417,7 @@ export default function RecruitUpload() {
         price: `${formData.price}만원`,
         preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
         categoryDtos: cleanedCategories,
+        // existingImageUrls: [],
         originalFileNames: formData.files.map((file) => file.name),
         workType: formData.workType.toUpperCase(),
       };
@@ -463,9 +469,9 @@ export default function RecruitUpload() {
         response = await uploadRecruit(formDataToSend);
         const { recruitId, dtoList } = response.data.result;
         
-        console.log("📦 dtoList:", dtoList);
+        // console.log("📦 dtoList:", dtoList);
 dtoList.forEach((dto, i) => {
-  console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
+  // console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
 });
 
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
@@ -931,7 +937,7 @@ dtoList.forEach((dto, i) => {
         </div>
 
         <div>
-            <div className="flex items-center gap-2 mb-4">
+            {/* <div className="flex items-center gap-2 mb-4">
               <label className="text-xl font-semibold text-black">
                 우대사항 키워드 (2개)
           </label>
@@ -956,7 +962,7 @@ dtoList.forEach((dto, i) => {
                 placeholder="우대사항 키워드 2"
                 maxLength="10"
               />
-            </div>
+            </div> */}
           </div>
           
           <div>
