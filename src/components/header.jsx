@@ -129,6 +129,11 @@ useEffect(() => {
     navigate(`/feed`);
     setShowMobileMenu(false);
   };
+
+  const handleNavigationFeedUpload = () => {
+    navigate(`/postUpload`);
+    setShowMobileMenu(false);
+  };
   const deleteCookie = (name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   };
@@ -280,6 +285,7 @@ const DesktopHeader = () => (
                  >
                    <ul className="flex flex-col gap-1">
                      <li><button onClick={() => handleNavigationFeedCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">카테고리별 피드</button></li>
+                     <li><button onClick={() => handleNavigationFeedUpload()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">피드 등록하기</button></li>
                    </ul>
                  </div>
               )}

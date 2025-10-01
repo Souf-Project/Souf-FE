@@ -112,7 +112,7 @@ export default function RecruitUpload() {
         preferentialTreatment: editData.preferentialTreatment || '',
         preferentialKeyword1: editData.preferentialKeyword1 || '',
         preferentialKeyword2: editData.preferentialKeyword2 || '',
-        hasPreference: !!editData.preferentialTreatment,
+        hasPreference: !!(editData.preferentialKeyword1 || editData.preferentialKeyword2),
         logoUrl: editData.logoUrl || '',
         logoFile: null,
         companyDescription: editData.companyDescription || '',
@@ -404,8 +404,9 @@ export default function RecruitUpload() {
         cityDetailId = cityDetail ? cityDetail.city_detail_id : null;
       }
   
-      const startDateTime = new Date(formData.startDate).toISOString();
-      const deadlineDateTime = new Date(formData.deadline).toISOString();
+      // yyyy-MM-ddTHH:mm 형식으로 변환
+      const startDateTime = new Date(formData.startDate).toISOString().slice(0, 16);
+      const deadlineDateTime = new Date(formData.deadline).toISOString().slice(0, 16);
   
       const formDataToSend = {
         title: formData.title,
@@ -414,8 +415,10 @@ export default function RecruitUpload() {
         cityDetailId: cityDetailId,
         startDate: startDateTime,
         deadline: deadlineDateTime,
-        price: `${formData.price}만원`,
-        preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
+        price: estimateType === 'fixed' && formData.estimatePayment ? `${formData.estimatePayment}만원` : '',
+        preferentialTreatment: formData.hasPreference && (formData.preferentialKeyword1 || formData.preferentialKeyword2) 
+          ? [formData.preferentialKeyword1, formData.preferentialKeyword2].filter(keyword => keyword && keyword.trim() !== '')
+          : [],
         categoryDtos: cleanedCategories,
         // existingImageUrls: [],
         originalFileNames: formData.files.map((file) => file.name),
@@ -937,7 +940,7 @@ dtoList.forEach((dto, i) => {
         </div>
 
         <div>
-            {/* <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-2 mb-4">
               <label className="text-xl font-semibold text-black">
                 우대사항 키워드 (2개)
           </label>
@@ -962,10 +965,10 @@ dtoList.forEach((dto, i) => {
                 placeholder="우대사항 키워드 2"
                 maxLength="10"
               />
-            </div> */}
+            </div>
           </div>
           
-          <div>
+          {/* <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
               우대사항 설명
             </label>
@@ -977,7 +980,7 @@ dtoList.forEach((dto, i) => {
               placeholder="우대사항에 대한 상세 설명을 입력하세요"
               rows="4"
             />
-          </div>
+          </div> */}
           
           <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             STEP 3. 
@@ -1017,8 +1020,17 @@ dtoList.forEach((dto, i) => {
               type="number"
               name="estimatePayment"
               value={formData.estimatePayment || ''}
-              onChange={handleChange}
+              onChange={(e) => {
+                // 숫자만 입력 허용
+                const value = e.target.value.replace(/[^0-9]/g, '');
+                setFormData(prev => ({
+                  ...prev,
+                  estimatePayment: value
+                }));
+              }}
               disabled={estimateType === 'estimate'}
+              min="0"
+              step="1"
               className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
                 estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
               }`}

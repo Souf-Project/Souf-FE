@@ -373,6 +373,8 @@ export default function Recruit() {
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
+                      nickname={recruit.nickname}
+                      firstMediaUrl={recruit.firstMediaUrl}
                     />
                     
                     {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}

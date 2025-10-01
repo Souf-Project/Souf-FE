@@ -16,13 +16,15 @@ export default function RecruitBlock({
   deadLine,
   startDate,
   recruitable,
+  nickname,
   price,
   cityName,
   cityDetailName,
   secondCategory,
   categoryDtoList,
-  imageUrl,
+  firstMediaUrl,
 }) {
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
   const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   
@@ -116,8 +118,8 @@ export default function RecruitBlock({
       className="flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
       
-        {imageUrl ? (
-          <img src={imageUrl} alt="공고문 이미지" className="w-40 h-40 rounded-2xl object-cover" />
+        {firstMediaUrl ? (
+          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-40 h-40 rounded-2xl object-cover" />
         ) : (
           <img src={soufMockup} alt="기본 로고 이미지" className="w-40 h-40 rounded-2xl object-cover" />
         )}
@@ -156,9 +158,9 @@ export default function RecruitBlock({
         <p className="text-zinc-500 text-base line-clamp-2">
         {content || "내용 없음"}
       </p>
-      {/* <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
-        관영컴퍼니
-      </div> */}
+      <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+        {nickname}
+      </div>
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch my-2"></div>
