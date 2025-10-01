@@ -74,8 +74,8 @@ export default function FreeEstimate({color}) {
       {showAlertModal && (
         <AlertModal
           type="simple"
-          title="로그인 후 이용해주세요."
-          description="외주 등록은 일반 회원만 이용할 수 있습니다."
+          title="권한이 없습니다."
+          description="외주 등록은 기업 회원만 이용할 수 있습니다."
           TrueBtnText="로그인하러 가기"
           FalseBtnText="취소"
           onClickTrue={() => {

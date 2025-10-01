@@ -41,7 +41,7 @@ export default function AlertModal({
             </button>
           )}
           <button
-            className="w-full py-3 px-5 bg-yellow-main rounded-[10px] font-semibold text-base whitespace-nowrap"
+            className="w-full py-3 px-5 bg-blue-main rounded-[10px] font-semibold text-base whitespace-nowrap text-white"
             onClick={onClickTrue}
           >
             {TrueBtnText}

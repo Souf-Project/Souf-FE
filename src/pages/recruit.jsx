@@ -307,8 +307,6 @@ export default function Recruit() {
       <PageHeader
         leftButtons={[
           { text: "외주 조회", onClick: () => {} },
-          { text: "이 가격에 해주세요", onClick: () => {} },
-          { text: "견적 내어주세요", onClick: () => {} }
         ]}
         showDropdown={true}
         showSearchBar={true}

@@ -42,13 +42,13 @@ export default function RecommendRecruit() {
           <h1 className="text-sm font-semibold mb-4">비슷한 외주를 찾아봤어요</h1>
           <div className="flex flex-col gap-2 bg-blue-50 rounded-md p-4 mb-4">
             <p className="text-blue-600 text-sm font-bold">스프에서 찾아봤어요! (AI 탐색)</p>
-            <div className="flex gap-2">
+            <div className="flex gap-4 items-center justify-center">
               {recruitData.map((recruit) => (
                 <img 
                   key={recruit.recruitId}
                   src={recruit.imageUrl? recruit.imageUrl : soufMockup} 
                   alt={recruit.title} 
-                  className="w-40 h-40 rounded-md cursor-pointer" 
+                  className="w-40 h-40 rounded-md cursor-pointer hover:shadow-lg transition-shadow duration-200" 
                   onClick={() => navigate(`/recruitDetails/${recruit.recruitId}`)}
                 />
               ))}
