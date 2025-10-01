@@ -161,11 +161,11 @@ export default function RecruitBlock({
       </div> */}
         
       </div>
-      <div className="w-[1px] bg-gray-200 self-stretch"></div>
-      <div className="flex flex-col items-start justify-center gap-2 w-44 px-2">
+      <div className="w-[1px] bg-gray-200 self-stretch my-2"></div>
+      <div className="flex flex-col items-start gap-4 w-44 px-2 mt-4">
         <div className="flex items-center gap-4 justify-between w-full">
           <span className="text-xs font-medium text-black ">견적 비용</span>
-          <span className="text-xs font-regular text-black ">{price}</span>
+          <span className="text-md font-regular text-black ">{price}</span>
         </div>
         {/* <div className="flex flex-col gap-1">
           <span className="text-xs font-medium text-black ">우대사항</span>
@@ -175,11 +175,11 @@ export default function RecruitBlock({
             <li>회화과</li>
           </ul>
         </div> */}
-         <div className="flex items-center gap-4 justify-between w-full">
-         <span className="text-xs font-medium text-black whitespace-nowrap">납기일</span>
-          <div className="flex flex-col items-end text-right">
-          <span className="text-xs font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}</span>
-          <span className="text-xs font-regular text-black ">~ {deadLine ? deadLine.split(' ')[0] : ''}</span>
+         <div className="flex gap-4 justify-between w-full">
+         <span className="text-xs font-medium text-black whitespace-nowrap">마감일</span>
+          <div className="flex flex-col items-start">
+          <span className="text-md font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}~ </span>
+          <span className="text-md font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
           </div>
           
           
