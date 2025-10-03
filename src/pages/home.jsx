@@ -50,6 +50,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showGuideModal, setShowGuideModal] = useState(false);
   const [competitions, setCompetitions] = useState([]);
   const [imageLoadingStates, setImageLoadingStates] = useState({});
   const [statsData, setStatsData] = useState({
@@ -258,6 +259,10 @@ export default function Home() {
     setShowLoginModal(false);
   };
 
+  const handleGuideClick = () => {
+    setShowGuideModal(true);
+  };
+
 
    useEffect(() => {
     const fetchContests = async () => {
@@ -359,7 +364,12 @@ export default function Home() {
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
               onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
-              <button className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg ">이용 가이드</button>
+              {/* <button 
+                className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
+                onClick={handleGuideClick}
+              >
+                이용 가이드
+              </button> */}
             </div>
             {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
               <div className="relative w-full max-w-2xl lg:max-w-3xl">
@@ -595,7 +605,8 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
           onClickFalse={() => setShowAlertModal(false)}
         />
       )}
-      
+
+    
     </div>
     </>
   );

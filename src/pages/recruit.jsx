@@ -45,6 +45,8 @@ export default function Recruit() {
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [sortBy, setSortBy] = useState('RECENT_DESC');
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [bannerShown, setBannerShown] = useState(false);
+  const [recommendShown, setRecommendShown] = useState(false);
   const pageSize = 12;
   const { memberId, roleType } = UserStore();
 
@@ -109,7 +111,7 @@ export default function Recruit() {
         const totalPagesData = response.data.result?.page?.totalPages;
         setTotalPages(totalPagesData);
       } else {
-        console.log('검색 실패: 응답 데이터 없음');
+        // console.log('검색 실패: 응답 데이터 없음');
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
@@ -186,6 +188,12 @@ export default function Recruit() {
   useEffect(() => {
     fetchRecruits();
   }, [selectedCategory, selectedCategories, currentPage, sortBy, fetchRecruits]);
+
+  // 데이터가 로드될 때마다 배너와 추천공고 상태 리셋
+  useEffect(() => {
+    setBannerShown(false);
+    setRecommendShown(false);
+  }, [filteredRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -354,10 +362,23 @@ export default function Recruit() {
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
-                // 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시
-                const shouldShowRandomComponent = index >= 3 && Math.random() < 0.3; // 30% 확률
-                const showEstimateBanner = shouldShowRandomComponent && Math.random() < 0.5; // 50% 확률로 EstimateBanner
-                const showRecommendRecruit = shouldShowRandomComponent && !showEstimateBanner; // 나머지 50% 확률로 RecommendRecruit
+                // 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 (한 번만)
+                let showEstimateBanner = false;
+                let showRecommendRecruit = false;
+                
+                if (index >= 3 && !bannerShown && !recommendShown) {
+                  const shouldShowRandomComponent = Math.random() < 0.3; // 30% 확률
+                  if (shouldShowRandomComponent) {
+                    const showBanner = Math.random() < 0.5; // 50% 확률로 EstimateBanner
+                    if (showBanner) {
+                      showEstimateBanner = true;
+                      setBannerShown(true);
+                    } else {
+                      showRecommendRecruit = true;
+                      setRecommendShown(true);
+                    }
+                  }
+                }
 
                 return (
                   <div key={recruit.recruitId}>
@@ -375,6 +396,7 @@ export default function Recruit() {
                       categoryDtoList={recruit.categoryDtoList}
                       nickname={recruit.nickname}
                       firstMediaUrl={recruit.firstMediaUrl}
+                      profileImageUrl={recruit.profileImageUrl}
                     />
                     
                     {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}

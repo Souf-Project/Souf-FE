@@ -23,6 +23,7 @@ export default function RecruitBlock({
   secondCategory,
   categoryDtoList,
   firstMediaUrl,
+  profileImageUrl,
 }) {
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -59,7 +60,7 @@ export default function RecruitBlock({
       const secondCatId = dto.secondCategory;
       const thirdCatId = dto.thirdCategory;
 
-      console.log('Processing category:', { firstCatId, secondCatId, thirdCatId });
+      // console.log('Processing category:', { firstCatId, secondCatId, thirdCatId });
 
       const firstName = firstCategoryData.first_category.find(
         cat => cat.first_category_id === firstCatId
@@ -123,7 +124,7 @@ export default function RecruitBlock({
         ) : (
           <img src={soufMockup} alt="기본 로고 이미지" className="w-40 h-40 rounded-2xl object-cover" />
         )}
-      <div className="flex flex-col px-4 py-3 flex-1 gap-2 max-w-[26rem]">
+      <div className="flex flex-col px-4 py-3 flex-1 max-w-[26rem]">
         <div className="flex justify-between items-center">
         <div className="flex text-blue-600 text-sm">
           {(() => {
@@ -158,7 +159,14 @@ export default function RecruitBlock({
         <p className="text-zinc-500 text-base line-clamp-2">
         {content || "내용 없음"}
       </p>
-      <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+      <div className="flex items-center gap-2 text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+        {profileImageUrl && profileImageUrl.trim() !== '' && (
+          <img 
+            src={profileImageUrl} 
+            alt="프로필 이미지" 
+            className="w-4 h-4 rounded-full object-cover" 
+          />
+        )}
         {nickname}
       </div>
         

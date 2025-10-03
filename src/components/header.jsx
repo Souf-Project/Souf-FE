@@ -19,6 +19,7 @@ export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(true);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
@@ -114,6 +115,18 @@ useEffect(() => {
     return true;
   };
 
+  const checkFeedUploadAccess = () => {
+    if (!memberId) {
+      setShowFeedAlertModal(true);
+      return false;
+    }
+    if (roleType !== "STUDENT" && roleType !== "ADMIN") {
+      setShowFeedAlertModal(true);
+      return false;
+    }
+    return true;
+  };
+
   const handleRecruitUploadClick = () => {
     if (checkRecruitUploadAccess()) {
       navigate("/recruitUpload");
@@ -131,8 +144,10 @@ useEffect(() => {
   };
 
   const handleNavigationFeedUpload = () => {
-    navigate(`/postUpload`);
-    setShowMobileMenu(false);
+    if (checkFeedUploadAccess()) {
+      navigate(`/postUpload`);
+      setShowMobileMenu(false);
+    }
   };
   const deleteCookie = (name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
@@ -537,6 +552,22 @@ const DesktopHeader = () => (
             navigate("/login");
           }}
           onClickFalse={() => setShowAlertModal(false)}
+        />
+      )}
+
+      {/* Feed Upload Alert Modal */}
+      {showFeedAlertModal && (
+        <AlertModal
+          type="simple"
+          title="권한이 없습니다"
+          description="피드 등록은 학생 계정만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowFeedAlertModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowFeedAlertModal(false)}
         />
       )}
     </>
