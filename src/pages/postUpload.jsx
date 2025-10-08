@@ -16,6 +16,7 @@ import {
 } from "../api/video";
 import { filterEmptyCategories } from "../utils/filterEmptyCategories";
 import LoadingModal from "../components/loadingModal";
+import { FEED_UPLOAD_ERRORS } from "../constants/post";
 
 const validImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const validVideoTypes = [
@@ -31,7 +32,6 @@ export default function PostUpload() {
   const [isModal, setIsModal] = useState(false);
   const [isWarningModal, setIsWarningModal] = useState(false);
   const [warningText, setWarningText] = useState("업로드 실패");
-
   const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
   const { memberId } = UserStore();
@@ -61,6 +61,10 @@ export default function PostUpload() {
       },
     ],
   });
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근입니다.");
+  const [errorAction, setErrorAction] = useState(null);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -75,13 +79,27 @@ export default function PostUpload() {
     setVideoFiles(files.filter((file) => file.type.startsWith("video/")));
   };
 
+  const handleApiError = (error) => {
+    const errorKey = error?.response?.data?.errorKey;
+    const errorInfo = FEED_UPLOAD_ERRORS[errorKey];
+
+    if (errorInfo) {
+      setErrorDescription(errorInfo.message);
+      setErrorAction(errorInfo.action);
+    } else {
+      setErrorDescription("업로드 중 예상치 못한 오류가 발생했습니다.\n다시 시도해주세요.");
+      setErrorAction("refresh"); 
+    }
+    setErrorModal(true);
+  };
+
   const { mutate, isPending } = useMutation({
     mutationFn: (postData) => {
       //1. 백엔드에서 presigned-url 받아오기 위해 텍스트관련된 내용 먼저 보내기
       const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
-
       if (cleanedCategories.length === 0) {
-        alert("최소 1개 이상의 카테고리를 선택해주세요.");
+        //alert("최소 1개 이상의 카테고리를 선택해주세요.");
+        throw new Error("최소 1개 이상의 카테고리를 선택해주세요.");
         return;
       }
       
@@ -126,12 +144,12 @@ export default function PostUpload() {
         //const type = invalidImage.type.split("/");
         console.log(invalidImage);
         setWarningText(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
-        throw new Error("지원하지 않는 이미지 형식입니다.");
+        throw new Error(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
       }
 
       if (invalidVideo) {
         setWarningText(`지원하지 않는 영상 형식입니다: ${invalidVideo.type}`);
-        throw new Error("지원하지 않는 영상 형식입니다.");
+        throw new Error(`지원하지 않는 영상 형식입니다: ${invalidVideo.type}`);
       }
 
 
@@ -261,22 +279,33 @@ export default function PostUpload() {
 
         console.error("파일 업로드 또는 미디어 등록 중 에러:", error);
         //alert("업로드 중 오류가 발생했습니다.");
-        alert(error);
+        //alert(error);
+        handleApiError(error);
       }
     },
     onError: (error) => {
       console.error("피드 업로드 에러:", error);
-      if (error.message === "카테고리 선택 필요" || 
-          error.message === "제목 입력 필요" || 
-          error.message === "내용 입력 필요" || 
-          error.message === "미디어 파일 필요") {
-        // validation 에러는 이미 alert로 표시됨
+      if (typeof error.message === 'string' && !error.response) {
+        console.log("클라이언트 유효성 검사 실패:", error.message);
+        setWarningText(error.message);
+        setIsWarningModal(true); // 기존 경고 모달을 사용
+        return;
+      }else if(error?.response?.data?.status === 403){
+        setShowLoginModal(true);
         return;
       }
+      handleApiError(error);
+      // if (error.message === "카테고리 선택 필요" || 
+      //     error.message === "제목 입력 필요" || 
+      //     error.message === "내용 입력 필요" || 
+      //     error.message === "미디어 파일 필요") {
+      //   // validation 에러는 이미 alert로 표시됨
+      //   return;
+      // }
       //alert("피드 업로드 중 오류가 발생했습니다.");
       //alert(error);
       //console.log(error);
-      setIsWarningModal(true);
+      //setIsWarningModal(true);
 
     },
   });
@@ -382,6 +411,34 @@ export default function PostUpload() {
           description={warningText}
           TrueBtnText="확인"
           onClickTrue={() => setIsWarningModal(false)}
+          />
+        )}
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 회원만 댓글을 작성할 수 있습니다!"
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+        {errorModal && (
+          <AlertModal
+            type="simple"
+            title="업로드 오류"
+            description={errorDescription}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setErrorModal(false);
+              if (errorAction === "redirect") {
+                navigate("/feed");
+              }
+            }}
           />
         )}
         {isPending && (
