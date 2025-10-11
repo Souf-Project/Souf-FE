@@ -49,9 +49,32 @@ export const FEED_UPLOAD_ERRORS = {
     message: `올바르지 않은 카테고리 조합입니다.\n상위 카테고리를 먼저 선택해주세요.`,
     action: null,
   },
-    "F404-1": {
+  "F404-1": {
     message: "존재하지 않는 피드에 대한 접근입니다.",
     action: "redirect",
   },
 };
+
+export const FEED_ERRORS = {
+  "M404-1": {
+    message: "올바르지 않은 계정입니다\n이메일 정보를 확인해주세요.",
+    action: "login", 
+  },
+  "F404-1": {
+    message: "존재하지 않는 피드에 대한 접근입니다.",
+    action: "redirect",
+  },
+  "F403-1": {
+    message: "해당 피드에 접근 권한이 없습니다.",
+    action: "redirect",
+  },
+  "F400-1": {
+    message: "이미 좋아요를 눌렀습니다.",
+    action: null,
+  },
+  "F404-2": {
+    message: "좋아요가 반영되지 않았습니다.",
+    action: null,
+  },
+}
 

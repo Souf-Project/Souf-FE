@@ -4,21 +4,43 @@ import { useQuery } from "@tanstack/react-query";
 import BasicImg4 from "../assets/images/BasicProfileImg4.png";
 import { getMemberFeed } from "../api/feed";
 import { UserStore } from "../store/userStore";
+import { FEED_ERRORS } from "../constants/post";
+import AlertModal from "./alertModal";
 
 export default function MyFeed() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState([]);
   const [userWorks, setUserWorks] = useState([]);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
   const {memberId} = UserStore();
 
   const { isLoading, error } = useQuery({
     queryKey: ["myFeed", memberId],
     queryFn: async () => {
-      const data = await getMemberFeed(memberId);
-      setUserData(data.result.memberResDto);
-      setUserWorks(data.result.feedSimpleResDtoPage.content);
+      try{
+        const data = await getMemberFeed(memberId);
+        setUserData(data.result.memberResDto);
+        setUserWorks(data.result.feedSimpleResDtoPage.content);
       return data;
+      } catch (error) {
+        console.error("피드 데이터를 가져오는 중 에러가 발생했습니다:", error);
+        // throw err;
+        //err?.response?.data?.errorKey
+        const errorKey = error?.response?.data?.errorKey;
+        debugger;
+        if (error.response.status === 403) {
+                setShowLoginModal(true);
+        }else{
+          const errorInfo = FEED_ERRORS[errorKey];
+          setErrorModal(true);
+          setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+          setErrorAction(errorInfo?.action || "redirect");
+        }
+      }
     },
     keepPreviousData: true,
   });
@@ -67,6 +89,34 @@ export default function MyFeed() {
 
           ))}
         </div>
+      {showLoginModal && (
+        <AlertModal
+        type="simple"
+        title="로그인이 필요합니다"
+        description="SouF 회원만 댓글을 작성할 수 있습니다!"
+        TrueBtnText="로그인하러 가기"
+        FalseBtnText="취소"
+        onClickTrue={() => {
+          setShowLoginModal(false);
+          navigate("/login");
+        }}
+        onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="잘못된 접근"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              localStorage.clear();
+              navigate("/login");
+          }
+        }}
+          />
+      )}
     </div>
   );
 }
