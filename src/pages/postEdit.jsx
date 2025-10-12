@@ -348,7 +348,7 @@ export default function PostEdit() {
       {errorModal && (
         <AlertModal
         type="simple"
-        title="잘못된 접근"
+        title="오류 발생"
         description={errorDescription}
         TrueBtnText="확인"
         onClickTrue={() => {
