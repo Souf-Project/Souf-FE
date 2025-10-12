@@ -5,7 +5,7 @@ export const FAVORITE_ERRORS = {
   },
   "M404-2": {
     message: `즐겨찾기한 사용자가 아닙니다.`,
-    action: null, //아님 refresh?
+    action: "refresh", //아님 refresh?
   },
 };
 
