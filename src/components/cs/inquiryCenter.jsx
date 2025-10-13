@@ -104,7 +104,6 @@ export default function InquiryCenter() {
             };
             
             const inquiryResponse = await postInquiry(inquiryData);
-            console.log("문의 등록 응답:", inquiryResponse);
             
             // 2. 이미지 파일 존재 - presignedUrl 업로드
             if (formData.files.length > 0 && inquiryResponse.data?.result?.dtoList) {
@@ -121,10 +120,8 @@ export default function InquiryCenter() {
                             fileName: file.name,
                             fileType: file.type.split('/')[1]
                         };
-                        console.log("uploadData", uploadData);
-                        
+
                         const uploadResponse = await uploadInquiryFile(uploadData);
-                        console.log(`이미지 ${i + 1} 업로드 응답:`, uploadResponse);
                     } catch (error) {
                         console.error(`이미지 ${i + 1} 업로드 에러:`, error);
                     }

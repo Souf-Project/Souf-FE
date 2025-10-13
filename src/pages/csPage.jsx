@@ -15,7 +15,6 @@ export default function CsPage() {
     const { memberId } = UserStore();
     
     const handleTabChange = (tab) => {
-        // 문의 센터로 이동하려고 할 때 로그인 상태 확인
         if (tab === 1 && !memberId) {
             setShowLoginModal(true);
             return;
@@ -67,7 +66,6 @@ export default function CsPage() {
                 {activeTab === 0 ? <FAQcontent onInquiryClick={() => handleTabChange(1)} /> : <InquiryCenter />}
             </div>
             
-            {/* 로그인 필요 모달 */}
             {showLoginModal && (
                 <AlertModal
                     type="simple"
