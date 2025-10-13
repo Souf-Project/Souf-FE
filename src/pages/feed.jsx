@@ -118,7 +118,7 @@ export default function Feed() {
           onSearch={handleSearch}
           searchPlaceholder="검색어를 입력하세요"
         />
-        <div className="w-screen ">
+        <div className="w-screen px-8 lg:px-0">
         <Carousel />
         </div>
          
