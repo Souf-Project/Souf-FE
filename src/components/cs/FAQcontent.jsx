@@ -1,10 +1,17 @@
 import { useState } from "react";
+import SearchBar from "../SearchBar";
 import Accordian from "./accordian";
 
 export default function FAQcontent({ onInquiryClick }) {
     const [activeTab, setActiveTab] = useState(0);
+    const [searchQuery, setSearchQuery] = useState("");
     const handleTabChange = (tab) => {
         setActiveTab(tab);
+    };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        console.log(searchQuery);
     };
     // 탭 마다 다른 데이터 연결하도록
     const faqData1 = [
@@ -38,7 +45,15 @@ export default function FAQcontent({ onInquiryClick }) {
     ];
     return (
         <div>
-            <div className="flex items-center gap-2">
+             <SearchBar
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onSubmit={handleSearch}
+                placeholder="어떤게 궁금하신가요?"
+                width="w-1/2"
+                height="py-4"
+            />
+            <div className="flex items-center gap-2 mt-4">
                 <button
                         className={`pr-8 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
                             activeTab === 0 ? "text-black" : "text-gray-500"

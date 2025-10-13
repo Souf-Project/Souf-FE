@@ -4,20 +4,26 @@ import SEO from "../components/seo";
 import Pageheader from "../components/pageHeader";
 import FAQcontent from "../components/cs/FAQcontent";
 import InquiryCenter from "../components/cs/inquiryCenter";
-import SearchBar from "../components/SearchBar";
+import AlertModal from "../components/alertModal";
+import { UserStore } from "../store/userStore";
+
 export default function CsPage() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
-   
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const { memberId } = UserStore();
+    
     const handleTabChange = (tab) => {
+        // 문의 센터로 이동하려고 할 때 로그인 상태 확인
+        if (tab === 1 && !memberId) {
+            setShowLoginModal(true);
+            return;
+        }
         setActiveTab(tab);
     };
    
-    const handleSearch = (e) => {
-        e.preventDefault();
-        console.log(e.target.value);
-    };
+  
   return (
     <div>
         <SEO  title="고객센터" description={`스프 SouF - 고객센터`} subTitle='스프' />
@@ -56,17 +62,26 @@ export default function CsPage() {
                         ></span> */}
                     </button>
             </div>
-            <SearchBar
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onSubmit={handleSearch}
-                placeholder="어떤게 궁금하신가요?"
-                width="w-1/2"
-                height="py-4"
-            />
+           
             <div>
                 {activeTab === 0 ? <FAQcontent onInquiryClick={() => handleTabChange(1)} /> : <InquiryCenter />}
             </div>
+            
+            {/* 로그인 필요 모달 */}
+            {showLoginModal && (
+                <AlertModal
+                    type="simple"
+                    title="로그인이 필요합니다"
+                    description="문의 센터를 이용하려면 로그인이 필요합니다."
+                    TrueBtnText="로그인하러 가기"
+                    FalseBtnText="취소"
+                    onClickTrue={() => {
+                        setShowLoginModal(false);
+                        navigate("/login");
+                    }}
+                    onClickFalse={() => setShowLoginModal(false)}
+                />
+            )}
         </div>
     </div>
   );

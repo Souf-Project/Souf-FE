@@ -346,7 +346,7 @@ const DesktopHeader = () => (
                 <img src={ChatIcon} alt="chat" className="w-6 h-6" />
               </button>
               {roleType === "MEMBER" && (
-                <button className="px-4 py-2 text-blue-main font-bold border border-blue-200 rounded-lg hover:shadow-[0px_0px_5px_3px_rgba(92,161,232,0.5)] transition-all duration-300" onClick={() => handleNavigation("/verifyStudent")}>
+                <button className="px-2 py-2 text-blue-main font-bold border border-blue-200 rounded-lg hover:shadow-[0px_0px_5px_3px_rgba(92,161,232,0.5)] transition-all duration-300" onClick={() => handleNavigation("/verifyStudent")}>
                대학생 인증
                 </button>
               )}
