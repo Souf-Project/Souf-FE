@@ -3,7 +3,7 @@ import FilterDropdown from "../FilterDropdown";
 import SEO from "../seo";
 import { postInquiry, uploadInquiryFile } from "../../api/inquiry";
 
-export default function InquiryCenter() {
+export default function InquiryCenter({ onInquiryComplete }) {
     const [selectedValue, setSelectedValue] = useState("");
     const [formData, setFormData] = useState({
         title: "",
@@ -128,14 +128,18 @@ export default function InquiryCenter() {
                 }
             }
             
-            alert("문의가 성공적으로 등록되었습니다.");
-
+            // 폼 초기화
             setFormData({
                 title: "",
                 content: "",
                 files: []
             });
             setSelectedValue("");
+            
+            // 완료 콜백 호출
+            if (onInquiryComplete) {
+                onInquiryComplete();
+            }
             
         } catch (error) {
             console.error("문의 등록 에러:", error);

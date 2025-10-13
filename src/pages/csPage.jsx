@@ -12,6 +12,7 @@ export default function CsPage() {
     const [activeTab, setActiveTab] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [showLoginModal, setShowLoginModal] = useState(false);
+    const [isInquiryCompleted, setIsInquiryCompleted] = useState(false);
     const { memberId } = UserStore();
     
     const handleTabChange = (tab) => {
@@ -20,6 +21,7 @@ export default function CsPage() {
             return;
         }
         setActiveTab(tab);
+        setIsInquiryCompleted(false);
     };
    
   
@@ -63,7 +65,29 @@ export default function CsPage() {
             </div>
            
             <div>
-                {activeTab === 0 ? <FAQcontent onInquiryClick={() => handleTabChange(1)} /> : <InquiryCenter />}
+                {isInquiryCompleted ? (
+                    <div className="flex flex-col items-start py-20">
+                        <div className="">
+                           
+                            <p className="text-2xl font-bold text-blue-500 mb-2">문의가 접수되었습니다.
+                           </p>
+                            <p className="text-2xl font-bold text-blue-500 mb-6"> 마이페이지에서 확인하세요.</p>
+                            {/* <button
+                                onClick={() => {
+                                    setIsInquiryCompleted(false);
+                                    setActiveTab(0);
+                                }}
+                                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                            >
+                                FAQ로 돌아가기
+                            </button> */}
+                        </div>
+                    </div>
+                ) : activeTab === 0 ? (
+                    <FAQcontent onInquiryClick={() => handleTabChange(1)} />
+                ) : (
+                    <InquiryCenter onInquiryComplete={() => setIsInquiryCompleted(true)} />
+                )}
             </div>
             
             {showLoginModal && (
