@@ -412,8 +412,8 @@ export default function RecruitUpload() {
         price: `${formData.price}만원`,
         preferentialTreatment: formData.hasPreference ? formData.preferentialTreatment : '',
         categoryDtos: cleanedCategories,
-        originalFileNames: formData.files.map((file) => file.name),
         workType: formData.workType.toUpperCase(),
+        ...(formData.files.length > 0 && { originalFileNames: formData.files.map((file) => file.name) })
       };
   
       // console.log('Sending data:', formDataToSend);
