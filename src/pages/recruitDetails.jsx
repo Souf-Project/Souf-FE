@@ -187,9 +187,9 @@ export default function RecruitDetail() {
       // setIsApplyModalOpen(false);
       handleApiError(error,{setShowLoginModal,setErrorModal,setErrorDescription,setErrorAction},APPLICATION_ERRORS);
     }
-    setIsApplyModalOpen(false);
+    //setIsApplyModalOpen(false);
 
-    setIsApplySuccessModalOpen(true);
+    //setIsApplySuccessModalOpen(true);
   };
 
   const handleEstimateSubmit = async () => {
