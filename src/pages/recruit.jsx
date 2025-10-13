@@ -47,7 +47,7 @@ export default function Recruit() {
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [bannerShown, setBannerShown] = useState(false);
   const [recommendShown, setRecommendShown] = useState(false);
-  const pageSize = 12;
+  const pageSize = 9;
   const { memberId, roleType } = UserStore();
 
 
@@ -362,23 +362,9 @@ export default function Recruit() {
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
-                // 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 (한 번만)
-                let showEstimateBanner = false;
-                let showRecommendRecruit = false;
-                
-                if (index >= 3 && !bannerShown && !recommendShown) {
-                  const shouldShowRandomComponent = Math.random() < 0.3; // 30% 확률
-                  if (shouldShowRandomComponent) {
-                    const showBanner = Math.random() < 0.5; // 50% 확률로 EstimateBanner
-                    if (showBanner) {
-                      showEstimateBanner = true;
-                      setBannerShown(true);
-                    } else {
-                      showRecommendRecruit = true;
-                      setRecommendShown(true);
-                    }
-                  }
-                }
+                 const isOddPage = (currentPage + 1) % 2 === 1;
+                 const showRecommendRecruit = isOddPage && index === 2;
+                 const showEstimateBanner = isOddPage && index === 5;
 
                 return (
                   <div key={recruit.recruitId}>
@@ -399,7 +385,6 @@ export default function Recruit() {
                       profileImageUrl={recruit.profileImageUrl}
                     />
                     
-                    {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}
                     {showEstimateBanner && (
                       <div className="my-8">
                         <EstimateBanner color="black" />

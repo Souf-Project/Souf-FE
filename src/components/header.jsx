@@ -237,7 +237,7 @@ const DesktopHeader = () => (
       <div className="relative flex items-center justify-between max-w-[60rem] mx-auto">
         <div className="flex items-center gap-x-8">
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
-          <ul className="flex items-center font-bold text-xl text-black cursor-pointer gap-1">
+          <ul className="flex items-center font-bold text-lg text-black cursor-pointer gap-1">
             <li 
               className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('recruit')}
@@ -247,7 +247,7 @@ const DesktopHeader = () => (
               {/* 외주 의뢰하기 드롭다운 */}
               {activeDropdown === 'recruit' && (
                  <div 
-                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1.1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('recruit')}
                    onMouseLeave={handleDropdownLeave}
                  >
@@ -275,7 +275,7 @@ const DesktopHeader = () => (
               {/* 외주 찾기 드롭다운 */}
               {activeDropdown === 'find' && (
                  <div 
-                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('find')}
                    onMouseLeave={handleDropdownLeave}
                  >
@@ -294,7 +294,7 @@ const DesktopHeader = () => (
               {/* 대학생 피드보기 드롭다운 */}
               {activeDropdown === 'feed' && (
                  <div 
-                   className="absolute top-[3rem] left-[-0.5rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('feed')}
                    onMouseLeave={handleDropdownLeave}
                  >
@@ -529,17 +529,14 @@ const DesktopHeader = () => (
 
   return (
     <>
-      {/* PC 버전 (md 이상) */}
       <div className="hidden lg:block">
         <DesktopHeader />
       </div>
       
-      {/* 모바일 버전 (md 미만) */}
       <div className="block lg:hidden">
         <MobileHeader />
       </div>
 
-      {/* Alert Modal */}
       {showAlertModal && (
         <AlertModal
           type="simple"
@@ -555,7 +552,6 @@ const DesktopHeader = () => (
         />
       )}
 
-      {/* Feed Upload Alert Modal */}
       {showFeedAlertModal && (
         <AlertModal
           type="simple"
