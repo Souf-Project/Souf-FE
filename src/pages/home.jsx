@@ -394,6 +394,22 @@ export default function Home() {
      <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0 ">
        <div className="flex flex-col justify-center gap-2 items-center w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
        <span className="text-black text-xl lg:text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+       <div className="flex items-center justify-between w-full">
+        {/* 좌측 화살표 */}
+        <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
+             <svg 
+               className="w-5 h-5 text-gray-400" 
+               fill="none" 
+               stroke="currentColor" 
+               viewBox="0 0 24 24"
+               style={{
+                 animation: 'bounceLeft 1.5s ease-in-out infinite'
+               }}
+             >
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+             </svg>
+           </div>
+
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
          <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
@@ -414,7 +430,23 @@ export default function Home() {
            ))}
               </div>
             </div>
+            {/* 우측 화살표 */}
+ <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
+             <svg 
+               className="w-5 h-5 text-gray-400" 
+               fill="none" 
+               stroke="currentColor" 
+               viewBox="0 0 24 24"
+               style={{
+                 animation: 'bounceRight 1.5s ease-in-out infinite'
+               }}
+             >
+               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+             </svg>
+           </div>
             </div>
+ 
+           </div>
             </div>
      
 <div className="flex flex-col lg:flex-row mt-32 max-w-[60rem] mx-auto  w-screen px-8 lg:px-0 ">
@@ -449,8 +481,8 @@ export default function Home() {
       </div>
     
 {/* 스프 소개란 */}
-<div className="relative px-6 lg:px-24 mt-32 bg-[#2582E0BF]">
-<div className="max-w-[60rem] mx-auto flex justify-center items-center py-16">
+<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF]">
+<div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
   <div className="flex flex-col items-start">
     <h2 className="my-8 text-white text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
@@ -519,7 +551,7 @@ export default function Home() {
       </div>
 
       {/* 무료 외주 등록 섹션 */}
-      <div className="flex mt-32 max-w-[60rem] mx-auto">
+      <div className="flex mt-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
         <EstimateBanner color="black" />
       </div>
 
@@ -537,7 +569,7 @@ Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetr
 Proin facilisis, velit ut commodo interdum, velit nunc tincidunt ex, vel pharetra quam mi quis metus. Donec suscipit accumsan libero at rutrum. Maecenas sit amet tincidunt nisl. Ut luctus euismod nibh ac maximus. Nunc nisi massa, bibendum sed blandit et, interdum in sapien. Aliquam dictum venenatis risus, in imperdiet velit vehicula eget.</p>
         </div>
       </div> */}
-      <div className="flex my-32  max-w-[60rem] mx-auto">
+      <div className="flex my-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
         <EstimateBanner color="blue" />
       </div>
 
