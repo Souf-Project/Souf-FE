@@ -93,7 +93,7 @@ export default function MyFeed() {
         <AlertModal
         type="simple"
         title="로그인이 필요합니다"
-        description="SouF 회원만 댓글을 작성할 수 있습니다!"
+        description="SouF 회원만 접근 가능합니다!"
         TrueBtnText="로그인하러 가기"
         FalseBtnText="취소"
         onClickTrue={() => {
