@@ -346,8 +346,8 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-        <div className="relative bg-[#FBFBFB] py-20 w-screen">
-        <div className="flex justify-center items-start max-w-[70rem] mx-auto">
+        <div className="relative bg-[#FBFBFB] py-20 w-screen mx-auto">
+        <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[70rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-28">
           <AnimatedTitle />
@@ -391,9 +391,9 @@ export default function Home() {
         /> */}
 
      {/* 카테고리 섹션 */}
-     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0">
-       <div className="flex flex-col justify-center gap-2 items-center max-w-[60rem] mx-auto">
-       <span className="text-black text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0 ">
+       <div className="flex flex-col justify-center gap-2 items-center w-screen px-4 lg:max-w-[60rem] mx-auto">
+       <span className="text-black text-xl lg:text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
          <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
