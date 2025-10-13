@@ -312,12 +312,24 @@ const DesktopHeader = () => (
               외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
-            {/* <li 
+            <li 
               className={` ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
               onClick={() => navigate("/guide")}
             >
-              이용 가이드
-            </li> */}
+              <span className="cursor-pointer" onClick={() => navigate("/feed")}>이용가이드</span>
+              {/* 이용가이드 드롭다운 */}
+              {activeDropdown === 'guide' && (
+                 <div 
+                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
+                   onMouseEnter={() => handleDropdownEnter('guide')}
+                   onMouseLeave={handleDropdownLeave}
+                 >
+                   <ul className="flex flex-col gap-1">
+                     <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
+                   </ul>
+                 </div>
+              )}
+            </li>
           </ul>
         </div>
 
