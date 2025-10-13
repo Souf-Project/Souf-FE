@@ -39,7 +39,7 @@ export default function FreeEstimate({color}) {
             <h3 className="text-white text-md font-semibold mt-4">연계 학교 단체 / 개인의 다양한 견적</h3>
           </div>
           <div className="flex items-center gap-4">
-              <img src={freeImg} alt="freeImg" className="absolute bottom-0 right-60 w-52" />
+              <img src={freeImg} alt="freeImg" className="hidden lg:block absolute bottom-0 right-60 w-52" />
               <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl"
               onClick={handleRecruitUploadClick}>무료 외주 견적 받기</button>
           </div>

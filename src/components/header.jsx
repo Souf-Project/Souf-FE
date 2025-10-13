@@ -188,23 +188,23 @@ useEffect(() => {
   const UserTypeLabel = () => {
     if (roleType === "ADMIN") {
       return (
-        <div className="flex justify-center gap-2">
+        <div className="flex items-center gap-2 text-white">
           <span className="font-bold">관리자</span>
-          <span className="font-normal ml-1">{nickname}</span>
+          <span className="font-normal">{nickname}</span>
         </div>
       );
     } else if (roleType === "STUDENT") {
       return (
-        <div className="flex justify-center gap-2">
+        <div className="flex items-center gap-2 text-white">
           <span className="font-bold">학생</span>
-          <span className="font-normal ml-1">{nickname}</span>
+          <span className="font-normal">{nickname}</span>
         </div>
       );
     } else {
       return (
-        <div>
+        <div className="flex items-center gap-2 text-white">
           <span className="font-bold">일반</span>
-          <span className="font-normal ml-1">{nickname}</span>
+          <span className="font-normal">{nickname}</span>
         </div>
       );
     }
@@ -436,7 +436,7 @@ const DesktopHeader = () => (
 <div
   ref={mobileMenuRef}
   className={`
-    absolute top-[2.2rem] left-[-1rem] w-full bg-white border-b border-grey-border shadow-lg z-50
+    absolute top-16 left-0 w-full bg-white border-b border-grey-border shadow-lg z-50
     transition-all duration-300 ease-in-out overflow-hidden
     ${showMobileMenu ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"}
   `}
@@ -447,19 +447,13 @@ const DesktopHeader = () => (
   <div className="px-4 py-4">
     <h3 className="text-md font-bold text-gray-700 mb-3">카테고리</h3>
     <ul className="space-y-2">
-      {categories.map((category) => (
-        <li
-          key={category.first_category_id}
-          className={`px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-            activeCategory === category.first_category_id.toString()
-              ? "bg-yellow-point text-white"
-              : "text-gray-700 hover:bg-gray-100"
-          }`}
-          onClick={() => handleNavigationCategory(category.first_category_id)}
-        >
-          {category.name}
-        </li>
-      ))}
+      <li>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/recruitUpload")}>외주 의뢰하기</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/recruit")}>외주 찾기</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/feed")}>대학생 피드보기</button>
+        {/* <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/review")}>외주 후기</button> */}
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/guide")}>이용가이드</button>
+      </li>
     </ul>
     <h3 className="text-md font-bold text-gray-700 my-3">로그인 메뉴</h3>
     {/* 추가적인 메뉴 (로그인 상태에 따라) */}
@@ -469,13 +463,13 @@ const DesktopHeader = () => (
           <UserTypeLabel />
         </div>
         <button
-          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+          className="block w-full px-3 py-2 text-left text-gray-700"
           onClick={() => handleNavigation("/mypage")}
         >
           마이페이지
         </button>
         <button
-          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+          className="block w-full px-3 py-2 text-left text-gray-700"
           onClick={() =>
             handleNavigation(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")
           }
@@ -483,7 +477,7 @@ const DesktopHeader = () => (
           {roleType === "MEMBER" ? "공고문 작성하기" : "피드 작성하기"}
         </button>
         <button
-          className="block w-full px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-lg"
+          className="block w-full px-3 py-2 text-left text-gray-700"
           onClick={toggleLogin}
         >
           로그아웃
