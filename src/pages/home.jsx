@@ -392,7 +392,7 @@ export default function Home() {
 
      {/* 카테고리 섹션 */}
      <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0 ">
-       <div className="flex flex-col justify-center gap-2 items-center w-screen px-4 lg:max-w-[60rem] mx-auto">
+       <div className="flex flex-col justify-center gap-2 items-center w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
        <span className="text-black text-xl lg:text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
          <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
@@ -417,9 +417,9 @@ export default function Home() {
             </div>
             </div>
      
-<div className="flex mt-32 max-w-[60rem] mx-auto">
+<div className="flex flex-col lg:flex-row mt-32 max-w-[60rem] mx-auto  w-screen px-8 lg:px-0 ">
 {/* 실시간 대학생 피드 섹션 */}
-  <div className="relative w-2/3">
+  <div className="relative w-full lg:w-2/3">
   <div className="flex items-center mb-8 gap-4">
   <h2 className="text-2xl font-semibold">
         실시간 대학생 피드
@@ -431,7 +431,7 @@ export default function Home() {
         </div>
     
 {/* 진행 중인 외주 의뢰 섹션 */}
-      <div className="relative w-1/3 ml-4">
+      <div className="relative w-full lg:w-1/3 lg:ml-4 mt-10 lg:mt-0">
       <div className="flex items-center mb-8 gap-4">
         <h2 className="text-2xl font-semibold">
         진행 중인 외주 의뢰

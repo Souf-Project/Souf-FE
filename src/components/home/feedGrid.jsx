@@ -48,10 +48,10 @@ export default function FeedGrid() {
         {feedData.map((feed) => (
           <div
             key={feed.feedId}
-            className="w-52 cursor-pointer"
+            className="w-40 lg:w-52 cursor-pointer"
             onClick={() => handleClick(feed.feedId, feed.memberId)}
           >
-            <div className="w-52 bg-white">
+            <div className="w-40 lg:w-52 bg-white">
               {feed.mediaResDto?.fileUrl && (
                  <img
                  src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
