@@ -149,6 +149,10 @@ useEffect(() => {
       setShowMobileMenu(false);
     }
   };
+  const handleNavigationGuideCategory = () => {
+    navigate(`/guide`);
+    setShowMobileMenu(false);
+  };
   const deleteCookie = (name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   };
@@ -313,14 +317,15 @@ const DesktopHeader = () => (
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
             <li 
-              className={` ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
-              onClick={() => navigate("/guide")}
+              className={`relative py-5 w-28 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('guide')}
+              onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer" onClick={() => navigate("/feed")}>이용가이드</span>
+              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
               {/* 이용가이드 드롭다운 */}
               {activeDropdown === 'guide' && (
                  <div 
-                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('guide')}
                    onMouseLeave={handleDropdownLeave}
                  >

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import SEO from "../components/seo";
 import Pageheader from "../components/pageHeader";
 import FAQcontent from "../components/cs/FAQcontent";
 import InquiryCenter from "../components/cs/inquiryCenter";
@@ -19,6 +20,7 @@ export default function CsPage() {
     };
   return (
     <div>
+        <SEO  title="고객센터" description={`스프 SouF - 고객센터`} subTitle='스프' />
         <Pageheader
             leftButtons={[
                 { text: "고객센터", onClick: () => navigate("/guide") }
