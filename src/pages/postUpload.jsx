@@ -304,8 +304,8 @@ export default function PostUpload() {
 
   return (
 
-    <div className="lg:max-w-5xl mx-auto my-10">
-      <div className="lg:w-[1000px] border-2 flex flex-col justify-center items-left p-10 gap-4">
+    <div className="lg:max-w-[60rem] mx-auto my-10">
+      <div className="lg:w-[60rem] border-2 flex flex-col justify-center items-left p-10 gap-4">
 
         <div className="text-center font-bold text-3xl">게시물 작성</div>
         <PostInput
@@ -346,7 +346,7 @@ export default function PostUpload() {
             className={`px-6 py-3 rounded-lg font-bold transition-colors duration-200 ${
               isPending
                 ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                : 'bg-yellow-main text-black hover:bg-yellow-600'
+                : 'bg-blue-main text-white hover:shadow-md'
             }`}
           >
 {/*            {isPending ? (

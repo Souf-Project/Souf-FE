@@ -93,3 +93,13 @@ export async function getInquiryList(pageable) {
   });
   return response;
 }
+
+export async function deleteInquiry(inquiryId) {
+  const accessToken = localStorage.getItem("accessToken");
+  const response = await client.delete(`/api/v1/inquiry/${inquiryId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response;
+}

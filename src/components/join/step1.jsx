@@ -156,6 +156,7 @@ export default function JoinForm({ socialLoginInfo }) {
       setEmailModal(true);
     },
     onEmailError: (error) => {
+      console.log("인증번호 전송 실패:", error);
       setModalTitle("인증번호 전송 실패");
       setDescription("인증번호 전송에 실패했습니다. 다시 시도해주세요.");
       setEmailModal(true);

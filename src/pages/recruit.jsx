@@ -45,7 +45,9 @@ export default function Recruit() {
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [sortBy, setSortBy] = useState('RECENT_DESC');
   const [showAlertModal, setShowAlertModal] = useState(false);
-  const pageSize = 12;
+  const [bannerShown, setBannerShown] = useState(false);
+  const [recommendShown, setRecommendShown] = useState(false);
+  const pageSize = 9;
   const { memberId, roleType } = UserStore();
 
 
@@ -109,7 +111,7 @@ export default function Recruit() {
         const totalPagesData = response.data.result?.page?.totalPages;
         setTotalPages(totalPagesData);
       } else {
-        console.log('검색 실패: 응답 데이터 없음');
+        // console.log('검색 실패: 응답 데이터 없음');
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
       }
@@ -186,6 +188,12 @@ export default function Recruit() {
   useEffect(() => {
     fetchRecruits();
   }, [selectedCategory, selectedCategories, currentPage, sortBy, fetchRecruits]);
+
+  // 데이터가 로드될 때마다 배너와 추천공고 상태 리셋
+  useEffect(() => {
+    setBannerShown(false);
+    setRecommendShown(false);
+  }, [filteredRecruits]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -320,6 +328,21 @@ export default function Recruit() {
           )}
         </div>
       </div>
+
+      {/* 데스크톱 헤더와 검색창 */}
+      <PageHeader
+        leftButtons={[
+          { text: "외주 조회", onClick: () => {} },
+        ]}
+        showDropdown={true}
+        showSearchBar={true}
+        onSearchTypeChange={handleSearchTypeChange}
+        searchQuery={searchQuery}
+        onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+        onSearch={handleSearch}
+        searchPlaceholder="어떤 외주를 찾는지 알려주세요!"
+      />
+
       <div className="max-w-[60rem] w-full mx-auto">
         <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">
         {/* 데스크톱 카테고리 메뉴 */}
@@ -357,10 +380,9 @@ export default function Recruit() {
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
-                // 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시
-                const shouldShowRandomComponent = index >= 3 && Math.random() < 0.3; // 30% 확률
-                const showEstimateBanner = shouldShowRandomComponent && Math.random() < 0.5; // 50% 확률로 EstimateBanner
-                const showRecommendRecruit = shouldShowRandomComponent && !showEstimateBanner; // 나머지 50% 확률로 RecommendRecruit
+                 const isOddPage = (currentPage + 1) % 2 === 1;
+                 const showRecommendRecruit = isOddPage && index === 2;
+                 const showEstimateBanner = isOddPage && index === 5;
 
                 return (
                   <div key={recruit.recruitId}>
@@ -376,9 +398,11 @@ export default function Recruit() {
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
+                      nickname={recruit.nickname}
+                      firstMediaUrl={recruit.firstMediaUrl}
+                      profileImageUrl={recruit.profileImageUrl}
                     />
                     
-                    {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}
                     {showEstimateBanner && (
                       <div className="my-8">
                         <EstimateBanner color="black" />
