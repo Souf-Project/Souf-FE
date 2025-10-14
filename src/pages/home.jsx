@@ -351,7 +351,7 @@ export default function Home() {
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
           <AnimatedTitle />
-            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
+            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left whitespace-nowrap">
               여기! 인재 매칭해드려요.
             </h2>
             <h3 className="text-lg font-semibold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
