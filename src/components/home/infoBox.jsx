@@ -113,7 +113,7 @@ export default function InfoBox() {
       </div>
 
             {/* 네비게이션 버튼들 */}
-      <div className="absolute bottom-[-20px] left-[44%] transform -translate-x-1/2 flex gap-4 z-40">
+      <div className="absolute bottom-[-20px] left-[50%] transform -translate-x-1/2 flex gap-4 z-40">
         <button
           onClick={handlePrev}
           className="w-36 h-36 sm:w-10 sm:h-10 bg-white rounded-full flex items-center justify-center transition-transform duration-150 active:scale-90 hover:scale-110"
@@ -129,7 +129,7 @@ export default function InfoBox() {
       </div>
 
       {/* 인디케이터 */}
-      <div className="absolute bottom-16 sm:bottom-10 left-[44%] transform -translate-x-1/2 flex gap-1 z-40">
+      <div className="absolute bottom-16 sm:bottom-10 left-[50%] transform -translate-x-1/2 flex gap-1 z-40">
         {images.map((_, index) => (
           <div
             key={index}
