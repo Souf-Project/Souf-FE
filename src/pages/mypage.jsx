@@ -5,12 +5,12 @@ import starIcon from '../assets/images/starIcon.svg'
 import applyIcon from '../assets/images/applyIcon.svg'
 import feedIcon from '../assets/images/feedIcon.svg'
 
-import ProfileEditContent from '../components/ProfileEditContent';
-import ApplicationsContent from '../components/ApplicationsContent';
-import FavoritesContent from '../components/FavoritesContent';
+import ProfileEditContent from '../components/mypage/ProfileEditContent';
+import ApplicationsContent from '../components/mypage/ApplicationsContent';
+import FavoritesContent from '../components/mypage/FavoritesContent';
 import CompanyApplicants from '../components/companyMyPage/companyApplicants';
 import { UserStore } from '../store/userStore';
-import MyFeed from '../components/myFeed';
+import MyFeed from '../components/mypage/myFeed';
 
 export default function MyPage() {
   // const navigate = useNavigate();
@@ -38,6 +38,8 @@ export default function MyPage() {
         return <FavoritesContent />;
       case 'myFeed':
         return <MyFeed/>;
+      case 'inquiryList':
+        return <InquiryList/>;
       default:
         return <ProfileEditContent />;
     }

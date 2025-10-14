@@ -83,3 +83,10 @@ export async function getNickNameVerify(nickname) {
   return response;
 }
 
+export async function getInquiryList(pageable) {
+  const accessToken = localStorage.getItem("accessToken");
+  const response = await client.get("/api/v1/inquiry/my", {
+    params: pageable
+  });
+  return response;
+}
