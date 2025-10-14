@@ -38,7 +38,7 @@ export default function ProfileEditContent() {
       const response = await getProfile();
       if (response.status === 200 && response.data?.result) {
         const profileData = response.data.result;
-        console.log(profileData);
+        // console.log(profileData);
         
         // 백엔드에서 받은 categoryDtoList를 newCategories 형식으로 변환
         let newCategories = [

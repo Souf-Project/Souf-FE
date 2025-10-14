@@ -4,10 +4,12 @@ import profileIcon from '../assets/images/profileIcon.svg'
 import starIcon from '../assets/images/starIcon.svg'
 import applyIcon from '../assets/images/applyIcon.svg'
 import feedIcon from '../assets/images/feedIcon.svg'
+import inquiryIcon from '../assets/images/inquiryIcon.svg'
 
 import ProfileEditContent from '../components/mypage/ProfileEditContent';
 import ApplicationsContent from '../components/mypage/ApplicationsContent';
 import FavoritesContent from '../components/mypage/FavoritesContent';
+import InquiryContent from '../components/mypage/inquiryContent';
 import CompanyApplicants from '../components/companyMyPage/companyApplicants';
 import { UserStore } from '../store/userStore';
 import MyFeed from '../components/mypage/myFeed';
@@ -38,8 +40,8 @@ export default function MyPage() {
         return <FavoritesContent />;
       case 'myFeed':
         return <MyFeed/>;
-      case 'inquiryList':
-        return <InquiryList/>;
+      case 'inquiry':
+        return <InquiryContent/>;
       default:
         return <ProfileEditContent />;
     }
@@ -57,6 +59,11 @@ export default function MyPage() {
         id: 'favorites',
         label: '내 즐겨찾기',
         icon: starIcon
+      },
+      {
+        id: 'inquiry',
+        label: '문의 내역',
+        icon: inquiryIcon
       }
     ];
 
@@ -112,7 +119,7 @@ export default function MyPage() {
   const menuItems = renderMenuItems();
 
   return (
-    <div className="min-h-screen w-screen bg-blue-bright pb-24">
+    <div className="min-h-screen w-screen bg-white pb-24">
       {/* 모바일 메뉴 버튼 */}
       <button
         className="lg:hidden fixed top-20 left-4 z-30 p-2 bg-white rounded-lg shadow-md"
@@ -167,7 +174,7 @@ export default function MyPage() {
       {/* PC 레이아웃 */}
       <div className="hidden lg:flex w-full max-w-[60rem] mx-auto pt-12">
         {/* PC 사이드바 */}
-        <div className="w-52 bg-white p-6 mr-6 rounded-2xl shadow-md h-fit">
+        <div className="min-w-52 bg-white p-6 mr-6 rounded-2xl shadow-md h-fit">
           <ul className="space-y-2">
             {menuItems.map((item) => (
               <li key={item.id} className='mb-4'>
@@ -218,6 +225,7 @@ export default function MyPage() {
           {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium mb-4">기업 지원 내역</h3>}
           {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium mb-4">즐겨찾기</h3>}
           {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium mb-4">내 피드</h3>}
+          {activeSubmenu === 'inquiry' && <h3 className="text-4xl font-medium mb-4">문의 내역</h3>}
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>

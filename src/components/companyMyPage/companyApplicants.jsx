@@ -76,14 +76,14 @@ export default function CompanyApplicants({ recruitId }) {
   const handleRecruitDetailClick = async (recruitId) => {
     try {
       const response = await getRecruitDetail(recruitId);
-      console.log('API Response:', response);
-      console.log('Response data:', response.data);
+      // console.log('API Response:', response);
+      // console.log('Response data:', response.data);
       
       // API 응답 구조에 따라 데이터 전달
       const stateData = response.data?.result ? response.data : { recruitDetail: response.data };
       
       navigate(`/recruitDetails/${recruitId}`, { state: stateData });
-      console.log('공고문 상세 조회 성공:', stateData);
+      // console.log('공고문 상세 조회 성공:', stateData);
     } catch (error) {
       console.error('공고문 상세 조회 실패:', error);
       // 에러가 발생해도 기본 데이터로 이동
