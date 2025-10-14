@@ -186,11 +186,13 @@ export default function CompanyApplicants({ recruitId }) {
           
           {/* PC 타이틀 */}
           <h2 className="hidden lg:block text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
-          <div className="flex gap-5">
+          
+          </div>
+          <div className="flex gap-5 mb-4">
             <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
             <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
           </div>
-          </div>
+
           {recruits.length > 0 ? (
             <div className="border rounded-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">

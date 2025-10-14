@@ -21,22 +21,33 @@ export const uploadInquiryFile = async (file) => {
     }
 };
 
-export const patchInquiry = async (inquiryId) => {
-    try {
-        const response = await client.patch(`/api/v1/inquiry/${inquiryId}`);
-        return response.data;
-    } catch (error) {
-        console.error("문의 수정 에러:", error);
-        throw error;
-    }
-};
-
-export const deleteInquiry = async (inquiryId) => {
-    try {
-        const response = await client.delete(`/api/v1/inquiry/${inquiryId}`);
-        return response.data;
-    } catch (error) {
-        console.error("문의 삭제 에러:", error);
-        throw error;
-    }
-};
+export async function getInquiryList(pageable) {
+    const accessToken = localStorage.getItem("accessToken");
+    const response = await client.get("/api/v1/inquiry/my", {
+      params: pageable,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response;
+  }
+  
+  export async function deleteInquiry(inquiryId) {
+    const accessToken = localStorage.getItem("accessToken");
+    const response = await client.delete(`/api/v1/inquiry/${inquiryId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response;
+  }
+  
+  export async function patchInquiry(inquiryId, requestBody) {
+    const accessToken = localStorage.getItem("accessToken");
+    const response = await client.patch(`/api/v1/inquiry/${inquiryId}`, requestBody, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response;
+  }
