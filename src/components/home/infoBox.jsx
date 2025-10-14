@@ -52,9 +52,9 @@ export default function InfoBox() {
   };
 
   return (
-    <div className="relative w-full max-w-xl mx-auto hidden lg:block">
+    <div className="relative mx-auto hidden lg:block mt-8">
       {/* 이미지들 */}
-      <div className="relative w-[32rem] aspect-[8/7]">
+      <div className="relative w-[26rem] aspect-[8/7]">
         {images.map((image, index) => {
           const isActive = index === currentIndex;
           const isNext = index === (currentIndex + 1) % images.length;
@@ -83,7 +83,7 @@ export default function InfoBox() {
           return (
             <div
               key={index}
-              className={`absolute inset-0 sm:p-6 md:p-8 flex flex-col rounded-xl justify-center items-center text-center transition-all duration-500 ease-in-out ${zIndex} ${opacity} ${transform}`}
+              className={`absolute inset-0 sm:p-4 md:p-6 flex flex-col rounded-xl justify-center items-center text-center transition-all duration-500 ease-in-out ${zIndex} ${opacity} ${transform}`}
             >
               <img 
                 src={image} 
@@ -91,7 +91,7 @@ export default function InfoBox() {
                 className="w-full h-full object-cover rounded-lg"
               />
              
-                              {index === 1 && (
+                              /* {index === 1 && (
                   <div className="absolute inset-0 flex justify-center items-end pb-20 gap-4 z-50">
                     <button 
                       onClick={handleStudentSignup}
@@ -106,7 +106,7 @@ export default function InfoBox() {
                       외주 공고문 업로드하러 가기!
                     </button>
                   </div>
-                )}
+                )} */
             </div>
           );
         })}
