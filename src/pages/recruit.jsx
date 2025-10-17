@@ -266,8 +266,6 @@ export default function Recruit() {
       <PageHeader
         leftButtons={[
           { text: "외주 조회", onClick: () => {} },
-          { text: "이 가격에 해주세요", onClick: () => {} },
-          { text: "견적 내어주세요", onClick: () => {} }
         ]}
         showDropdown={true}
         showSearchBar={true}
@@ -328,20 +326,6 @@ export default function Recruit() {
           )}
         </div>
       </div>
-
-      {/* 데스크톱 헤더와 검색창 */}
-      <PageHeader
-        leftButtons={[
-          { text: "외주 조회", onClick: () => {} },
-        ]}
-        showDropdown={true}
-        showSearchBar={true}
-        onSearchTypeChange={handleSearchTypeChange}
-        searchQuery={searchQuery}
-        onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
-        onSearch={handleSearch}
-        searchPlaceholder="어떤 외주를 찾는지 알려주세요!"
-      />
 
       <div className="max-w-[60rem] w-full mx-auto">
         <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">

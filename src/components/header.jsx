@@ -222,6 +222,7 @@ useEffect(() => {
     } else {
       return (
         <div className="flex items-center gap-2 text-white justify-center">
+
           <span className="font-bold">일반</span>
           <span className="font-normal">{nickname}</span>
         </div>
