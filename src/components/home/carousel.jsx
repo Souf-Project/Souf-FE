@@ -115,10 +115,10 @@ export default function FeedSwiper() {
                         e.target.style.display = 'none';
                       }}
                     />
-                    {/* 호버 오버레이 */}
-                    <div className="absolute bottom-0 left-0 right-0 h-0 group-hover:h-[30%] transition-all duration-300 overflow-hidden">
-                      <div className="w-full h-full bg-gradient-to-t from-black/50 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                        <div className="transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    {/* 기본 오버레이 및 PC 호버 오버레이 */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[30%] lg:h-0 lg:group-hover:h-[30%] transition-all duration-300 overflow-hidden">
+                      <div className="w-full h-full bg-gradient-to-t from-black/50 via-black/30 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                        <div className="transform translate-y-0 lg:translate-y-full lg:group-hover:translate-y-0 transition-transform duration-300">
                           <h3 className="text-white text-lg font-bold mb-1 line-clamp-2">
                             {feed.title || '제목 없음'}
                           </h3>

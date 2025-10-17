@@ -275,7 +275,7 @@ export default function RecruitDetail() {
       />
      
       
-      <div className="flex w-full mx-auto max-w-[60rem] pb-40 gap-12">
+      <div className="flex w-full mx-auto max-w-[60rem] pb-40 gap-12 px-8 lg:px-0">
         <div className="w-2/3 mx-auto pt-4">
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
@@ -461,20 +461,25 @@ export default function RecruitDetail() {
         <div className="sticky top-24 w-1/3 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md text-sm">
             <div className="space-y-8 mb-4">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1">견적 금액</span>
+                <span className="text-neutral-600 mb-1">견적 비용</span>
                 <span className="font-lg">
                   {price
                     ? `${price.toLocaleString()}`
                     : '견적 희망'}
                 </span>
               </div>
-             
+
               <div className="flex justify-between">
                 <span className="text-neutral-600 mb-1 whitespace-nowrap">마감일</span>
                 <div className="flex flex-col items-center gap-2 text-right">
                 <span className="font-lg">{formatDate(displayData?.startDate)}</span>
                 <span className="font-lg">~{formatDate(displayData?.deadline)}</span>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-600 mb-1">지역</span>
+                <span className="font-lg">{displayData?.cityName} {displayData?.cityDetailName}</span>
+
               </div>
             </div>
             {isAuthor ? (

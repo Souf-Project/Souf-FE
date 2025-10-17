@@ -54,7 +54,7 @@ export default function Profile({
 
   return (
     <div
-      className="flex relative items-center justify-start w-[70%] bg-[#DFEFFF] rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
+      className="flex relative items-center justify-start lg:w-[70%] w-full bg-blue-bright rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
       <div className="absolute top-4 right-4 bg-blue-main p-2 rounded-lg">
       <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
@@ -74,9 +74,7 @@ export default function Profile({
         {/* <div className="font-semibold text-[15px]">스프 온도 {temperature}도</div> */}
         <div className="text-base font-semibold">{userName}</div>
         <div className="text-blue-500 text-[10px]">스프 온도 36.5도</div>
-        <div className="flex flex-col justify-center">
-         
-          </div>
+       
         </div>
         {popularFeeds && popularFeeds.length > 0 ? (
           <div className="grid grid-cols-3 justify-center gap-2">

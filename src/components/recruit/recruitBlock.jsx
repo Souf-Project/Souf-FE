@@ -120,9 +120,9 @@ export default function RecruitBlock({
     >
       
         {firstMediaUrl ? (
-          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-40 h-40 rounded-2xl object-cover" />
+          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-36 h-full max-w-36 rounded-2xl object-cover" />
         ) : (
-          <img src={soufMockup} alt="기본 로고 이미지" className="w-40 h-40 rounded-2xl object-cover" />
+          <img src={soufMockup} alt="기본 로고 이미지" className="w-36  max-w-36 max-h-44 rounded-2xl object-cover" />
         )}
       <div className="flex flex-col px-4 py-3 flex-1 max-w-[26rem]">
         <div className="flex justify-between items-center">

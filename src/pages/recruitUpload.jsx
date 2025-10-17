@@ -425,6 +425,7 @@ export default function RecruitUpload() {
         // existingImageUrls: [],
         originalFileNames: formData.files.map((file) => file.name),
         workType: formData.workType.toUpperCase(),
+        ...(formData.files.length > 0 && { originalFileNames: formData.files.map((file) => file.name) })
       };
   
       console.log('Sending data:', formDataToSend);

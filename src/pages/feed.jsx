@@ -118,38 +118,12 @@ export default function Feed() {
           onSearch={handleSearch}
           searchPlaceholder="검색어를 입력하세요"
         />
-        <div className="w-screen ">
+        <div className="w-screen px-8 lg:px-0">
         <Carousel />
         </div>
          
       <div className="pt-6 md:px-6 md:w-4/5 px-2 w-full">
-        {/* 모바일 탭 */}
-        <div className={`lg:hidden w-full mb-6 sticky top-0 z-10 ${
-          showMobileCategoryMenu 
-            ? "bg-white" 
-            : "bg-gradient-to-b from-white to-transparent"
-        }`}>
-          <div className="pt-20">
-            
-
-            {/* 모바일 카테고리 메뉴 */}
-            {showMobileCategoryMenu && (
-              <div className="mt-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-                <CategoryMenu
-                  secondCategories={filteredSecondCategories}
-                  thirdCategories={thirdCategories}
-                  onSelect={handleCategorySelect}
-                  selectedCategories={{
-                    firstCategoryId: selectedCategory[0],
-                    secondCategoryId: selectedCategory[1],
-                    thirdCategoryId: selectedCategory[2]
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        </div>
-
+       
         <div className="w-full mx-auto max-w-[60rem]">
           <p className="text-base font-bold border-b border-gray-500 pb-4">카테고리 별</p>
           <div className="flex justify-between items-center mt-6">
