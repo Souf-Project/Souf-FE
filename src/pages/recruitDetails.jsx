@@ -403,7 +403,7 @@ export default function RecruitDetail() {
         <div className="sticky top-24 w-1/3 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md text-sm">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1">급여</span>
+                <span className="text-neutral-600 mb-1">견적 비용</span>
                 <span className="font-lg">
                   {price
                     ? `${price.toLocaleString()}`
@@ -411,11 +411,16 @@ export default function RecruitDetail() {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1 whitespace-nowrap">납기일</span>
+                <span className="text-neutral-600 mb-1 whitespace-nowrap">마감일</span>
                 <div className="flex flex-col items-center gap-2 text-right">
                 <span className="font-lg">{formatDate(displayData?.startDate)}</span>
                 <span className="font-lg">~{formatDate(displayData?.deadline)}</span>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-600 mb-1">지역</span>
+                <span className="font-lg">{displayData?.cityName} {displayData?.cityDetailName}</span>
+
               </div>
             </div>
             {isAuthor ? (

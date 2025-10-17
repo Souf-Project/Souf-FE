@@ -349,9 +349,9 @@ export default function Home() {
         <div className="relative bg-[#FBFBFB] py-20 w-screen mx-auto">
         <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[70rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-28">
+          <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
           <AnimatedTitle />
-            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
+            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left whitespace-nowrap">
               여기! 인재 매칭해드려요.
             </h2>
             <h3 className="text-lg font-semibold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
@@ -431,26 +431,7 @@ export default function Home() {
                <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
               </div>
            ))}
-           
-          
-         </div>
-        
-       </div>
-         {/* 우측 화살표 */}
-         <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
-             <svg 
-               className="w-5 h-5 text-gray-400" 
-               fill="none" 
-               stroke="currentColor" 
-               viewBox="0 0 24 24"
-               style={{
-                 animation: 'bounceRight 1.5s ease-in-out infinite'
-               }}
-             >
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-             </svg>
-           </div>
-       
+              </div>
             </div>
             {/* 우측 화살표 */}
  <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
