@@ -339,11 +339,11 @@ export default function RecruitDetail() {
          
           <div className="text-xs font-bold mb-2">{displayData?.hostName}</div>
           <div className="flex justify-between items-center">
-          {/* <div className="flex items-center gap-2">
-            <span className="text-zinc-700 text-lg font-bold mr-2">프로젝트 소개</span>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md">팝업</div>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md">패션디자인 전공</div>
-          </div> */}
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-700 text-lg font-bold mr-2">우대사항 키워드</span>
+            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[0]}</div>
+            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[1]}</div>
+          </div>
          
           </div>
          
@@ -468,13 +468,7 @@ export default function RecruitDetail() {
                     : '견적 희망'}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-neutral-600 mb-1">우대사항</span>
-                <span className="font-lg flex flex-col gap-2">
-                  <span># {displayData?.preferentialTreatmentTags[0]}</span>
-                 <span># {displayData?.preferentialTreatmentTags[1]}</span>
-                </span>
-              </div>
+             
               <div className="flex justify-between">
                 <span className="text-neutral-600 mb-1 whitespace-nowrap">마감일</span>
                 <div className="flex flex-col items-center gap-2 text-right">
