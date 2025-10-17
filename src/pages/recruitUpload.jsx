@@ -113,7 +113,7 @@ export default function RecruitUpload() {
         preferentialTreatmentTags: editData.preferentialTreatmentTags || [],
         logoUrl: editData.logoUrl || '',
         logoFile: null,
-        companyDescription: editData.companyDescription || '',
+        companyDescription: '',
         briefIntroduction: editData.briefIntroduction || '',
         estimatePayment: editData.estimatePayment || '',
         contractMethod: editData.contractMethod || '',
@@ -652,20 +652,6 @@ dtoList.forEach((dto, i) => {
             required
           />
         </div>
-
-        <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
-              공고 간략 소개 (1~2줄)
-          </label>
-            <textarea
-              name="companyDescription"
-              value={formData.companyDescription || ''} 
-              onChange={handleChange}
-              className="w-full h-20 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent resize-none"
-              placeholder="공고에 대한 간략한 소개를 1~2줄로 입력하세요"
-              rows="2"
-            />
-          </div>
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
