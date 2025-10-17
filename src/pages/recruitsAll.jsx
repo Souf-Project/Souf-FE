@@ -9,6 +9,9 @@ import SearchBar from "../components/SearchBar";
 import adImg from "../assets/images/adImg.png";
 import { getProfile } from "../api/profile";
 import basicProfileImg from "../assets/images/BasicProfileImg1.png";
+import { MEMBER_ERRORS } from "../constants/user";
+import AlertModal from "../components/alertModal";
+import { handlePublicApiError } from "../utils/publicApiErrorHandler";
 
 export default function RecruitsAll() {
     const navigate = useNavigate();
@@ -21,7 +24,10 @@ export default function RecruitsAll() {
     const [studentProfiles, setStudentProfiles] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchTerm, setSearchTerm] = useState(""); // 실제 검색에 사용할 용어
-  
+    const [errorModal, setErrorModal] = useState(false);
+    const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+    const [errorAction, setErrorAction] = useState("redirect");
+
     const fetchRecruits = useCallback(async () => {
         try {
           setLoading(true);
@@ -68,7 +74,7 @@ export default function RecruitsAll() {
       try {
         // 1~5 중 랜덤 값 생성
         const randomCategory = Math.floor(Math.random() * 5) + 1;
-        const response = await getProfile(randomCategory, null, null, null, {
+        const response = await getProfile(randomCategory, null, {
           page: 0,
           size: 10,
         });
@@ -94,6 +100,7 @@ export default function RecruitsAll() {
         console.error("Error fetching student profiles:", err);
         console.error("에러 상세:", err.response?.data);
         setStudentProfiles([]);
+        handlePublicApiError(err, {setErrorModal, setErrorDescription, setErrorAction},MEMBER_ERRORS);
       }
     }, []);
 
@@ -303,6 +310,21 @@ export default function RecruitsAll() {
             </div>
         </div>
       </div>
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="오류 발생"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              navigate("/");
+          }else{
+            window.location.reload();
+          }
+        }}
+          />
+      )}
     </>
   );
 }

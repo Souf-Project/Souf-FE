@@ -11,6 +11,8 @@ import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import SEO from "../seo";
 import DeclareButton from "../declare/declareButton";
+import { FAVORITE_ERRORS } from "../../constants/user";
+import { handleApiError } from "../../utils/apiErrorHandler";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -21,6 +23,9 @@ export default function ProfileDetail({}) {
   const [userWorks, setUserWorks] = useState([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showIntroSkeleton, setShowIntroSkeleton] = useState(true);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
   const fromMemberId = UserStore.getState().memberId;
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -59,10 +64,10 @@ export default function ProfileDetail({}) {
 
     const handleFavorite = async () => {
 
-      if (!fromMemberId || !userData.id) {
-        console.error("ID가 없습니다. fromMemberId:", fromMemberId, "userData.id:", userData.id);
-        return;
-      }
+      // if (!fromMemberId || !userData.id) {
+      //   console.error("ID가 없습니다. fromMemberId:", fromMemberId, "userData.id:", userData.id);
+      //   return;
+      // }
       
       try {
         if (!star) {
@@ -78,13 +83,13 @@ export default function ProfileDetail({}) {
       } catch (error) {
         console.error("즐겨찾기 처리 에러:", error);
         // 에러 발생 시 UI 상태 변경하지 않음
+        handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, FAVORITE_ERRORS);
       }
     }
 
     useEffect(() => {
       const fetchFavoriteStatus = async () => {
-        if (fromMemberId && userData.id && fromMemberId !== userData.id) {
-          try {
+         try {
             const response = await getFavorite(fromMemberId, 0, 100);
          
             const favoriteList = response.result?.content || [];
@@ -98,8 +103,11 @@ export default function ProfileDetail({}) {
           } catch (error) {
             console.error("즐겨찾기 상태 확인 에러:", error);
             setStar(false);
+            handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, FAVORITE_ERRORS);
           }
-        }
+        // if (fromMemberId && userData.id && fromMemberId !== userData.id) {
+         
+        // }
       };
   
       fetchFavoriteStatus();
@@ -233,7 +241,6 @@ export default function ProfileDetail({}) {
             </div>
           )}
         </div>
-        
         {showLoginModal && (
         <AlertModal
         type="simple"
@@ -245,8 +252,29 @@ export default function ProfileDetail({}) {
           setShowLoginModal(false);
           navigate("/login");
         }}
-        onClickFalse={() => setShowLoginModal(false)}
+        onClickFalse={() => {
+          setShowLoginModal(false);
+          navigate("/");
+        }}
       />
+        )}
+        {errorModal && (
+          <AlertModal
+          type="simple"
+          title="오류 발생"
+          description={errorDescription}
+          TrueBtnText="확인"
+          onClickTrue={() => {
+            if (errorAction === "redirect") {
+                navigate("/");
+            }else if(errorAction === "login"){
+              localStorage.clear();
+              navigate("/login");
+            }else{
+              window.location.reload();
+            }
+          }}
+            />
         )}
       </div>
     </>

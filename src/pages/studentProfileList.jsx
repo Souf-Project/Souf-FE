@@ -4,12 +4,20 @@ import Pagination from "../components/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { getProfile } from "../api/profile";
 import Loading from "../components/loading";
+import { MEMBER_ERRORS } from "../constants/user";
+//import { handlePublicError } from "../utils/apiErrorHandler";
+import { handlePublicApiError } from "../utils/publicApiErrorHandler";
+import AlertModal from "../components/alertModal";
+import { useNavigate } from "react-router-dom";
 
 export default function StudentProfileList({ firstCategoryId, secondCategoryId }) {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
   const pageSize = 6;
-
+  const navigate = useNavigate();
   const pageable = {
     page: currentPage,
     size: pageSize,
@@ -22,10 +30,14 @@ export default function StudentProfileList({ firstCategoryId, secondCategoryId }
   } = useQuery({
     queryKey: ["profile", firstCategoryId, secondCategoryId, currentPage],
     queryFn: async () => {
-      const data = await getProfile(firstCategoryId, secondCategoryId, pageable);
-      setTotalPages(data.result.page.totalPages);
-      // console.log("data", data);
-      return data;
+      try {
+        const data = await getProfile(firstCategoryId, secondCategoryId, pageable);
+        setTotalPages(data.result.page.totalPages);
+        // console.log("data", data);
+        return data;
+      } catch (error) {
+         handlePublicApiError(error, { setErrorModal, setErrorDescription, setErrorAction },MEMBER_ERRORS);
+      }
     },
     keepPreviousData: true,
   });
@@ -45,6 +57,24 @@ export default function StudentProfileList({ firstCategoryId, secondCategoryId }
     return (
       <div className="text-center py-10">
         <p className="text-red-500">데이터를 불러오는데 실패했습니다.</p>
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="오류 발생"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              navigate("/");
+          }else if(errorAction === "refresh"){
+            setErrorModal(false);
+          }else{
+            setErrorModal(false);
+            //window.location.reload();
+          }
+        }}
+          />
+      )}
       </div>
     );
   }

@@ -74,7 +74,12 @@ client.interceptors.response.use(
         localStorage.setItem("accessToken", newAccessToken);
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return client(originalRequest);
+        try {
+          return await client(originalRequest); 
+        } catch (retryError) {
+          console.error("🔁 재시도 요청 실패:", retryError);
+          return Promise.reject(retryError); 
+        }
       }
     }
     // AlertModal이 있는 페이지는 에러 페이지로 이동하지 않고 모달이 뜨게
@@ -88,7 +93,6 @@ client.interceptors.response.use(
     if (error.code === "ERR_NETWORK") {
       console.error("서버 연결 실패");
     }
-
     return Promise.reject(error);
   }
 );

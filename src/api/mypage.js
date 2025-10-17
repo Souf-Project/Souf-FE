@@ -60,17 +60,17 @@ export async function getProfile() {
 }
 
 /* 프로필 수정 */
-export async function putProfileEdit(data) {
-  const accessToken = localStorage.getItem("accessToken");
-  const response = await client.put("/api/v1/member/update", data, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/octet-stream",
-    },
-  });
+// export async function putProfileEdit(data) {
+//   const accessToken = localStorage.getItem("accessToken");
+//   const response = await client.put("/api/v1/member/update", data, {
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//       "Content-Type": "application/octet-stream",
+//     },
+//   });
 
-  return response;
-}
+//   return response;
+// }
 
 
 /* 닉네임 검증 */
@@ -83,3 +83,4 @@ export async function getNickNameVerify(nickname) {
   return response;
 }
 
+//id랑 modify/email/send 가 여기 없어

@@ -3,13 +3,21 @@ import { getFavorite } from '../api/favorite';
 import { UserStore } from '../store/userStore';
 import StudentInfoBlock from './studentInfoBlock';
 import Loading from './loading';
+import AlertModal from './alertModal';
+import { handleApiError } from '../utils/apiErrorHandler';
+import { FAVORITE_ERRORS } from '../constants/user';
+import { useNavigate } from 'react-router-dom';
 
 export default function FavoritesContent() {
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { memberId } = UserStore();
-
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
     if (memberId) {
       fetchFavorites();
@@ -34,6 +42,7 @@ export default function FavoritesContent() {
       }
     } catch (error) {
       console.error('즐겨찾기 조회 중 에러:', error);
+      handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, FAVORITE_ERRORS);
       setError('즐겨찾기 목록을 불러오는데 실패했습니다.');
       if (error.response?.status === 403) {
         setError('로그인이 필요합니다.');
@@ -54,6 +63,38 @@ export default function FavoritesContent() {
         <div className="text-red-500 text-lg mb-4">
           {error}
         </div>
+        {showLoginModal && (
+        <AlertModal
+        type="simple"
+        title="로그인이 필요합니다"
+        description="로그인 후 즐겨찾기 등록이 가능합니다!"
+        TrueBtnText="로그인하러 가기"
+        FalseBtnText="취소"
+        onClickTrue={() => {
+          setShowLoginModal(false);
+          navigate("/");
+        }}
+        onClickFalse={() => setShowLoginModal(false)}
+          />
+        )}
+        {errorModal && (
+          <AlertModal
+          type="simple"
+          title="즐겨찾기 오류"
+          description={errorDescription}
+          TrueBtnText="확인"
+          onClickTrue={() => {
+            if (errorAction === "redirect") {
+                navigate("/");
+            }else if(errorAction === "login"){
+              localStorage.clear();
+              navigate("/login");
+            }else{
+              window.location.reload();
+            }
+          }}
+            />
+        )}
       </div>
     );
   }

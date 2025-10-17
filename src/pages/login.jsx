@@ -35,8 +35,11 @@ export default function Login() {
     },
 
     onError: (error) => {
-      console.error("로그인 실패:", error);
-      const apiErrorMessage = "이메일 또는 비밀번호가 일치하지 않습니다.";
+      const errorKey = error.response.data.errorKey === "RP401-1";
+
+      const apiErrorMessage = errorKey
+        ? "신고된 회원입니다."
+        : "이메일 또는 비밀번호가 일치하지 않습니다.";
       setEmailError(apiErrorMessage);
       setPasswordError(apiErrorMessage);
     },
@@ -129,91 +132,93 @@ export default function Login() {
           </p>
         </div>
         <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
-        <div className="max-w-[20rem] lg:ml-20 lg:mr-auto mx-auto w-full">
-          <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto w-fit">
-            로그인
-          </h2>
-          <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow-md"
-          >
-            <Input
-              title="이메일"
-              // isValidateTrigger={isValidateTrigger}
-              value={email}
-              isConfirmed={emailError ? false : undefined}
-              onChange={handleEmailChange}
-              placeholder="Souf@souf.com"
-              essentialText="이메일을 입력해주세요"
-              disapproveText={
-                emailError === "이메일을 입력해주세요." ? emailError : ""
-              }
-              // onValidChange={onValidChange}
-            />
-            <Input
-              title="비밀번호"
-              // isValidateTrigger={isValidateTrigger}
-              type="password"
-              placeholder=""
-              value={password}
-              isConfirmed={passwordError ? false : undefined}
-              onChange={handlePasswordChange}
-              essentialText="비밀번호를 입력해주세요"
-              disapproveText={passwordError}
-              // onValidChange={onValidChange}
-            />
+          <div className="max-w-[20rem] lg:ml-20 lg:mr-auto mx-auto w-full">
+            <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto w-fit">
+              로그인
+            </h2>
+            <form
+              onSubmit={handleSubmit}
+              className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow-md"
+            >
+              <Input
+                title="이메일"
+                // isValidateTrigger={isValidateTrigger}
+                value={email}
+                isConfirmed={emailError ? false : undefined}
+                onChange={handleEmailChange}
+                placeholder="Souf@souf.com"
+                essentialText="이메일을 입력해주세요"
+                disapproveText={
+                  emailError === "이메일을 입력해주세요." ? emailError : ""
+                }
+                // onValidChange={onValidChange}
+              />
+              <Input
+                title="비밀번호"
+                // isValidateTrigger={isValidateTrigger}
+                type="password"
+                placeholder=""
+                value={password}
+                isConfirmed={passwordError ? false : undefined}
+                onChange={handlePasswordChange}
+                essentialText="비밀번호를 입력해주세요"
+                disapproveText={passwordError}
+                // onValidChange={onValidChange}
+              />
 
-            <div className="flex justify-between text-[#767676] text-xl font-reagular">
-              <button type="button" onClick={() => navigate("/join")}>
-                회원가입
-              </button>
-              <button type="button" onClick={() => navigate("/pwdFind")}>
-                비밀번호 재설정
-              </button>
-            </div>
-            <div className="flex justify-center">
-              <button
-                type="submit"
-                className="bg-blue-main text-white mx-auto w-36 py-2 rounded-xl text-xl font-semibold mt-4"
-              >
-                로그인
-              </button>
-            </div>
-            <div className="flex flex-col items-center justify-center mt-4">
-              <div className="flex items-center justify-center w-full mb-4">
-                <div className="flex-1 h-px bg-gray-300"></div>
-                <p className="text-lg font-light mx-4">SNS 계정으로 시작하기</p>
-                <div className="flex-1 h-px bg-gray-300"></div>
-              </div>
-              <div className="flex flex-col items-center justify-center gap-4">
-                <button
-                  type="button"
-                  onClick={handleKakaoLogin}
-                  className="w-60 bg-[#FEE500] rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-4"
-                >
-                  <img
-                    src={kakaoLogo}
-                    alt="카카오 로그인"
-                    className="w-[1.4rem] object-contain"
-                  />
-                  <p>카카오 계정으로 로그인</p>
+              <div className="flex justify-between text-[#767676] text-xl font-reagular">
+                <button type="button" onClick={() => navigate("/join")}>
+                  회원가입
                 </button>
-                <button
-                  type="button"
-                  onClick={handleGoogleLogin}
-                  className="w-60 bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-7"
-                >
-                  <img
-                    src={googleLogo}
-                    alt="구글 로그인"
-                    className="w-[1.4rem] object-contain"
-                  />
-                  구글 계정으로 로그인
+                <button type="button" onClick={() => navigate("/pwdFind")}>
+                  비밀번호 재설정
                 </button>
               </div>
-            </div>
-          </form>
-        </div>
+              <div className="flex justify-center">
+                <button
+                  type="submit"
+                  className="bg-blue-main text-white mx-auto w-36 py-2 rounded-xl text-xl font-semibold mt-4"
+                >
+                  로그인
+                </button>
+              </div>
+              <div className="flex flex-col items-center justify-center mt-4">
+                <div className="flex items-center justify-center w-full mb-4">
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                  <p className="text-lg font-light mx-4">
+                    SNS 계정으로 시작하기
+                  </p>
+                  <div className="flex-1 h-px bg-gray-300"></div>
+                </div>
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleKakaoLogin}
+                    className="w-60 bg-[#FEE500] rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-4"
+                  >
+                    <img
+                      src={kakaoLogo}
+                      alt="카카오 로그인"
+                      className="w-[1.4rem] object-contain"
+                    />
+                    <p>카카오 계정으로 로그인</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="w-60 bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md duration-200 flex items-center justify-center gap-7"
+                  >
+                    <img
+                      src={googleLogo}
+                      alt="구글 로그인"
+                      className="w-[1.4rem] object-contain"
+                    />
+                    구글 계정으로 로그인
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
         <div className="mt-10  lg:hidden flex justify-center">
           <img src={loginImg} className=" w-1/2" />

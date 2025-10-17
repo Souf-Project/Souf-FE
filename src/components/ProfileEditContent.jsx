@@ -11,6 +11,9 @@ import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 import Loading from './loading';
 import kakaoLogo from "../assets/images/kakaoLogo.png"
 import googleLogo from "../assets/images/googleLogo.png"
+import { handleApiError } from '../utils/apiErrorHandler';
+import { MEMBER_ERRORS } from '../constants/user';
+import AlertModal from './alertModal';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -20,6 +23,10 @@ export default function ProfileEditContent() {
   const [verifyingNickname, setVerifyingNickname] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState('');
   const [marketingAgreement, setMarketingAgreement] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const {roleType} = UserStore();
   
   const [formData, setFormData] = useState(null);
@@ -74,6 +81,7 @@ export default function ProfileEditContent() {
     } catch (error) {
       console.error('프로필 데이터 조회 중 에러 발생:', error);
       setFormData(null);
+      handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction },MEMBER_ERRORS);
     } finally {
       setLoading(false);
     }
@@ -135,7 +143,7 @@ export default function ProfileEditContent() {
     },
     onError: (error) => {
       console.error("프로필 수정 실패:", error);
-      alert("프로필 수정에 실패했습니다.");
+      handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction },MEMBER_ERRORS);
     }
   });
 
@@ -257,7 +265,40 @@ export default function ProfileEditContent() {
   }
 
   if (!formData) {
-    return <div className="text-center py-10">프로필 정보를 불러오지 못했습니다.</div>;
+    return <>
+<div className="text-center py-10">프로필 정보를 불러오지 못했습니다.</div>
+    {showLoginModal && (
+      <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="로그인 후 마이페이지를 조회할 수 있습니다!"
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowLoginModal(false)}
+          />
+        )}
+        {errorModal && (
+          <AlertModal
+          type="simple"
+          title="잘못된 접근"
+          description={errorDescription}
+          TrueBtnText="확인"
+          onClickTrue={() => {
+            if (errorAction === "redirect") {
+                navigate("/login");
+            }else if(errorAction === "refresh"){
+              setErrorModal(false);
+            }else{
+              setErrorModal(false);
+              //window.location.reload();
+            }
+          }}
+            />
+        )}</>;
   }
 
   return (

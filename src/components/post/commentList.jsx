@@ -4,9 +4,10 @@ import sendIco from "../../assets/images/sendIco.svg";
 import { useState, useEffect } from "react";
 import { getComment, postComment, deleteComment, postAdditionalComment, getAdditionalComment } from "../../api/additionalFeed";
 import { UserStore } from "../../store/userStore";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
 import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
+import { COMMENT_ERRORS } from "../../constants/post";
 
 export default function commentList() {
     const [commentList, setCommentList] = useState([]);
@@ -21,7 +22,10 @@ export default function commentList() {
     const { id, worksId } = useParams();
     const { memberId } = UserStore();
     const [showLoginModal, setShowLoginModal] = useState(false);
-
+    const [errorModal, setErrorModal] = useState(false);
+    const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+    const [errorAction, setErrorAction] = useState("redirect");
+    const navigate = useNavigate();
     const fetchComments = async () => {
         try {
             const response = await getComment(worksId);
@@ -46,6 +50,15 @@ export default function commentList() {
             }
         } catch (error) {
             console.error("댓글 조회 에러:", error);
+            const errorKey = error?.response?.data?.errorKey;
+            if (error.response.status === 403) {
+                setShowLoginModal(true);
+            }else{
+                const errorInfo = COMMENT_ERRORS[errorKey];
+                setErrorModal(true);
+                setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+                setErrorAction(errorInfo?.action || "redirect");
+            }
         }
     };
 
@@ -124,6 +137,15 @@ export default function commentList() {
             }
         } catch (error) {
             console.error("대댓글 조회 에러:", error);
+            const errorKey = error?.response?.data?.errorKey;
+            if (error.response.status === 403) {
+                setShowLoginModal(true);
+            }else{
+                const errorInfo = COMMENT_ERRORS[errorKey];
+                setErrorModal(true);
+                setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+                setErrorAction(errorInfo?.action || "redirect");
+            }
         }
     };
 
@@ -141,7 +163,6 @@ export default function commentList() {
                 };
 
                 const response = await postAdditionalComment(worksId, requestBody);
-                
                 // 답글 작성 후 해당 댓글의 대댓글을 다시 가져오기
                 setTimeout(async () => {
                     await fetchAdditionalComments(replyToComment.commentId, 0, false);
@@ -171,7 +192,7 @@ export default function commentList() {
                     authorId: Number(id)
                 };
 
-                await postComment(worksId, requestBody);
+                const response = await postComment(worksId, requestBody);
             }
 
             setCommentContent("");
@@ -182,8 +203,14 @@ export default function commentList() {
             fetchComments();
             }
         } catch (error) {
+            const errorKey = error?.response?.data?.errorKey;
             if (error.response.status === 403) {
                 setShowLoginModal(true);
+            }else{
+                const errorInfo = COMMENT_ERRORS[errorKey];
+                setErrorModal(true);
+                setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+                setErrorAction(errorInfo?.action || "redirect");
             }
             console.error("댓글 작성 에러:", error);
         }
@@ -246,7 +273,15 @@ export default function commentList() {
             return response?.result?.content && response.result.content.length > 1;
         } catch (error) {
             console.error("대댓글 확인 에러:", error);
-            return false;
+            const errorKey = error?.response?.data?.errorKey;
+            if (error.response.status === 403) {
+                setShowLoginModal(true);
+            }else{
+                const errorInfo = COMMENT_ERRORS[errorKey];
+                setErrorModal(true);
+                setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+                setErrorAction(errorInfo?.action || "redirect");
+            }
         }
     };
 
@@ -336,6 +371,21 @@ export default function commentList() {
          navigate("/login");
        }}
        onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+      {errorModal && (
+       <AlertModal
+        type="simple"
+        title="잘못된 접근"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+            if (errorAction === "redirect") {
+                navigate("/feed");
+            } else if (errorAction === "refresh") {
+                window.location.reload();
+            }
+        }}
         />
       )}
         </div>
