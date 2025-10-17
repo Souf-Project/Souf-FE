@@ -695,7 +695,7 @@ dtoList.forEach((dto, i) => {
               >
                 <span className="underline">U</span>
               </button>
-              <button
+              {/* <button
                 type="button"
                 onClick={handleToolbarImageClick}
                 className="px-2 py-1 text-sm border rounded hover:bg-gray-50"
@@ -709,7 +709,7 @@ dtoList.forEach((dto, i) => {
                 accept="image/*"
                 className="hidden"
                 onChange={handleToolbarImageChange}
-              />
+              /> */}
             </div>
             <textarea
               name="content"
