@@ -25,6 +25,7 @@ import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
 import RecommendRecruit from "../recruit/recommendRecruit";
+import basicLogoImg from "../../assets/images/BasicLogoImg.png";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -479,7 +480,28 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full">
+        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4"
+        onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
+        <div className="flex justify-between">
+        {worksData.profileImageUrl ? (
+          <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+        ) : (
+          <img src={basicLogoImg} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+        )}
+        <button></button>
+        </div>
+        <div>
+          {worksData.nickname && (
+            <p className="text-lg font-bold">{worksData.nickname}</p>
+          )}
+          {worksData.intro && (
+            <p className="text-sm text-gray-500">{worksData.intro}</p>
+          )}
+          {worksData.personalUrl && (
+            <p className="text-sm text-gray-500">{worksData.personalUrl}</p>
+          )}
+        </div>
+       
         </div>
        
        
