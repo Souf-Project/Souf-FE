@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import BasicImg4 from "../assets/images/BasicProfileImg4.png";
-import { getMemberFeed } from "../api/feed";
-import { UserStore } from "../store/userStore";
+import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
+import { getMemberFeed } from "../../api/feed";
+import { UserStore } from '../../store/userStore';
 
 export default function MyFeed() {
   const navigate = useNavigate();

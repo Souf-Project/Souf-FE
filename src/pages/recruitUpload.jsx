@@ -420,8 +420,6 @@ export default function RecruitUpload() {
           ? [formData.preferentialKeyword1, formData.preferentialKeyword2].filter(keyword => keyword && keyword.trim() !== '')
           : [],
         categoryDtos: cleanedCategories,
-        // existingImageUrls: [],
-        originalFileNames: formData.files.map((file) => file.name),
         workType: formData.workType.toUpperCase(),
         ...(formData.files.length > 0 && { originalFileNames: formData.files.map((file) => file.name) })
       };

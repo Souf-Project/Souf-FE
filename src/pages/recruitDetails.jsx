@@ -44,10 +44,10 @@ export default function RecruitDetail() {
     // API에서 받은 상세 정보가 있으면 사용
     if (recruitData?.result) {
       setRecruitDetail(recruitData.result);
-      console.log('Using API recruit detail:', recruitData.result);
+      // console.log('Using API recruit detail:', recruitData.result);
     } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
-      console.log('Using API recruit detail:', recruitData.recruitDetail);
+      // console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
 
@@ -148,7 +148,7 @@ export default function RecruitDetail() {
       
 
   const handleApply = () => {
-    console.log('지원 버튼 클릭');
+    // console.log('지원 버튼 클릭');
     if (!displayData?.price || displayData.price === '견적 희망') {
       setIsEstimateModalOpen(true);
     } else {
@@ -157,7 +157,7 @@ export default function RecruitDetail() {
   };
 
   const handleViewApplicants = () => {
-    console.log('지원자 리스트 보기 버튼 클릭');
+    // console.log('지원자 리스트 보기 버튼 클릭');
     navigate(`/companyMyPage?recruitId=${id}`);
   };
 
@@ -167,7 +167,7 @@ export default function RecruitDetail() {
        priceOffer: priceOffer,
        priceReason: priceReason,
       });
-      console.log("지원 성공:", response.data);
+      // console.log("지원 성공:", response.data);
       setIsApplyModalOpen(false);
       setIsApplySuccessModalOpen(true);
     } catch (error) {
@@ -199,7 +199,7 @@ export default function RecruitDetail() {
         priceOffer: priceOfferWithUnit,
         priceReason: priceReason,
       });
-      console.log("견적 제출 성공:", response.data);
+      // console.log("견적 제출 성공:", response.data);
       setIsEstimateModalOpen(false);
       setIsApplySuccessModalOpen(true);
 
@@ -316,7 +316,10 @@ export default function RecruitDetail() {
                 )}
               </div>
             ) : (
-              <></>
+              <DeclareButton 
+              contentType="공고문" 
+              iconClassName="w-5 h-5 cursor-pointer"
+            />
             )}
           </div>
           <div className="flex items-center gap-2 my-2">
@@ -341,19 +344,16 @@ export default function RecruitDetail() {
             <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md">팝업</div>
             <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md">패션디자인 전공</div>
           </div> */}
-          <DeclareButton 
-                contentType="공고문" 
-                iconClassName="w-5 h-5 cursor-pointer"
-              />
+         
           </div>
          
 
           <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           <div>
-             <p className="text-sm font-semibold text-black mb-4">
+             {/* <p className="text-sm font-semibold text-black mb-4">
                기업 소개
-             </p>
-             <div className="prose prose-lg max-w-none text-gray-800 mb-4 text-sm">
+             </p> */}
+             <div className="prose prose-lg max-w-none text-gray-800 mb-4 text-sm whitespace-pre-wrap">
                <ReactMarkdown 
                  remarkPlugins={[remarkGfm]}
                  rehypePlugins={[rehypeRaw]}
@@ -361,6 +361,8 @@ export default function RecruitDetail() {
                    u: ({children}) => <u>{children}</u>,
                    strong: ({children}) => <strong>{children}</strong>,
                    em: ({children}) => <em>{children}</em>,
+                   p: ({children}) => <p className="mb-4">{children}</p>,
+                   br: () => <br />,
                    a: ({href, children}) => (
                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                        {children}

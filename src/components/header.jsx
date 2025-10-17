@@ -19,6 +19,7 @@ export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showDropdown, setShowDropdown] = useState(true);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
   //const username = UserStore((state) => state.username);
@@ -114,6 +115,18 @@ useEffect(() => {
     return true;
   };
 
+  const checkFeedUploadAccess = () => {
+    if (!memberId) {
+      setShowFeedAlertModal(true);
+      return false;
+    }
+    if (roleType !== "STUDENT" && roleType !== "ADMIN") {
+      setShowFeedAlertModal(true);
+      return false;
+    }
+    return true;
+  };
+
   const handleRecruitUploadClick = () => {
     if (checkRecruitUploadAccess()) {
       navigate("/recruitUpload");
@@ -131,7 +144,13 @@ useEffect(() => {
   };
 
   const handleNavigationFeedUpload = () => {
-    navigate(`/postUpload`);
+    if (checkFeedUploadAccess()) {
+      navigate(`/postUpload`);
+      setShowMobileMenu(false);
+    }
+  };
+  const handleNavigationGuideCategory = () => {
+    navigate(`/guide`);
     setShowMobileMenu(false);
   };
   const deleteCookie = (name) => {
@@ -202,7 +221,8 @@ useEffect(() => {
       );
     } else {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
+
           <span className="font-bold">일반</span>
           <span className="font-normal">{nickname}</span>
         </div>
@@ -222,7 +242,7 @@ const DesktopHeader = () => (
       <div className="relative flex items-center justify-between max-w-[60rem] mx-auto">
         <div className="flex items-center gap-x-8">
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
-          <ul className="flex items-center font-bold text-xl text-black cursor-pointer gap-1">
+          <ul className="flex items-center font-bold text-lg text-black cursor-pointer gap-1">
             <li 
               className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('recruit')}
@@ -232,7 +252,7 @@ const DesktopHeader = () => (
               {/* 외주 의뢰하기 드롭다운 */}
               {activeDropdown === 'recruit' && (
                  <div 
-                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1.1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('recruit')}
                    onMouseLeave={handleDropdownLeave}
                  >
@@ -260,7 +280,7 @@ const DesktopHeader = () => (
               {/* 외주 찾기 드롭다운 */}
               {activeDropdown === 'find' && (
                  <div 
-                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('find')}
                    onMouseLeave={handleDropdownLeave}
                  >
@@ -279,7 +299,7 @@ const DesktopHeader = () => (
               {/* 대학생 피드보기 드롭다운 */}
               {activeDropdown === 'feed' && (
                  <div 
-                   className="absolute top-[3rem] left-[-0.5rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
+                   className="absolute top-[3rem] left-[-1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-36 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('feed')}
                    onMouseLeave={handleDropdownLeave}
                  >
@@ -297,12 +317,25 @@ const DesktopHeader = () => (
               외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
-            {/* <li 
-              className={` ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
-              onClick={() => navigate("/guide")}
+            <li 
+              className={`relative py-5 w-28 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('guide')}
+              onMouseLeave={handleDropdownLeave}
             >
-              이용 가이드
-            </li> */}
+              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
+              {/* 이용가이드 드롭다운 */}
+              {activeDropdown === 'guide' && (
+                 <div 
+                   className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
+                   onMouseEnter={() => handleDropdownEnter('guide')}
+                   onMouseLeave={handleDropdownLeave}
+                 >
+                   <ul className="flex flex-col gap-1">
+                     <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
+                   </ul>
+                 </div>
+              )}
+            </li>
           </ul>
         </div>
 
@@ -313,11 +346,6 @@ const DesktopHeader = () => (
               <button className="p-2" onClick={() => handleNavigation("/chat")}>
                 <img src={ChatIcon} alt="chat" className="w-6 h-6" />
               </button>
-              {roleType === "MEMBER" && (
-                <button className="px-4 py-2 text-blue-main font-bold border border-blue-200 rounded-lg hover:shadow-[0px_0px_5px_3px_rgba(92,161,232,0.5)] transition-all duration-300" onClick={() => handleNavigation("/verifyStudent")}>
-               대학생 인증
-                </button>
-              )}
               <div className="relative user-menu-container">
                 <button
                   className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
@@ -326,7 +354,7 @@ const DesktopHeader = () => (
                   <UserTypeLabel />
                 </button>
                 {showUserMenu && (
-                  <div className="fixed right-70 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
+                  <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
                     <button
                       className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                       onClick={() => handleNavigation("/mypage")}
@@ -355,6 +383,14 @@ const DesktopHeader = () => (
                         onClick={handleRecruitUploadClick}
                       >
                         공고문 작성하기
+                      </button>
+                    )}
+                    {roleType === "MEMBER" && (
+                      <button
+                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
+                        onClick={() => handleNavigation("/verifyStudent")}
+                      >
+                        대학생 인증하기
                       </button>
                     )}
                     {roleType === "STUDENT" && (
@@ -508,17 +544,14 @@ const DesktopHeader = () => (
 
   return (
     <>
-      {/* PC 버전 (md 이상) */}
       <div className="hidden lg:block">
         <DesktopHeader />
       </div>
       
-      {/* 모바일 버전 (md 미만) */}
       <div className="block lg:hidden">
         <MobileHeader />
       </div>
 
-      {/* Alert Modal */}
       {showAlertModal && (
         <AlertModal
           type="simple"
@@ -531,6 +564,21 @@ const DesktopHeader = () => (
             navigate("/login");
           }}
           onClickFalse={() => setShowAlertModal(false)}
+        />
+      )}
+
+      {showFeedAlertModal && (
+        <AlertModal
+          type="simple"
+          title="권한이 없습니다"
+          description="피드 등록은 학생 계정만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          FalseBtnText="취소"
+          onClickTrue={() => {
+            setShowFeedAlertModal(false);
+            navigate("/login");
+          }}
+          onClickFalse={() => setShowFeedAlertModal(false)}
         />
       )}
     </>
