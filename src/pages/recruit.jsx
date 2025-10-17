@@ -258,8 +258,6 @@ export default function Recruit() {
       <PageHeader
         leftButtons={[
           { text: "외주 조회", onClick: () => {} },
-          { text: "이 가격에 해주세요", onClick: () => {} },
-          { text: "견적 내어주세요", onClick: () => {} }
         ]}
         showDropdown={true}
         showSearchBar={true}
@@ -320,6 +318,7 @@ export default function Recruit() {
           )}
         </div>
       </div>
+
       <div className="max-w-[60rem] w-full mx-auto">
         <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">
         {/* 데스크톱 카테고리 메뉴 */}
@@ -376,6 +375,8 @@ export default function Recruit() {
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
+                      nickname={recruit.nickname}
+                      firstMediaUrl={recruit.firstMediaUrl}
                     />
                     
                     {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}

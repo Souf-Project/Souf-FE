@@ -16,13 +16,15 @@ export default function RecruitBlock({
   deadLine,
   startDate,
   recruitable,
+  nickname,
   price,
   cityName,
   cityDetailName,
   secondCategory,
   categoryDtoList,
-  imageUrl,
+  firstMediaUrl,
 }) {
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
   const [showLoginModal, setShowLoginModal] = useState(false);
   const navigate = useNavigate();
   
@@ -116,10 +118,10 @@ export default function RecruitBlock({
       className="flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
       
-        {imageUrl ? (
-          <img src={imageUrl} alt="공고문 이미지" className="w-40 h-40 rounded-2xl object-cover" />
+        {firstMediaUrl ? (
+          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-36 h-full max-w-36 rounded-2xl object-cover" />
         ) : (
-          <img src={soufMockup} alt="기본 로고 이미지" className="w-40 h-40 rounded-2xl object-cover" />
+          <img src={soufMockup} alt="기본 로고 이미지" className="w-36  max-w-36 max-h-44 rounded-2xl object-cover" />
         )}
       <div className="flex flex-col px-4 py-3 flex-1 gap-2 max-w-[26rem]">
         <div className="flex justify-between items-center">
@@ -156,16 +158,16 @@ export default function RecruitBlock({
         <p className="text-zinc-500 text-base line-clamp-2">
         {content || "내용 없음"}
       </p>
-      {/* <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
-        관영컴퍼니
-      </div> */}
+      <div className="text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+        {nickname}
+      </div>
         
       </div>
-      <div className="w-[1px] bg-gray-200 self-stretch"></div>
-      <div className="flex flex-col items-start justify-center gap-2 w-44 px-2">
+      <div className="w-[1px] bg-gray-200 self-stretch my-2"></div>
+      <div className="flex flex-col items-start gap-4 w-44 px-2 mt-4">
         <div className="flex items-center gap-4 justify-between w-full">
           <span className="text-xs font-medium text-black ">견적 비용</span>
-          <span className="text-xs font-regular text-black ">{price}</span>
+          <span className="text-md font-regular text-black ">{price}</span>
         </div>
         {/* <div className="flex flex-col gap-1">
           <span className="text-xs font-medium text-black ">우대사항</span>
@@ -175,11 +177,11 @@ export default function RecruitBlock({
             <li>회화과</li>
           </ul>
         </div> */}
-         <div className="flex items-center gap-4 justify-between w-full">
-         <span className="text-xs font-medium text-black whitespace-nowrap">납기일</span>
-          <div className="flex flex-col items-end text-right">
-          <span className="text-xs font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}</span>
-          <span className="text-xs font-regular text-black ">~ {deadLine ? deadLine.split(' ')[0] : ''}</span>
+         <div className="flex gap-4 justify-between w-full">
+         <span className="text-xs font-medium text-black whitespace-nowrap">마감일</span>
+          <div className="flex flex-col items-start">
+          <span className="text-md font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}~ </span>
+          <span className="text-md font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
           </div>
           
           

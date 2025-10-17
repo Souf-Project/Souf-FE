@@ -60,7 +60,7 @@ export default function Profile({
       <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
       </div>
       
-      <div className="flex items-center justify-center gap-8"
+      <div className="w-full flex items-center justify-start gap-8"
       onClick={() => clickHandler(memberId)}>
         <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8">
         <img 
@@ -91,8 +91,7 @@ export default function Profile({
             ))}
           </div>
         ) : (
-          <div className="flex items-center justify-center gap-4">
-            <img src={SoufLogoBlack} alt="SouF 로고" className="w-32 h-32 object-contain rounded-lg" />
+          <div className="flex items-center justify-center mx-auto">
             <span className="text-gray-500 text-sm">작성된 피드가 없습니다.</span>
           </div>
         )}

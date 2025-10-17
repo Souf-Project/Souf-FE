@@ -92,15 +92,18 @@ export default function CategorySelectBox({
     setSelectedOption(option);
     setSelectedSubOption(null);
     setSelectedSubSubOption(null);
+    // onChange는 호출하지 않음 - 선택 완료 버튼을 눌렀을 때만 호출
   };
 
   const handleSubOptionSelect = (subOption) => {
     setSelectedSubOption(subOption);
     setSelectedSubSubOption(null);
+    // onChange는 호출하지 않음 - 선택 완료 버튼을 눌렀을 때만 호출
   };
 
   const handleSubSubOptionSelect = (subSubOption) => {
     setSelectedSubSubOption(subSubOption);
+    // onChange는 호출하지 않음 - 선택 완료 버튼을 눌렀을 때만 호출
   };
 
   const getValueToSave = () => {
@@ -130,9 +133,12 @@ export default function CategorySelectBox({
     };
   };
 
+  const hasValidSelection = () => {
+    return selectedOption !== null;
+  };
+
   const handleSave = () => {
     const valueToSave = getValueToSave();
-    console.log('CategorySelectBox - 선택된 카테고리 값:', valueToSave);
     
     // 선택된 카테고리들을 계층적으로 표시
     let displayValue = "";
@@ -147,9 +153,12 @@ export default function CategorySelectBox({
     }
     
     setSelectedValue(displayValue);
-    if (onChange) {
+    
+    // 모달이 열려있을 때만 onChange 호출
+    if (showModal && onChange) {
       onChange(valueToSave);
     }
+    
     setShowModal(false);
   };
 
@@ -220,8 +229,24 @@ export default function CategorySelectBox({
 
       {/* 선택 모달 */}
       {showModal && isEditing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg shadow-xl p-6 w-[50rem] category-modal">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowModal(false);
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl p-6 w-[50rem] category-modal"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.stopPropagation();
+              }
+            }}
+          >
             <style>
               {`
                 @keyframes slideInFromLeft {
@@ -260,6 +285,7 @@ export default function CategorySelectBox({
                  {options.map((option) => (
                    <button
                      key={option.id}
+                     type="button"
                      className={`text-left p-3 my-1 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 ${getOptionButtonStyle(
                        option
                      )}`}
@@ -281,6 +307,7 @@ export default function CategorySelectBox({
                      {selectedOption.subOptions.map((subOption, index) => (
                        <button
                          key={subOption.id}
+                         type="button"
                          className={`text-left p-3 my-1 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 ${
                            getSubOptionButtonStyle(subOption)
                          }`}
@@ -312,6 +339,7 @@ export default function CategorySelectBox({
                        {selectedSubOption.subOptions.map((subSubOption, index) => (
                          <button
                            key={subSubOption.id}
+                           type="button"
                            className={`text-left p-3 my-1 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 ${
                              getSubSubOptionButtonStyle(subSubOption)
                            }`}
@@ -331,17 +359,19 @@ export default function CategorySelectBox({
 
             <div className="flex justify-end mt-4">
               <button
+                type="button"
                 className="bg-gray-200 text-gray-800 px-4 py-2 rounded-md mr-2"
                 onClick={() => setShowModal(false)}
               >
                 취소
               </button>
               <button
+                type="button"
                 className={`bg-blue-main text-white px-4 py-2 rounded-md ${
-                  !getValueToSave() ? "opacity-50 cursor-not-allowed" : ""
+                  !hasValidSelection() ? "opacity-50 cursor-not-allowed" : ""
                 }`}
                 onClick={handleSave}
-                disabled={!getValueToSave()}
+                disabled={!hasValidSelection()}
               >
                 선택 완료
               </button>

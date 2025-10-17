@@ -25,6 +25,7 @@ import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
 import RecommendRecruit from "../recruit/recommendRecruit";
+import basicLogoImg from "../../assets/images/BasicLogoImg.png";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -279,6 +280,39 @@ const handleDeleteClick = () => {
                     <p className="text-sm text-gray-500 whitespace-nowrap">
             조회 수 {worksData.view}회
           </p>
+          {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
+{Number(id) === memberId && (
+                      <div ref={optionsRef} className="relative">
+                        <button
+                          onClick={() => setShowOptions((prev) => !prev)}
+                          className="text-xl px-2 py-1 rounded hover:bg-gray-100"
+                        >
+                          ⋯
+                        </button>
+
+                        {showOptions && (
+                          <div className="absolute right-0 top-full mt-1 w-28 bg-white border rounded shadow-lg z-10">
+                            <button
+                              onClick={() => navigate("/postEdit", {
+                                        state: {
+                                        worksData,
+                                        mediaData
+                                      }
+                                    })}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
+                            >
+                              수정하기
+                            </button>
+                            <button
+                               onClick={handleDeleteClick}
+                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
+                            >
+                              삭제하기
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
             </div>
          
             <div className="flex  w-full h-full relative">
@@ -342,56 +376,13 @@ const handleDeleteClick = () => {
             <div className="w-full relative order-1 lg:order-2 mb-6 lg:mb-0">
               <div className="flex flex-col justify-between h-full">
                 {/* 상단: 프로필 + 제목 + 내용 */}
-                <div>
-                  <div className="flex items-center justify-between mb-4 w-full">
-                   
-                    
-                    
-                    {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
-                    {Number(id) === memberId && (
-                      <div ref={optionsRef}>
-                        <button
-                          onClick={() => setShowOptions((prev) => !prev)}
-                          className="text-xl px-2 py-1 rounded hover:bg-gray-100"
-                        >
-                          ⋯
-                        </button>
-
-                        {showOptions && (
-                          <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg z-10">
-                            <button
-                              onClick={() => navigate("/postEdit", {
-                                        state: {
-                                        worksData,
-                                        mediaData
-                                      }
-                                    })}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm"
-                            >
-                              수정하기
-                            </button>
-                            <button
-                               onClick={handleDeleteClick}
-                              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-red-500"
-                            >
-                              삭제하기
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-
-
-                  
-                    <div className="w-full">
+                 
+                    <div className="w-full mt-6">
                       <p className="text-xs font-semibold mb-2">작품 소개</p>
                       <p className="whitespace-pre-wrap text-sm font-medium leading-relaxed break-words overflow-hidden">
                         {worksData.content}
                       </p>
                       </div>
-
-                </div>
 
                 <div className="flex items-center justify-between gap-2 mt-4">
                   <div className="flex items-center gap-2">
@@ -479,7 +470,28 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full">
+        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4"
+        onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
+        <div className="flex justify-between">
+        {worksData.profileImageUrl ? (
+          <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+        ) : (
+          <img src={basicLogoImg} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+        )}
+        <button></button>
+        </div>
+        <div>
+          {worksData.nickname && (
+            <p className="text-lg font-bold">{worksData.nickname}</p>
+          )}
+          {worksData.intro && (
+            <p className="text-sm text-gray-500">{worksData.intro}</p>
+          )}
+          {worksData.personalUrl && (
+            <p className="text-sm text-gray-500">{worksData.personalUrl}</p>
+          )}
+        </div>
+       
         </div>
        
        

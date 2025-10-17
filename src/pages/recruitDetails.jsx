@@ -47,7 +47,7 @@ export default function RecruitDetail() {
       console.log('Using API recruit detail:', recruitData.result);
     } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
-      // console.log('Using API recruit detail:', recruitData.recruitDetail);
+      console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
 
@@ -376,21 +376,26 @@ export default function RecruitDetail() {
              </div>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
-            <img
-              src={`${S3_BUCKET_URL}${recruitDetail.mediaResDtos[0].fileUrl}`}
-              alt={recruitDetail.mediaResDtos[0].fileName || "이미지"}
-              className="w-full h-auto object-cover"
-            />
-          ) : (
-            <></>
-          )}
+              <div className="space-y-4">
+                {recruitDetail.mediaResDtos.map((media, index) => (
+                  <img
+                    key={index}
+                    src={`${S3_BUCKET_URL}${media.fileUrl}`}
+                    alt={media.fileName || `이미지 ${index + 1}`}
+                    className="w-full h-auto object-cover rounded-lg shadow-sm"
+                  />
+                ))}
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         {/* 우측 외주 조건 */}
         <div className="sticky top-24 w-1/3 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md text-sm">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1">급여</span>
+                <span className="text-neutral-600 mb-1">견적 비용</span>
                 <span className="font-lg">
                   {price
                     ? `${price.toLocaleString()}`
@@ -398,11 +403,16 @@ export default function RecruitDetail() {
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1 whitespace-nowrap">납기일</span>
+                <span className="text-neutral-600 mb-1 whitespace-nowrap">마감일</span>
                 <div className="flex flex-col items-center gap-2 text-right">
                 <span className="font-lg">{formatDate(displayData?.startDate)}</span>
                 <span className="font-lg">~{formatDate(displayData?.deadline)}</span>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-600 mb-1">지역</span>
+                <span className="font-lg">{displayData?.cityName} {displayData?.cityDetailName}</span>
+
               </div>
             </div>
             {isAuthor ? (
