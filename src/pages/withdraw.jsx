@@ -22,8 +22,8 @@ export default function Withdraw() {
 
   //bg-yellow-main 
   return (
-    <div className="min-h-screen py-24 px-52 flex flex-col items-center justify-center w-full">
-      <div className=" flex flex-col items-center justify-center bg-white rounded-2xl shadow-md p-20 w-full  text-center border border-yellow-400">
+    <div className="bg-blue-bright min-h-screen py-24 px-52 flex flex-col items-center justify-center w-full">
+      <div className=" flex flex-col items-center justify-center bg-white rounded-2xl shadow-md p-20 w-full  text-center border border-blue-400">
         {step === 1  && <WithdrawDescription
         onWithdraw={() => setStep(2)}/>}
         {step === 2  && <WithdrawalConfirm/>}

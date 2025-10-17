@@ -47,7 +47,7 @@ export default function RecruitDetail() {
       console.log('Using API recruit detail:', recruitData.result);
     } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
-      // console.log('Using API recruit detail:', recruitData.recruitDetail);
+      console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
 
@@ -376,14 +376,19 @@ export default function RecruitDetail() {
              </div>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
-            <img
-              src={`${S3_BUCKET_URL}${recruitDetail.mediaResDtos[0].fileUrl}`}
-              alt={recruitDetail.mediaResDtos[0].fileName || "이미지"}
-              className="w-full h-auto object-cover"
-            />
-          ) : (
-            <></>
-          )}
+              <div className="space-y-4">
+                {recruitDetail.mediaResDtos.map((media, index) => (
+                  <img
+                    key={index}
+                    src={`${S3_BUCKET_URL}${media.fileUrl}`}
+                    alt={media.fileName || `이미지 ${index + 1}`}
+                    className="w-full h-auto object-cover rounded-lg shadow-sm"
+                  />
+                ))}
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         {/* 우측 외주 조건 */}

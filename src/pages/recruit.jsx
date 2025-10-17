@@ -320,6 +320,21 @@ export default function Recruit() {
           )}
         </div>
       </div>
+
+      {/* 데스크톱 헤더와 검색창 */}
+      <PageHeader
+        leftButtons={[
+          { text: "외주 조회", onClick: () => {} },
+        ]}
+        showDropdown={true}
+        showSearchBar={true}
+        onSearchTypeChange={handleSearchTypeChange}
+        searchQuery={searchQuery}
+        onSearchQueryChange={(e) => setSearchQuery(e.target.value)}
+        onSearch={handleSearch}
+        searchPlaceholder="어떤 외주를 찾는지 알려주세요!"
+      />
+
       <div className="max-w-[60rem] w-full mx-auto">
         <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">
         {/* 데스크톱 카테고리 메뉴 */}
@@ -376,6 +391,8 @@ export default function Recruit() {
                       cityDetailName={recruit.cityDetailName}
                       secondCategory={recruit.secondCategory}
                       categoryDtoList={recruit.categoryDtoList}
+                      nickname={recruit.nickname}
+                      firstMediaUrl={recruit.firstMediaUrl}
                     />
                     
                     {/* 4번째부터 랜덤으로 EstimateBanner 또는 RecommendRecruit 표시 */}

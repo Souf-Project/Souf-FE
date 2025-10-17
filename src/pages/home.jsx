@@ -349,9 +349,9 @@ export default function Home() {
         <div className="relative bg-[#FBFBFB] py-20 w-screen mx-auto">
         <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[70rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="flex-1 max-w-2xl lg:max-w-4xl lg:mt-28">
+          <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
           <AnimatedTitle />
-            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left">
+            <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left whitespace-nowrap">
               여기! 인재 매칭해드려요.
             </h2>
             <h3 className="text-lg font-semibold text-gray-700 mb-12 text-center lg:text-left">우리나라 인재발굴 프로젝트!<br/>
@@ -411,7 +411,10 @@ export default function Home() {
            </div>
 
        <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
+         
          <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
+          
+           
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
              <div 
                key={category.second_category_id} 

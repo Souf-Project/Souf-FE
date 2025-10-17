@@ -60,14 +60,14 @@ export default function WithdrawalConfirm() {
       <div className="flex justify-center gap-4">
         <button
           onClick={() => navigate("/")}
-          className="px-6 py-3 rounded-md bg-gray-200 font-bold hover:bg-gray-300"
+          className="px-6 py-3 rounded-md bg-gray-200 font-bold hover:shadow-md"
         >
           취소
         </button>
         <button
           onClick={handleSubmit}
           disabled={withdrawMutation.isPending}
-          className="px-6 py-3 rounded-md bg-red-500 text-white font-bold hover:bg-red-600 disabled:opacity-50"
+          className="px-6 py-3 rounded-md bg-red-500 text-white font-bold hover:shadow-md disabled:opacity-50"
         >
           {withdrawMutation.isPending ? "처리 중..." : "탈퇴"}
         </button>
