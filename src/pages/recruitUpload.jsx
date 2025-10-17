@@ -106,13 +106,11 @@ export default function RecruitUpload() {
         city: editData.cityName || '',
         startDate: startDateTime.date,
         deadline: deadlineDateTime.date,
-        companyName: editData.nickname || nickname || '',
+        companyName: editData.companyName || nickname || '',
         price: parsePrice(editData.price),
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
-        preferentialKeyword1: editData.preferentialKeyword1 || '',
-        preferentialKeyword2: editData.preferentialKeyword2 || '',
-        hasPreference: !!(editData.preferentialKeyword1 || editData.preferentialKeyword2),
+        preferentialTreatmentTags: editData.preferentialTreatmentTags || [],
         logoUrl: editData.logoUrl || '',
         logoFile: null,
         companyDescription: editData.companyDescription || '',
@@ -155,9 +153,7 @@ export default function RecruitUpload() {
         price: '',
         isregionIrrelevant: false,
         preferentialTreatment: '',
-        preferentialKeyword1: '',
-        preferentialKeyword2: '',
-        hasPreference: false,
+        preferentialTreatmentTags: [],
         logoUrl: '',
         logoFile: null,
         companyDescription: '',
@@ -408,7 +404,14 @@ export default function RecruitUpload() {
       const startDateTime = new Date(formData.startDate).toISOString().slice(0, 16);
       const deadlineDateTime = new Date(formData.deadline).toISOString().slice(0, 16);
   
+      // 우대사항 키워드 처리 - 빈 문자열 제거
+      const preferentialTreatmentTags = (formData.preferentialTreatmentTags || [])
+        .filter(tag => tag && tag.trim() !== '');
+
       const formDataToSend = {
+        writerName: formData.companyName,
+        logoOriginalFileName: formData.logoFile ? formData.logoFile.name : '',
+        introduction: formData.briefIntroduction,
         title: formData.title,
         content: formData.content,
         cityId: cityId,
@@ -416,16 +419,15 @@ export default function RecruitUpload() {
         startDate: startDateTime,
         deadline: deadlineDateTime,
         price: estimateType === 'fixed' && formData.estimatePayment ? `${formData.estimatePayment}만원` : '',
-        preferentialTreatment: formData.hasPreference && (formData.preferentialKeyword1 || formData.preferentialKeyword2) 
-          ? [formData.preferentialKeyword1, formData.preferentialKeyword2].filter(keyword => keyword && keyword.trim() !== '')
-          : [],
+        preferentialTreatment: formData.preferentialTreatment || '',
+        preferentialTreatmentTags: preferentialTreatmentTags,
         categoryDtos: cleanedCategories,
         // existingImageUrls: [],
         originalFileNames: formData.files.map((file) => file.name),
         workType: formData.workType.toUpperCase(),
       };
   
-      // console.log('Sending data:', formDataToSend);
+      console.log('Sending data:', formDataToSend);
       
       let response;
       
@@ -950,8 +952,12 @@ dtoList.forEach((dto, i) => {
           <input
                 type="text"
                 name="preferentialKeyword1"
-                value={formData.preferentialKeyword1}
-            onChange={handleChange}
+                value={formData.preferentialTreatmentTags[0] || ''}
+            onChange={(e) => {
+              const newTags = [...(formData.preferentialTreatmentTags || [])];
+              newTags[0] = e.target.value;
+              setFormData(prev => ({ ...prev, preferentialTreatmentTags: newTags }));
+            }}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 placeholder="우대사항 키워드 1"
                 maxLength="10"
@@ -959,8 +965,12 @@ dtoList.forEach((dto, i) => {
               <input
                 type="text"
                 name="preferentialKeyword2"
-                value={formData.preferentialKeyword2}
-                onChange={handleChange}
+                value={formData.preferentialTreatmentTags[1] || ''}
+                onChange={(e) => {
+                  const newTags = [...(formData.preferentialTreatmentTags || [])];
+                  newTags[1] = e.target.value;
+                  setFormData(prev => ({ ...prev, preferentialTreatmentTags: newTags }));
+                }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 placeholder="우대사항 키워드 2"
                 maxLength="10"
@@ -968,7 +978,7 @@ dtoList.forEach((dto, i) => {
             </div>
           </div>
           
-          {/* <div>
+          <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
               우대사항 설명
             </label>
@@ -980,7 +990,7 @@ dtoList.forEach((dto, i) => {
               placeholder="우대사항에 대한 상세 설명을 입력하세요"
               rows="4"
             />
-          </div> */}
+          </div>
           
           <div data-step="3" className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
             STEP 3. 
