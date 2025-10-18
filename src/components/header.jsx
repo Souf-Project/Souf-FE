@@ -221,7 +221,8 @@ useEffect(() => {
       );
     } else {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
+
           <span className="font-bold">일반</span>
           <span className="font-normal">{nickname}</span>
         </div>
@@ -316,6 +317,7 @@ const DesktopHeader = () => (
               외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
+
             {/* <li 
               className={`relative py-5 w-28 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('guide')}
@@ -324,6 +326,10 @@ const DesktopHeader = () => (
               <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span> */}
               {/* 이용가이드 드롭다운 */}
               {/* {activeDropdown === 'guide' && (
+
+              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
+              {/* 이용가이드 드롭다운 */}
+              {activeDropdown === 'guide' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('guide')}
@@ -334,7 +340,9 @@ const DesktopHeader = () => (
                    </ul>
                  </div>
               )}
+
             </li> */}
+
           </ul>
         </div>
 
@@ -353,7 +361,7 @@ const DesktopHeader = () => (
                   <UserTypeLabel />
                 </button>
                 {showUserMenu && (
-                  <div className="fixed right-70 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
+                  <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
                     <button
                       className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                       onClick={() => handleNavigation("/mypage")}
