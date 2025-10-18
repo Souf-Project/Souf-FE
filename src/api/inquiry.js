@@ -21,6 +21,7 @@ export const uploadInquiryFile = async (file) => {
     }
 };
 
+
 export async function getInquiryList(pageable) {
     const accessToken = localStorage.getItem("accessToken");
     const response = await client.get("/api/v1/inquiry/my", {
@@ -51,3 +52,4 @@ export async function getInquiryList(pageable) {
     });
     return response;
   }
+

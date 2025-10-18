@@ -317,12 +317,17 @@ const DesktopHeader = () => (
               외주 후기<span className="text-[#FF8454] font-medium text-sm">★9.9</span>
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
+
             {/* <li 
               className={`relative py-5 w-28 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('guide')}
               onMouseLeave={handleDropdownLeave}
             >
               <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span> */}
+              {/* 이용가이드 드롭다운 */}
+              {/* {activeDropdown === 'guide' && (
+
+              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
               {/* 이용가이드 드롭다운 */}
               {/* {activeDropdown === 'guide' && (
                  <div 
@@ -334,8 +339,11 @@ const DesktopHeader = () => (
                      <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
                    </ul>
                  </div>
-              )}
-            </li> */}
+              )} 
+               </li>*/}
+
+            
+
           </ul>
         </div>
 

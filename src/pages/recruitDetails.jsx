@@ -47,7 +47,7 @@ export default function RecruitDetail() {
       // console.log('Using API recruit detail:', recruitData.result);
     } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
-      console.log('Using API recruit detail:', recruitData.recruitDetail);
+      // console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
 
@@ -344,6 +344,7 @@ export default function RecruitDetail() {
             <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[0]}</div>
             <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[1]}</div>
           </div>
+
          
           </div>
          
