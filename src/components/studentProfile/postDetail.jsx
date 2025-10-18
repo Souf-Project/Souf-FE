@@ -251,7 +251,7 @@ const handleDeleteClick = () => {
       
       </div>
       <div className="flex flex-col max-w-[60rem] w-full mx-auto">
-      <button
+        <button
             className="flex items-center text-gray-600 hover:text-black transition-colors"
             onClick={handleGoBack}
           >
@@ -259,7 +259,7 @@ const handleDeleteClick = () => {
             <span>뒤로가기</span>
           </button>
 
-        <div className="w-full flex">
+        <div className="w-full flex max-w-[40rem]">
           <div className="flex flex-col p-2 w-full w-2/3 mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
@@ -281,7 +281,7 @@ const handleDeleteClick = () => {
             조회 수 {worksData.view}회
           </p>
           {/* 수정 버튼 (오른쪽) - 본인일 경우에만 */}
-{Number(id) === memberId && (
+            {Number(id) === memberId && (
                       <div ref={optionsRef} className="relative">
                         <button
                           onClick={() => setShowOptions((prev) => !prev)}
@@ -315,7 +315,7 @@ const handleDeleteClick = () => {
                     )}
             </div>
          
-            <div className="flex  w-full h-full relative">
+            <div className="flex w-full h-full relative">
               <Swiper
                 onSwiper={(swiper) => {
                   swiperRef.current = swiper;
@@ -470,13 +470,13 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4"
+        <div className="min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4"
         onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
         <div className="flex justify-between">
         {worksData.profileImageUrl ? (
-          <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+          <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-24 object-cover rounded-full" />
         ) : (
-          <img src={basicLogoImg} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+          <img src={basicLogoImg} alt="profileImage" className="w-24 h-24 object-cover rounded-full" />
         )}
         <button></button>
         </div>
