@@ -25,7 +25,7 @@ import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
 import RecommendRecruit from "../recruit/recommendRecruit";
-import basicLogoImg from "../../assets/images/basicLogoImg.png";
+import basicLogoImg from "../../assets/images/basiclogoimg.png";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
