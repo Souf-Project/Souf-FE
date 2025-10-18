@@ -3,6 +3,173 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Swiper 캐러셀 커스텀 스타일 */
+.carousel-swiper .swiper-slide-active .carousel-box {
+  font-size: 0.8rem !important;
+  border-color: #3E78E3 !important;
+  border-width: 2px !important;
+
+  box-shadow: 0 4px 8px -0px rgba(0, 0, 0, 0.70) !important;
+  transform: scale(1) !important;
+  z-index: 100 !important;
+}
+
+.carousel-swiper .swiper-slide:not(.swiper-slide-active) .carousel-box {
+  transform: scale(0.90) !important;
+  opacity: 0.7 !important;
+  z-index: 1 !important;
+}
+
+.carousel-swiper .swiper-slide-prev .carousel-box {
+  transform: scale(0.90) translateX(20px) !important;
+  opacity: 0.6 !important;
+  z-index: 1 !important;
+}
+
+.carousel-swiper .swiper-slide-next .carousel-box {
+  transform: scale(0.90) translateX(-20px) !important;
+  opacity: 0.6 !important;
+  z-index: 1 !important;
+}
+
+.carousel-swiper .carousel-box {
+  transition: all 0.3s ease-in-out !important;
+}
+
+.carousel-swiper .swiper-pagination {
+  bottom: -40px !important;
+}
+
+.carousel-swiper .swiper-pagination-bullet {
+  background-color: #d1d5db !important;
+  opacity: 1 !important;
+}
+
+.carousel-swiper .swiper-pagination-bullet-active {
+  background-color: #3E78E3 !important;
+}
+
+/* 가로 스와이퍼 z-index 설정 */
+.carousel-swiper .swiper-slide-active {
+  z-index: 100 !important;
+}
+
+.carousel-swiper .swiper-slide:not(.swiper-slide-active) {
+  z-index: 1 !important;
+}
+
+/* 세로 스와이퍼 커스텀 스타일 */
+
+.vertical-swiper .swiper-wrapper {
+  height: 240px !important;
+}
+
+
+.vertical-swiper .vertical-box {
+  height: 100px !important;
+  width: 100% !important;
+  transition: all 0.3s ease-in-out !important;
+}
+
+/* 슬라이드 자체의 z-index 설정 */
+.vertical-swiper .swiper-slide-active {
+  z-index: 100 !important;
+}
+
+.vertical-swiper .swiper-slide:not(.swiper-slide-active) {
+  z-index: 1 !important;
+}
+.vertical-swiper .swiper-slide-active .vertical-box {
+  border-color: #3E78E3 !important;
+  color: #3E78E3 !important;
+  border-width: 2px !important;
+  box-shadow: 0 4px 8px -0px rgba(0, 0, 0, 0.50) !important;
+  transform: scale(1) !important;
+  z-index: 100 !important;
+}
+
+.vertical-swiper .swiper-slide-active .vertical-box h3 {
+  color: #3E78E3 !important;
+  font-size: 1.2rem !important;
+}
+
+.vertical-swiper .swiper-slide-active .vertical-box img {
+  display: block !important;
+}
+
+.vertical-swiper .swiper-slide:not(.swiper-slide-active) .vertical-box img {
+  display: none !important;
+}
+
+.vertical-swiper .swiper-slide-prev .vertical-box img {
+  display: none !important;
+}
+
+.vertical-swiper .swiper-slide-next .vertical-box img {
+  display: none !important;
+}
+
+.vertical-swiper .swiper-slide:not(.swiper-slide-active) .vertical-box {
+  transform: scale(0.9) !important;
+  opacity: 0.6 !important;
+  z-index: 1 !important;
+}
+
+.vertical-swiper .swiper-slide:not(.swiper-slide-active) .vertical-box h3 {
+  color: #6b7280 !important;
+}
+
+.vertical-swiper .swiper-slide:not(.swiper-slide-active) .vertical-box p {
+  color: #6b7280 !important;
+}
+
+.vertical-swiper .swiper-slide-prev .vertical-box {
+  transform: scale(0.9) translateY(-10px) !important;
+  opacity: 0.5 !important;
+  z-index: 1 !important;
+}
+
+.vertical-swiper .swiper-slide-prev .vertical-box h3 {
+  color: #6b7280 !important;
+}
+
+.vertical-swiper .swiper-slide-prev .vertical-box p {
+  color: #6b7280 !important;
+}
+
+.vertical-swiper .swiper-slide-next .vertical-box {
+  transform: scale(0.9) translateY(-10px) !important;
+  opacity: 0.5 !important;
+  z-index: 1 !important;
+}
+
+.vertical-swiper .swiper-slide-next .vertical-box h3 {
+  color: #6b7280 !important;
+}
+
+.vertical-swiper .swiper-slide-next .vertical-box p {
+  color: #6b7280 !important;
+}
+
+
+.vertical-swiper .swiper-pagination {
+  right: -40px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: auto !important;
+}
+
+.vertical-swiper .swiper-pagination-bullet {
+  background-color: #d1d5db !important;
+  opacity: 1 !important;
+  margin: 8px 0 !important;
+  display: block !important;
+}
+
+.vertical-swiper .swiper-pagination-bullet-active {
+  background-color: #3E78E3 !important;
+}
+
 
 :root {
   font-family: 'Pretendard', system-ui , sans-serif;

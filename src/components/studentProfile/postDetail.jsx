@@ -259,7 +259,7 @@ const handleDeleteClick = () => {
             <span>뒤로가기</span>
           </button>
 
-        <div className="w-full flex max-w-[40rem]">
+        <div className="w-full flex max-w-[60rem]">
           <div className="flex flex-col p-2 w-full w-2/3 mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
