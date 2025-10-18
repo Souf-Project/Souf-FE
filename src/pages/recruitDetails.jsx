@@ -14,7 +14,7 @@ import rehypeRaw from 'rehype-raw';
 import PageHeader from "../components/pageHeader";
 import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
 import RecommendRecruit from "../components/recruit/recommendRecruit";
-
+import EstimateBanner from "../components/home/EstimateBanner";
 
 const formatPayment = (paymentString) => {
   if (!paymentString || typeof paymentString !== 'string') return '견적 희망';
@@ -44,10 +44,10 @@ export default function RecruitDetail() {
     // API에서 받은 상세 정보가 있으면 사용
     if (recruitData?.result) {
       setRecruitDetail(recruitData.result);
-      console.log('Using API recruit detail:', recruitData.result);
+      // console.log('Using API recruit detail:', recruitData.result);
     } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
-      console.log('Using API recruit detail:', recruitData.recruitDetail);
+      // console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
 
@@ -148,7 +148,7 @@ export default function RecruitDetail() {
       
 
   const handleApply = () => {
-    console.log('지원 버튼 클릭');
+    // console.log('지원 버튼 클릭');
     if (!displayData?.price || displayData.price === '견적 희망') {
       setIsEstimateModalOpen(true);
     } else {
@@ -157,7 +157,7 @@ export default function RecruitDetail() {
   };
 
   const handleViewApplicants = () => {
-    console.log('지원자 리스트 보기 버튼 클릭');
+    // console.log('지원자 리스트 보기 버튼 클릭');
     navigate(`/companyMyPage?recruitId=${id}`);
   };
 
@@ -167,7 +167,7 @@ export default function RecruitDetail() {
        priceOffer: priceOffer,
        priceReason: priceReason,
       });
-      console.log("지원 성공:", response.data);
+      // console.log("지원 성공:", response.data);
       setIsApplyModalOpen(false);
       setIsApplySuccessModalOpen(true);
     } catch (error) {
@@ -199,7 +199,7 @@ export default function RecruitDetail() {
         priceOffer: priceOfferWithUnit,
         priceReason: priceReason,
       });
-      console.log("견적 제출 성공:", response.data);
+      // console.log("견적 제출 성공:", response.data);
       setIsEstimateModalOpen(false);
       setIsApplySuccessModalOpen(true);
 
@@ -275,7 +275,7 @@ export default function RecruitDetail() {
       />
      
       
-      <div className="flex w-full mx-auto max-w-[60rem] pb-40 gap-12">
+      <div className="flex w-full mx-auto max-w-[60rem] pb-40 gap-12 px-8 lg:px-0">
         <div className="w-2/3 mx-auto pt-4">
         <button 
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
@@ -316,7 +316,10 @@ export default function RecruitDetail() {
                 )}
               </div>
             ) : (
-              <></>
+              <DeclareButton 
+              contentType="공고문" 
+              iconClassName="w-5 h-5 cursor-pointer"
+            />
             )}
           </div>
           <div className="flex items-center gap-2 my-2">
@@ -334,26 +337,51 @@ export default function RecruitDetail() {
       ))}
           </div>
          
-          <div className="text-xs font-bold mb-2">{displayData?.nickname}</div>
+          <div className="text-xs font-bold mb-2">{displayData?.hostName}</div>
           <div className="flex justify-between items-center">
-          {/* <div className="flex items-center gap-2">
-            <span className="text-zinc-700 text-lg font-bold mr-2">프로젝트 소개</span>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md">팝업</div>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md">패션디자인 전공</div>
-          </div> */}
-          <DeclareButton 
-                contentType="공고문" 
-                iconClassName="w-5 h-5 cursor-pointer"
-              />
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-700 text-lg font-bold mr-2">우대사항 키워드</span>
+            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[0]}</div>
+            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[1]}</div>
+          </div>
+
+         
           </div>
          
 
           <div className="border-t border-gray-200 my-4 sm:my-6"></div>
-          <div>
-             <p className="text-sm font-semibold text-black mb-4">
+          <div className="flex flex-col gap-8 border-b border-gray-200 pb-8">
+            <div>
+            <p className="text-xl font-semibold text-black mb-4">
                기업 소개
              </p>
-             <div className="prose prose-lg max-w-none text-gray-800 mb-4 text-sm">
+             <p>
+              {displayData?.introduction}
+             </p>
+            </div>
+
+            {/* <div>
+            <p className="text-xl font-semibold text-black mb-4">
+               외주 간략 소개
+             </p>
+             <p>
+              {displayData?.introduction}
+             </p>
+            </div> */}
+
+            <div>
+             <p>
+             {displayData.logoUrl? 
+             <img src={`${S3_BUCKET_URL}${displayData.logoUrl}`} alt="logo" className="w-full h-auto object-cover rounded-lg shadow-sm" /> 
+             : <></>}
+             </p>
+            </div>
+            
+            <div>
+              <p className="text-xl font-semibold text-black mb-4">
+               요청사항
+             </p>
+             <div className="prose prose-lg max-w-none text-gray-800 mb-4 text-sm whitespace-pre-wrap">
                <ReactMarkdown 
                  remarkPlugins={[remarkGfm]}
                  rehypePlugins={[rehypeRaw]}
@@ -361,6 +389,8 @@ export default function RecruitDetail() {
                    u: ({children}) => <u>{children}</u>,
                    strong: ({children}) => <strong>{children}</strong>,
                    em: ({children}) => <em>{children}</em>,
+                   p: ({children}) => <p className="mb-4">{children}</p>,
+                   br: () => <br />,
                    a: ({href, children}) => (
                      <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
                        {children}
@@ -373,6 +403,7 @@ export default function RecruitDetail() {
                >
                  {displayData?.content || ''}
                </ReactMarkdown>
+             </div>
              </div>
             
             {recruitDetail?.mediaResDtos && recruitDetail.mediaResDtos.length > 0 ? (
@@ -389,25 +420,67 @@ export default function RecruitDetail() {
             ) : (
               <></>
             )}
+
+            <div>
+              <p className="text-xl font-semibold text-black mb-4">
+               우대사항
+             </p>
+             <p>
+              {displayData?.preferentialTreatment}
+             </p>
+            </div>
+
+            <div>
+              <p className="text-xl font-semibold text-black mb-4">
+               근무 형태
+             </p>
+             <p>
+              {displayData?.workType === 'OFFLINE' ? '오프라인' : 
+               displayData?.workType === 'ONLINE' ? '온라인' : 
+               displayData?.workType}
+             </p>
+            </div>
+
+            {displayData?.workType === 'OFFLINE' && (
+              <div>
+                <p className="text-xl font-semibold text-black mb-4">
+                 근무 장소
+               </p>
+               <p>
+                {displayData?.cityName} {displayData?.cityDetailName}
+               </p>
+              </div>
+            )}
+
           </div>
+
+          <RecommendRecruit />
+          <EstimateBanner color="blue" />
+
         </div>
         {/* 우측 외주 조건 */}
         <div className="sticky top-24 w-1/3 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md text-sm">
-            <div className="space-y-4">
+            <div className="space-y-8 mb-4">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1">급여</span>
+                <span className="text-neutral-600 mb-1">견적 비용</span>
                 <span className="font-lg">
                   {price
                     ? `${price.toLocaleString()}`
                     : '견적 희망'}
                 </span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600 mb-1 whitespace-nowrap">납기일</span>
+
+              <div className="flex justify-between">
+                <span className="text-neutral-600 mb-1 whitespace-nowrap">마감일</span>
                 <div className="flex flex-col items-center gap-2 text-right">
                 <span className="font-lg">{formatDate(displayData?.startDate)}</span>
                 <span className="font-lg">~{formatDate(displayData?.deadline)}</span>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-neutral-600 mb-1">지역</span>
+                <span className="font-lg">{displayData?.cityName} {displayData?.cityDetailName}</span>
+
               </div>
             </div>
             {isAuthor ? (
@@ -519,6 +592,7 @@ export default function RecruitDetail() {
                   <span>만원</span>
                 </div>
               </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   견적 사유

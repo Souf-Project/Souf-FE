@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserStore } from '../store/userStore';
-import { getMyApplications, cancelApplication } from '../api/application';
-import firstCategoryData from '../assets/categoryIndex/first_category.json';
-import secondCategoryData from '../assets/categoryIndex/second_category.json';
-import thirdCategoryData from '../assets/categoryIndex/third_category.json';
-import AlertModal from './alertModal';
-import Loading from './loading';
+import { UserStore } from '../../store/userStore';
+import { getMyApplications, cancelApplication } from '../../api/application';
+import firstCategoryData from '../../assets/categoryIndex/first_category.json';
+import secondCategoryData from '../../assets/categoryIndex/second_category.json';
+import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
+import AlertModal from '../alertModal';
+import Loading from '../loading';
 
 export default function ApplicationsContent() {
   const navigate = useNavigate();

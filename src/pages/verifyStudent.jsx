@@ -63,7 +63,7 @@ export default function VerifyStudent() {
           roleType: "STUDENT",
         });
         setModalTitle("학생 전환 완료");
-        setModalDescription(`학생 안중이 완료되었습니다. \n 본인의 피드를 작성하실 수 있습니다.`);
+        setModalDescription(`학생 인증이 완료되었습니다. \n 본인의 피드를 작성하실 수 있습니다.`);
         setIsValidateTrigger(false);
         setModalOpen(true);
         setIsConfirmed(false);
