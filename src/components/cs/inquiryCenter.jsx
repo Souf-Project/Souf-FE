@@ -81,7 +81,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
         
         // 내용 길이 검증
         if (formData.content.length < 20) {
-            alert("내용은 최소 20글자 이상 입력해주세요.");
+            alert("내용은 최소 20자 이상 입력해주세요.");
             return;
         }
         if (formData.content.length > 1000) {
@@ -180,7 +180,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
                     onChange={handleChange}
                     maxLength={1000}
                     className="w-full p-2 rounded-md border border-gray-300 min-h-32"
-                    placeholder="최소 20글자, 최대 1000자 이내" 
+                    placeholder="최소 20자, 최대 1000자 이내" 
                 />
                 {formData.content.length > 0 && formData.content.length < 20 && (
                     <p className="text-red-500 text-sm">최소 20글자 이상 입력해주세요.</p>

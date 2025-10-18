@@ -95,7 +95,6 @@ export default function InfoBox() {
                   <div className="absolute inset-0 flex justify-center items-end pb-16 gap-4 z-50">
                     <button 
                       onClick={handleStudentSignup}
-
                       className="px-4 py-2 bg-[#FFB041] rounded-full text-white text-sm font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       대학생 회원가입하러 가기!
