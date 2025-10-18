@@ -1,5 +1,5 @@
 import { useState } from "react";
-import FilterDropdown from "../FilterDropdown";
+import FilterDropdown from "../filterDropdown";
 import SEO from "../seo";
 import { postInquiry, uploadInquiryFile } from "../../api/inquiry";
 
