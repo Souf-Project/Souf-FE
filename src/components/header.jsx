@@ -221,7 +221,8 @@ useEffect(() => {
       );
     } else {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
+
           <span className="font-bold">일반</span>
           <span className="font-normal">{nickname}</span>
         </div>
@@ -353,7 +354,7 @@ const DesktopHeader = () => (
                   <UserTypeLabel />
                 </button>
                 {showUserMenu && (
-                  <div className="fixed right-70 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
+                  <div className="absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-lg py-1 z-[999999] border border-gray-200">
                     <button
                       className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                       onClick={() => handleNavigation("/mypage")}

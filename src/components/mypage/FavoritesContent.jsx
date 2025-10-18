@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { getFavorite } from '../api/favorite';
-import { UserStore } from '../store/userStore';
-import StudentInfoBlock from './studentInfoBlock';
-import Loading from './loading';
+import { getFavorite } from '../../api/favorite';
+import { UserStore } from '../../store/userStore';
+import StudentInfoBlock from '../../components/studentInfoBlock';
+import Loading from '../loading';
 
 export default function FavoritesContent() {
   const [favorites, setFavorites] = useState([]);
