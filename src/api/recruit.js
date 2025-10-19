@@ -1,13 +1,9 @@
 import client from "./client";
 import axios from "axios";
 
-export const getPopularRecruit = async (pageable) => {
+export const getPopularRecruit = async () => {
   try {
-    const response = await client.get("/api/v1/recruit/popular", {
-      params: {
-        page: pageable.page,
-      },
-    });
+    const response = await client.get("/api/v1/recruit/popular");
     return response.data;
   } catch (error) {
     console.error("인기 공고문 조회 에러:", error);
@@ -151,6 +147,7 @@ export async function uploadRecruit(data) {
 }
 
 export async function updateRecruit(recruitId, data) {
+    // console.log("data", data);
     try {
         const response = await client.patch(`/api/v1/recruit/${recruitId}`, data, {
             headers: {

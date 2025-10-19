@@ -1,11 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import BasicImg4 from "../assets/images/BasicProfileImg4.png";
-import { getMemberFeed } from "../api/feed";
-import { UserStore } from "../store/userStore";
-import { FEED_ERRORS } from "../constants/post";
-import AlertModal from "./alertModal";
+import basiclogoimg from "../../assets/images/Basiclogoimg.png";
+import { getMemberFeed } from "../../api/feed";
+import { UserStore } from "../../store/userStore";
+import { FEED_ERRORS } from "../../constants/post";
+import AlertModal from "../alertModal";
 
 export default function MyFeed() {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ export default function MyFeed() {
             src={
               userData?.profileImageUrl
                 ? userData.profileImageUrl
-                : BasicImg4
+                : basiclogoimg
             }
             className="rounded-full w-1/4"
           />

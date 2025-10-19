@@ -76,14 +76,14 @@ export default function CompanyApplicants({ recruitId }) {
   const handleRecruitDetailClick = async (recruitId) => {
     try {
       const response = await getRecruitDetail(recruitId);
-      console.log('API Response:', response);
-      console.log('Response data:', response.data);
+      // console.log('API Response:', response);
+      // console.log('Response data:', response.data);
       
       // API 응답 구조에 따라 데이터 전달
       const stateData = response.data?.result ? response.data : { recruitDetail: response.data };
       
       navigate(`/recruitDetails/${recruitId}`, { state: stateData });
-      console.log('공고문 상세 조회 성공:', stateData);
+      // console.log('공고문 상세 조회 성공:', stateData);
     } catch (error) {
       console.error('공고문 상세 조회 실패:', error);
       // 에러가 발생해도 기본 데이터로 이동
@@ -186,11 +186,13 @@ export default function CompanyApplicants({ recruitId }) {
           
           {/* PC 타이틀 */}
           <h2 className="hidden lg:block text-2xl font-bold">지원자 리스트를 확인할 공고문을 선택하세요</h2>
-          <div className="flex gap-5">
+          
+          </div>
+          <div className="flex gap-5 mb-4">
             <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
             <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
           </div>
-          </div>
+
           {recruits.length > 0 ? (
             <div className="border rounded-lg overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">

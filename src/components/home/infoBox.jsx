@@ -101,7 +101,7 @@ export default function InfoBox() {
                     </button>
                     {/* <button 
                       onClick={handleRecruitUpload}
-                      className="px-6 py-3 bg-[#FFB041] rounded-full text-white text-sm font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
+                      className="px-4 py-3 bg-[#FFB041] rounded-full text-white text-sm font-bold transition-all duration-300 hover:shadow-lg hover:scale-105"
                     >
                       외주 공고문 업로드하러 가기!
                     </button> */}

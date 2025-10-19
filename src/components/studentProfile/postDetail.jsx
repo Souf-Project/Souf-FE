@@ -26,8 +26,7 @@ import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
 import RecommendRecruit from "../recruit/recommendRecruit";
 import { FEED_ERRORS } from "../../constants/post";
-import basicLogoImg from "../../assets/images/BasicLogoImg.png";
-
+import basiclogoimg from "../../assets/images/basiclogoimg.png";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -496,7 +495,7 @@ const handleDeleteClick = () => {
         {worksData.profileImageUrl ? (
           <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
         ) : (
-          <img src={basicLogoImg} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
+          <img src={basiclogoimg} alt="profileImage" className="w-24 h-full object-cover rounded-full" />
         )}
         <button></button>
         </div>

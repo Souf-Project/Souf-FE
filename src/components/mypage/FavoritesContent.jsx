@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { getFavorite } from '../api/favorite';
-import { UserStore } from '../store/userStore';
-import StudentInfoBlock from './studentInfoBlock';
-import Loading from './loading';
-import AlertModal from './alertModal';
-import { handleApiError } from '../utils/apiErrorHandler';
-import { FAVORITE_ERRORS } from '../constants/user';
+import { getFavorite } from '../../api/favorite';
+import { UserStore } from '../../store/userStore';
+import StudentInfoBlock from '../studentInfoBlock';
+import Loading from '../loading';
+import AlertModal from '../alertModal';
+import { handleApiError } from '../../utils/apiErrorHandler';
+import { FAVORITE_ERRORS } from '../../constants/user';
 import { useNavigate } from 'react-router-dom';
 
 export default function FavoritesContent() {

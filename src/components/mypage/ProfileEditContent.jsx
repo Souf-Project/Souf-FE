@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import EditBox from '../components/editBox';
-import CategorySelectBox from './categorySelectBox';
-import { getProfile, updateProfileInfo, uploadToS3, confirmImageUpload, getNickNameVerify } from '../api/mypage';
+import EditBox from '../editBox';
+import CategorySelectBox from '../categorySelectBox';
+import { getProfile, updateProfileInfo, uploadToS3, confirmImageUpload, getNickNameVerify } from '../../api/mypage';
 import { useMutation } from '@tanstack/react-query';
-import ProfileImageUpdate from './post/profileImageUpdate';
-import { UserStore } from '../store/userStore';
+import ProfileImageUpdate from '../post/profileImageUpdate';
+import { UserStore } from '../../store/userStore';
 import { useNavigate } from 'react-router-dom';
-import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
-import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
-import Loading from './loading';
-import kakaoLogo from "../assets/images/kakaoLogo.png"
-import googleLogo from "../assets/images/googleLogo.png"
-import { handleApiError } from '../utils/apiErrorHandler';
-import { MEMBER_ERRORS } from '../constants/user';
-import AlertModal from './alertModal';
+import checkBoxIcon from '../../assets/images/checkBoxIcon.svg';
+import notCheckBoxIcon from '../../assets/images/notCheckBoxIcon.svg';
+import Loading from '../loading';
+import kakaoLogo from "../../assets/images/kakaoLogo.png"
+import googleLogo from "../../assets/images/googleLogo.png"
+import { handleApiError } from '../../utils/apiErrorHandler';
+import { MEMBER_ERRORS } from '../../constants/user';
+import AlertModal from '../alertModal';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +45,7 @@ export default function ProfileEditContent() {
       const response = await getProfile();
       if (response.status === 200 && response.data?.result) {
         const profileData = response.data.result;
-        console.log(profileData);
+        // console.log(profileData);
         
         // 백엔드에서 받은 categoryDtoList를 newCategories 형식으로 변환
         let newCategories = [

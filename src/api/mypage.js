@@ -83,4 +83,23 @@ export async function getNickNameVerify(nickname) {
   return response;
 }
 
-//id랑 modify/email/send 가 여기 없어
+export async function getInquiryList(pageable) {
+  const accessToken = localStorage.getItem("accessToken");
+  const response = await client.get("/api/v1/inquiry/my", {
+    params: pageable,
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response;
+}
+
+export async function deleteInquiry(inquiryId) {
+  const accessToken = localStorage.getItem("accessToken");
+  const response = await client.delete(`/api/v1/inquiry/${inquiryId}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  return response;
+}
