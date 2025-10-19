@@ -26,7 +26,7 @@ import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
 import RecommendRecruit from "../recruit/recommendRecruit";
 import basicLogoImg from "../../assets/images/basiclogoimg.png";
-
+import { FEED_ERRORS } from "../../constants/post";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -50,6 +50,9 @@ export default function PostDetail() {
   const [isLiked, setIsLiked] = useState();
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
   const [isHeartDisabled, setIsHeartDisabled] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
 
     const {
     data: feedData,
@@ -58,32 +61,35 @@ export default function PostDetail() {
   } = useQuery({
     queryKey: ["feedDetail"],
     queryFn: async () => {
-      const data = await getFeedDetail(id,worksId);
-      // console.log("좋아요 상태:", data.result.liked);
-      // console.log("응답:", data.result);
-      console.log("피드 디테일응답:", data.result);
-
-      data.result.mediaResDtos?.forEach((media, index) => {
-      });
-    
-      setWorksData(data.result);
-      setMediaData(data.result.mediaResDtos);
+      try {
+        const data = await getFeedDetail(id,worksId);
+        data.result.mediaResDtos?.forEach((media, index) => {
+        });
       
-      // 좋아요 상태 초기화
-      if (data.result.liked !== undefined) {
-        setIsLiked(data.result.liked);
-       
-      }
-      
-      return data;
+        setWorksData(data.result);
+        setMediaData(data.result.mediaResDtos);
+        
+        // 좋아요 상태 초기화
+        if (data.result.liked !== undefined) {
+          setIsLiked(data.result.liked);
+        
+        }
+        
+        return data;
+      } catch (error) {
+        const errorKey = error?.response?.data?.errorKey;
+        if (error.response?.status === 403) {
+          setShowLoginModal(true);
+        } else {
+          const errorInfo = FEED_ERRORS[errorKey];
+          setErrorModal(true);
+          setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+          setErrorAction(errorInfo?.action || "redirect");
+        }
+        throw error;
+        }
     },
     keepPreviousData: true,
-    onError: (error) => {
-      // 403 에러인 경우 로그인 모달 표시
-      if (error.response?.status === 403) {
-        setShowLoginModal(true);
-      }
-    },
   });
 
 
@@ -123,7 +129,18 @@ const handleDeleteClick = () => {
       setShowDeleteModal(false);
       setShowCompleteModal(true);
     } catch (err) {
-      // console.log("실패함");
+      //console.log("실패 넘어요", err);
+      setShowDeleteModal(false);
+      const errorKey = err?.response?.data?.errorKey;
+      if (err.response?.status === 403) {
+        setShowLoginModal(true);
+      } else {
+        const errorInfo = FEED_ERRORS[errorKey];
+        setErrorModal(true);
+        setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+        setErrorAction(errorInfo?.action || "redirect");
+      }
+        
     }
   };
 
@@ -159,20 +176,22 @@ const handleDeleteClick = () => {
       };
       
       await patchLike(worksId, requestBody);
-      // console.log("요청:", requestBody);
 
       const updatedData = await getFeedDetail(id, worksId);
       setWorksData(updatedData.result);
       setIsLiked(updatedData.result.liked);
       setMediaData(updatedData.result.mediaResDtos);
-      
-      // console.log("좋아요 처리 성공");
      
     } catch (error) {
-      console.error("좋아요 처리 에러:", error);
-      
+      console.error("피드 관련 에러:", error);
+      const errorKey = error?.response?.data?.errorKey;
       if (error.response?.status === 403) {
         setShowLoginModal(true);
+      }else{
+        const errorInfo = FEED_ERRORS[errorKey];
+        setErrorModal(true);
+        setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+        setErrorAction(errorInfo?.action || "redirect");
       }
     }
     
@@ -409,7 +428,7 @@ const handleDeleteClick = () => {
                 iconClassName="w-7 h-7 cursor-pointer ml-auto"
               />
                   <div className="relative">
-                                      {/* <img src={shareIco} alt="shareIco" className="w-7 h-7 cursor-pointer" onClick={handleShareClick} /> */}
+                    {/* <img src={shareIco} alt="shareIco" className="w-7 h-7 cursor-pointer" onClick={handleShareClick} /> */}
                   
                   
                  
@@ -533,7 +552,24 @@ const handleDeleteClick = () => {
        onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-      
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="잘못된 접근"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              navigate("/feed");
+          }else if(errorAction === "login"){
+            localStorage.clear();
+            navigate("/login");
+          }else{
+            window.location.reload();
+          }
+        }}
+          />
+      )}
 
     </>
   );

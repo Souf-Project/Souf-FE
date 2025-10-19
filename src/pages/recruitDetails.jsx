@@ -14,6 +14,9 @@ import rehypeRaw from 'rehype-raw';
 import PageHeader from "../components/pageHeader";
 import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js';
 import RecommendRecruit from "../components/recruit/recommendRecruit";
+import { handleApiError } from '../utils/apiErrorHandler.js';
+import { APPLICATION_ERRORS } from '../constants/application.js';
+
 import EstimateBanner from "../components/home/EstimateBanner";
 
 const formatPayment = (paymentString) => {
@@ -37,6 +40,10 @@ export default function RecruitDetail() {
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
   const [priceOffer, setPriceOffer] = useState('');
   const [priceReason, setPriceReason] = useState('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근입니다.");
+  const [errorAction, setErrorAction] = useState(null);
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
 
@@ -172,17 +179,18 @@ export default function RecruitDetail() {
       setIsApplySuccessModalOpen(true);
     } catch (error) {
       console.error("지원 실패:", error);
-      if (error.response?.status === 403) {
-        alert("학생 계정만 지원이 가능합니다.");
-        navigate('/login');
-      } else {
-        alert("지원 중 오류가 발생했습니다.");
-      }
-      setIsApplyModalOpen(false);
+      // if (error.response?.status === 403) {
+      //   alert("학생 계정만 지원이 가능합니다.");
+      //   navigate('/login');
+      // } else {
+      //   alert("지원 중 오류가 발생했습니다.");
+      // }
+      // setIsApplyModalOpen(false);
+      handleApiError(error,{setShowLoginModal,setErrorModal,setErrorDescription,setErrorAction},APPLICATION_ERRORS);
     }
-    setIsApplyModalOpen(false);
+    //setIsApplyModalOpen(false);
 
-    setIsApplySuccessModalOpen(true);
+    //setIsApplySuccessModalOpen(true);
   };
 
   const handleEstimateSubmit = async () => {
@@ -207,12 +215,13 @@ export default function RecruitDetail() {
       setPriceReason('');
     } catch (error) {
       console.error("견적 제출 실패:", error);
-      if (error.response?.status === 403) {
-        alert("학생 계정만 지원이 가능합니다.");
-        navigate('/login');
-      } else {
-        alert("견적 제출 중 오류가 발생했습니다.");
-      }
+      handleApiError(error,{setShowLoginModal,setErrorModal,setErrorDescription,setErrorAction},APPLICATION_ERRORS);
+      // if (error.response?.status === 403) {
+      //   alert("학생 계정만 지원이 가능합니다.");
+      //   navigate('/login');
+      // } else {
+      //   alert("견적 제출 중 오류가 발생했습니다.");
+      // }
       setIsEstimateModalOpen(false);
     }
   };
@@ -627,6 +636,36 @@ export default function RecruitDetail() {
           </div>
         </div>
       )}
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 학생 회원만 공고문에 지원가능합니다."
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+        {errorModal && (
+          <AlertModal
+            type="simple"
+            title="지원 오류"
+            description={errorDescription}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setErrorModal(false);
+              if (errorAction === "redirect") {
+                navigate("/recruit");
+              }else{
+                setErrorModal(false);
+              }
+            }}
+          />
+        )}
 
       </div>
     </>
