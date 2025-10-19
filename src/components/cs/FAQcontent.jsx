@@ -5,13 +5,57 @@ import Accordian from "./accordian";
 export default function FAQcontent({ onInquiryClick }) {
     const [activeTab, setActiveTab] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
+    const [filteredData, setFilteredData] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    
     const handleTabChange = (tab) => {
         setActiveTab(tab);
     };
 
     const handleSearch = (e) => {
         e.preventDefault();
-        console.log(searchQuery);
+        if (searchQuery.trim() === "") {
+            setIsSearching(false);
+            setFilteredData([]);
+            return;
+        }
+        
+        // 검색을 위해 모든 FAQ 데이터를 하나의 배열로 합침
+        const allFaqData = [
+            ...faqData1.map(item => ({ ...item, category: '계정/인증' })),
+            ...faqData2.map(item => ({ ...item, category: '프로필·피드' })),
+            ...faqData3.map(item => ({ ...item, category: '외주 공고·지원/견적' })),
+            ...faqData4.map(item => ({ ...item, category: '매칭·채팅' })),
+            ...faqData5.map(item => ({ ...item, category: '표준 계약서·전자서명' })),
+            ...faqData6.map(item => ({ ...item, category: '결제·정산' }))
+        ];
+
+        const filtered = allFaqData.filter(item => 
+            item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (item.ulList && item.ulList.some(listItem => 
+                listItem.toLowerCase().includes(searchQuery.toLowerCase())
+            )) ||
+            (item.olList && item.olList.some(listItem => 
+                listItem.toLowerCase().includes(searchQuery.toLowerCase())
+            )) ||
+            (item.quotation && item.quotation.some(quote => 
+                quote.toLowerCase().includes(searchQuery.toLowerCase())
+            ))
+        );
+        
+        setFilteredData(filtered);
+        setIsSearching(true);
+    };
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+
+        if (value.trim() === "") {
+            setIsSearching(false);
+            setFilteredData([]);
+        }
     };
 
     const faqData1 = [
@@ -216,7 +260,7 @@ export default function FAQcontent({ onInquiryClick }) {
         <div>
              <SearchBar
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleSearchChange}
                 onSubmit={handleSearch}
                 placeholder="어떤게 궁금하신가요?"
                 width="w-1/2"
@@ -274,24 +318,49 @@ export default function FAQcontent({ onInquiryClick }) {
                     </button>
             </div>
             <div className="flex flex-col gap-4 mt-8">
-                {activeTab === 0 && faqData1.map((item, index) => (
-                    <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                ))}
-                {activeTab === 1 && faqData2.map((item, index) => (
-                    <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                ))}
-                {activeTab === 2 && faqData3.map((item, index) => (
-                    <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                ))}
-                {activeTab === 3 && faqData4.map((item, index) => (
-                    <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                ))}
-                {activeTab === 4 && faqData5.map((item, index) => (
-                    <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                ))}
-                {activeTab === 5 && faqData6.map((item, index) => (
-                    <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                ))}
+                {isSearching ? (
+                    filteredData.length > 0 ? (
+                        filteredData.map((item, index) => (
+                            <div key={index}>
+                                <div className="text-sm text-gray-500 mb-2 font-medium">{item.category}</div>
+                                <Accordian 
+                                    question={item.question} 
+                                    answer={item.answer} 
+                                    ulList={item.ulList} 
+                                    olList={item.olList} 
+                                    quotation={item.quotation} 
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">
+                            <p className="text-lg">검색 결과가 없습니다.</p>
+                            <p className="text-sm mt-2">다른 검색어로 시도해보세요.</p>
+                        </div>
+                    )
+                ) : (
+                  
+                    <>
+                        {activeTab === 0 && faqData1.map((item, index) => (
+                            <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
+                        ))}
+                        {activeTab === 1 && faqData2.map((item, index) => (
+                            <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
+                        ))}
+                        {activeTab === 2 && faqData3.map((item, index) => (
+                            <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
+                        ))}
+                        {activeTab === 3 && faqData4.map((item, index) => (
+                            <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
+                        ))}
+                        {activeTab === 4 && faqData5.map((item, index) => (
+                            <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
+                        ))}
+                        {activeTab === 5 && faqData6.map((item, index) => (
+                            <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
+                        ))}
+                    </>
+                )}
             </div>
             <div className="flex items-center  gap-8 mt-8">
                 <p className="text-2xl font-semibold">궁금한 점이 해결되지 않으셨나요?</p>
