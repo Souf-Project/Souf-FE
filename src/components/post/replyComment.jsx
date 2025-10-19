@@ -3,13 +3,20 @@ import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
 import trashIco from "../../assets/images/trashIco.svg";
 import { UserStore } from "../../store/userStore";
 import { deleteComment } from "../../api/additionalFeed";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
+import { COMMENT_ERRORS } from "../../constants/post";
 
 export default function ReplyComment({ reply }) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [errorModal, setErrorModal] = useState(false);
+    const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+    const [errorAction, setErrorAction] = useState("redirect");
     const { id, worksId } = useParams();
     const { memberId } = UserStore();
+
+    const navigate = useNavigate();
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -25,11 +32,19 @@ export default function ReplyComment({ reply }) {
     const handleDeleteReply = async () => {
         try {
             const response = await deleteComment(worksId, reply.commentId);
-            
             // 삭제 성공 후 페이지 새로고침 
             window.location.reload();
         } catch (error) {
             console.error("답글 삭제 에러:", error);
+            const errorKey = error?.response?.data?.errorKey;
+            if (error.response.status === 403) {
+                setShowLoginModal(true);
+            }else{
+                const errorInfo = COMMENT_ERRORS[errorKey];
+                setErrorModal(true);
+                setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+                setErrorAction(errorInfo?.action || "redirect");
+            }
         }
     };
 
@@ -83,6 +98,35 @@ export default function ReplyComment({ reply }) {
                     onClickFalse={handleCancelDelete}
                 />
             )}
+            {showLoginModal && (
+                  <AlertModal
+                  type="simple"
+                  title="로그인이 필요합니다"
+                  description="SouF 회원만 댓글을 작성할 수 있습니다!"
+                  TrueBtnText="로그인하러 가기"
+                  FalseBtnText="취소"
+                  onClickTrue={() => {
+                    setShowLoginModal(false);
+                    navigate("/login");
+                  }}
+                  onClickFalse={() => setShowLoginModal(false)}
+                   />
+                 )}
+            {errorModal && (
+                <AlertModal
+                  type="simple"
+                  title="잘못된 접근"
+                  description={errorDescription}
+                  TrueBtnText="확인"
+                  onClickTrue={() => {
+                    if (errorAction === "redirect") {
+                        navigate("/feed");
+                    } else if (errorAction === "refresh") {
+                        window.location.reload();
+                    }
+                }}
+                   />
+                 )}
         </div>
     );
 } 

@@ -7,6 +7,8 @@ import secondCategoryData from '../../assets/categoryIndex/second_category.json'
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
 import AlertModal from '../alertModal';
 import Loading from '../loading';
+import { handleApiError } from '../../utils/apiErrorHandler';
+import { APPLICATION_ERRORS } from '../../constants/application';
 
 export default function ApplicationsContent() {
   const navigate = useNavigate();
@@ -17,6 +19,10 @@ export default function ApplicationsContent() {
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [selectedRecruitId, setSelectedRecruitId] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근입니다.");
+  const [errorAction, setErrorAction] = useState(null);
 
   const getCategoryNames = (categoryDtos) => {
     if (!categoryDtos || categoryDtos.length === 0) {
@@ -78,9 +84,10 @@ export default function ApplicationsContent() {
       } catch (error) {
         console.error('지원 내역 조회 실패:', error);
         setError('지원 내역을 불러오는데 실패했습니다.');
-        if (error.response?.status === 403) {
-          setError('로그인이 필요합니다.');
-        }
+        debugger;
+        handleApiError(error,{setShowLoginModal,setErrorModal,setErrorDescription,setErrorAction},APPLICATION_ERRORS);
+        console.log(showLoginModal);
+        debugger;
       } finally {
         setLoading(false);
       }
@@ -109,7 +116,8 @@ export default function ApplicationsContent() {
       setShowSuccessModal(true);
     } catch (error) {
       console.error('지원 취소 실패:', error);
-      alert('지원 취소에 실패했습니다.');
+      //alert('지원 취소에 실패했습니다.');
+      handleApiError(error,{setShowLoginModal,setErrorModal,setErrorDescription,setErrorAction},APPLICATION_ERRORS);
     }
   };
 
@@ -126,6 +134,36 @@ export default function ApplicationsContent() {
     return (
       <div className="text-center py-8 bg-red-50 rounded-lg">
         <p className="text-red-500">{error}</p>
+{showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 학생 회원만 접근 가능합니다."
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+        {errorModal && (
+          <AlertModal
+            type="simple"
+            title="공고문 오류"
+            description={errorDescription}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setErrorModal(false);
+              if (errorAction === "redirect") {
+                location.reload();
+              }else{
+                location.reload();
+              }
+            }}
+          />
+        )}
       </div>
     );
   }
@@ -215,6 +253,36 @@ export default function ApplicationsContent() {
           onClose={() => setShowSuccessModal(false)}
         />
       )}
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 학생 회원만 접근 가능합니다."
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+        {errorModal && (
+          <AlertModal
+            type="simple"
+            title="공고문 오류"
+            description={errorDescription}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setErrorModal(false);
+              if (errorAction === "redirect") {
+                location.reload();
+              }else{
+                location.reload();
+              }
+            }}
+          />
+        )}
     </div>
   );
 }; 
