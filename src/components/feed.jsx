@@ -13,6 +13,7 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
 import DeclareButton from "./declare/declareButton";
+import { FEED_ERRORS } from "../constants/post";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -29,6 +30,9 @@ export default function Feed({ feedData, onFeedClick }) {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
 
   const {memberId} = UserStore();
   const swiperRef = useRef(null);
@@ -80,7 +84,16 @@ export default function Feed({ feedData, onFeedClick }) {
         setShowDeleteModal(false);
         setShowCompleteModal(true);
       } catch (err) {
-        console.log("실패함");
+        console.log("실패함" , err);
+        const errorKey = err?.response?.data?.errorKey;
+        if (err.response?.status === 403) {
+          setShowLoginModal(true);
+        } else {
+          const errorInfo = FEED_ERRORS[errorKey];
+          setErrorModal(true);
+          setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+          setErrorAction(errorInfo?.action || "redirect");
+        }
       }
     };
   
@@ -263,7 +276,24 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickFalse={() => setShowLoginModal(false)}
         />
       )}
-
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="잘못된 접근"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              navigate("/feed");
+          }else if(errorAction === "login"){
+            localStorage.clear();
+            navigate("/login");
+          }else{
+            window.location.reload();
+          }
+        }}
+          />
+      )}
     </div>
   );
 }

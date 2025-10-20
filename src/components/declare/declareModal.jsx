@@ -1,6 +1,10 @@
 import { useState } from "react";
 import ReasonCheckbox from "../ReasonCheckbox";
 import { postReport } from "../../api/report";
+import { handleApiError } from "../../utils/apiErrorHandler";
+import AlertModal from "../alertModal";
+import { REPORT_ERRORS } from "../../constants/report";
+import { useNavigate } from "react-router-dom";
 
 export default function DeclareModal({
   isOpen,
@@ -15,7 +19,11 @@ export default function DeclareModal({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [description, setDescription] = useState("");
-
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근입니다.");
+  const [errorAction, setErrorAction] = useState(null);
+  const navigate = useNavigate();
   // 신고 사유 목록
   const reasonList = [
     "개인정보 노출",
@@ -41,6 +49,10 @@ export default function DeclareModal({
       alert("신고 사유를 하나 이상 선택해주세요.");
       return;
     }
+    if(!description){
+      alert("신고 사유를 자세하게 작성해주세요.");
+      return;
+    }
 
     try {
       const response = await postReport(postType, postId, title, reporterId, reportedMemberId, selectedReasons, description);
@@ -56,6 +68,7 @@ export default function DeclareModal({
       }
     } catch (error) {
       console.error("신고 접수 실패:", error);
+      handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, REPORT_ERRORS)
     }
   };
 
@@ -157,6 +170,36 @@ export default function DeclareModal({
           </button>
         </div>
       </div>
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 회원만 신고가 가능합니다."
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+        {errorModal && (
+          <AlertModal
+            type="simple"
+            title="신고 오류"
+            description={errorDescription}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setErrorModal(false);
+              if (errorAction === "redirect") {
+                location.reload();
+              }else{
+                location.reload();
+              }
+            }}
+          />
+        )}
     </div>
   );
 }

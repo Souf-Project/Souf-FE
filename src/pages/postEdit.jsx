@@ -14,6 +14,7 @@ import {
 } from "../api/video";
 import AlertModal from "../components/alertModal";
 import { filterEmptyCategories } from "../utils/filterEmptyCategories";
+import { FEED_ERRORS } from "../constants/post";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -38,6 +39,10 @@ export default function PostEdit() {
       { firstCategory: null, secondCategory: null, thirdCategory: null },
     ],
   });
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
 
   useEffect(() => {
     if (mediaData?.length) {
@@ -87,6 +92,19 @@ export default function PostEdit() {
       );
       return { ...prev, categoryDtos: updated };
     });
+  };
+
+  const handleApiError = (error) => {
+    debugger;
+    const errorKey = error?.response?.data?.errorKey;
+    if (error?.response?.status === 403) {
+      setShowLoginModal(true);
+    } else {
+      const errorInfo = FEED_ERRORS[errorKey];
+      setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+      setErrorAction(errorInfo?.action || "redirect");
+      setErrorModal(true);
+    }
   };
 
   const { mutate, isPending } = useMutation({
@@ -172,8 +190,12 @@ export default function PostEdit() {
         setIsModal(true);
       } catch (err) {
         console.error("업로드 실패:", err);
-        alert("수정 실패");
+        handleApiError(err);
       }
+    },
+    onError: (err) => {
+      console.error("업로드 실패:", err);
+      handleApiError(err);
     },
   });
 
@@ -308,6 +330,38 @@ export default function PostEdit() {
           TrueBtnText="확인"
           onClickTrue={() => navigate("/recruit?category=1")}
         />
+      )}
+      {showLoginModal && (
+       <AlertModal
+       type="simple"
+       title="로그인이 필요합니다"
+       description="SouF 회원만 상세 글을 조회할 수 있습니다!"
+       TrueBtnText="로그인하러 가기"
+       FalseBtnText="취소"
+       onClickTrue={() => {
+         setShowLoginModal(false);
+         navigate("/login");
+       }}
+       onClickFalse={() => setShowLoginModal(false)}
+        />
+      )}
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="오류 발생"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              navigate("/feed");
+          }else if(errorAction === "login"){
+            localStorage.clear();
+            navigate("/login");
+          }else{
+            window.location.reload();
+          }
+        }}
+          />
       )}
     </div>
   );
