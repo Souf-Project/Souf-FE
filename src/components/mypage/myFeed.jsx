@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import basiclogoimg from "../../assets/images/Basiclogoimg.png";
+import basiclogoimg from "../../assets/images/basiclogoimg.png";
 import { getMemberFeed } from "../../api/feed";
 import { UserStore } from "../../store/userStore";
 import { FEED_ERRORS } from "../../constants/post";
