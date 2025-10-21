@@ -6,7 +6,7 @@ export const getPopularRecruit = async () => {
     const response = await client.get("/api/v1/recruit/popular");
     return response.data;
   } catch (error) {
-    console.error("인기 공고문 조회 에러:", error);
+    // console.error("인기 공고문 조회 에러:", error);
     throw error;
   }
 };

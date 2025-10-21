@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { getUnreadNotificationCount, getNotifications } from "../api/notification";
 
 export const UserStore = create(
   persist(
@@ -63,6 +64,26 @@ export const UserStore = create(
           roleType: null,
           accessToken: null
         });
+      },
+
+      // 알림 초기화 (로그인 시 호출)
+      initializeNotifications: async () => {
+        try {
+          const unreadCountResponse = await getUnreadNotificationCount();
+          const notificationsResponse = await getNotifications(0, 20);
+          
+          // 알림 store에 데이터 설정 (외부에서 호출)
+          return {
+            unreadCount: unreadCountResponse.result || 0,
+            notifications: notificationsResponse.result || []
+          };
+        } catch (error) {
+          console.error('알림 초기화 에러:', error);
+          return {
+            unreadCount: 0,
+            notifications: []
+          };
+        }
       },
     }),
     {

@@ -531,7 +531,7 @@ export default function Home() {
         </div>
     
 {/* 진행 중인 외주 의뢰 섹션 */}
-      <div className="relative w-full lg:w-1/3 lg:ml-4 mt-10 lg:mt-0">
+      {/* <div className="relative w-full lg:w-1/3 lg:ml-4 mt-10 lg:mt-0">
       <div className="flex items-center mb-8 gap-4">
         <h2 className="text-2xl font-semibold">
         진행 중인 외주 의뢰
@@ -545,7 +545,7 @@ export default function Home() {
             <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
             onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
   </div>
-      </div>
+      </div> */}
       </div>
     
 {/* 스프 소개란 */}
