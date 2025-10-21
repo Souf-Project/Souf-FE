@@ -30,7 +30,7 @@ import Review from "../pages/review";
 import ReviewDetail from "../pages/reviewDetail";
 import Inspection from "../pages/inspection";
 import { HelmetProvider } from 'react-helmet-async';
-
+import FloatingChatButton from "../components/floatingChatButton";
 function AppRouter() {
   const location = useLocation();
   const isChatPage = location.pathname === "/chat";
@@ -72,6 +72,7 @@ function AppRouter() {
         </Routes>
       </main>
       {!isChatPage && <Footer />}
+      {!isChatPage && <FloatingChatButton />}
     </div>
   );
 }
