@@ -101,6 +101,8 @@ export default function RecruitUpload() {
       const deadlineDateTime = parseDateTime(editData.deadline);
       return {
         title: editData.title || '',
+        logoOriginalFileName: editData.logoOriginalFileName || '',
+        writerName: editData.writerName || '',
         content: editData.content || '',
         region: editData.cityDetailName || '',
         city: editData.cityName || '',
@@ -362,6 +364,7 @@ export default function RecruitUpload() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -423,10 +426,9 @@ export default function RecruitUpload() {
         preferentialTreatmentTags: preferentialTreatmentTags,
         categoryDtos: cleanedCategories,
         workType: formData.workType.toUpperCase(),
-        ...(formData.files.length > 0 && { originalFileNames: formData.files.map((file) => file.name) })
+        ...(formData.files.length > 0 && { originalFileNames: formData.files.map((file) => file.name) }),
       };
   
-      console.log('Sending data:', formDataToSend);
       
       let response;
       
@@ -434,35 +436,58 @@ export default function RecruitUpload() {
         const recruitId = editData.recruitId || editData.id;
         response = await updateRecruit(recruitId, formDataToSend);
 
-        if (formData.files.length > 0 && response.data?.result?.dtoList) {
+        if ((formData.files.length > 0 || formData.logoFile) && response.data?.result) {
           try {
-            const { recruitId: updatedRecruitId, dtoList } = response.data.result;
+            const { recruitId: updatedRecruitId, dtoList, logoPresignedUrlResDto } = response.data.result;
             
-            // S3에 모든 파일 업로드
-            await Promise.all(
-              dtoList.map(({ presignedUrl }, i) =>
-                uploadToS3(presignedUrl, formData.files[i])
-              )
-            );
+            // 로고 파일이 있는 경우 처리
+            if (formData.logoFile && logoPresignedUrlResDto) {
+              await uploadToS3(logoPresignedUrlResDto.presignedUrl, formData.logoFile);
+              
+              await postRecruitMedia({
+                recruitId: updatedRecruitId,
+                fileUrl: [logoPresignedUrlResDto.fileUrl],
+                fileName: [formData.logoFile.name],
+                fileType: [formData.logoFile.type.split("/")[1].toUpperCase()],
+                purpose: ["LOGO"]
+              });
+              
+            }
+            
+            // 일반 파일 처리
+            if (formData.files.length > 0 && dtoList) {
+              // S3에 모든 파일 업로드
+              await Promise.all(
+                dtoList.map(({ presignedUrl }, i) =>
+                  uploadToS3(presignedUrl, formData.files[i])
+                )
+              );
 
-            // 파일 정보 추출
-            const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
-            const fileNames = formData.files.map((file) => file.name);
-            const fileTypes = formData.files.map((file) =>
-              file.type.split("/")[1].toUpperCase()
-            );
+              // 파일 정보 추출 - 모든 파일을 배열로 구성
+              const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+              const fileNames = formData.files.map((file) => file.name);
+              const fileTypes = formData.files.map((file) =>
+                file.type.split("/")[1].toUpperCase()
+              );
+              const filePurposes = new Array(formData.files.length).fill("RECRUIT");
 
-            // S3 업로드 성공 후 미디어 정보 저장
-            await Promise.all(
-              dtoList.map(({ presignedUrl }, i) =>
-                postRecruitMedia({
-                  recruitId: updatedRecruitId,
-                  fileUrl: fileUrls,
-                  fileName: fileNames,
-                  fileType: fileTypes,
-                })
-              )
-            );
+              console.log("📦 파일 정보 배열:", {
+                fileUrls,
+                fileNames,
+                fileTypes,
+                filePurposes
+              });
+
+              // S3 업로드 성공 후 미디어 정보 저장 - 한 번에 모든 파일 처리
+              await postRecruitMedia({
+                recruitId: updatedRecruitId,
+                fileUrl: fileUrls,
+                fileName: fileNames,
+                fileType: fileTypes,
+                purpose: filePurposes
+              });
+            }
+            
             alert('공고가 성공적으로 수정되었습니다.');
           } catch (error) {
             console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
@@ -471,41 +496,65 @@ export default function RecruitUpload() {
         }
       } else {
         response = await uploadRecruit(formDataToSend);
-        const { recruitId, dtoList } = response.data.result;
+        const { recruitId, dtoList, logoPresignedUrlResDto } = response.data.result;
         
-        // console.log("📦 dtoList:", dtoList);
-dtoList.forEach((dto, i) => {
-  // console.log(`🧾 파일 ${i + 1} presignedUrl:`, dto.presignedUrl);
-});
+        console.log("📦 dtoList:", dtoList);
+        console.log("📦 formData:", formData);
 
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
-        if (formData.files.length > 0 && dtoList) {
+        if ((formData.files.length > 0 || formData.logoFile) && response.data?.result) {
           try {
-            // S3에 모든 파일 업로드
-            await Promise.all(
-              dtoList.map(({ presignedUrl }, i) =>
-                uploadToS3(presignedUrl, formData.files[i])
-              )
-            );
+            // 로고 파일이 있는 경우 처리
+            if (formData.logoFile && logoPresignedUrlResDto) {
+              await uploadToS3(logoPresignedUrlResDto.presignedUrl, formData.logoFile);
+              
+              const logoMediaData = {
+                recruitId,
+                fileUrl: [logoPresignedUrlResDto.fileUrl],
+                fileName: [formData.logoFile.name],
+                fileType: [formData.logoFile.type.split("/")[1].toUpperCase()],
+                purpose: ["LOGO"]
+              };
+              
+              console.log("📦 로고 파일 postRecruitMedia 데이터:", logoMediaData.purpose);
+              
+              await postRecruitMedia(logoMediaData);
+            }
+            
+            // 일반 파일이 있는 경우 처리
+            if (formData.files.length > 0 && dtoList) {
+              // S3에 모든 파일 업로드
+              await Promise.all(
+                dtoList.map(({ presignedUrl }, i) =>
+                  uploadToS3(presignedUrl, formData.files[i])
+                )
+              );
 
-            // 파일 정보 추출
-            const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
-            const fileNames = formData.files.map((file) => file.name);
-            const fileTypes = formData.files.map((file) =>
-              file.type.split("/")[1].toUpperCase()
-            );
+              // 파일 정보 추출 - 모든 파일을 배열로 구성
+              const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
+              const fileNames = formData.files.map((file) => file.name);
+              const fileTypes = formData.files.map((file) =>
+                file.type.split("/")[1].toUpperCase()
+              );
+              const filePurposes = new Array(formData.files.length).fill("RECRUIT");
 
-            // 3. S3 업로드 성공 후 미디어 정보 저장
-            await Promise.all(
-              dtoList.map(({ presignedUrl }, i) =>
-                postRecruitMedia({
-                  recruitId,
-                  fileUrl: fileUrls,
-                  fileName: fileNames,
-                  fileType: fileTypes,
-                })
-              )
-            );
+              console.log("📦 파일 정보 배열:", {
+                fileUrls,
+                fileNames,
+                fileTypes,
+                filePurposes
+              });
+
+              // S3 업로드 성공 후 미디어 정보 저장 - 한 번에 모든 파일 처리
+              await postRecruitMedia({
+                recruitId,
+                fileUrl: fileUrls,
+                fileName: fileNames,
+                fileType: fileTypes,
+                purpose: filePurposes
+              });
+            }
+            
             alert('공고가 성공적으로 등록되었습니다.');
           } catch (error) {
             console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
