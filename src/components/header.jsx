@@ -42,7 +42,7 @@ export default function Header() {
   useEffect(() => {
     if (memberId) {
       setIsLogin(true);
-      setUserType(roleType || "student");
+      setUserType(roleType || "");
       setUserName(nickname || "");
     } else {
       setIsLogin(false);
@@ -207,14 +207,14 @@ useEffect(() => {
   const UserTypeLabel = () => {
     if (roleType === "ADMIN") {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
           <span className="font-bold">관리자</span>
           <span className="font-normal">{nickname}</span>
         </div>
       );
     } else if (roleType === "STUDENT") {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
           <span className="font-bold">학생</span>
           <span className="font-normal">{nickname}</span>
         </div>
@@ -318,18 +318,14 @@ const DesktopHeader = () => (
             </li> */}
             {/* <li className="text-gray-400 font-medium mx-4">|</li> */}
 
-            {/* <li 
+            <li 
               className={`relative py-5 w-28 ${location.pathname === "/guide" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('guide')}
               onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span> */}
-              {/* 이용가이드 드롭다운 */}
-              {/* {activeDropdown === 'guide' && (
-
               <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
               {/* 이용가이드 드롭다운 */}
-              {/* {activeDropdown === 'guide' && (
+                {activeDropdown === 'guide' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('guide')}
@@ -340,7 +336,7 @@ const DesktopHeader = () => (
                    </ul>
                  </div>
               )} 
-               </li>*/}
+               </li>
 
             
 
