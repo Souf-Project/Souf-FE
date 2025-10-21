@@ -25,6 +25,7 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
+import Guide from "../pages/guide";
 import CsPage from "../pages/csPage";
 import Review from "../pages/review";
 import ReviewDetail from "../pages/reviewDetail";
@@ -68,7 +69,8 @@ function AppRouter() {
           <Route path="/search" element={<Search />} />
           <Route path="/withdraw" element={<Withdraw/>} />
           <Route path="/forbidden" element={<Forbidden/>} />
-          <Route path="/guide" element={<CsPage/>} />
+          <Route path="/guide" element={<Guide/>} />
+          <Route path="/csPage" element={<CsPage/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

@@ -153,6 +153,10 @@ useEffect(() => {
     navigate(`/guide`);
     setShowMobileMenu(false);
   };
+  const handleNavigationCsPageCategory = () => {
+    navigate(`/csPage`);
+    setShowMobileMenu(false);
+  };
   const deleteCookie = (name) => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   };
@@ -332,7 +336,8 @@ const DesktopHeader = () => (
                    onMouseLeave={handleDropdownLeave}
                  >
                    <ul className="flex flex-col gap-1">
-                     <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
+                    <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">가이드라인</button></li>
+                     <li><button onClick={() => handleNavigationCsPageCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
                    </ul>
                  </div>
               )} 
