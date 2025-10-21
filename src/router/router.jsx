@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -32,9 +33,42 @@ import ReviewDetail from "../pages/reviewDetail";
 import Inspection from "../pages/inspection";
 import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
+import useUnreadStore from "../store/useUnreadStore";
+import { UserStore } from "../store/userStore";
+import { getUnreadNotificationCount, getNotifications } from "../api/notification";
 function AppRouter() {
   const location = useLocation();
   const isChatPage = location.pathname === "/chat";
+  const { nickname } = UserStore();
+  const { setUnreadCount, setNotifications } = useUnreadStore();
+
+  // // 로그인 시 알림 초기화
+  // useEffect(() => {
+  //   const initializeNotifications = async () => {
+  //     if (nickname) {
+  //       try {
+  //         // 읽지 않은 알림 개수 조회
+  //         const unreadCountResponse = await getUnreadNotificationCount();
+  //         setUnreadCount(unreadCountResponse.result || 0);
+
+  //         // 최근 알림 목록 조회 (최대 20개)
+  //         const notificationsResponse = await getNotifications(0, 20);
+  //         setNotifications(notificationsResponse.result || []);
+  //       } catch (error) {
+  //         console.error('알림 초기화 에러:', error);
+  //         // 에러 발생 시 기본값 설정
+  //         setUnreadCount(0);
+  //         setNotifications([]);
+  //       }
+  //     } else {
+  //       // 로그아웃 시 알림 상태 초기화
+  //       setUnreadCount(0);
+  //       setNotifications([]);
+  //     }
+  //   };
+
+  //   initializeNotifications();
+  // }, [nickname, setUnreadCount, setNotifications]);
 
   return (
     <div className="flex flex-col min-h-screen">
