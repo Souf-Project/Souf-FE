@@ -346,7 +346,17 @@ export default function RecruitDetail() {
       ))}
           </div>
          
-          <div className="text-xs font-bold mb-2">{displayData?.hostName}</div>
+         <div className="flex items-center gap-2">
+         {displayData.logoUrl? 
+             <img 
+               src={`${S3_BUCKET_URL}${displayData.logoUrl}`} 
+               alt="logo" 
+               className="w-8 h-8 object-cover rounded-full shadow-sm border-2 border-gray-200"
+             /> 
+             : <></>}
+              <div className="text-xs font-bold mb-2">{displayData?.hostName}</div>
+         </div>
+         
           <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <span className="text-zinc-700 text-lg font-bold mr-2">우대사항 키워드</span>
@@ -378,13 +388,6 @@ export default function RecruitDetail() {
              </p>
             </div> */}
 
-            <div>
-             <p>
-             {displayData.logoUrl? 
-             <img src={`${S3_BUCKET_URL}${displayData.logoUrl}`} alt="logo" className="w-full h-auto object-cover rounded-lg shadow-sm" /> 
-             : <></>}
-             </p>
-            </div>
             
             <div>
               <p className="text-xl font-semibold text-black mb-4">

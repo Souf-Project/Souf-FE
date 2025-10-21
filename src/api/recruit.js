@@ -172,13 +172,14 @@ export const uploadToS3 = async (url, file) => {
 };
 
 // 공고문 미디어 정보 저장 함수 (피드와 동일한 형식)
-export const postRecruitMedia = async ({ recruitId, fileUrl, fileName, fileType }) => {
+export const postRecruitMedia = async ({ recruitId, fileUrl, fileName, fileType, purpose }) => {
   try {
     const response = await client.post("/api/v1/recruit/upload", {
       postId: recruitId,
       fileUrl: fileUrl,
       fileName: fileName,
       fileType: fileType,
+      filePurpose: purpose
     });
     return response.data;
   } catch (error) {
