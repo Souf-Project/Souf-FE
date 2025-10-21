@@ -5,8 +5,8 @@ import backArrow from '../assets/images/backArrow.svg';
 export default function Footer() {
   return (
     <footer className="w-full z-30 bg-[#FCFEFF] border-t border-gray-200 py-8">
-      <div className="flex gap-8 justify-center items-center w-full max-w-[60rem] mx-auto">
-       <div className='flex flex-col gap-10 justify-between items-start w-1/2'>
+      <div className="flex gap-8 justify-between items-center w-full max-w-[60rem] mx-auto">
+       <div className='flex flex-col gap-10 justify-between items-start w-[30%]'>
         <div>
         <img src={SouFLogo} alt="SouFLogo" className="w-24 brightness-0" />
         <h3 className='text-neutral-700 text-xl font-bold mt-2'>No 1. 대학생 프리랜서 플랫폼</h3>
@@ -19,28 +19,44 @@ export default function Footer() {
         </div>
        
        </div>
-       <div className="mt-auto">
+
+       <div className='flex'>
+       <p className="mb-auto font-bold text-md w-36">이용안내</p>
+        <div className="flex flex-col gap-2 font-semibold text-md w-full">
+          <div 
+            className='flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity'
+            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580c9a7e0e27d42c77ae5?source=copy_link', '_blank')}
+          >
+            이용약관
+            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
+          </div>
+          <div 
+            className='flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity'
+            onClick={() => window.open('https://www.notion.so/293adbfeb0858054beecca8fe3d2e5cf?source=copy_link', '_blank')}
+          >
+            개인정보처리방침
+            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
+          </div>
+          <div 
+            className='flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity'
+            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580eda58dec894c1c9463?source=copy_link', '_blank')}
+          >
+          결제·정산·환불(에스크로) 정책
+            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
+          </div>
+          <div 
+            className='flex items-center gap-2 mb-2 cursor-pointer hover:opacity-70 transition-opacity'
+            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580b59ce9c871ba2f2fb3?source=copy_link', '_blank')}
+          >
+          분쟁처리방침
+            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
+          </div>
+          <div className='w-full border-b border-gray-300'/>
+          <div className="mt-2">
               <p>이메일</p>
             <p className='font-medium text-sm '>souf-official@souf.co.kr</p>
             </div>
-        {/* <div className="flex flex-col gap-2 font-semibold text-md w-1/2">
-          <div className='flex items-center gap-2 cursor-pointer'>
-            스프 서비스 소개
-            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
-          </div>
-          <div className='flex items-center gap-2 cursor-pointer'>
-            제휴 & 광고 문의
-            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
-          </div>
-          <div className='flex items-center gap-2 cursor-pointer'>
-            FAQ
-            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
-          </div>
-          <div className='flex items-center gap-2 cursor-pointer'>
-            고객센터
-            <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-0" />          
-          </div>
-          <div className='flex gap-8 text-md'>
+          {/* <div className='flex gap-8 text-md'>
             <div>
               <p>상담 시간</p>
               <p className='font-medium text-sm'>평일 11:00 ~ 20:00
@@ -54,8 +70,9 @@ export default function Footer() {
             <p className='font-medium text-sm'>souf-official@souf.co.kr</p>
             </div>
             
-          </div>
-        </div> */}
+          </div> */}
+        </div> 
+        </div>
         
       </div>
      

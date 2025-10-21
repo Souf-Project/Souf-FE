@@ -279,7 +279,7 @@ const handleDeleteClick = () => {
           </button>
 
         <div className="w-full flex max-w-[60rem]">
-          <div className="flex flex-col p-2 w-full w-2/3 mr-4">
+          <div className="flex flex-col p-2 w-full max-w-[40rem] mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
@@ -489,7 +489,7 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4"
+        <div className="min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer"
         onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
         <div className="flex justify-between">
         {worksData.profileImageUrl ? (
