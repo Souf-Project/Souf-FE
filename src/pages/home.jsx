@@ -741,18 +741,9 @@ export default function Home() {
           <p className="text-lg font-bold text-[#7393BA] mt-2">더욱 자세한 이용가이드는</p>
           <p className="text-lg font-bold text-[#7393BA]">스프 플랫폼 가이드라인을 확인해보세요!</p>
         </div>
-        <div className="flex items-center justify-center">
-           <button 
-             className="bg-gradient-to-r from-[#7393BA] to-[#5a7ba3] text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ease-in-out mt-8 flex items-center gap-2" 
-             onClick={() => navigate("/guide")}
-           >
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-             </svg>
-             가이드라인 보러가기!
-           </button>
+        <div className="flex flex-col items-center justify-center">
         <img src={part2} alt="국내 최초 대학생 외주 매칭 플랫폼" className="w-64 h-64 object-contain" />
-       
+        <button className="text-[#7393BA] text-sm mt-8" onClick={() => navigate("/guide")}>가이드라인 보러가기!</button>
         </div>
        
         </div>
