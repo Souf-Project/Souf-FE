@@ -18,7 +18,7 @@ export default function RecruitUpload() {
   
   const isEditMode = location.state?.isEditMode || false;
   const editData = location.state?.recruitDetail || location.state?.recruitData;
-  const initialEstimateType = location.state?.estimateType || 'fixed';
+  const initialEstimateType = location.state?.estimateType || (isEditMode && editData?.price ? 'fixed' : 'estimate');
   
   const [isLoading, setIsLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -97,6 +97,7 @@ export default function RecruitUpload() {
   
   const [formData, setFormData] = useState(() => {
     if (isEditMode && editData) {
+      // console.log("📦 editData:", editData);
       const startDateTime = parseDateTime(editData.startDate);
       const deadlineDateTime = parseDateTime(editData.deadline);
       return {
@@ -110,13 +111,14 @@ export default function RecruitUpload() {
         deadline: deadlineDateTime.date,
         companyName: editData.companyName || nickname || '',
         price: parsePrice(editData.price),
+        estimatePayment: parsePrice(editData.price) || '',
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
         preferentialTreatmentTags: editData.preferentialTreatmentTags || [],
         logoUrl: editData.logoUrl || '',
         logoFile: null,
         companyDescription: '',
-        briefIntroduction: editData.briefIntroduction || '',
+        briefIntroduction: editData.briefIntroduction || editData.introduction || '',
         estimatePayment: editData.estimatePayment || '',
         contractMethod: editData.contractMethod || '',
         categoryDtos: editData.categoryDtoList?.map(cat => ({
@@ -140,7 +142,8 @@ export default function RecruitUpload() {
             "thirdCategory": null
           }
         ],
-        files: [],
+        existingImages: editData.mediaResDtos || [],
+        newFiles: [],
         workType: editData.workType?.toLowerCase() || 'online',
       };
     } else {
@@ -179,7 +182,8 @@ export default function RecruitUpload() {
             "thirdCategory": null
           }
         ],
-        files: [],
+        existingImages: [],
+        newFiles: [],
         workType: 'online',
       };
     }
@@ -262,7 +266,7 @@ export default function RecruitUpload() {
         //     return;
         //   }
           
-          const currentFiles = [...formData.files];
+          const currentFiles = [...formData.newFiles];
           const emptySlotIndex = currentFiles.findIndex(f => f === null || f === undefined);
           
           if (emptySlotIndex !== -1) {
@@ -276,7 +280,7 @@ export default function RecruitUpload() {
           
           setFormData(prev => ({
             ...prev,
-            files: currentFiles
+            newFiles: currentFiles
           }));
         }
       }
@@ -426,7 +430,8 @@ export default function RecruitUpload() {
         preferentialTreatmentTags: preferentialTreatmentTags,
         categoryDtos: cleanedCategories,
         workType: formData.workType.toUpperCase(),
-        ...(formData.files.length > 0 && { originalFileNames: formData.files.map((file) => file.name) }),
+        ...(formData.newFiles.length > 0 && { originalFileNames: formData.newFiles.map((file) => file.name) }),
+        ...(formData.existingImages.length > 0 && { existingImageUrls: formData.existingImages.map((file) => file.fileUrl) }),
       };
   
       
@@ -436,7 +441,7 @@ export default function RecruitUpload() {
         const recruitId = editData.recruitId || editData.id;
         response = await updateRecruit(recruitId, formDataToSend);
 
-        if ((formData.files.length > 0 || formData.logoFile) && response.data?.result) {
+        if ((formData.newFiles.length > 0 || formData.logoFile) && response.data?.result) {
           try {
             const { recruitId: updatedRecruitId, dtoList, logoPresignedUrlResDto } = response.data.result;
             
@@ -455,21 +460,21 @@ export default function RecruitUpload() {
             }
             
             // 일반 파일 처리
-            if (formData.files.length > 0 && dtoList) {
+            if (formData.newFiles.length > 0 && dtoList) {
               // S3에 모든 파일 업로드
               await Promise.all(
                 dtoList.map(({ presignedUrl }, i) =>
-                  uploadToS3(presignedUrl, formData.files[i])
+                  uploadToS3(presignedUrl, formData.newFiles[i])
                 )
               );
 
               // 파일 정보 추출 - 모든 파일을 배열로 구성
               const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
-              const fileNames = formData.files.map((file) => file.name);
-              const fileTypes = formData.files.map((file) =>
+              const fileNames = formData.newFiles.map((file) => file.name);
+              const fileTypes = formData.newFiles.map((file) =>
                 file.type.split("/")[1].toUpperCase()
               );
-              const filePurposes = new Array(formData.files.length).fill("RECRUIT");
+              const filePurposes = new Array(formData.newFiles.length).fill("RECRUIT");
 
 
               // S3 업로드 성공 후 미디어 정보 저장 - 한 번에 모든 파일 처리
@@ -494,7 +499,7 @@ export default function RecruitUpload() {
         
 
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
-        if ((formData.files.length > 0 || formData.logoFile) && response.data?.result) {
+        if ((formData.newFiles.length > 0 || formData.logoFile) && response.data?.result) {
           try {
             // 로고 파일이 있는 경우 처리
             if (formData.logoFile && logoPresignedUrlResDto) {
@@ -513,21 +518,21 @@ export default function RecruitUpload() {
             }
             
             // 일반 파일이 있는 경우 처리
-            if (formData.files.length > 0 && dtoList) {
+            if (formData.newFiles.length > 0 && dtoList) {
               // S3에 모든 파일 업로드
               await Promise.all(
                 dtoList.map(({ presignedUrl }, i) =>
-                  uploadToS3(presignedUrl, formData.files[i])
+                  uploadToS3(presignedUrl, formData.newFiles[i])
                 )
               );
 
               // 파일 정보 추출 - 모든 파일을 배열로 구성
               const fileUrls = dtoList.map(({ fileUrl }) => fileUrl);
-              const fileNames = formData.files.map((file) => file.name);
-              const fileTypes = formData.files.map((file) =>
+              const fileNames = formData.newFiles.map((file) => file.name);
+              const fileTypes = formData.newFiles.map((file) =>
                 file.type.split("/")[1].toUpperCase()
               );
-              const filePurposes = new Array(formData.files.length).fill("RECRUIT");
+              const filePurposes = new Array(formData.newFiles.length).fill("RECRUIT");
 
 
               // S3 업로드 성공 후 미디어 정보 저장 - 한 번에 모든 파일 처리
@@ -625,7 +630,7 @@ export default function RecruitUpload() {
                 >
                   {formData.logoUrl || (formData.logoFile && URL.createObjectURL(formData.logoFile)) ? (
                     <img 
-                      src={formData.logoUrl || (formData.logoFile && URL.createObjectURL(formData.logoFile))} 
+                      src={formData.logoFile ? URL.createObjectURL(formData.logoFile) : `${import.meta.env.VITE_S3_BUCKET_URL}${formData.logoUrl}`} 
                       alt="로고 미리보기" 
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -780,7 +785,12 @@ export default function RecruitUpload() {
             </label>
             <div className="flex items-start gap-4 w-full">
               <div className="grid grid-cols-3 gap-3">
-                {Array.from({ length: 3 }, (_, index) => (
+                {Array.from({ length: 3 }, (_, index) => {
+                  const allFiles = [...formData.existingImages, ...formData.newFiles];
+                  const file = allFiles[index];
+                  const isExistingFile = index < formData.existingImages.length;
+                  
+                  return (
                   <div key={index} className="relative">
               <input
                       type="file"
@@ -788,22 +798,28 @@ export default function RecruitUpload() {
                 onChange={handleChange}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       id={`file-upload-${index}`}
-                      disabled={formData.files.length > index}
+                      disabled={allFiles.length > index}
                     />
                     <label
                       htmlFor={`file-upload-${index}`}
                       className={`w-24 h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors duration-200 ${
-                        formData.files[index] 
+                        file 
                           ? 'bg-green-50' 
                           : 'border-gray-300 hover:border-yellow-point hover:bg-yellow-50'
                       }`}
                     >
-                      {formData.files[index] ? (
+                      {file ? (
                         <div className="w-full h-full relative">
-                          {formData.files[index].type.startsWith('image/') ? (
+                          {isExistingFile ? (
                             <img 
-                              src={URL.createObjectURL(formData.files[index])} 
-                              alt="파일 미리보기" 
+                              src={`${import.meta.env.VITE_S3_BUCKET_URL}${file.fileUrl}`} 
+                              alt="기존 파일" 
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          ) : file.type && file.type.startsWith('image/') ? (
+                            <img 
+                              src={URL.createObjectURL(file)} 
+                              alt="새 파일 미리보기" 
                               className="w-full h-full object-cover rounded-lg"
                             />
                           ) : (
@@ -812,11 +828,11 @@ export default function RecruitUpload() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                               </svg>
                               <span className="text-xs text-gray-600 font-medium truncate px-1">
-                                {formData.files[index].name.split('.')[0]}
+                                {file.fileName ? file.fileName.split('.')[0] : file.name.split('.')[0]}
                               </span>
-            </div>
+                            </div>
                           )}
-          </div>
+                        </div>
                       ) : (
                         <div className="text-center">
                           <svg className="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -826,12 +842,20 @@ export default function RecruitUpload() {
                         </div>
                       )}
                     </label>
-                    {formData.files[index] && (
+                    {file && (
                       <button
                         type="button"
                         onClick={() => {
-                          const newFiles = formData.files.filter((_, i) => i !== index);
-                          setFormData(prev => ({ ...prev, files: newFiles }));
+                          if (isExistingFile) {
+                            // 기존 파일 삭제
+                            const newExistingImages = formData.existingImages.filter((_, i) => i !== index);
+                            setFormData(prev => ({ ...prev, existingImages: newExistingImages }));
+                          } else {
+                            // 새 파일 삭제
+                            const newFileIndex = index - formData.existingImages.length;
+                            const newFiles = formData.newFiles.filter((_, i) => i !== newFileIndex);
+                            setFormData(prev => ({ ...prev, newFiles }));
+                          }
                         }}
                         className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
                       >
@@ -841,17 +865,27 @@ export default function RecruitUpload() {
                       </button>
                     )}
                   </div>
-                ))}
+                  );
+                })}
         </div>
 
             </div>
-            {formData.files.length > 0 && (
+            {(formData.existingImages.length > 0 || formData.newFiles.length > 0) && (
                   <div className="space-y-2 mt-2">
                     <p className="text-sm font-medium text-gray-700">첨부된 파일:</p>
                     <ul className="space-y-1">
-                      {formData.files.map((file, index) => (
-                        <li key={index} className="text-sm text-gray-600 flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg">
+                      {formData.existingImages.map((file, index) => (
+                        <li key={`existing-${index}`} className="text-sm text-gray-600 flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg">
                           <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="flex-1 truncate">{file.fileName}</span>
+                          <span className="text-xs text-gray-500">기존 파일</span>
+                        </li>
+                      ))}
+                      {formData.newFiles.map((file, index) => (
+                        <li key={`new-${index}`} className="text-sm text-gray-600 flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg">
+                          <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                           <span className="flex-1 truncate">{file.name}</span>
