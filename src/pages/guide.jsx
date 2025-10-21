@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import PageHeader from "../components/pageHeader";
 import SEO from "../components/seo";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,7 @@ export default function Guide() {
     const [activeTab, setActiveTab] = useState(0);
     const [activeGuideTab, setActiveGuideTab] = useState(0);
     const [activeFeatureTab, setActiveFeatureTab] = useState(0);
+    const [activeSection, setActiveSection] = useState('chat');
     const navigate = useNavigate();
     
     // 각 세션에 대한 ref
@@ -66,6 +67,33 @@ export default function Guide() {
         }
     };
 
+    // 스크롤 이벤트 리스너
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollPosition = window.scrollY + 200; // 헤더 높이 고려
+
+            if (chatSectionRef.current && memberSectionRef.current && reviewSectionRef.current) {
+                const chatTop = chatSectionRef.current.offsetTop;
+                const memberTop = memberSectionRef.current.offsetTop;
+                const reviewTop = reviewSectionRef.current.offsetTop;
+                
+                // 회원 구분 섹션의 중간 지점 계산
+                const memberMiddle = memberTop + (memberSectionRef.current.offsetHeight / 2);
+
+                if (scrollPosition >= memberMiddle) {
+                    setActiveSection('review');
+                } else if (scrollPosition >= chatTop) {
+                    setActiveSection('member');
+                } else {
+                    setActiveSection('chat');
+                }
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
         <div>
             <SEO title="이용 가이드" description={`스프 SouF - 이용 가이드`} subTitle='스프' />
@@ -91,19 +119,25 @@ export default function Guide() {
             <div className="w-full sticky top-16 bg-white z-10 mx-auto border-b border-gray-200 py-6">
                 <div className="w-full max-w-[40rem] mx-auto flex justify-between">
                     <button 
-                        className="text-sm font-semibold text-neutral-500 hover:text-blue-main transition-colors duration-200"
+                        className={`text-sm font-semibold transition-colors duration-200 ${
+                            activeSection === 'chat' ? 'text-black' : 'text-neutral-500 hover:text-blue-main'
+                        }`}
                         onClick={scrollToChat}
                     >
                         채팅
                     </button>
                     <button 
-                        className="text-sm font-semibold text-neutral-500 hover:text-blue-main transition-colors duration-200"
+                        className={`text-sm font-semibold transition-colors duration-200 ${
+                            activeSection === 'member' ? 'text-black' : 'text-neutral-500 hover:text-blue-main'
+                        }`}
                         onClick={scrollToMember}
                     >
                         회원 구분
                     </button>
                     <button 
-                        className="text-sm font-semibold text-neutral-500 hover:text-blue-main transition-colors duration-200"
+                        className={`text-sm font-semibold transition-colors duration-200 ${
+                            activeSection === 'review' ? 'text-black' : 'text-neutral-500 hover:text-blue-main'
+                        }`}
                         onClick={scrollToReview}
                     >
                         후기
