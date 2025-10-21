@@ -77,12 +77,14 @@ export default function Guide() {
                 const memberTop = memberSectionRef.current.offsetTop;
                 const reviewTop = reviewSectionRef.current.offsetTop;
                 
+                // 채팅 섹션의 끝 지점 계산 (80% 지점)
+                const chatEnd = chatTop + (chatSectionRef.current.offsetHeight * 0.8);
                 // 회원 구분 섹션의 중간 지점 계산
                 const memberMiddle = memberTop + (memberSectionRef.current.offsetHeight / 2);
 
                 if (scrollPosition >= memberMiddle) {
                     setActiveSection('review');
-                } else if (scrollPosition >= chatTop) {
+                } else if (scrollPosition >= chatEnd) {
                     setActiveSection('member');
                 } else {
                     setActiveSection('chat');
