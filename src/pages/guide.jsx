@@ -352,7 +352,7 @@ export default function Guide() {
             </div>
             <div className="w-full" ref={reviewSectionRef}>
              <div className="w-full max-w-[60rem] mx-auto flex flex-col justify-center items-center">
-              <h1 className="text-2xl font-bold mt-20">신뢰는 투명한 피드백에서 자랍니다.</h1>
+              <h1 className="text-2xl font-bold mt-20">신뢰는 투명한 피드백에서 성장합니다.</h1>
               <h2 className="text-zinc-500 text-base font-semibold mt-4">스프는 후기 중심의 투명한 중개 플랫폼입니다.</h2>
               <h2 className="text-zinc-500 text-base font-semibold">모든 거래와 협업은 검증된 피드백을 기반으로 이루어집니다.</h2>
              <h2 className="text-zinc-500 text-base font-semibold">신뢰는 곧 우리의 경쟁력입니다.</h2>
@@ -416,6 +416,7 @@ export default function Guide() {
                 </div>
                
             </div>
+            
         </div>
     );
 }
