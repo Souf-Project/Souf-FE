@@ -248,12 +248,12 @@ const DesktopHeader = () => (
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
           <ul className="flex items-center font-bold text-lg text-black cursor-pointer gap-1">
             <li 
-              className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
+              className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" || location.pathname === "/recruit" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('recruit')}
               onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm ml-2">★</span></span>
-              {/* 외주 의뢰하기 드롭다운 */}
+              <span className="cursor-pointer ml-4">외주 의뢰<span className="text-[#FF8454] font-medium text-sm ml-6">★</span></span>
+              {/* 외주 의뢰 드롭다운 */}
               {activeDropdown === 'recruit' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
@@ -267,29 +267,7 @@ const DesktopHeader = () => (
                          navigate("/recruitUpload", { state: { estimateType: 'estimate' } });
                        }
                      }} className="w-full flex justify-center items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">무료 외주 견적 받기</button></li>
-                   </ul>
-                 </div>
-              )}
-            </li>
-            <li 
-              className={`relative py-5 flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}
-              onMouseEnter={() => handleDropdownEnter('find')}
-              onMouseLeave={handleDropdownLeave}
-            >
-              <div className="flex items-center gap-1">
-              <span className="cursor-pointer" onClick={() => navigate("/recruit")}>외주 찾기</span>
-              <img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg] ml-2" />
-              </div>
-             
-              {/* 외주 찾기 드롭다운 */}
-              {activeDropdown === 'find' && (
-                 <div 
-                   className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
-                   onMouseEnter={() => handleDropdownEnter('find')}
-                   onMouseLeave={handleDropdownLeave}
-                 >
-                   <ul className="flex flex-col gap-1">
-                     <li><button onClick={() => handleNavigationCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">카테고리별 외주</button></li>
+                       <li><button onClick={() => handleNavigationCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">카테고리별 외주</button></li>
                    </ul>
                  </div>
               )}
@@ -329,7 +307,7 @@ const DesktopHeader = () => (
             >
               <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
               {/* 이용가이드 드롭다운 */}
-                {activeDropdown === 'guide' && (
+                {/* {activeDropdown === 'guide' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('guide')}
@@ -340,8 +318,15 @@ const DesktopHeader = () => (
                      <li><button onClick={() => handleNavigationCsPageCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
                    </ul>
                  </div>
-              )} 
+              )}  */}
                </li>
+               <li 
+              className={`relative py-5 w-28 ${location.pathname === "/csPage" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('guide')}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <span className="cursor-pointer" onClick={() => navigate("/csPage")}>고객센터</span>
+              </li>
 
             
 
