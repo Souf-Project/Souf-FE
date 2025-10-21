@@ -42,7 +42,7 @@ export default function Header() {
   useEffect(() => {
     if (memberId) {
       setIsLogin(true);
-      setUserType(roleType || "student");
+      setUserType(roleType || "");
       setUserName(nickname || "");
     } else {
       setIsLogin(false);
@@ -207,14 +207,14 @@ useEffect(() => {
   const UserTypeLabel = () => {
     if (roleType === "ADMIN") {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
           <span className="font-bold">관리자</span>
           <span className="font-normal">{nickname}</span>
         </div>
       );
     } else if (roleType === "STUDENT") {
       return (
-        <div className="flex items-center gap-2 text-white">
+        <div className="flex items-center gap-2 text-white justify-center">
           <span className="font-bold">학생</span>
           <span className="font-normal">{nickname}</span>
         </div>
