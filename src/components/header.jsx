@@ -1,7 +1,6 @@
 import {React, useRef} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ChatIcon from "../assets/images/chatIco.svg";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
@@ -347,9 +346,7 @@ const DesktopHeader = () => (
           {memberId ? (
             // 로그인 상태
             <div className="flex items-center gap-x-4">
-              <button className="p-2" onClick={() => handleNavigation("/chat")}>
-                <img src={ChatIcon} alt="chat" className="w-6 h-6" />
-              </button>
+             
               <div className="relative user-menu-container">
                 <button
                   className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
@@ -447,11 +444,7 @@ const DesktopHeader = () => (
        <img src={SOUFLogo} alt="SouF" className="w-16 cursor-pointer" onClick={() => handleNavigation("/")} />
 
       <div className="flex items-center gap-x-2">
-  {memberId && (
-    <button className="p-2" onClick={() => handleNavigation("/chat")}>
-      <img src={ChatIcon} alt="chat" className="w-5 h-5" />
-    </button>
-  )}
+ 
 
   {/* 햄버거 버튼 */}
   <button
