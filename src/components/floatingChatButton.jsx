@@ -10,7 +10,6 @@ export default function FloatingChatButton() {
         navigate(path);
     };
 
-    // 로그인하지 않은 경우 버튼을 렌더링하지 않음
     if (!nickname) {
         return null;
     }
@@ -26,6 +25,7 @@ export default function FloatingChatButton() {
                     className="w-7 h-7 filter brightness-0 invert"
                 />
             </button>
+            
         </div>
     );
 }
