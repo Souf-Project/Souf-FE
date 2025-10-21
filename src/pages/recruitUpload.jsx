@@ -471,12 +471,6 @@ export default function RecruitUpload() {
               );
               const filePurposes = new Array(formData.files.length).fill("RECRUIT");
 
-              console.log("📦 파일 정보 배열:", {
-                fileUrls,
-                fileNames,
-                fileTypes,
-                filePurposes
-              });
 
               // S3 업로드 성공 후 미디어 정보 저장 - 한 번에 모든 파일 처리
               await postRecruitMedia({
@@ -498,8 +492,6 @@ export default function RecruitUpload() {
         response = await uploadRecruit(formDataToSend);
         const { recruitId, dtoList, logoPresignedUrlResDto } = response.data.result;
         
-        console.log("📦 dtoList:", dtoList);
-        console.log("📦 formData:", formData);
 
         // 2. 파일이 있는 경우 S3 업로드 및 미디어 정보 저장
         if ((formData.files.length > 0 || formData.logoFile) && response.data?.result) {
@@ -516,7 +508,6 @@ export default function RecruitUpload() {
                 purpose: ["LOGO"]
               };
               
-              console.log("📦 로고 파일 postRecruitMedia 데이터:", logoMediaData.purpose);
               
               await postRecruitMedia(logoMediaData);
             }
@@ -538,12 +529,6 @@ export default function RecruitUpload() {
               );
               const filePurposes = new Array(formData.files.length).fill("RECRUIT");
 
-              console.log("📦 파일 정보 배열:", {
-                fileUrls,
-                fileNames,
-                fileTypes,
-                filePurposes
-              });
 
               // S3 업로드 성공 후 미디어 정보 저장 - 한 번에 모든 파일 처리
               await postRecruitMedia({
