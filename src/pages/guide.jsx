@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import PageHeader from "../components/pageHeader";
 import SEO from "../components/seo";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,12 @@ export default function Guide() {
     const [activeGuideTab, setActiveGuideTab] = useState(0);
     const [activeFeatureTab, setActiveFeatureTab] = useState(0);
     const navigate = useNavigate();
+    
+    // 각 세션에 대한 ref
+    const chatSectionRef = useRef(null);
+    const memberSectionRef = useRef(null);
+    const reviewSectionRef = useRef(null);
+    
     const handleSearch = (e) => {
         e.preventDefault();
         console.log(e.target.value);
@@ -23,6 +29,41 @@ export default function Guide() {
     };
     const handleFeatureTabChange = (tabIndex) => {
         setActiveFeatureTab(tabIndex);
+    };
+    
+    // 스크롤 함수들
+    const scrollToChat = () => {
+        const element = chatSectionRef.current;
+        if (element) {
+            const elementPosition = element.offsetTop;
+            const offsetPosition = elementPosition - 120; // 헤더 + sticky 높이만큼 위로
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
+    const scrollToMember = () => {
+        const element = memberSectionRef.current;
+        if (element) {
+            const elementPosition = element.offsetTop;
+            const offsetPosition = elementPosition - 120;
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
+    };
+    const scrollToReview = () => {
+        const element = reviewSectionRef.current;
+        if (element) {
+            const elementPosition = element.offsetTop;
+            const offsetPosition = elementPosition - 120;
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        }
     };
 
     return (
@@ -49,15 +90,28 @@ export default function Guide() {
             </div>
             <div className="w-full sticky top-16 bg-white z-10 mx-auto border-b border-gray-200 py-6">
                 <div className="w-full max-w-[40rem] mx-auto flex justify-between">
-                    <button className="text-sm font-semibold text-neutral-500">회원 구분</button>
-                    <button className="text-sm font-semibold text-neutral-500">피드</button>
-                    <button className="text-sm font-semibold text-neutral-500">외주</button>
-                    <button className="text-sm font-semibold text-neutral-500">채팅</button>
-                    <button className="text-sm font-semibold text-neutral-500">후기</button>
+                    <button 
+                        className="text-sm font-semibold text-neutral-500 hover:text-blue-main transition-colors duration-200"
+                        onClick={scrollToChat}
+                    >
+                        채팅
+                    </button>
+                    <button 
+                        className="text-sm font-semibold text-neutral-500 hover:text-blue-main transition-colors duration-200"
+                        onClick={scrollToMember}
+                    >
+                        회원 구분
+                    </button>
+                    <button 
+                        className="text-sm font-semibold text-neutral-500 hover:text-blue-main transition-colors duration-200"
+                        onClick={scrollToReview}
+                    >
+                        후기
+                    </button>
                 </div>
 
             </div>
-            <div className="w-full border-b border-gray-500 py-6">
+            <div className="w-full border-b border-gray-500 py-6" ref={chatSectionRef}>
              <div className="w-full max-w-[60rem] mx-auto flex flex-col justify-center items-center pb-40">
               <h1 className="text-2xl font-bold mt-20">협의는 빠르게, 기록은 깔끔하게</h1>
               <h2 className="text-base font-medium mt-4">1:1 채팅을 통해 외주 프로젝트를 진행하세요.</h2>
@@ -83,7 +137,7 @@ export default function Guide() {
             
                 </div>
             </div>
-            <div className="w-full border-b border-gray-500 py-6 bg-[#F8F8F8]">
+            <div className="w-full border-b border-gray-500 py-6 bg-[#F8F8F8]" ref={memberSectionRef}>
              <div className="w-full max-w-[60rem] mx-auto flex flex-col justify-center items-center pb-40">
               <h1 className="text-2xl font-bold mt-20">누가 무엇을 할 수 있나요?</h1>
               <h2 className="text-base font-medium mt-4">SouF는 역할에 따라 보이는 메뉴와 가능한 기능이 달라집니다.</h2>
@@ -260,7 +314,7 @@ export default function Guide() {
               </div>
                 </div>
             </div>
-            <div className="w-full">
+            <div className="w-full" ref={reviewSectionRef}>
              <div className="w-full max-w-[60rem] mx-auto flex flex-col justify-center items-center">
               <h1 className="text-2xl font-bold mt-20">신뢰는 투명한 피드백에서 자랍니다.</h1>
               <h2 className="text-zinc-500 text-base font-semibold mt-4">스프는 후기 중심의 투명한 중개 플랫폼입니다.</h2>
