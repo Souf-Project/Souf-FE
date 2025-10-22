@@ -158,7 +158,7 @@ export default function JoinForm({ socialLoginInfo }) {
       setEmailModal(true);
     },
     onNicknameChecked: (data) => {
-      console.log("닉네임 중복확인 응답:", data);
+      // console.log("닉네임 중복확인 응답:", data);
       if (data?.data?.result === true) {
         setCheckResult(true);
         setModalTitle("사용 가능한 닉네임입니다.");
@@ -186,7 +186,6 @@ export default function JoinForm({ socialLoginInfo }) {
     },
     onSignUpError: (error) => {
       //"올바른 형식의 이메일 주소여야 합니다"
-      console.log("찍히나용");
       const errorCode = error.response.data.errorKey;
       const errorMsg = errorCode
         ? SIGNUP_ERRORS[errorCode]
@@ -290,8 +289,38 @@ export default function JoinForm({ socialLoginInfo }) {
         privacyAgreement && serviceAgreement && thirdPartyAgreement;
       const isMarketingAgreed = marketingAgreement;
 
+      // registrationToken 처리
+      let registrationToken = socialLoginInfo.registrationToken;
+      // console.log("원본 registrationToken:", registrationToken, "타입:", typeof registrationToken);
+      
+      // registrationToken이 없거나 유효하지 않은 경우
+      if (!registrationToken || registrationToken === null || registrationToken === undefined) {
+        console.error("registrationToken이 없습니다:", registrationToken);
+        alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
+        return;
+      }
+      
+      if (Array.isArray(registrationToken)) {
+        registrationToken = registrationToken[0];
+        // console.log("배열에서 추출한 registrationToken:", registrationToken);
+      } else if (typeof registrationToken === 'object') {
+        // 객체인 경우 token 필드가 있는지 확인
+        const tokenValue = registrationToken.token || registrationToken.registrationToken;
+        if (tokenValue) {
+          registrationToken = tokenValue;
+        } else {
+          // 빈 객체인 경우 에러 처리
+          console.error("registrationToken이 빈 객체입니다:", registrationToken);
+          alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
+          return;
+        }
+        // console.log("객체에서 추출한 registrationToken:", registrationToken);
+      }
+      
+      // console.log("최종 registrationToken:", registrationToken);
+
       const socialSignupData = {
-        registrationToken: socialLoginInfo.registrationToken,
+        registrationToken: registrationToken,
         nickname: formData.nickname,
         categoryDtos: cleanedCategories,
         isPersonalInfoAgreed,
