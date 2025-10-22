@@ -15,16 +15,14 @@ export const getUnreadNotificationCount = async () => {
 // 알림 목록 조회
 export const getNotifications = async (page = 0, size = 20) => {
   try {
-    const response = await client.get('/api/v1/notifications', {
-      params: { page, size }
-    });
-    return response.data;
+    const response = await client.get('/api/v1/notifications/unread-count');
+      return response.data;
   } catch (error) {
-    console.error('알림 목록 조회 에러:', error);
+    console.error('알림 개수 조회 에러:', error);
     throw error;
   }
 };
-
+  
 // 알림 읽음 처리
 export const markNotificationAsRead = async (notificationId) => {
   try {
