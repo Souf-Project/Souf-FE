@@ -57,7 +57,7 @@ export default function Redirect() {
           provider: detectedProvider
         })
           .then((response) => {
-            console.log("소셜 계정 연동 성공:", response);
+            // console.log("소셜 계정 연동 성공:", response);
             localStorage.removeItem('socialProvider');
             localStorage.removeItem('isLinking');
             alert("소셜 계정이 성공적으로 연동되었습니다.");
@@ -83,6 +83,8 @@ export default function Redirect() {
         })
         .then((response) => {
           const result = response?.result;
+          // console.log("소셜 로그인 응답 전체:", response);
+          // console.log("result 객체:", result);
           
           if (result) {
             // console.log(result)
@@ -99,14 +101,14 @@ export default function Redirect() {
               navigate("/");
             }
              else {
-            console.log(result)
+            // console.log(result)
               navigate("/join", { 
                 state: { 
                   socialLogin: true,
                   provider: detectedProvider || {},
                   email: result.prefill.email || {},
                   username: result.prefill.name || {},
-                  registrationToken: result.registrationToken || {},
+                  registrationToken: result.message,
                 },
                 
               });
