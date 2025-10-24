@@ -54,7 +54,7 @@ export default function Profile({
 
   return (
     <div
-      className="flex relative items-center justify-start lg:w-[70%] w-full bg-blue-bright rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
+      className="flex relative items-center justify-start lg:w-[70%] w-full bg-white border-4 border-blue-200 rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
       <div className="absolute top-4 right-4 bg-blue-main p-2 rounded-lg">
       <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
