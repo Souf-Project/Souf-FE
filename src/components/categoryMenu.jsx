@@ -4,55 +4,32 @@ import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
 import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 
 const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories, onApply }) => {
-  const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || null);
+  const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || 1); // 초기값 1로 설정
   const [selectedSecondCategories, setSelectedSecondCategories] = useState(selectedCategories?.secondCategoryId ? [selectedCategories.secondCategoryId] : []);
   const [selectedThirdCategories, setSelectedThirdCategories] = useState(selectedCategories?.thirdCategoryId ? [selectedCategories.thirdCategoryId] : []);
   const [tempSelectedCategories, setTempSelectedCategories] = useState([]);
-  const [expandedFirstCategory, setExpandedFirstCategory] = useState(null);
+  const [expandedFirstCategory, setExpandedFirstCategory] = useState(selectedCategories?.firstCategoryId || 1); // 초기값 1로 설정
 
   const firstCategories = firstCategoryData.first_category;
 
   const handleFirstCategoryClick = (firstCategory) => {
-    const isExpanded = expandedFirstCategory === firstCategory.first_category_id;
-    const isSelected = tempSelectedCategories.some(cat => 
-      cat.firstCategory === firstCategory.first_category_id && 
-      cat.secondCategory === null && 
-      cat.thirdCategory === null
+    // 라디오 버튼 방식: 항상 선택되고 펼쳐짐
+    setSelectedFirstCategory(firstCategory.first_category_id);
+    setExpandedFirstCategory(firstCategory.first_category_id);
+    
+    // 기존에 선택된 같은 대분류의 카테고리들을 제거하고 새로운 대분류만 선택
+    const newTempSelected = tempSelectedCategories.filter(cat => 
+      cat.firstCategory !== firstCategory.first_category_id
     );
     
-    if (isExpanded) {
-      // 이미 펼쳐진 상태면 접기
-      setExpandedFirstCategory(null);
-    } else {
-      // 펼치기
-      setExpandedFirstCategory(firstCategory.first_category_id);
-    }
+    // 대분류만 선택된 카테고리 추가
+    const newCategory = {
+      firstCategory: firstCategory.first_category_id,
+      secondCategory: null,
+      thirdCategory: null
+    };
     
-    // 선택/해제 토글
-    if (isSelected) {
-      // 제거
-      const newTempSelected = tempSelectedCategories.filter(cat => 
-        !(cat.firstCategory === firstCategory.first_category_id && 
-          cat.secondCategory === null && 
-          cat.thirdCategory === null)
-      );
-      setTempSelectedCategories(newTempSelected);
-    } else {
-      // 최대 3개까지만 선택 가능
-      if (tempSelectedCategories.length >= 3) {
-        alert('최대 3개의 카테고리만 선택할 수 있습니다.');
-        return;
-      }
-      
-      // 대분류만 선택된 카테고리 추가
-      const newCategory = {
-        firstCategory: firstCategory.first_category_id,
-        secondCategory: null,
-        thirdCategory: null
-      };
-      
-      setTempSelectedCategories([...tempSelectedCategories, newCategory]);
-    }
+    setTempSelectedCategories([...newTempSelected, newCategory]);
   };
 
   const handleSecondCategoryClick = (secondCategory) => {
@@ -156,19 +133,33 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
   };
 
   const handleReset = () => {
-    setSelectedFirstCategory(null);
+    setSelectedFirstCategory(1); // 초기값 1로 리셋
     setSelectedSecondCategories([]);
     setSelectedThirdCategories([]);
-    setTempSelectedCategories([]);
-    setExpandedFirstCategory(null);
+    setTempSelectedCategories([{
+      firstCategory: 1,
+      secondCategory: null,
+      thirdCategory: null
+    }]);
+    setExpandedFirstCategory(1); // 초기값 1로 리셋
   };
 
   useEffect(() => {
     if (selectedCategories?.firstCategoryId) {
       setSelectedFirstCategory(selectedCategories.firstCategoryId);
+      setExpandedFirstCategory(selectedCategories.firstCategoryId);
     }
     if (selectedCategories?.secondCategoryId) {
       setSelectedSecondCategories([selectedCategories.secondCategoryId]);
+    }
+    
+    // 초기값 설정 (대분류 1번이 기본 선택)
+    if (!selectedCategories?.firstCategoryId) {
+      setTempSelectedCategories([{
+        firstCategory: 1,
+        secondCategory: null,
+        thirdCategory: null
+      }]);
     }
   }, [selectedCategories?.firstCategoryId, selectedCategories?.secondCategoryId]);
 
@@ -184,13 +175,13 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
     );
   }
 
-  // PC 버전 카테고리 메뉴
-const DesktopCategoryMenu = () => (
-  <div className="hidden lg:block w-52 h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm overflow-y-auto mb-20">
-    <h3 className="text-base font-bold text-gray-800">카테고리</h3>
-    <div className="flex justify-around items-center my-2">
-      
-        <button
+  return (
+  <div className="w-full h-auto border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+
+    <div className="flex justify-between items-center mb-4">
+      <h3 className="text-base font-bold text-gray-800">카테고리</h3>
+      <div className="flex gap-2">
+      <button
           onClick={handleReset}
           className="text-xs px-4 py-2 bg-gray-100 text-gray-600 rounded hover:shadow-md whitespace-nowrap"
         >
@@ -207,110 +198,133 @@ const DesktopCategoryMenu = () => (
         >
           적용 ({tempSelectedCategories.length})
         </button>
-      </div>
-    
-    {/* 대분류 섹션 */}
-    <div className="mb-4">
-      <h4 className="text-sm font-semibold text-gray-600 mb-2">대분류</h4>
-      <div className="space-y-1">
+    </div>
+       
+    </div>
+   
+    {/* 대분류 선택  */}
+    <div className="flex gap-2">
+      <div className="flex flex-col w-1/4">
+        <h4 className="text-sm font-semibold text-gray-600 mb-2">대분류 (필수 선택)</h4>
         {firstCategories.map((first) => {
           const isExpanded = expandedFirstCategory === first.first_category_id;
-          const hasSelectedCategories = tempSelectedCategories.some(cat => cat.firstCategory === first.first_category_id);
+          const isSelected = selectedFirstCategory === first.first_category_id;
           
           return (
-            <div key={first.first_category_id}>
+            <div key={`desktop-first-${first.first_category_id}`}>
               <div 
                 className={`p-2 rounded cursor-pointer transition-colors text-sm flex items-center gap-2 ${
-                  hasSelectedCategories
-                    ? ' text-blue-main font-semibold'
-                    : 'text-gray-700 hover:text-blue-main'
+                  isSelected
+                    ? 'text-blue-main font-semibold bg-blue-50'
+                    : 'text-gray-700 hover:text-blue-main hover:bg-gray-50'
                 }`}
                 onClick={() => handleFirstCategoryClick(first)}
               >
-                <img 
-                  src={hasSelectedCategories ? checkBoxIcon : notCheckBoxIcon} 
-                  alt="checkbox" 
-                  className={`w-4 h-4`}
-                />
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                  isSelected 
+                    ? 'border-blue-main bg-blue-main' 
+                    : 'border-gray-300'
+                }`}>
+                  {isSelected && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                </div>
                 {first.name}
               </div>
-              
-              {/* 중분류 섹션 - 대분류가 펼쳐졌을 때만 표시 */}
-              {isExpanded && (
-                <div className="ml-4 mt-2 mb-2">
-                  <h5 className="text-xs font-medium text-gray-500 mb-2">중분류</h5>
-                  <div className="space-y-1">
-                    {filteredSecondCategories.map((second) => {
-                      const isSelectedSecond = tempSelectedCategories.some(cat => 
-                        cat.firstCategory === expandedFirstCategory && 
-                        cat.secondCategory === second.second_category_id
-                      );
-                      
-                      return (
-                        <div key={second.second_category_id}>
-                          <div 
-                            className={`p-2 rounded cursor-pointer transition-colors text-sm flex items-center gap-2 ${
-                              isSelectedSecond
-                                ? ' text-blue-main font-semibold'
-                                : 'text-gray-700 hover:text-blue-main'
-                            }`}
-                            onClick={() => handleSecondCategoryClick(second)}
-                          >
-                            <img 
-                              src={isSelectedSecond ? checkBoxIcon : notCheckBoxIcon} 
-                              alt="checkbox" 
-                              className={`w-4 h-4`}
-                            />
-                            {second.name}
-                          </div>
-                          
-                          {/* 소분류 (IT·개발이 아닌 경우에만) */}
-                          {second.first_category_id !== 6 && isSelectedSecond && (
-                            <div className="ml-4 mb-1">
-                              <h6 className="text-xs font-medium text-gray-500 mb-1">소분류</h6>
-                              <div className="space-y-1">
-                                {thirdCategories.third_category
-                                  .filter(third => third.second_category_id === second.second_category_id)
-                                  .map((third) => {
-                                    const isSelectedThird = tempSelectedCategories.some(cat => 
-                                      cat.firstCategory === second.first_category_id && 
-                                      cat.secondCategory === second.second_category_id && 
-                                      cat.thirdCategory === third.third_category_id
-                                    );
-                                    
-                                    return (
-                                      <div 
-                                        key={third.third_category_id} 
-                                        className={`py-1 px-2 text-xs rounded cursor-pointer transition-colors flex items-center gap-2 ${
-                                          isSelectedThird
-                                            ? ' text-blue-main bg-blue-50'
-                                            : 'text-gray-600 hover:text-blue-main hover:bg-gray-50'
-                                        }`}
-                                        onClick={() => handleThirdCategoryClick(second, third)}
-                                      >
-                                        <img 
-                                          src={isSelectedThird ? checkBoxIcon : notCheckBoxIcon} 
-                                          alt="checkbox" 
-                                          className={`w-3 h-3`}
-                                        />
-                                        {third.name}
-                                      </div>
-                                    );
-                                  })}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
             </div>
           );
         })}
+
+
       </div>
+
+{/* 중분류 섹션 - 선택된 대분류에 따라 표시 */}
+{expandedFirstCategory && (
+      <div className="flex flex-col w-1/3">
+         <h5 className="text-sm font-semibold text-gray-500 mb-2">중분류</h5>
+          {filteredSecondCategories.map((second) => {
+            const isSelectedSecond = tempSelectedCategories.some(cat => 
+              cat.firstCategory === expandedFirstCategory && 
+              cat.secondCategory === second.second_category_id
+            );
+            
+            return (
+              <div key={`desktop-second-${second.second_category_id}`}>
+                <div 
+                  className={`p-2 rounded cursor-pointer transition-colors text-sm flex items-center gap-2 ${
+                    isSelectedSecond
+                      ? 'text-blue-main font-semibold bg-blue-50'
+                      : 'text-gray-700 hover:text-blue-main hover:bg-gray-50'
+                  }`}
+                  onClick={() => handleSecondCategoryClick(second)}
+                >
+                  <img 
+                    src={isSelectedSecond ? checkBoxIcon : notCheckBoxIcon} 
+                    alt="checkbox" 
+                    className="w-4 h-4"
+                  />
+                  {second.name}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+    )}
+
+    {/* 소분류 섹션 - 선택된 중분류에 따라 표시 */}
+    {(() => {
+      const selectedSecondCategories = filteredSecondCategories.filter(second => 
+        tempSelectedCategories.some(cat => 
+          cat.firstCategory === expandedFirstCategory && 
+          cat.secondCategory === second.second_category_id &&
+          second.first_category_id !== 6
+        )
+      );
+      
+      if (selectedSecondCategories.length > 0) {
+        return (
+          <div className="flex flex-col w-1/3 ">
+            <h6 className="text-sm font-semibold text-gray-500 mb-2">소분류</h6>
+            <div className="flex flex-col h-[300px] overflow-y-auto">
+              {selectedSecondCategories.map(second => 
+                thirdCategories.third_category
+                  .filter(third => third.second_category_id === second.second_category_id)
+                  .map((third) => {
+                    const isSelectedThird = tempSelectedCategories.some(cat => 
+                      cat.firstCategory === second.first_category_id && 
+                      cat.secondCategory === second.second_category_id && 
+                      cat.thirdCategory === third.third_category_id
+                    );
+                    
+                    return (
+                      <div 
+                        key={`desktop-third-${third.third_category_id}`} 
+                        className={`p-2 text-sm rounded cursor-pointer transition-colors flex items-center gap-2 ${
+                          isSelectedThird
+                            ? 'text-blue-main bg-blue-50'
+                            : 'text-gray-600 hover:text-blue-main hover:bg-gray-50'
+                        }`}
+                        onClick={() => handleThirdCategoryClick(second, third)}
+                      >
+                        <img 
+                          src={isSelectedThird ? checkBoxIcon : notCheckBoxIcon} 
+                          alt="checkbox" 
+                          className="w-4 h-4"
+                        />
+                        {third.name}
+                      </div>
+                    );
+                  })
+              )}
+            </div>
+            </div>
+        );
+      }
+      return null;
+    })()}
     </div>
+
+   
+    
+    
 
     {/* 선택된 카테고리 표시 */}
     {tempSelectedCategories.length > 0 && (
@@ -323,8 +337,11 @@ const DesktopCategoryMenu = () => (
             const thirdCategory = cat.thirdCategory ? 
               thirdCategories.third_category.find(t => t.third_category_id === cat.thirdCategory) : null;
             
+            // 고유한 key 생성
+            const uniqueKey = `${cat.firstCategory}-${cat.secondCategory || 'null'}-${cat.thirdCategory || 'null'}-${index}`;
+            
             return (
-              <div key={index} className="text-xs text-gray-700">
+              <div key={uniqueKey} className="text-xs text-gray-700">
                 {firstCategory?.name}
                 {secondCategory ? ` › ${secondCategory.name}` : ' >'}
                 {thirdCategory && ` › ${thirdCategory.name}`}
@@ -337,169 +354,6 @@ const DesktopCategoryMenu = () => (
   </div>
 );
 
-
-  // 모바일 버전 카테고리 메뉴
-  const MobileCategoryMenu = () => {
-    return (
-      <div className="block lg:hidden w-full bg-white border border-gray-200 rounded-lg p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base font-bold text-gray-800">카테고리</h3>
-          <div className="flex gap-2">
-            <button
-              onClick={handleReset}
-              className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded hover:bg-gray-200"
-            >
-              초기화
-            </button>
-            <button
-              onClick={handleApply}
-              disabled={tempSelectedCategories.length === 0}
-              className={`text-xs px-2 py-1 rounded ${
-                tempSelectedCategories.length === 0
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-main text-white hover:bg-blue-600'
-              }`}
-            >
-              적용 ({tempSelectedCategories.length})
-            </button>
-          </div>
-        </div>
-
-        {/* 대분류 섹션 */}
-        <div className="mb-4">
-          <h4 className="text-sm font-semibold text-gray-600 mb-2">대분류</h4>
-          <div className="space-y-1">
-            {firstCategories.map((first) => {
-              const isExpanded = expandedFirstCategory === first.first_category_id;
-              const hasSelectedCategories = tempSelectedCategories.some(cat => cat.firstCategory === first.first_category_id);
-              
-              return (
-                <div key={first.first_category_id}>
-                  <div 
-                    className={`p-2 rounded cursor-pointer transition-colors text-sm flex items-center gap-2 ${
-                      hasSelectedCategories
-                        ? ' text-blue-main font-semibold'
-                        : 'text-gray-700 hover:text-blue-main'
-                    }`}
-                    onClick={() => handleFirstCategoryClick(first)}
-                  >
-                    <img 
-                      src={hasSelectedCategories ? checkBoxIcon : notCheckBoxIcon} 
-                      alt="checkbox" 
-                      className={`w-4 h-4`}
-                    />
-                    {first.name}
-                  </div>
-                  
-                  {/* 중분류 섹션 - 대분류가 펼쳐졌을 때만 표시 */}
-                  {isExpanded && (
-                    <div className="ml-4 mt-2 mb-2">
-                      <h5 className="text-xs font-medium text-gray-500 mb-2">중분류</h5>
-                      <div className="space-y-1">
-                        {filteredSecondCategories.map((second) => {
-                          const isSelectedSecond = tempSelectedCategories.some(cat => 
-                            cat.firstCategory === expandedFirstCategory && 
-                            cat.secondCategory === second.second_category_id
-                          );
-                          
-                          return (
-                            <div key={second.second_category_id}>
-                              <div 
-                                className={`p-2 rounded cursor-pointer transition-colors text-sm flex items-center gap-2 ${
-                                  isSelectedSecond
-                                    ? ' text-blue-main font-semibold'
-                                    : 'text-gray-700 hover:text-blue-main'
-                                }`}
-                                onClick={() => handleSecondCategoryClick(second)}
-                              >
-                                <img 
-                                  src={isSelectedSecond ? checkBoxIcon : notCheckBoxIcon} 
-                                  alt="checkbox" 
-                                  className={`w-4 h-4`}
-                                />
-                                {second.name}
-                              </div>
-                              
-                              {/* 소분류 (IT·개발이 아닌 경우에만) */}
-                              {second.first_category_id !== 6 && isSelectedSecond && (
-                                <div className="ml-4 mb-1">
-                                  <h6 className="text-xs font-medium text-gray-500 mb-1">소분류</h6>
-                                  <div className="space-y-1">
-                                    {thirdCategories.third_category
-                                      .filter(third => third.second_category_id === second.second_category_id)
-                                      .map((third) => {
-                                        const isSelectedThird = tempSelectedCategories.some(cat => 
-                                          cat.firstCategory === second.first_category_id && 
-                                          cat.secondCategory === second.second_category_id && 
-                                          cat.thirdCategory === third.third_category_id
-                                        );
-                                        
-                                        return (
-                                          <div 
-                                            key={third.third_category_id} 
-                                            className={`py-1 px-2 text-xs rounded cursor-pointer transition-colors flex items-center gap-2 ${
-                                              isSelectedThird
-                                                ? ' text-blue-main bg-blue-50'
-                                                : 'text-gray-600 hover:text-blue-main hover:bg-gray-50'
-                                            }`}
-                                            onClick={() => handleThirdCategoryClick(second, third)}
-                                          >
-                                            <img 
-                                              src={isSelectedThird ? checkBoxIcon : notCheckBoxIcon} 
-                                              alt="checkbox" 
-                                              className={`w-3 h-3`}
-                                            />
-                                            {third.name}
-                                          </div>
-                                        );
-                                      })}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* 선택된 카테고리 표시 */}
-        {tempSelectedCategories.length > 0 && (
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-            <h5 className="text-xs font-medium text-gray-600 mb-2">선택된 카테고리</h5>
-            <div className="space-y-1">
-              {tempSelectedCategories.map((cat, index) => {
-                const firstCategory = firstCategories.find(f => f.first_category_id === cat.firstCategory);
-                const secondCategory = secondCategories.find(s => s.second_category_id === cat.secondCategory);
-                const thirdCategory = cat.thirdCategory ? 
-                  thirdCategories.third_category.find(t => t.third_category_id === cat.thirdCategory) : null;
-                
-                return (
-                  <div key={index} className="text-xs text-gray-700">
-                    {firstCategory?.name}
-                    {secondCategory ? ` › ${secondCategory.name}` : ' >'}
-                    {thirdCategory && ` › ${thirdCategory.name}`}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  return (
-    <>
-      <DesktopCategoryMenu />
-      <MobileCategoryMenu />
-    </>
-  );
 };
 
 export default CategoryMenu;

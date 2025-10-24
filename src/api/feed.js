@@ -54,15 +54,15 @@ export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
   }
 };
 
-export const getFeed = async (firstCategory, secondCategory, thirdCategory, keyword, pageable) => {
+export const getFeed = async (firstCategory, pageable) => {
   try {
     const params = {
       page: pageable.page,
       size: pageable.size,
       ...(firstCategory ? { firstCategory } : {}),
-      ...(secondCategory ? { secondCategory } : {}),
-      ...(thirdCategory ? { thirdCategory } : {}),
-      ...(keyword ? { keyword } : {}),
+      // ...(secondCategory ? { secondCategory } : {}),
+      // ...(thirdCategory ? { thirdCategory } : {}),
+      // ...(keyword ? { keyword } : {}),
     };
 
     const response = await client.get("/api/v1/feed", { params });
