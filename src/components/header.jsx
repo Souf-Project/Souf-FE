@@ -337,9 +337,6 @@ const DesktopHeader = () => (
           {memberId ? (
             // 로그인 상태
             <div className="flex items-center gap-x-4">
-              <button className="p-2" onClick={() => handleNavigation("/chat")}>
-                <img src={ChatIcon} alt="chat" className="w-6 h-6" />
-              </button>
               <div className="relative user-menu-container">
                 <button
                   className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
