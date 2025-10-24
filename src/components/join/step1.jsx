@@ -29,7 +29,7 @@ export default function JoinForm({ socialLoginInfo }) {
   const [passwordValidation, setPasswordValidation] = useState(undefined);
   const [passwordCheckValidation, setpasswordCheckValidation] =
     useState(undefined);
-  const [userType, setUserType] = useState("student");
+  const [userType, setUserType] = useState("STUDENT");
 
   const [errors, setErrors] = useState({
     username: false,
@@ -41,6 +41,7 @@ export default function JoinForm({ socialLoginInfo }) {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
+    roleType: "",
     username: "",
     nickname: "",
     email: "",
@@ -97,10 +98,19 @@ export default function JoinForm({ socialLoginInfo }) {
     }
   }, [socialLoginInfo]);
 
+  // userType이 변경될 때 formData.roleType도 업데이트
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      roleType: userType
+    }));
+  }, [userType]);
+
   const validateForm = () => {
     // 소셜 로그인이면 비밀번호 검증 X
     if (socialLoginInfo?.socialLogin) {
       const newErrors = {
+        roleType: !formData.roleType,
         username: !formData.username.trim(),
         nickname: !formData.nickname.trim() || !checkResult,
         email: !formData.email.trim(),
@@ -120,6 +130,7 @@ export default function JoinForm({ socialLoginInfo }) {
     );
 
     const newErrors = {
+      roleType: !formData.roleType,
       username: !formData.username.trim(),
       nickname: !formData.nickname.trim() || !checkResult,
       email: !formData.email.trim(),
@@ -258,8 +269,19 @@ export default function JoinForm({ socialLoginInfo }) {
   };
 
   const handleSignup = () => {
+    console.log("handleSignup 호출됨");
+    console.log("formData:", formData);
+    console.log("errors:", errors);
+    
     const isValid = validateForm();
-    if (!isValid) return;
+    console.log("validateForm 결과:", isValid);
+    
+    if (!isValid) {
+      console.log("폼 검증 실패로 함수 종료");
+      return;
+    }
+    
+    console.log("폼 검증 통과, 회원가입 진행");
 
     // 카테고리 데이터 정리 및 검증
     const cleanedCategories = formData.categoryDtos
@@ -350,14 +372,14 @@ export default function JoinForm({ socialLoginInfo }) {
   return (
     <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
       <div className="w-full flex flex-col items-center justify-between mb-6 gap-2">
-        {/* <p className="text-black text-lg md:text-xl font-regular mr-auto">회원 가입 유형</p>
+        <p className="text-black text-lg md:text-xl font-regular mr-auto">회원 가입</p>
         <div className="flex gap-6 mr-auto">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="radio"
               name="userType"
-              value="student"
-              checked={userType === 'student'}
+              value="STUDENT"
+              checked={userType === 'STUDENT'}
               onChange={(e) => setUserType(e.target.value)}
               className="w-4 h-4 text-blue-main focus:ring-blue-main"
             />
@@ -367,14 +389,25 @@ export default function JoinForm({ socialLoginInfo }) {
             <input
               type="radio"
               name="userType"
-              value="company"
-              checked={userType === 'company'}
+              value="CLUB"
+              checked={userType === 'CLUB'}
+              onChange={(e) => setUserType(e.target.value)}
+              className="w-4 h-4 text-blue-main focus:ring-blue-main"
+            />
+            <span className="text-lg">동아리</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name="userType"
+              value="MEMBER"
+              checked={userType === 'MEMBER'}
               onChange={(e) => setUserType(e.target.value)}
               className="w-4 h-4 text-blue-main focus:ring-blue-main"
             />
             <span className="text-lg">일반</span>
           </label>
-        </div> */}
+        </div>
       </div>
       <Input
         title="이름"
@@ -925,7 +958,11 @@ export default function JoinForm({ socialLoginInfo }) {
         </div>
       </div>
 
-      <Button btnText="회원가입" onClick={handleSignup} />
+      <Button 
+        btnText="회원가입" 
+        onClick={handleSignup} 
+        isLoading={signUp.isPending || socialSignUp.isPending}
+      />
 
       {/* 모달들 */}
       {nicknameModal && (
