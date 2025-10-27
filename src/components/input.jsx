@@ -14,6 +14,7 @@ export default function Input({
   subtitle = "",
   value = "",
   disabled = false,
+  width = "w-full",
 }) {
   const [inputValue, setInputValue] = useState(value);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -77,7 +78,7 @@ export default function Input({
 
       <input
         type={type}
-        className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
+        className={`${width} py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
           validationType !== "error" ? "focus:border-blue-main" : ""
         }`}
         placeholder={placeholder}

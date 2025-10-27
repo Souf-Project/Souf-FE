@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import JoinForm from "../components/join/step1";
+import Step1 from "../components/join/step1";
+import Step2 from "../components/join/step2";
+import Step3 from "../components/join/step3";
 import SEO from "../components/seo";
 
 export default function Join({}) {
@@ -14,14 +16,19 @@ export default function Join({}) {
     username: location.state.username,
     registrationToken: location.state.registrationToken
   } : null;
-  
+
+  const [step, setStep] = useState(1);
+  const [selectedType, setSelectedType] = useState(null);
+
   return (
     <>
     <SEO title="회원가입" description="스프 SouF 회원가입" subTitle="스프"/>
     <div className="flex items-center justify-center my-20 w-full">
       <div className="w-full max-w-[60rem] px-4 bg-white ">
-        <div className="font-semibold text-2xl sm:text-[32px] md:text-3xl max-sm:pl-4">회원 가입</div>
-        <JoinForm socialLoginInfo={socialLoginInfo} />
+        {step === 1 && <Step1 setStep={setStep} />}
+        {step === 2 && <Step2 setStep={setStep} setSelectedType={setSelectedType} />}
+        {step === 3 && <Step3 socialLoginInfo={socialLoginInfo} selectedType={selectedType} />}
+        
       </div>
     </div>
     </>

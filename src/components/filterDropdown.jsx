@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export default function FilterDropdown({ options, selectedValue, onSelect, placeholder = "정렬 기준", width="w-32"}) {
+export default function FilterDropdown({ options, selectedValue, onSelect, placeholder = "정렬 기준", width="w-full"}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
