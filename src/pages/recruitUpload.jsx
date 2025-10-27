@@ -430,8 +430,8 @@ export default function RecruitUpload() {
         preferentialTreatmentTags: preferentialTreatmentTags,
         categoryDtos: cleanedCategories,
         workType: formData.workType.toUpperCase(),
-        ...(formData.newFiles.length > 0 && { originalFileNames: formData.newFiles.map((file) => file.name) }),
-        ...(formData.existingImages.length > 0 && { existingImageUrls: formData.existingImages.map((file) => file.fileUrl) }),
+        originalFileNames: formData.newFiles.map((file) => file.name),
+        existingImageUrls: formData.existingImages.map((file) => file.fileUrl),
       };
   
       
