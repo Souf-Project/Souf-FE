@@ -91,11 +91,21 @@ export default function AuthForm() {
                 placeholder="구분을 선택해주세요."
                 selectedValue={formData.businessType}
                 onSelect={(value) => handleInputChange("businessType", value)}
-                width="w-1/3"
+                width="w-1/2"
             />
            </div>
            <div>
-           <p className="text-black text-lg md:text-xl font-regular mb-2">사업자 등록증</p>
+            <div className="flex items-center gap-2 mb-2">
+            <p className="text-black text-lg md:text-xl font-regular">사업자 등록증</p>
+            <p className="text-gray-500 text-sm md:text-base font-regular">PDF 형식으로 업로드해주세요.</p>
+            </div>
+           
+           <button className="w-1/3 bg-white border border-gray-300 rounded-lg p-2 h-64 flex flex-col items-center justify-center gap-8">
+           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="gray" className="w-6 h-6">
+             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+           </svg>
+            <p className="text-gray-500 text-lg md:text-xl font-regular">업로드하기</p>
+           </button>
            </div>
         </div>
     )
