@@ -19,7 +19,6 @@ export const getPopularFeed = async (pageable) => {
 export const postFeed = async (data) => {
   try {
     const res = await client.post("/api/v1/feed", data);
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.error("postFeed error:", err);
@@ -39,30 +38,38 @@ export const uploadToS3 = async (url, file) => {
 // headers: { "Content-Type": file.type },
 
 
-export const postMedia = async ({ feedId, fileUrl, fileName, fileType }) => {
+export const postMedia = async ({ postId, fileUrl, fileName, fileType, filePurpose }) => {
   try {
+    console.log("postMedia 전송 데이터:", {
+      postId,
+      fileUrl,
+      fileName,
+      fileType,
+    });
+    
     const response = await client.post("/api/v1/feed/upload", {
-      postId: feedId,
+      postId: postId,
       fileUrl: fileUrl,
       fileName: fileName,
       fileType: fileType,
+      filePurpose: [],
     });
     return response.data;
   } catch (error) {
-    console.error("피드 이미지 조회 에러:", error);
+    console.error("피드 미디어 저장 에러:", error);
     throw error;
   }
 };
 
-export const getFeed = async (firstCategory, secondCategory, thirdCategory, keyword, pageable) => {
+export const getFeed = async (firstCategory, pageable) => {
   try {
     const params = {
       page: pageable.page,
       size: pageable.size,
       ...(firstCategory ? { firstCategory } : {}),
-      ...(secondCategory ? { secondCategory } : {}),
-      ...(thirdCategory ? { thirdCategory } : {}),
-      ...(keyword ? { keyword } : {}),
+      // ...(secondCategory ? { secondCategory } : {}),
+      // ...(thirdCategory ? { thirdCategory } : {}),
+      // ...(keyword ? { keyword } : {}),
     };
 
     const response = await client.get("/api/v1/feed", { params });

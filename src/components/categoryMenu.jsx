@@ -3,7 +3,8 @@ import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
 import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 
-const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories, onApply }) => {
+const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories, onApply, mode = 'full' }) => {
+  // mode: 'full' (기본, 전체 기능) 또는 'simple' (대분류만, 하나만 선택)
   const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || null);
   const [selectedSecondCategories, setSelectedSecondCategories] = useState(selectedCategories?.secondCategoryId ? [selectedCategories.secondCategoryId] : []);
   const [selectedThirdCategories, setSelectedThirdCategories] = useState(selectedCategories?.thirdCategoryId ? [selectedCategories.thirdCategoryId] : []);
@@ -13,6 +14,18 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
   const firstCategories = firstCategoryData.first_category;
 
   const handleFirstCategoryClick = (firstCategory) => {
+    // simple 모드인 경우
+    if (mode === 'simple') {
+      // 하나만 선택 가능 (라디오 버튼처럼)
+      setTempSelectedCategories([{
+        firstCategory: firstCategory.first_category_id,
+        secondCategory: null,
+        thirdCategory: null
+      }]);
+      return;
+    }
+    
+    // full 모드 (기존 동작)
     const isExpanded = expandedFirstCategory === firstCategory.first_category_id;
     const isSelected = tempSelectedCategories.some(cat => 
       cat.firstCategory === firstCategory.first_category_id && 
@@ -236,7 +249,7 @@ const DesktopCategoryMenu = () => (
               </div>
               
               {/* 중분류 섹션 - 대분류가 펼쳐졌을 때만 표시 */}
-              {isExpanded && (
+              {isExpanded && mode === 'full' && (
                 <div className="ml-4 mt-2 mb-2">
                   <h5 className="text-xs font-medium text-gray-500 mb-2">중분류</h5>
                   <div className="space-y-1">
@@ -264,8 +277,8 @@ const DesktopCategoryMenu = () => (
                             {second.name}
                           </div>
                           
-                          {/* 소분류 (IT·개발이 아닌 경우에만) */}
-                          {second.first_category_id !== 6 && isSelectedSecond && (
+                              {/* 소분류 (IT·개발이 아닌 경우에만, full 모드일 때만) */}
+                              {second.first_category_id !== 6 && isSelectedSecond && mode === 'full' && (
                             <div className="ml-4 mb-1">
                               <h6 className="text-xs font-medium text-gray-500 mb-1">소분류</h6>
                               <div className="space-y-1">
@@ -391,8 +404,8 @@ const DesktopCategoryMenu = () => (
                     {first.name}
                   </div>
                   
-                  {/* 중분류 섹션 - 대분류가 펼쳐졌을 때만 표시 */}
-                  {isExpanded && (
+                  {/* 중분류 섹션 - 대분류가 펼쳐졌을 때만 표시 (full 모드일 때만) */}
+                  {isExpanded && mode === 'full' && (
                     <div className="ml-4 mt-2 mb-2">
                       <h5 className="text-xs font-medium text-gray-500 mb-2">중분류</h5>
                       <div className="space-y-1">
@@ -420,8 +433,8 @@ const DesktopCategoryMenu = () => (
                                 {second.name}
                               </div>
                               
-                              {/* 소분류 (IT·개발이 아닌 경우에만) */}
-                              {second.first_category_id !== 6 && isSelectedSecond && (
+                              {/* 소분류 (IT·개발이 아닌 경우에만, full 모드일 때만) */}
+                              {second.first_category_id !== 6 && isSelectedSecond && mode === 'full' && (
                                 <div className="ml-4 mb-1">
                                   <h6 className="text-xs font-medium text-gray-500 mb-1">소분류</h6>
                                   <div className="space-y-1">
