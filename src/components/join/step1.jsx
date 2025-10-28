@@ -38,7 +38,7 @@ export default function JoinForm({ socialLoginInfo }) {
     password: false,
     passwordCheck: false,
   });
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -347,7 +347,7 @@ export default function JoinForm({ socialLoginInfo }) {
     signUp.mutate(finalData);
   };
 
-  return (
+    return (
     <div className="mx-auto w-full sm:mt-[5%] rounded-[30px] sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
       <div className="w-full flex flex-col items-center justify-between mb-6 gap-2">
         {/* <p className="text-black text-lg md:text-xl font-regular mr-auto">회원 가입 유형</p>
@@ -499,8 +499,8 @@ export default function JoinForm({ socialLoginInfo }) {
 
         {/* 전체 선택 버튼 */}
         <div className="flex items-center gap-3">
-          <button
-            type="button"
+                  <button
+                    type="button"
             onClick={() => {
               const allChecked =
                 privacyAgreement &&
@@ -514,8 +514,8 @@ export default function JoinForm({ socialLoginInfo }) {
               setMarketingAgreement(newState);
             }}
             className="flex items-center gap-3"
-          >
-            <img
+                  >
+                    <img
               src={
                 privacyAgreement &&
                 serviceAgreement &&
@@ -528,17 +528,17 @@ export default function JoinForm({ socialLoginInfo }) {
               className="w-5 h-5"
             />
             <span className="text-xl font-bold">전체 선택</span>
-          </button>
+                  </button>
         </div>
 
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <button
-              type="button"
+                  <button
+                    type="button"
               onClick={() => setPrivacyAgreement(!privacyAgreement)}
               className="flex items-center gap-3"
-            >
-              <img
+                  >
+                    <img
                 src={privacyAgreement ? checkBoxIcon : notCheckBoxIcon}
                 alt="개인정보 동의"
                 className="w-5 h-5"
@@ -547,7 +547,7 @@ export default function JoinForm({ socialLoginInfo }) {
                 개인정보 수집 및 이용 동의 (필수)
                 <span className="text-sm text-red-500 ml-1">*</span>
               </span>
-            </button>
+                  </button>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -564,8 +564,8 @@ export default function JoinForm({ socialLoginInfo }) {
                 제3자 제공 동의 (필수)
                 <span className="text-sm text-red-500 ml-1">*</span>
               </span>
-            </button>
-          </div>
+                    </button>
+                </div>
           {/* 개인정보 수집 및 이용 동의 내용 */}
           <div
             className="ml-4 flex items-center gap-3 cursor-pointer"
@@ -921,7 +921,7 @@ export default function JoinForm({ socialLoginInfo }) {
               />
               <span className="text-lg">마케팅 수신 동의 (선택)</span>
             </button>
-          </div>
+                </div>
         </div>
       </div>
 

@@ -13,6 +13,7 @@ import Footer from "../components/footer";
 import Join from "../pages/join";
 import PwdFind from "../pages/pwdFind";
 import StudentProfileList from "../pages/studentProfileList";
+import StudentFeedList from "../pages/studentFeedList";
 import ProfileDetail from "../components/studentProfile/profileDetail";
 import PostDetail from "../components/studentProfile/postDetail";
 import PostEdit from "../pages/postEdit";
@@ -48,6 +49,7 @@ function AppRouter() {
           <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
           <Route path="/feed" element={<Feed />} />
+          <Route path="/studentFeedList" element={<StudentFeedList />} />
           <Route path="/recruitDetails/:id" element={<RecruitDetail />} />
           <Route path="/recruitsAll" element={<RecruitsAll />} />
           <Route path="/mypage" element={<MyPage />} />
