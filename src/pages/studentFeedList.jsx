@@ -57,9 +57,10 @@ const {
     <>
     <SEO title="카테고리별 피드" description="스프 SouF 카테고리별 피드" subTitle="스프"/>
     <PageHeader leftText="카테고리별 피드" />
-    <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
-      <div className="w-full mb-4">
+    <div className="w-screen max-w-[60rem] mx-auto flex mb-40">
+      <div className="mb-4 mr-4">
         <CategoryMenu 
+          mode="simple"
           secondCategories={secondCategoryData.second_category}
           thirdCategories={thirdCategoryData}
           onApply={handleCategoryApply}
@@ -72,7 +73,7 @@ const {
         {isLoading ? (
           <Loading />
         ) : feedData?.result?.content && feedData.result.content.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-[50rem]">
             {feedData.result.content.map((data, index) => (
               <Feed key={`${data.memberId}-${data.worksId || index}`} feedData={data} onFeedClick={onFeedClick} />
             ))}

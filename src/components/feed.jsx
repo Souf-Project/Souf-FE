@@ -125,7 +125,7 @@ export default function Feed({ feedData, onFeedClick }) {
   return (
     <div
       key={feedData?.memberId}
-      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm relative"
+      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full shadow-sm relative"
     >
       <div className="flex justify-between items-center mb-4">
         <h2 
