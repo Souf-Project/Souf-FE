@@ -63,10 +63,12 @@ export default function PostDetail() {
     queryFn: async () => {
       try {
         const data = await getFeedDetail(id,worksId);
+
         data.result.mediaResDtos?.forEach((media, index) => {
         });
       
         setWorksData(data.result);
+        console.log("mediaData", data.result.mediaResDtos);
         setMediaData(data.result.mediaResDtos);
         
         // 좋아요 상태 초기화

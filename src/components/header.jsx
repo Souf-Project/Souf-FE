@@ -138,8 +138,13 @@ useEffect(() => {
     setShowMobileMenu(false);
   };
 
-  const handleNavigationFeedCategory = () => {
+  const handleNavigationStudentList = () => {
     navigate(`/feed`);
+    setShowMobileMenu(false);
+  };
+
+  const handleNavigationFeedList = () => {
+    navigate(`/studentFeedList`);
     setShowMobileMenu(false);
   };
 
@@ -304,7 +309,8 @@ const DesktopHeader = () => (
                    onMouseLeave={handleDropdownLeave}
                  >
                    <ul className="flex flex-col gap-1">
-                     <li><button onClick={() => handleNavigationFeedCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">카테고리별 피드</button></li>
+                     <li><button onClick={() => handleNavigationStudentList()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">대학생 리스트</button></li>
+                     <li><button onClick={() => handleNavigationFeedList()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">카테고리별 피드</button></li>
                      <li><button onClick={() => handleNavigationFeedUpload()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">피드 등록하기</button></li>
                    </ul>
                  </div>

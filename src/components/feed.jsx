@@ -125,7 +125,7 @@ export default function Feed({ feedData, onFeedClick }) {
   return (
     <div
       key={feedData?.memberId}
-      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full max-w-[600px] shadow-sm mb-6 relative"
+      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full shadow-sm relative"
     >
       <div className="flex justify-between items-center mb-4">
         <h2 
@@ -146,7 +146,8 @@ export default function Feed({ feedData, onFeedClick }) {
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
-          <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
+          <h2 className="text-base lg:text-xl font-semibold leading-snug text-black"
+          onClick={() => navigate(`/profileDetail/${feedData?.memberId}`)}>
             {feedData?.nickname || "학생" }
           </h2>
         </div>
@@ -262,7 +263,7 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickTrue={handleCompleteConfirm}
         />
       )}
-      {showLoginModal && (
+      {/* {showLoginModal && (
         <AlertModal
           type="simple"
           title="로그인이 필요합니다"
@@ -275,7 +276,7 @@ export default function Feed({ feedData, onFeedClick }) {
           }}
           onClickFalse={() => setShowLoginModal(false)}
         />
-      )}
+      )} */}
       {errorModal && (
         <AlertModal
         type="simple"
