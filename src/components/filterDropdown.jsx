@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export default function FilterDropdown({ options, selectedValue, onSelect, placeholder = "정렬 기준", width="w-full"}) {
+export default function FilterDropdown({ options, selectedValue, onSelect, placeholder = "정렬 기준", width="w-full", disabled = false}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -27,8 +27,13 @@ export default function FilterDropdown({ options, selectedValue, onSelect, place
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between ${width} px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors`}
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className={`flex items-center justify-between ${width} px-4 py-2 border border-gray-300 rounded-lg transition-colors ${
+          disabled 
+            ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+            : "bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }`}
       >
         <span className="text-sm font-medium text-gray-700">
           {selectedOption ? selectedOption.label : placeholder}

@@ -66,6 +66,54 @@ export default function AccountForm({
             approveText={verificationApproveText}
             disapproveText={verificationApproveText}
           />
+              <div className="w-full relative mb-8">
+                <div className="text-black text-lg md:text-xl font-regular mb-2">
+                  전화번호
+                  <span className="text-gray-500 text-xs sm:text-sm"> (긴급시에 사용하기 위함입니다.)</span>
+                </div>
+                <div className="flex items-center">
+                <input
+  type="text"
+  inputMode="numeric"
+  pattern="[0-9]*"
+  maxLength={11}
+  className="flex-1 py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 border-[#898989] focus:border-blue-main"
+  placeholder="000-0000-0000"
+  value={formData.phoneNumber}
+  onBeforeInput={(e) => {
+    // 입력 직전에 숫자가 아닌 입력은 막음
+    if (!/^[0-9]*$/.test(e.data)) {
+      e.preventDefault();
+    }
+  }}
+  onKeyDown={(e) => {
+    const allowedKeys = [
+      "Backspace",
+      "Delete",
+      "ArrowLeft",
+      "ArrowRight",
+      "Tab",
+    ];
+    if (!/^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
+      e.preventDefault();
+    }
+  }}
+  onChange={(e) => {
+    // 혹시 몰라서 한 번 더 숫자만 남김 (IME 대비)
+    const onlyNums = e.target.value.replace(/[^0-9]/g, "").slice(0, 11);
+    handleInputChange("phoneNumber", onlyNums);
+  }}
+  onPaste={(e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/[^0-9]/g, "").slice(0, 11);
+    handleInputChange("phoneNumber", pasted);
+  }}
+/>
+
+
+                </div>
+              
+            </div>
           <Input
             title="비밀번호"
             type="password"
