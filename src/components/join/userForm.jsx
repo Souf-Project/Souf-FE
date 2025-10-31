@@ -49,7 +49,7 @@ export default function UserForm({
         if (!formData.username || !formData.username.trim()) {
           newErrors.username = true;
           if (!errorMessage) {
-            errorMessage = "이름을 입력해주세요.";
+            errorMessage = "대표자명을 입력해주세요.";
           }
         }
       }
@@ -102,16 +102,22 @@ export default function UserForm({
     // 동아리 회원가입
     if (selectedType === "CLUB") {
       // 동아리명 검증
-      if (!formData.clubName || !formData.clubName.trim()) {
-        newErrors.clubName = true;
+      if (!formData.nickname || !formData.nickname.trim()) {
+        newErrors.nickname = true;
         if (!errorMessage) {
           errorMessage = "동아리명을 입력해주세요.";
+        }
+      } else if (checkResult !== true) {
+        // 동아리명 중복 확인 검증
+        newErrors.nickname = true;
+        if (!errorMessage) {
+          errorMessage = "동아리명 중복 확인을 완료해주세요.";
         }
       }
 
       // 대표자명 검증
-      if (!formData.clubRepresentativeName || !formData.clubRepresentativeName.trim()) {
-        newErrors.clubRepresentativeName = true;
+      if (!formData.username || !formData.username.trim()) {
+        newErrors.username = true;
         if (!errorMessage) {
           errorMessage = "대표자명을 입력해주세요.";
         }
@@ -161,9 +167,93 @@ export default function UserForm({
   
     
     if (validateForm()) {
-      // 동아리 계정일 때는 회원가입 API 호출
       if (selectedType === "CLUB") {
-        handleSignup();
+        // 동아리 계정: 이전 데이터와 함께 회원가입 API 직접 호출
+        // 카테고리 데이터 정리 (null 값 제거)
+        const cleanedCategories = (formData.categoryDtos || [])
+          .map((category) => {
+            if (!category) return null;
+            const cleaned = {};
+            if (category.firstCategory !== null && category.firstCategory !== undefined) {
+              cleaned.firstCategory = Number(category.firstCategory);
+            }
+            if (category.secondCategory !== null && category.secondCategory !== undefined) {
+              cleaned.secondCategory = Number(category.secondCategory);
+            }
+            if (category.thirdCategory !== null && category.thirdCategory !== undefined) {
+              cleaned.thirdCategory = Number(category.thirdCategory);
+            }
+            return Object.keys(cleaned).length > 0 ? cleaned : null;
+          })
+          .filter(Boolean); // null 제거
+
+        if (cleanedCategories.length === 0) {
+          setErrorModalTitle("입력 오류");
+          setErrorModalDescription("최소 1개 이상의 관심분야를 선택해주세요.");
+          setShowErrorModal(true);
+          return;
+        }
+
+        // 이전 단계(accountForm)의 데이터와 userForm의 동아리 데이터를 합쳐서 회원가입 데이터 생성
+        const finalSignupData = {
+          ...formData,
+          roleType: "CLUB",
+          // userForm에서 입력한 동아리 정보
+          nickname: formData.nickname || "", // 동아리명
+          username: formData.username || "", // 대표자명
+          clubAuthenticationMethod: formData.clubAuthenticationMethod ? String(formData.clubAuthenticationMethod).trim() : "", // 동아리 인증 수단 (없으면 빈 문자열)
+          intro: formData.intro ? String(formData.intro).trim() : "", // 동아리 정보 (없으면 빈 문자열)
+          categoryDtos: cleanedCategories,
+        };
+
+        // 중첩 구조 제거
+        delete finalSignupData.studentFormData;
+        delete finalSignupData.memberFormData;
+        delete finalSignupData.clubFormData;
+
+        console.log("동아리 회원가입 데이터:", finalSignupData);
+
+        // 소셜 로그인 회원가입인 경우
+        if (socialLoginInfo?.socialLogin) {
+          let registrationToken = socialLoginInfo.registrationToken;
+          
+          if (!registrationToken || registrationToken === null || registrationToken === undefined) {
+            console.error("registrationToken이 없습니다:", registrationToken);
+            alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
+            return;
+          }
+          
+          if (Array.isArray(registrationToken)) {
+            registrationToken = registrationToken[0];
+          } else if (typeof registrationToken === 'object') {
+            const tokenValue = registrationToken.token || registrationToken.registrationToken;
+            if (tokenValue) {
+              registrationToken = tokenValue;
+            } else {
+              console.error("registrationToken이 빈 객체입니다:", registrationToken);
+              alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
+              return;
+            }
+          }
+
+          const socialSignupData = {
+            registrationToken: registrationToken,
+            nickname: finalSignupData.nickname,
+            categoryDtos: cleanedCategories,
+            isPersonalInfoAgreed: finalSignupData.isPersonalInfoAgreed || false,
+            isMarketingAgreed: finalSignupData.isMarketingAgreed || false,
+          };
+
+          if (socialSignUp) {
+            socialSignUp.mutate(socialSignupData);
+          }
+          return;
+        }
+
+        // 일반 회원가입인 경우
+        if (signUp) {
+          signUp.mutate(finalSignupData);
+        }
       } else {
         // 일반/학생 계정일 때는 데이터 합쳐서 다음 단계로 넘기기
         if (setFormData && setSubStep) {
@@ -453,56 +543,63 @@ export default function UserForm({
          
           <ButtonInput
           title="동아리명"
-          name="clubName"
-          value={formData.clubName}
+          name="nickname"
+          value={formData.nickname}
           onChange={(e) => {
-            handleInputChange("clubName", e);
-            if (validationErrors.clubName) {
-              setValidationErrors((prev) => ({ ...prev, clubName: false }));
+            handleInputChange("nickname", e);
+            if (validationErrors.nickname) {
+              setValidationErrors((prev) => ({ ...prev, nickname: false }));
             }
           }}
-          disapproveText="동아리명을 입력해주세요."
+          onClick={() => {
+            if (formData.nickname && formData.nickname.trim()) {
+              checkNickname.mutate(formData.nickname.trim());
+            }
+          }}
+          disapproveText={checkResult === false ? "이미 가입된 동아리명입니다." : (checkResult === undefined ? "동아리명 중복 확인을 완료해주세요." : "동아리명을 입력해주세요.")}
           essentialText="동아리명을 입력해주세요."
-          isValidateTrigger={validationErrors.clubName || errors.clubName}
-          btnText="중복확인"  
+          isValidateTrigger={validationErrors.nickname || errors.nickname}
+          isConfirmed={checkResult === true}
+          approveText="사용 가능한 동아리명입니다."
+          btnText="중복확인"
+          isLoading={checkNickname.isPending}
           />
-          <ButtonInput  
+          <Input  
           title="대표자명"
-        name="clubRepresentativeName"
-          value={formData.clubRepresentativeName}
+        name="username"
+          value={formData.username}
           onChange={(e) => {
-            handleInputChange("clubRepresentativeName", e);
-            if (validationErrors.clubRepresentativeName) {
-              setValidationErrors((prev) => ({ ...prev, clubRepresentativeName: false }));
+            handleInputChange("username", e);
+            if (validationErrors.username) {
+              setValidationErrors((prev) => ({ ...prev, username: false }));
             }
           }}
           disapproveText="대표자명을 입력해주세요."
           essentialText="대표자명을 입력해주세요."
-          isValidateTrigger={validationErrors.clubRepresentativeName || errors.clubRepresentativeName}
-          btnText="중복확인"
+          isValidateTrigger={validationErrors.username || errors.username}
         />
 
 
         <p className="text-black text-lg md:text-xl font-regular mb-2">동아리 인증 수단</p>
         <textarea 
-         name="clubCertificationType"
+         name="clubAuthenticationMethod"
          placeholder="스프 측에서 동아리 소유주인지 확인할 수 있는 동아리 공식 연락 수단이 있다면 기입해주세요.
  (예: 인스타그램 아이디, 공식 계정 이메일 등)"
          className="w-full p-2 mb-8 border border-gray-300 rounded-lg min-h-[160px] resize-none align-top"
-         value={formData.clubCertificationType || ""}
-         onChange={(e) => handleInputChange("clubCertificationType", e)}
+         value={formData.clubAuthenticationMethod || ""}
+         onChange={(e) => handleInputChange("clubAuthenticationMethod", e)}
          />
 
 
-<p className="text-black text-lg md:text-xl font-regular mb-2">동아리 정보<span className="text-gray-500 text-sm font-light ml-2">(선택)</span></p>
+<p className="text-black text-lg md:text-xl font-regular mb-2">동아리 정보<span className="text-gray-500 text-sm font-light ml-2">(선택, 최대 300자)</span></p>
 
 
         <textarea 
-         name="clubCertificationType"
+         name="intro"
          placeholder="동아리에 대해 여러 사용자가 알 수 있도록 다양한 정보를 기입해보세요!"
          className="w-full p-2 border border-gray-300 rounded-lg min-h-[160px] resize-none align-top"
-         value={formData.clubCertificationType || ""}
-         onChange={(e) => handleInputChange("clubCertificationType", e)}
+         value={formData.intro || ""}
+         onChange={(e) => handleInputChange("intro", e)}
          />
           </div>
       )}

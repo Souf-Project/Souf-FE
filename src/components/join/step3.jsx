@@ -494,8 +494,12 @@ export default function Step3({ socialLoginInfo, selectedType }) {
           type={checkResult ? "success" : "warning"}
           title={
             checkResult
-              ? "사용 가능한 닉네임입니다."
-              : "이미 가입된 닉네임입니다."
+              ? selectedType === "CLUB" 
+                ? "사용 가능한 동아리명입니다."
+                : "사용 가능한 닉네임입니다."
+              : selectedType === "CLUB"
+                ? "이미 가입된 동아리명입니다."
+                : "이미 가입된 닉네임입니다."
           }
           TrueBtnText="확인"
           onClickTrue={() => setNicknameModal(false)}
