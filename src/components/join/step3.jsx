@@ -400,19 +400,39 @@ export default function Step3({ socialLoginInfo, selectedType }) {
     signUp.mutate(finalData);
   };
 
+  const handleBack = () => {
+    if (subStep > 1) {
+      setSubStep(subStep - 1);
+    }
+  };
+
   return (
     <div>
-      <p className=" text-black text-3xl font-bold">
-        {selectedType === 'MEMBER' ? '일반' : 
-         selectedType === 'STUDENT' ? '대학생' : 
-         selectedType === 'CLUB' ? '동아리' : '일반'} 회원가입
-      </p>
+      <div className="flex items-center gap-4 mb-4">
+        
+        <p className=" text-black text-3xl font-bold">
+          {selectedType === 'MEMBER' ? '일반' : 
+           selectedType === 'STUDENT' ? '대학생' : 
+           selectedType === 'CLUB' ? '동아리' : '일반'} 회원가입
+        </p>
+      </div>
+      
     <div className="mx-auto mt-4 w-full rounded-md sm:border-[1px] py-8 md:py-16 px-4 sm:px-12 md:px-16 lg:px-48 flex flex-col items-center justify-center">
+    {(subStep === 2 || subStep === 3) && (
+          <button
+            onClick={handleBack}
+            className="flex items-center justify-center h-10 text-lg font-light text-gray-500 rounded-full mr-auto"
+            aria-label="이전 단계로 이동"
+          >
+            <img src={backArrow} alt="뒤로가기" className="w-6 h-6" />뒤로가기
+          </button>
+        )}
     <JoinStepIndicator 
       currentStep={subStep} 
       totalSteps={getCurrentStepList().length} 
       stepTitles={getCurrentStepList()}
     />
+   
       {subStep === 1 ? (
         <AccountForm
           socialLoginInfo={socialLoginInfo}
@@ -464,7 +484,7 @@ export default function Step3({ socialLoginInfo, selectedType }) {
           setSubStep={setSubStep}
         />
        ) : (
-        <AuthForm />
+        <AuthForm selectedType={selectedType} />
       )}
 
       {nicknameModal && (
