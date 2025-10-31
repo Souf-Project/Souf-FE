@@ -6,12 +6,27 @@ import googleLogo from "../../assets/images/googleLogo.png";
 
 export default function Step1({ setStep }) {
     const navigate = useNavigate();
-    const handleKakaoLogin = () => {
-        console.log("카카오 로그인");
-    }
-    const handleGoogleLogin = () => {
-        console.log("구글 로그인");
-    }
+   
+  // 카카오 로그인
+  const REST_API_KEY = import.meta.env.VITE_REST_API_KEY;
+  const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI;
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile_nickname,account_email,profile_image`;
+
+  const handleKakaoLogin = () => {
+    localStorage.setItem("socialProvider", "KAKAO");
+    window.location.href = KAKAO_AUTH_URL;
+  };
+
+  // 구글 로그인
+  const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const GOOGLE_REDIRECT_URI = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+  const GOOGLE_AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&response_type=code&scope=email profile`;
+
+  const handleGoogleLogin = () => {
+    localStorage.setItem("socialProvider", "GOOGLE");
+    window.location.href = GOOGLE_AUTH_URL;
+  };
+
     return (
         <div className="flex flex-col items-center justify-center gap-10">
             <img src={SouFLogo} alt="SouFLogo" className="w-32 brightness-0" />
