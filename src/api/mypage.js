@@ -21,30 +21,35 @@ export async function updateProfileInfo(data) {
 }
 
 /* 2. S3 업로드 후, 이미지 정보 최종 전송 */
-export async function confirmImageUpload({ postId, fileUrl, fileName, fileType }) {
-    const accessToken = localStorage.getItem("accessToken");
-    const requestData = {
-      postId,
-      fileUrl:  Array.isArray(fileUrl) ? fileUrl : [fileUrl],
-      fileName: Array.isArray(fileName) ? fileName : [fileName],
-      fileType: Array.isArray(fileType)
-    ? fileType.map(type => type.toUpperCase())
-    : [fileType.toUpperCase()],
-};
-    
-    console.log("S3 업로드 후 /upload 엔드포인트로 전송될 최종 데이터:", requestData);
+export async function confirmImageUpload({
+  postId,
+  fileUrl,
+  fileName,
+  fileType,
+}) {
+  const accessToken = localStorage.getItem("accessToken");
+  const requestData = {
+    postId,
+    fileUrl: Array.isArray(fileUrl) ? fileUrl : [fileUrl],
+    fileName: Array.isArray(fileName) ? fileName : [fileName],
+    fileType: Array.isArray(fileType)
+      ? fileType.map((type) => type.toUpperCase())
+      : [fileType.toUpperCase()],
+  };
 
-    const response = await client.post("/api/v1/member/upload", 
-        requestData, 
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        }
-    );
-    console.log(response);
-    return response.data;
+  console.log(
+    "S3 업로드 후 /upload 엔드포인트로 전송될 최종 데이터:",
+    requestData
+  );
+
+  const response = await client.post("/api/v1/member/upload", requestData, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+  console.log(response);
+  return response.data;
 }
 
 /* 프로필 조회 */
@@ -68,10 +73,19 @@ export async function getProfile() {
 //       "Content-Type": "application/octet-stream",
 //     },
 //   });
+// export async function putProfileEdit(data) {
+//   const accessToken = localStorage.getItem("accessToken");
+//   const response = await client.put("/api/v1/member/update", data, {
+//     headers: {
+//       Authorization: `Bearer ${accessToken}`,
+//       "Content-Type": "application/octet-stream",
+//     },
+//   });
 
 //   return response;
 // }
-
+//   return response;
+// }
 
 /* 닉네임 검증 */
 

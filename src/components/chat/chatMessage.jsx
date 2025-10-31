@@ -21,6 +21,8 @@ import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/SouFLogo.svg";
 import outIcon from "../../assets/images/outIcon.svg";
+import { handleApiError } from "../../utils/apiErrorHandler";
+import { CHAT_ERRORS } from "../../constants/chat";
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
@@ -37,6 +39,10 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const videoInputRef = useRef(null);
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근");
+  const [errorAction, setErrorAction] = useState("redirect");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -158,6 +164,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       };
      
       const success = sendChatMessage(fileMessage);
+      debugger;
       if (success) {
        
         setPendingImageUpload({
@@ -296,7 +303,6 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const handleFileUploadComplete = async (chatId, uploadInfo) => {
     try {
      
-      
       await postChatImageUpload({
         chatId: chatId,
         fileUrl: [uploadInfo.fileUrl],
@@ -307,6 +313,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       setPendingImageUpload(null); // 대기 상태 해제
     } catch (error) {
       console.error("postChatImageUpload 에러:", error);
+      handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, CHAT_ERRORS);
     }
   };
 
@@ -569,7 +576,40 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           console.log("온도 평가 확인");
           setShowDegreeModal(false);
         }}
+
       />
+    )}
+    {showLoginModal && (
+    <AlertModal
+      type="simple"
+      title="로그인이 필요합니다"
+      description="로그인 후 마이페이지를 조회할 수 있습니다!"
+      TrueBtnText="로그인하러 가기"
+      FalseBtnText="취소"
+      onClickTrue={() => {
+        setShowLoginModal(false);
+        navigate("/login");
+      }}
+      onClickFalse={() => setShowLoginModal(false)}
+      />
+    )}
+    {errorModal && (
+      <AlertModal
+      type="simple"
+      title="잘못된 접근"
+      description={errorDescription}
+      TrueBtnText="확인"
+      onClickTrue={() => {
+        if (errorAction === "redirect") {
+            navigate("/login");
+        }else if(errorAction === "refresh"){
+          setErrorModal(false);
+        }else{
+          setErrorModal(false);
+          //window.location.reload();
+        }
+      }}
+        />
     )}
   </div>
 </div>
