@@ -18,14 +18,13 @@ export default function AuthForm({
     // 사업자 정보용 상태 (MEMBER일 때만 사용)
     const [formData, setFormData] = useState({
         companyName: "",
-        businessNumber: "",
-        postalCode: "",
+        businessRegistrationNumber: "",
+        zipCode: "",
         address: "",
-        detailAddress: "",
-        industry: "",
-        businessType: "",
+        detailedAddress: "",
+        businessStatus: "",
+        businessClassification: "",
         businessRegistrationFile: null,
-        businessRegistrationUrl: null,
     });
     const [showDaumAddress, setShowDaumAddress] = useState(false);
     const [address, setAddress] = useState("");
@@ -35,7 +34,7 @@ export default function AuthForm({
 
     // 대학생 인증용 상태 (STUDENT일 때 사용)
     const [studentFormData, setStudentFormData] = useState({
-        accountEmail: "",
+
         schoolEmail: "",
         verificationCode: "",
     });
@@ -71,7 +70,7 @@ export default function AuthForm({
         
         setFormData({ 
             ...formData, 
-            postalCode: data.zonecode,
+            zipCode: data.zonecode,
             address: fullAddress
         });
         
@@ -79,7 +78,7 @@ export default function AuthForm({
         setZonecode(data.zonecode);
         setShowDaumAddress(false);
       };
-    const formatBusinessNumber = (input) => {
+    const formatbusinessRegistrationNumber = (input) => {
         // 숫자만 추출하고 최대 10자리까지 제한
         const numbers = input.replace(/[^0-9]/g, '').slice(0, 10);
         
@@ -96,13 +95,13 @@ export default function AuthForm({
     };
     
     const handleInputChange = (name, value) => {
-        if (name === 'businessNumber') {
+        if (name === 'businessRegistrationNumber') {
             // 숫자만 추출하여 10자리 제한
             const numbers = value.replace(/[^0-9]/g, '');
             
             // 10자리를 넘으면 더 이상 입력 받지 않음
             if (numbers.length <= 10) {
-                const formatted = formatBusinessNumber(value);
+                const formatted = formatbusinessRegistrationNumber(value);
                 setFormData({ ...formData, [name]: formatted });
             }
         } else {
@@ -126,10 +125,9 @@ export default function AuthForm({
         setFormData({ 
             ...formData, 
             businessRegistrationFile: null,
-            businessRegistrationUrl: null 
         });
     };
-    const industryOptions = [
+    const businessStatusOptions = [
         { value: "1", label: "제조업" },
         { value: "2", label: "도소매업" },
         { value: "3", label: "서비스업" },
@@ -139,32 +137,14 @@ export default function AuthForm({
         { value: "7", label: "통신판매업" },
         { value: "8", label: "기타 업종" },
     ];
-    const businessTypeOptions = [
+    const businessClassificationOptions = [
         { value: "1", label: "법인 사업자" },
         { value: "2", label: "개인 사업자" },
     ];
     
     const isDisabled = selectedMemberType === "일반";
 
-    // 대학생 인증 핸들러
-    const handleStudentEmailRequest = () => {
-        if (!studentFormData.accountEmail || !studentFormData.schoolEmail) {
-            alert("이메일을 모두 입력해주세요.");
-            return;
-        }
-        // TODO: API 호출 추가
-        setIsStudentVerificationRequested(true);
-    };
-
-    const handleStudentVerification = () => {
-        if (!studentFormData.verificationCode) {
-            alert("인증번호를 입력해주세요.");
-            return;
-        }
-        // TODO: API 호출 추가
-        setStudentVerificationCheck(true);
-    };
-
+    
     const handleStudentInputChange = (name, e) => {
         const value = e.target.value;
         setStudentFormData({ ...studentFormData, [name]: value });
@@ -224,6 +204,13 @@ export default function AuthForm({
             return;
         }
 
+        console.log("===== AuthForm에서 받은 parentFormData =====");
+        console.log("isPersonalInfoAgreed:", parentFormData.isPersonalInfoAgreed);
+        console.log("isServiceUtilizationAgreed:", parentFormData.isServiceUtilizationAgreed);
+        console.log("isMarketingAgreed:", parentFormData.isMarketingAgreed);
+        console.log("isSuitableAged:", parentFormData.isSuitableAged);
+        console.log("============================================");
+
         // 학생 계정의 경우 schoolEmail과 schoolAuthenticatedImageFileName 검증
         if (selectedType === "STUDENT") {
             // schoolEmail 검증 (ac.kr 형식만 가능)
@@ -275,19 +262,32 @@ export default function AuthForm({
                 schoolAuthenticatedImageFileName: schoolAuthenticatedImageFileName.name,
             };
         } else if (selectedType === "MEMBER") {
-            // 일반 회원의 경우 사업자 정보 추가 (선택사항)
-            if (selectedMemberType === "사업자") {
+            // 일반 회원의 경우 isCompany 값 설정
+            if (selectedMemberType === "일반") {
+                // 일반 회원: isCompany만 false로 설정, 사업자 정보는 보내지 않음
                 finalFormData = {
                     ...finalFormData,
+                    isCompany: false,
+                };
+            } else if (selectedMemberType === "사업자") {
+                // 사업자: isCompany를 true로 설정하고 사업자 정보 추가
+                // businessStatus와 businessClassification을 숫자에서 문자열로 변환
+                const selectedBusinessStatus = businessStatusOptions.find(option => option.value === formData.businessStatus);
+                const selectedBusinessClassification = businessClassificationOptions.find(option => option.value === formData.businessClassification);
+                
+                finalFormData = {
+                    ...finalFormData,
+                    isCompany: true,
                     companyName: formData.companyName,
-                    businessNumber: formData.businessNumber,
-                    postalCode: formData.postalCode,
-                    address: formData.address,
-                    detailAddress: formData.detailAddress,
-                    industry: formData.industry,
-                    businessType: formData.businessType,
-                    businessRegistrationFile: formData.businessRegistrationFile,
-                    businessRegistrationUrl: formData.businessRegistrationUrl,
+                    businessRegistrationNumber: formData.businessRegistrationNumber,
+                    addressReqDto: {
+                        zipCode: formData.zipCode,
+                        roadNameAddress: formData.address,
+                        detailedAddress: formData.detailedAddress,
+                    },
+                    businessStatus: selectedBusinessStatus ? selectedBusinessStatus.label : formData.businessStatus,
+                    businessClassification: selectedBusinessClassification ? selectedBusinessClassification.label : formData.businessClassification,
+                    businessRegistrationFile: formData.businessRegistrationFile.name,
                 };
             }
         }
@@ -296,10 +296,10 @@ export default function AuthForm({
 
         // 소셜 로그인 회원가입인 경우
         if (socialLoginInfo?.socialLogin) {
-            const isPersonalInfoAgreed =
-                parentFormData.isPersonalInfoAgreed && 
-                parentFormData.isServiceUtilizationAgreed && 
-                parentFormData.isMarketingAgreed !== undefined ? parentFormData.isMarketingAgreed : false;
+            // parentFormData에서 약관 동의 값을 그대로 사용
+            const isPersonalInfoAgreed = parentFormData.isPersonalInfoAgreed || false;
+            const isServiceUtilizationAgreed = parentFormData.isServiceUtilizationAgreed || false;
+            const isMarketingAgreed = parentFormData.isMarketingAgreed || false;
 
             let registrationToken = socialLoginInfo.registrationToken;
             
@@ -327,7 +327,7 @@ export default function AuthForm({
                 nickname: finalFormData.nickname,
                 categoryDtos: cleanedCategories,
                 isPersonalInfoAgreed,
-                isMarketingAgreed: parentFormData.isMarketingAgreed || false,
+                isMarketingAgreed,
                 // 학생 계정 추가 필드
                 ...(selectedType === "STUDENT" ? {
                     schoolEmail: finalFormData.schoolEmail,
@@ -342,15 +342,16 @@ export default function AuthForm({
         }
 
         // 일반 회원가입인 경우
-        const isPersonalInfoAgreed =
-            parentFormData.isPersonalInfoAgreed && 
-            parentFormData.isServiceUtilizationAgreed && 
-            parentFormData.isMarketingAgreed !== undefined ? parentFormData.isMarketingAgreed : false;
+        // parentFormData에서 약관 동의 값을 그대로 사용 (재계산하지 않음)
+        const isPersonalInfoAgreed = parentFormData.isPersonalInfoAgreed || false;
+        const isServiceUtilizationAgreed = parentFormData.isServiceUtilizationAgreed || false;
+        const isMarketingAgreed = parentFormData.isMarketingAgreed || false;
 
         finalFormData = {
             ...finalFormData,
             isPersonalInfoAgreed,
-            isMarketingAgreed: parentFormData.isMarketingAgreed || false,
+            isServiceUtilizationAgreed,
+            isMarketingAgreed,
         };
 
         if (signUp) {
@@ -490,10 +491,10 @@ export default function AuthForm({
                         isDisabled ? "bg-gray-200 cursor-not-allowed" : "bg-[#F6F6F6] focus:border-blue-main"
                     }`}
                     placeholder="000-00-00000"
-                    value={formData.businessNumber}
-                    onChange={(e) => handleInputChange("businessNumber", e.target.value)}
+                    value={formData.businessRegistrationNumber}
+                    onChange={(e) => handleInputChange("businessRegistrationNumber", e.target.value)}
                     onKeyDown={(e) => {
-                        const numbers = formData.businessNumber.replace(/[^0-9]/g, '');
+                        const numbers = formData.businessRegistrationNumber.replace(/[^0-9]/g, '');
                         if (numbers.length >= 10 && e.key.match(/[0-9]/)) {
                             e.preventDefault();
                         }
@@ -513,9 +514,9 @@ export default function AuthForm({
                 <input
                 placeholder="우편번호"
                 type="text"
-                name="postalCode"
+                name="zipCode"
                 readOnly
-                value={formData.postalCode}
+                value={formData.zipCode}
                 disabled={isDisabled}
                 className={`py-2 px-2 w-32  font-medium text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 border-[#898989] ${
                     isDisabled ? "bg-gray-200 cursor-not-allowed" : "bg-[#F6F6F6] focus:border-blue-main"
@@ -549,20 +550,20 @@ export default function AuthForm({
                  <Input
                      placeholder="상세주소"
                      type="text"
-                     name="detailAddress"
+                     name="detailedAddress"
                      essentialText="상세주소를 입력해주세요."
-                     value={formData.detailAddress}
-                     onChange={(e) => handleInputChange("detailAddress", e.target.value)}
+                     value={formData.detailedAddress}
+                     onChange={(e) => handleInputChange("detailedAddress", e.target.value)}
                      disabled={isDisabled}
                  />
            </div>
            <div className="mb-8">
             <p className="text-black text-lg md:text-xl font-regular mb-2">업태</p>
             <FilterDropdown
-                options={industryOptions}
+                options={businessStatusOptions}
                 placeholder="업태를 선택해주세요."
-                selectedValue={formData.industry}
-                onSelect={(value) => handleInputChange("industry", value)}
+                selectedValue={formData.businessStatus}
+                onSelect={(value) => handleInputChange("businessStatus", value)}
                 width="w-full"
                 disabled={isDisabled}
             />
@@ -570,10 +571,10 @@ export default function AuthForm({
            <div className="mb-8">
             <p className="text-black text-lg md:text-xl font-regular mb-2">사업자 구분</p>
             <FilterDropdown
-                options={businessTypeOptions}
+                options={businessClassificationOptions}
                 placeholder="구분을 선택해주세요."
-                selectedValue={formData.businessType}
-                onSelect={(value) => handleInputChange("businessType", value)}
+                selectedValue={formData.businessClassification}
+                onSelect={(value) => handleInputChange("businessClassification", value)}
                 width="w-1/2"
                 disabled={isDisabled}
             />
@@ -594,7 +595,7 @@ export default function AuthForm({
                 id="business-registration-upload"
                 disabled={isDisabled}
               />
-              {(formData.businessRegistrationUrl || formData.businessRegistrationFile) ? (
+              {(formData.businessRegistrationFile) ? (
                 <div className="w-1/3 h-64 border border-gray-300 rounded-lg relative">
                   <button
                     onClick={handleFileDelete}

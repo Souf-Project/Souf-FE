@@ -94,8 +94,8 @@ export default function AccountForm({
         }
       }
 
-      // 약관 동의 검증
-      if (!isSuitableAged || !isPersonalInfoAgreed || !isServiceUtilizationAgreed || !isMarketingAgreed) {
+      // 약관 동의 검증 (마케팅 수신 동의는 선택 사항이므로 제외)
+      if (!isSuitableAged || !isPersonalInfoAgreed || !isServiceUtilizationAgreed) {
         newErrors.agreement = true;
         if (!errorKey) {
           errorKey = "M400-5";
@@ -198,7 +198,7 @@ export default function AccountForm({
                 essentialText="전화번호를 입력해주세요."
                 disapproveText="올바른 전화번호를 입력해주세요. (10-11자리 숫자)"
                 isValidateTrigger={validationErrors.phoneNumber || errors.phoneNumber}
-                subtitle="(긴급시에 사용하기 위함입니다.)"
+                subtitle="하이픈(-)을 포함해주세요."
                 onChange={(e) => {
                   const onlyNums = e.target.value.replace(/[^0-9]/g, "").slice(0, 11);
                   handleInputChange("phoneNumber", { target: { value: onlyNums } });

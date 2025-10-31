@@ -192,8 +192,8 @@ export default function UserForm({
             const updatedFormData = {
               ...prevFormData,
               // userForm에서 입력한 데이터 추가 - 값이 있으면 사용, 없으면 nickname state 사용
-              username: prevFormData.username || "",
-              nickname: prevFormData.nickname || nickname || "",
+              username: formData.username,
+              nickname: formData.nickname,
               categoryDtos: cleanedCategories.length > 0 ? cleanedCategories : (prevFormData.categoryDtos || []),
               // 학생 계정의 경우 추가 정보
               ...(selectedType === "STUDENT" ? {
