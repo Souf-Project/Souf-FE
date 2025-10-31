@@ -5,8 +5,16 @@ import FilterDropdown from "../filterDropdown";
 import DaumPostcode from "react-daum-postcode";
 import ButtonInput from "../buttonInput";
 import infoIcon from "../../assets/images/infoIcon.svg";
+import { postSignUp } from "../../api/member";
 
-export default function AuthForm({ selectedType = "MEMBER" }) {
+export default function AuthForm({ 
+    selectedType = "MEMBER",
+    formData: parentFormData,
+    handleSignup: parentHandleSignup,
+    signUp,
+    socialSignUp,
+    socialLoginInfo
+}) {
     // 사업자 정보용 상태 (MEMBER일 때만 사용)
     const [formData, setFormData] = useState({
         companyName: "",
@@ -23,6 +31,7 @@ export default function AuthForm({ selectedType = "MEMBER" }) {
     const [address, setAddress] = useState("");
     const [zonecode, setZonecode] = useState("");
     const [selectedMemberType, setSelectedMemberType] = useState("일반");
+    const [schoolAuthenticatedImageFileName, setSchoolAuthenticatedImageFileName] = useState(null);
 
     // 대학생 인증용 상태 (STUDENT일 때 사용)
     const [studentFormData, setStudentFormData] = useState({
@@ -32,6 +41,7 @@ export default function AuthForm({ selectedType = "MEMBER" }) {
     });
     const [isStudentVerificationRequested, setIsStudentVerificationRequested] = useState(false);
     const [studentVerificationCheck, setStudentVerificationCheck] = useState(undefined);
+    const [schoolEmailValidation, setSchoolEmailValidation] = useState(undefined);
 
     // 동아리 인증용 상태 (CLUB일 때 사용)
     const [clubFormData, setClubFormData] = useState({
@@ -45,8 +55,7 @@ export default function AuthForm({ selectedType = "MEMBER" }) {
         setShowDaumAddress(true);
       };
       const handleComplete = (data) => {
-        console.log(data);
-        
+
         let fullAddress = data.address;
         let extraAddress = '';
 
@@ -157,7 +166,32 @@ export default function AuthForm({ selectedType = "MEMBER" }) {
     };
 
     const handleStudentInputChange = (name, e) => {
-        setStudentFormData({ ...studentFormData, [name]: e.target.value });
+        const value = e.target.value;
+        setStudentFormData({ ...studentFormData, [name]: value });
+        
+        // schoolEmail인 경우 실시간 검증
+        if (name === "schoolEmail") {
+            if (!value || value.trim() === "") {
+                setSchoolEmailValidation(undefined);
+            } else {
+                const trimmedValue = value.trim();
+                // ac.kr 형식 검증
+                const isValidFormat = trimmedValue.endsWith(".ac.kr");
+                
+                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                const hasValidEmailStructure = emailRegex.test(trimmedValue);
+                
+                if (isValidFormat && hasValidEmailStructure) {
+                    setSchoolEmailValidation(true);
+                } else if (hasValidEmailStructure && !isValidFormat) {
+                    // 이메일 형식은 맞지만 ac.kr로 끝나지 않는 경우
+                    setSchoolEmailValidation(false);
+                } else if (!hasValidEmailStructure) {
+                    // 이메일 형식 자체가 잘못된 경우
+                    setSchoolEmailValidation(false);
+                }
+            }
+        }
     };
 
     // 동아리 인증 핸들러
@@ -183,114 +217,229 @@ export default function AuthForm({ selectedType = "MEMBER" }) {
             clubCertificateUrl: null 
         });
     };
+
+    const handleSignup = () => {
+        if (!parentFormData) {
+            console.error("parentFormData가 없습니다.");
+            return;
+        }
+
+        // 학생 계정의 경우 schoolEmail과 schoolAuthenticatedImageFileName 검증
+        if (selectedType === "STUDENT") {
+            // schoolEmail 검증 (ac.kr 형식만 가능)
+            if (!studentFormData.schoolEmail || !studentFormData.schoolEmail.trim()) {
+                alert("학교 이메일을 입력해주세요.");
+                return;
+            }
+            if (!studentFormData.schoolEmail.endsWith(".ac.kr")) {
+                alert("ac.kr 형식의 학교 이메일만 가능합니다.");
+                return;
+            }
+
+            // schoolAuthenticatedImageFileName 검증 (필수값)
+            if (!schoolAuthenticatedImageFileName) {
+                alert("학교 인증 파일을 업로드해주세요.");
+                return;
+            }
+        }
+
+        // 카테고리 데이터 정리 (null 값 제거)
+        const cleanedCategories = (parentFormData.categoryDtos || [])
+            .map((category) => {
+                if (!category) return null;
+                const cleaned = {};
+                if (category.firstCategory !== null && category.firstCategory !== undefined) {
+                    cleaned.firstCategory = Number(category.firstCategory);
+                }
+                if (category.secondCategory !== null && category.secondCategory !== undefined) {
+                    cleaned.secondCategory = Number(category.secondCategory);
+                }
+                if (category.thirdCategory !== null && category.thirdCategory !== undefined) {
+                    cleaned.thirdCategory = Number(category.thirdCategory);
+                }
+                return Object.keys(cleaned).length > 0 ? cleaned : null;
+            })
+            .filter(Boolean); // null 제거
+
+        // 최종 회원가입 데이터 생성
+        let finalFormData = {
+            ...parentFormData,
+            categoryDtos: cleanedCategories,
+        };
+
+        // 학생 계정의 경우 추가 필드 추가
+        if (selectedType === "STUDENT") {
+            finalFormData = {
+                ...finalFormData,
+                schoolEmail: studentFormData.schoolEmail.trim(),
+                schoolAuthenticatedImageFileName: schoolAuthenticatedImageFileName.name,
+            };
+        } else if (selectedType === "MEMBER") {
+            // 일반 회원의 경우 사업자 정보 추가 (선택사항)
+            if (selectedMemberType === "사업자") {
+                finalFormData = {
+                    ...finalFormData,
+                    companyName: formData.companyName,
+                    businessNumber: formData.businessNumber,
+                    postalCode: formData.postalCode,
+                    address: formData.address,
+                    detailAddress: formData.detailAddress,
+                    industry: formData.industry,
+                    businessType: formData.businessType,
+                    businessRegistrationFile: formData.businessRegistrationFile,
+                    businessRegistrationUrl: formData.businessRegistrationUrl,
+                };
+            }
+        }
+
+        console.log("최종 회원가입 데이터:", finalFormData);
+
+        // 소셜 로그인 회원가입인 경우
+        if (socialLoginInfo?.socialLogin) {
+            const isPersonalInfoAgreed =
+                parentFormData.isPersonalInfoAgreed && 
+                parentFormData.isServiceUtilizationAgreed && 
+                parentFormData.isMarketingAgreed !== undefined ? parentFormData.isMarketingAgreed : false;
+
+            let registrationToken = socialLoginInfo.registrationToken;
+            
+            if (!registrationToken || registrationToken === null || registrationToken === undefined) {
+                console.error("registrationToken이 없습니다:", registrationToken);
+                alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
+                return;
+            }
+            
+            if (Array.isArray(registrationToken)) {
+                registrationToken = registrationToken[0];
+            } else if (typeof registrationToken === 'object') {
+                const tokenValue = registrationToken.token || registrationToken.registrationToken;
+                if (tokenValue) {
+                    registrationToken = tokenValue;
+                } else {
+                    console.error("registrationToken이 빈 객체입니다:", registrationToken);
+                    alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
+                    return;
+                }
+            }
+
+            const socialSignupData = {
+                registrationToken: registrationToken,
+                nickname: finalFormData.nickname,
+                categoryDtos: cleanedCategories,
+                isPersonalInfoAgreed,
+                isMarketingAgreed: parentFormData.isMarketingAgreed || false,
+                // 학생 계정 추가 필드
+                ...(selectedType === "STUDENT" ? {
+                    schoolEmail: finalFormData.schoolEmail,
+                    schoolAuthenticatedImageFileName: finalFormData.schoolAuthenticatedImageFileName,
+                } : {}),
+            };
+
+            if (socialSignUp) {
+                socialSignUp.mutate(socialSignupData);
+            }
+            return;
+        }
+
+        // 일반 회원가입인 경우
+        const isPersonalInfoAgreed =
+            parentFormData.isPersonalInfoAgreed && 
+            parentFormData.isServiceUtilizationAgreed && 
+            parentFormData.isMarketingAgreed !== undefined ? parentFormData.isMarketingAgreed : false;
+
+        finalFormData = {
+            ...finalFormData,
+            isPersonalInfoAgreed,
+            isMarketingAgreed: parentFormData.isMarketingAgreed || false,
+        };
+
+        if (signUp) {
+            signUp.mutate(finalFormData);
+        }
+    };
     
-    // selectedType에 따라 다른 폼 렌더링
     if (selectedType === "STUDENT") {
         // 대학생 인증 폼
         return (
             <div className="w-full">
-                <Input
-                    title="계정 이메일"
-                    type="email"
-                    placeholder="your.email@example.com"
-                    essentialText="계정 이메일을 입력해주세요."
-                    value={studentFormData.accountEmail}
-                    onChange={(e) => handleStudentInputChange("accountEmail", e)}
-                />
-                <ButtonInput
-                    title="학교 이메일"
-                    value={studentFormData.schoolEmail}
-                    onChange={(e) => handleStudentInputChange("schoolEmail", e)}
-                    btnText="인증요청"
-                    onClick={handleStudentEmailRequest}
-                    placeholder="student@souf.ac.kr"
-                    essentialText="학교 이메일을 입력해주세요."
-                />
-                {isStudentVerificationRequested && (
-                    <ButtonInput
-                        title="인증번호 확인"
-                        value={studentFormData.verificationCode}
-                        onChange={(e) => handleStudentInputChange("verificationCode", e)}
-                        btnText="인증하기"
-                        onClick={handleStudentVerification}
-                        placeholder="인증 코드를 입력하세요"
-                        isConfirmed={studentVerificationCheck}
-                        essentialText="인증번호를 입력해주세요"
-                        approveText="인증이 완료되었습니다."
-                        disapproveText="인증번호가 올바르지 않습니다."
-                    />
-                )}
-            </div>
-        );
-    }
-
-    if (selectedType === "CLUB") {
-        // 동아리 인증 폼
-        return (
-            <div className="w-full">
-                <Input
-                    title="동아리명"
-                    type="text"
-                    essentialText="동아리명을 입력해주세요."
-                    value={clubFormData.clubName}
-                    onChange={(e) => handleClubInputChange("clubName", e)}
-                />
-                <Input
-                    title="소속 학교"
-                    type="text"
-                    essentialText="소속 학교를 입력해주세요."
-                    value={clubFormData.school}
-                    onChange={(e) => handleClubInputChange("school", e)}
-                />
-                <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <p className="text-black text-lg md:text-xl font-regular">동아리 인증서류</p>
-                        <p className="text-gray-500 text-sm md:text-base font-regular">PDF 또는 이미지 형식으로 업로드해주세요.</p>
-                    </div>
-                    <div className="relative">
-                        <input
-                            type="file"
-                            name="clubCertificateFile"
-                            accept="application/pdf,image/*"
-                            onChange={handleClubFileChange}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            id="club-certificate-upload"
-                        />
-                        {(clubFormData.clubCertificateUrl || clubFormData.clubCertificateFile) ? (
-                            <div className="w-1/3 h-64 border border-gray-300 rounded-lg relative">
-                                <button
-                                    onClick={handleClubFileDelete}
-                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                                {clubFormData.clubCertificateFile && (
-                                    <div className="w-full h-full p-4">
-                                        <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-red-500 mb-2">
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                            </svg>
-                                            <p className="text-gray-600 text-sm font-medium">{clubFormData.clubCertificateFile.name}</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <label
-                                htmlFor="club-certificate-upload"
-                                className="w-1/3 h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-blue-main hover:bg-blue-50 transition-colors duration-200"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="gray" className="w-12 h-12">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                <p className="text-gray-500 text-lg font-regular">업로드하기</p>
-                            </label>
-                        )}
-                    </div>
+                 <div className="flex flex-col items-start gap-2 mb-8">
+              <p className="text-black text-lg md:text-xl font-regular">학교 인증</p>
+              <p className="text-black text-sm md:text-base font-regular">학교 인증을 위한 학생증이나 재학증명서를 업로드해주세요.</p>
+              <p className="text-gray-500 text-sm md:text-base font-regular">(PNG, JPG, JPEG, PDF 업로드 가능)</p>
                 </div>
+           
+                <div className="relative mb-8">
+              <input
+                type="file"
+                name="schoolCertificationFile"
+                accept="image/png,image/jpeg,image/jpg,application/pdf"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    const fileType = file.type;
+                    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
+                    if (validTypes.includes(fileType)) {
+                      setSchoolAuthenticatedImageFileName(file);
+                    } else {
+                      alert('PNG, JPG, JPEG, PDF 파일만 업로드 가능합니다.');
+                    }
+                  }
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                id="school-certification-upload"
+              />
+              {schoolAuthenticatedImageFileName ? (
+                <div className="w-64 h-64 border border-gray-300 rounded-lg relative mx-auto">
+                  <button
+                    onClick={() => setSchoolAuthenticatedImageFileName(null)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                  <div className="w-full h-full p-4">
+                    <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 text-red-500 mb-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                      </svg>
+                      <p className="text-gray-600 text-sm font-medium">{schoolAuthenticatedImageFileName.name}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <label
+                  htmlFor="school-certification-upload"
+                  className="w-64 h-64 mx-auto border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-blue-main hover:bg-blue-50 transition-colors duration-200"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="gray" className="w-12 h-12">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  <p className="text-gray-500 text-lg font-regular">업로드하기</p>
+                </label>
+              )}
             </div>
+            <Input  
+                title="대학교 웹메일"
+                placeholder="souf@univ.ac.kr"
+                type="text"
+                name="schoolEmail"
+                essentialText="학교 이메일을 입력해주세요."
+                disapproveText={schoolEmailValidation === false ? "ac.kr 형식의 학교 이메일을 입력해주세요." : ""}
+                approveText={schoolEmailValidation === true ? "올바른 학교 이메일 형식입니다." : ""}
+                isConfirmed={schoolEmailValidation}
+                value={studentFormData.schoolEmail}
+                onChange={(e) => handleStudentInputChange("schoolEmail", e)}
+            />
+
+<button 
+              className="w-full py-3 rounded-md text-xl font-semibold transition-all bg-blue-main text-white shadow-md"
+              onClick={handleSignup}
+            >
+              가입 신청하기
+            </button>
+           </div>
+       
         );
     }
 
@@ -479,6 +628,9 @@ export default function AuthForm({ selectedType = "MEMBER" }) {
               )}
             </div>
            </div>
+           <button className="mt-8 w-full py-3 rounded-md text-xl font-semibold transition-all bg-blue-main text-white shadow-md"
+           onClick={handleSignup}
+           >가입 신청하기</button>
         </div>
     )
 }

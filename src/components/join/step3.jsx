@@ -45,7 +45,6 @@ export default function Step3({ socialLoginInfo, selectedType }) {
     club: [
       { title: "계정 정보", step: 1 },
       { title: "동아리 정보", step: 2 },
-      { title: "동아리 인증(선택)", step: 3 }
     ]
   };
 
@@ -98,10 +97,9 @@ export default function Step3({ socialLoginInfo, selectedType }) {
   });
 
   // 약관 동의 상태
-  const [privacyAgreement, setPrivacyAgreement] = useState(false);
-  const [serviceAgreement, setServiceAgreement] = useState(false);
-  const [thirdPartyAgreement, setThirdPartyAgreement] = useState(false);
-  const [marketingAgreement, setMarketingAgreement] = useState(false);
+  const [isPersonalInfoAgreed, setIsPersonalInfoAgreed] = useState(false);
+  const [isServiceUtilizationAgreed, setIsServiceUtilizationAgreed] = useState(false);
+  const [isMarketingAgreed, setIsMarketingAgreed] = useState(false);
 
   // 약관 내용 보기/숨기기 상태
   const [showPrivacyContent, setShowPrivacyContent] = useState(false);
@@ -300,20 +298,14 @@ export default function Step3({ socialLoginInfo, selectedType }) {
   };
 
   const handleSignup = () => {
-    console.log("handleSignup 호출됨");
-    console.log("formData:", formData);
-    console.log("errors:", errors);
-    
+
     const isValid = validateForm();
-    console.log("validateForm 결과:", isValid);
-    
+   
     if (!isValid) {
-      console.log("폼 검증 실패로 함수 종료");
+ 
       return;
     }
     
-    console.log("폼 검증 통과, 회원가입 진행");
-
     // 카테고리 데이터 정리 및 검증
     const cleanedCategories = formData.categoryDtos
       .map((category) => {
@@ -339,8 +331,7 @@ export default function Step3({ socialLoginInfo, selectedType }) {
     // 소셜 로그인 회원가입인 경우
     if (socialLoginInfo?.socialLogin) {
       const isPersonalInfoAgreed =
-        privacyAgreement && serviceAgreement && thirdPartyAgreement;
-      const isMarketingAgreed = marketingAgreement;
+        isPersonalInfoAgreed && isServiceUtilizationAgreed && isMarketingAgreed;
 
       // registrationToken 처리
       let registrationToken = socialLoginInfo.registrationToken;
@@ -387,8 +378,7 @@ export default function Step3({ socialLoginInfo, selectedType }) {
     // 일반 회원가입인 경우
     // 약관 동의 상태 처리
     const isPersonalInfoAgreed =
-      privacyAgreement && serviceAgreement && thirdPartyAgreement;
-    const isMarketingAgreed = marketingAgreement;
+      isPersonalInfoAgreed && isServiceUtilizationAgreed && isMarketingAgreed;
 
     const finalData = {
       ...formData,
@@ -446,10 +436,19 @@ export default function Step3({ socialLoginInfo, selectedType }) {
           passwordValidation={passwordValidation}
           passwordCheckValidation={passwordCheckValidation}
           errors={errors}
+          setErrors={setErrors}
           handleInputChange={handleInputChange}
           emailVerificationMutation={emailVerificationMutation}
           emailVerify={emailVerify}
           setSubStep={setSubStep}
+          isPersonalInfoAgreed={isPersonalInfoAgreed}
+          setIsPersonalInfoAgreed={setIsPersonalInfoAgreed}
+          isServiceUtilizationAgreed={isServiceUtilizationAgreed}
+          setIsServiceUtilizationAgreed={setIsServiceUtilizationAgreed}
+          isMarketingAgreed={isMarketingAgreed}
+          setIsMarketingAgreed={setIsMarketingAgreed}
+          selectedType={selectedType}
+          setFormData={setFormData}
         />
       ) : subStep === 2 ? (
         <UserForm
@@ -465,26 +464,29 @@ export default function Step3({ socialLoginInfo, selectedType }) {
           handleCategoryChange={handleCategoryChange}
           passwordValidation={passwordValidation}
           passwordCheckValidation={passwordCheckValidation}
-          privacyAgreement={privacyAgreement}
-          setPrivacyAgreement={setPrivacyAgreement}
-          serviceAgreement={serviceAgreement}
-          setServiceAgreement={setServiceAgreement}
-          thirdPartyAgreement={thirdPartyAgreement}
-          setThirdPartyAgreement={setThirdPartyAgreement}
-          marketingAgreement={marketingAgreement}
-          setMarketingAgreement={setMarketingAgreement}
-          showPrivacyContent={showPrivacyContent}
-          setShowPrivacyContent={setShowPrivacyContent}
-          showServiceContent={showServiceContent}
-          setShowServiceContent={setShowServiceContent}
+          isPersonalInfoAgreed={isPersonalInfoAgreed}
+          setIsPersonalInfoAgreed={setIsPersonalInfoAgreed}
+          isServiceUtilizationAgreed={isServiceUtilizationAgreed}
+          setIsServiceUtilizationAgreed={setIsServiceUtilizationAgreed}
+          isMarketingAgreed={isMarketingAgreed}
+          setIsMarketingAgreed={setIsMarketingAgreed}
           checkNickname={checkNickname}
           handleSignup={handleSignup}
           signUp={signUp}
           socialSignUp={socialSignUp}
           setSubStep={setSubStep}
+          selectedType={selectedType}
+          setFormData={setFormData}
         />
        ) : (
-        <AuthForm selectedType={selectedType} />
+        <AuthForm 
+          selectedType={selectedType}
+          formData={formData}
+          handleSignup={handleSignup}
+          signUp={signUp}
+          socialSignUp={socialSignUp}
+          socialLoginInfo={socialLoginInfo}
+        />
       )}
 
       {nicknameModal && (
