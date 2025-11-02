@@ -8,9 +8,10 @@ export const UserStore = create(
       nickname: null,
       roleType: null,
       accessToken: null,
+      approvedStatus: null,
 
-      setUser: ({ memberId, nickname, roleType }) => {
-        set({ memberId, nickname, roleType });
+      setUser: ({ memberId, nickname, roleType, approvedStatus }) => {
+        set({ memberId, nickname, roleType, approvedStatus });
       },
 
       setAccessToken: (accessToken) => {
@@ -26,7 +27,8 @@ export const UserStore = create(
           memberId: null, 
           nickname: null, 
           roleType: null,
-          accessToken: null
+          accessToken: null,
+          approvedStatus: null,
         });
       },
 
@@ -61,7 +63,8 @@ export const UserStore = create(
           memberId: null, 
           nickname: null, 
           roleType: null,
-          accessToken: null
+          accessToken: null,
+          approvedStatus: null,
         });
       },
     }),
@@ -72,6 +75,7 @@ export const UserStore = create(
         nickname: state.nickname,
         roleType: state.roleType,
         accessToken: state.accessToken,
+        approvedStatus: state.approvedStatus,
       }), // 저장할 필드만 선택
     }
   )

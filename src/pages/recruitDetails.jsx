@@ -31,7 +31,7 @@ export default function RecruitDetail() {
   const recruitData = location.state;
   const [recruitDetail, setRecruitDetail] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
-  const { username, memberId } = UserStore();
+  const { username, memberId, approvedStatus } = UserStore();
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isApplySuccessModalOpen, setIsApplySuccessModalOpen] = useState(false);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
@@ -156,6 +156,12 @@ export default function RecruitDetail() {
 
   const handleApply = () => {
     // console.log('지원 버튼 클릭');
+    if (approvedStatus === "PENDING") {
+      setErrorDescription("승인 대기 중인 유저는\n지원할 수 없습니다.");
+      setErrorAction("redirect");
+      setErrorModal(true);
+      return;
+    }
     if (!displayData?.price || displayData.price === '견적 희망') {
       setIsEstimateModalOpen(true);
     } else {
