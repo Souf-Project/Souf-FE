@@ -169,7 +169,7 @@ export default function AccountForm({
         };
 
         setFormData(updatedFormData);
-        console.log(updatedFormData);
+        // console.log(updatedFormData);
         setSubStep(2);
       }
     };
