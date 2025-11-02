@@ -392,14 +392,6 @@ const DesktopHeader = () => (
                         공고문 작성하기
                       </button>
                     )}
-                    {roleType === "MEMBER" && (
-                      <button
-                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
-                        onClick={() => handleNavigation("/verifyStudent")}
-                      >
-                        대학생 인증하기
-                      </button>
-                    )}
                     {roleType === "STUDENT" && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
