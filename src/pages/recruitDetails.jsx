@@ -358,11 +358,15 @@ export default function RecruitDetail() {
          </div>
          
           <div className="flex justify-between items-center">
+            {displayData?.preferentialTreatmentTags && displayData?.preferentialTreatmentTags.length > 0 ? (
           <div className="flex items-center gap-2">
             <span className="text-zinc-700 text-lg font-bold mr-2">우대사항 키워드</span>
             <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[0]}</div>
             <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[1]}</div>
           </div>
+) : (
+  <></>
+)}
 
          
           </div>

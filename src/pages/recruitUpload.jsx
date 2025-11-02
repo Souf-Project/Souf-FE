@@ -901,7 +901,7 @@ export default function RecruitUpload() {
 
           <div className="flex flex-col gap-6">
             <label className="block text-xl font-semibold text-gray-700">
-              작업 기간
+              채용 기간
             </label>
             <div className="flex gap-2 items-center">
               <input
