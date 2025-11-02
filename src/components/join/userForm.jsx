@@ -211,7 +211,7 @@ export default function UserForm({
         delete finalSignupData.memberFormData;
         delete finalSignupData.clubFormData;
 
-        console.log("동아리 회원가입 데이터:", finalSignupData);
+        // console.log("동아리 회원가입 데이터:", finalSignupData);
 
         // 소셜 로그인 회원가입인 경우
         if (socialLoginInfo?.socialLogin) {
@@ -236,13 +236,30 @@ export default function UserForm({
             }
           }
 
+
+          // ClubSignupReqDto 구성
+          const clubSignupReqDto = {
+            roleType: "CLUB",
+            email: finalSignupData.email || "",
+            phoneNumber: finalSignupData.phoneNumber || "",
+            nickname: finalSignupData.nickname || "",
+            username: finalSignupData.username || "",
+            clubAuthenticationMethod: finalSignupData.clubAuthenticationMethod || "",
+            intro: finalSignupData.intro || "",
+            categoryDtos: cleanedCategories,
+            password: "qwerty123!",
+            passwordCheck: "qwerty123!",
+            isPersonalInfoAgreed: finalSignupData.isPersonalInfoAgreed || false,
+            isServiceUtilizationAgreed: finalSignupData.isServiceUtilizationAgreed || false,
+            isMarketingAgreed: finalSignupData.isMarketingAgreed || false,
+            isSuitableAged: finalSignupData.isSuitableAged || false,
+          };
+
           const socialSignupData = {
             registrationToken: registrationToken,
-            nickname: finalSignupData.nickname,
-            categoryDtos: cleanedCategories,
-            isPersonalInfoAgreed: finalSignupData.isPersonalInfoAgreed || false,
-            isMarketingAgreed: finalSignupData.isMarketingAgreed || false,
+            signupReqDto: clubSignupReqDto,
           };
+          // console.log("socialSignupData:", socialSignupData);
 
           if (socialSignUp) {
             socialSignUp.mutate(socialSignupData);

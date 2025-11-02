@@ -285,7 +285,7 @@ export default function AuthForm({
             }
         }
 
-        console.log("최종 회원가입 데이터:", finalFormData);
+        // console.log("최종 회원가입 데이터:", finalFormData);
 
         // 소셜 로그인 회원가입인 경우
         if (socialLoginInfo?.socialLogin) {
@@ -315,18 +315,90 @@ export default function AuthForm({
                 }
             }
 
+
+
+            let signupReqDto = {};
+
+            if (selectedType === "STUDENT") {
+                // StudentSignupReqDto 구성
+                signupReqDto = {
+                    roleType: "STUDENT",
+                    email: finalFormData.email || "",
+                    phoneNumber: finalFormData.phoneNumber || "",
+                    username: finalFormData.username || "",
+                    nickname: finalFormData.nickname || "",
+                    categoryDtos: cleanedCategories,
+                    schoolEmail: finalFormData.schoolEmail || "",
+                    password: "qwerty123!",
+                    passwordCheck: "qwerty123!",
+                    schoolAuthenticatedImageFileName: finalFormData.schoolAuthenticatedImageFileName || "",
+                    isPersonalInfoAgreed: finalFormData.isPersonalInfoAgreed || true,
+                    isServiceUtilizationAgreed: parentFormData.isServiceUtilizationAgreed || true,
+                    isMarketingAgreed: finalFormData.isMarketingAgreed || true,
+                    isSuitableAged: finalFormData.isSuitableAged || true,
+                    schoolName: finalFormData.schoolName || "",
+                    educationType: finalFormData.educationType || "",
+                    majorReqDtos: finalFormData.majorReqDtos || [],
+                    schoolAuthenticatedImageFileName: finalFormData.schoolAuthenticatedImageFileName || "",
+                };
+            } else if (selectedType === "MEMBER") {
+                if (selectedMemberType === "사업자") {
+                    // CompanySignupReqDto 구성 (사업자)
+                    const selectedBusinessStatus = businessStatusOptions.find(option => option.value === formData.businessStatus);
+                    const selectedBusinessClassification = businessClassificationOptions.find(option => option.value === formData.businessClassification);
+                    
+                    signupReqDto = {
+                        roleType: "MEMBER",
+                        email: finalFormData.email || "",
+                        phoneNumber: finalFormData.phoneNumber || "",
+                        username: finalFormData.username || "",
+                        nickname: finalFormData.nickname || "",
+                        categoryDtos: cleanedCategories,
+                        isCompany: true,
+                        companyName: formData.companyName || "",
+                        businessRegistrationNumber: formData.businessRegistrationNumber || "",
+                        addressReqDto: {
+                            zipCode: formData.zipCode || "",
+                            roadNameAddress: formData.address || "",
+                            detailedAddress: formData.detailedAddress || "",
+                        },
+                        password: "qwerty123!",
+                        passwordCheck: "qwerty123!",
+                        businessStatus: selectedBusinessStatus ? selectedBusinessStatus.label : formData.businessStatus || "",
+                        businessClassification: selectedBusinessClassification ? selectedBusinessClassification.label : formData.businessClassification || "",
+                        businessRegistrationFile: formData.businessRegistrationFile ? formData.businessRegistrationFile.name : "",
+                        isPersonalInfoAgreed: finalFormData.isPersonalInfoAgreed || true,
+                        isServiceUtilizationAgreed: parentFormData.isServiceUtilizationAgreed || true,
+                        isMarketingAgreed: finalFormData.isMarketingAgreed || true,
+                        isSuitableAged: finalFormData.isSuitableAged || true,
+
+                    };
+                } else {
+                    // 일반 회원 (isCompany: false)
+                    signupReqDto = {
+                        roleType: "MEMBER",
+                        email: finalFormData.email || "",
+                        phoneNumber: finalFormData.phoneNumber || "",
+                        username: finalFormData.username || "",
+                        nickname: finalFormData.nickname || "",
+                        categoryDtos: cleanedCategories,
+                        isCompany: false,
+                        password: "qwerty123!",
+                        passwordCheck: "qwerty123!",
+                        isPersonalInfoAgreed: finalFormData.isPersonalInfoAgreed || true,
+                        isServiceUtilizationAgreed: parentFormData.isServiceUtilizationAgreed || true,
+                        isMarketingAgreed: finalFormData.isMarketingAgreed || true,
+                        isSuitableAged: finalFormData.isSuitableAged || true,
+
+                    };
+                }
+            }
+
             const socialSignupData = {
                 registrationToken: registrationToken,
-                nickname: finalFormData.nickname,
-                categoryDtos: cleanedCategories,
-                isPersonalInfoAgreed,
-                isMarketingAgreed,
-                // 학생 계정 추가 필드
-                ...(selectedType === "STUDENT" ? {
-                    schoolEmail: finalFormData.schoolEmail,
-                    schoolAuthenticatedImageFileName: finalFormData.schoolAuthenticatedImageFileName,
-                } : {}),
+                signupReqDto: signupReqDto,
             };
+            // console.log("socialSignupData:", socialSignupData);
 
             if (socialSignUp) {
                 socialSignUp.mutate(socialSignupData);
@@ -354,9 +426,6 @@ export default function AuthForm({
                     const result = response.data?.result;
                     const memberId = result?.memberId;
                     const dtoList = result?.dtoList;
-                    
-                    console.log("memberId:", memberId);
-                    console.log("dtoList:", dtoList);
                     
                     const filesToUpload = [];
                     
@@ -402,8 +471,7 @@ export default function AuthForm({
                                     // 1. presignedUrl로 S3에 파일 업로드
                                     if (dto?.presignedUrl) {
                                         await uploadToS3(dto.presignedUrl, file);
-                                        console.log(`파일 업로드 성공: ${file.name}`);
-                                        
+                                    
                                         // 2. S3 업로드 성공 후 서버에 파일 정보 전송
                                         const fileUrl = [dto.fileUrl];
                                         const fileName = [file.name];
@@ -416,11 +484,10 @@ export default function AuthForm({
                                             fileType,
                                             purpose
                                         );
-                                        console.log(`파일 정보 저장 성공: ${fileName[0]}`);
+                                       
                                     }
                                 })
                             );
-                            console.log("모든 파일 업로드 완료");
                         } catch (error) {
                             console.error("파일 업로드 중 오류 발생:", error);
                             alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
