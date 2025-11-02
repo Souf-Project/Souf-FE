@@ -189,8 +189,8 @@ export default function CompanyApplicants({ recruitId }) {
           
           </div>
           <div className="flex gap-5 mb-4">
-            <StateBlock color="bg-[#FFEFBA]" label="모집중" value={recruitingCount} />
-            <StateBlock color="bg-[#FFE58F]" label="모집 마감" value={closedCount} />
+            <StateBlock color="bg-blue-300" label="모집중" value={recruitingCount} />
+            <StateBlock color="bg-blue-200" label="모집 마감" value={closedCount} />
           </div>
 
           {recruits.length > 0 ? (

@@ -3,7 +3,6 @@ import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
 import Redirect from "../pages/redirect";
-import VerifyStudent from "../pages/verifyStudent";
 import Recruit from "../pages/recruit";
 import Feed from "../pages/feed";
 import RecruitDetail from "../pages/recruitDetails";
@@ -46,7 +45,6 @@ function AppRouter() {
          <Route path="/login" element={<Login />} />
           <Route path="/oauth/kakao/callback" element={<Redirect />} />
           <Route path="/oauth/google/callback" element={<Redirect />} />
-          <Route path="/verifyStudent" element={<VerifyStudent />} />
           <Route path="/recruit" element={<Recruit />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/studentFeedList" element={<StudentFeedList />} />

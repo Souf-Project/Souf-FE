@@ -1,5 +1,6 @@
 import client from "./client";
 import { UserStore } from "../store/userStore";
+import axios from "axios";
 
 /* 로그인 */
 export async function postLogin(email, password) {
@@ -16,6 +17,27 @@ export async function postSignUp(formData) {
   console.log(formData);
   const response = await client.post("/api/v1/auth/signup", formData);
   console.log(response); 
+  return response;
+}
+
+export const uploadToS3 = async (url, file) => {
+  return axios.put(url, file, {
+    headers: {
+      "Content-Type": file.type, 
+    },
+  });
+};
+
+
+/* 회원가입 파일 업로드 */
+export async function postSignupFileUpload(postId,fileUrl,fileName,fileType,purpose) {
+  const response = await client.post("/api/v1/auth/signup/upload", {
+    postId: postId,
+    fileUrl: fileUrl,
+    fileName: fileName,
+    fileType: fileType,
+    filePurpose: purpose,
+  });
   return response;
 }
 
