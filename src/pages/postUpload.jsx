@@ -34,7 +34,7 @@ export default function PostUpload() {
   const [warningText, setWarningText] = useState("업로드 실패");
   const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
-  const { memberId } = UserStore();
+  const { memberId, approvedStatus } = UserStore();
   const S3_BASE_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const [videoFiles, setVideoFiles] = useState([]);
@@ -87,7 +87,11 @@ export default function PostUpload() {
     if (errorInfo) {
       setErrorDescription(errorInfo.message);
       setErrorAction(errorInfo.action);
-    } else {
+    } else if (error?.response?.status === 403 && approvedStatus === "PENDING") {
+      setErrorDescription("승인 대기 중인 유저는\n피드 생성 권한이 없습니다.");
+      setErrorAction("redirect");
+    }
+    else {
       setErrorDescription("업로드 중 예상치 못한 오류가 발생했습니다.\n다시 시도해주세요.");
       setErrorAction("refresh"); 
     }

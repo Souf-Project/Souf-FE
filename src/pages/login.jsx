@@ -31,6 +31,7 @@ export default function Login() {
         memberId: result.memberId,
         nickname: result.nickname,
         roleType: result.roleType,
+        approvedStatus: result.approvedStatus,
       });
 
       UserStore.getState().setAccessToken(result.accessToken);
