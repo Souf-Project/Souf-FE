@@ -88,7 +88,7 @@ export default function Redirect() {
         })
         .then((response) => {
           const result = response?.result;
-          // console.log("소셜 로그인 응답 전체:", response);
+          console.log("소셜 로그인 응답 전체:", response);
           // console.log("result 객체:", result);
           
           if (result) {
@@ -107,15 +107,16 @@ export default function Redirect() {
             }
              else {
             // console.log(result)
+              // 신규 회원가입 사용자: step2부터 시작
               navigate("/join", { 
                 state: { 
+                  step: 2,
                   socialLogin: true,
                   provider: detectedProvider || {},
                   email: result.prefill.email || {},
                   username: result.prefill.name || {},
                   registrationToken: result.message,
                 },
-                
               });
             }
           } else {

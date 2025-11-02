@@ -355,7 +355,7 @@ const DesktopHeader = () => (
             
               <div className="relative user-menu-container">
                 <button
-                  className="text-white bg-blue-main py-2 w-full px-2 font-bold rounded-lg w-36 shadow-md"
+                  className="text-white bg-blue-main min-w-36 py-2 w-full px-2 font-bold rounded-lg w-36 shadow-md"
                   onClick={toggleUserMenu}
                 >
                   <UserTypeLabel />

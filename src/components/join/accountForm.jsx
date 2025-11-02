@@ -42,6 +42,29 @@ export default function AccountForm({
     const [showPrivacyContent, setShowPrivacyContent] = useState(false);
     const [showServiceContent, setShowServiceContent] = useState(false);
 
+    // 소셜 로그인 정보가 있으면 이메일과 전화번호를 자동으로 설정
+    React.useEffect(() => {
+      if (socialLoginInfo?.socialLogin && socialLoginInfo?.email) {
+        // 이메일이 아직 설정되지 않았을 때만 설정
+        if (!formData.email || !email) {
+          setEmail(socialLoginInfo.email);
+          handleInputChange("email", { target: { value: socialLoginInfo.email } });
+        }
+      }
+    }, [socialLoginInfo]);
+
+    // 전화번호 포맷팅 함수 (하이픈 포함)
+    const formatPhoneNumber = (value) => {
+      const onlyNums = value.replace(/[^0-9]/g, "").slice(0, 11);
+      if (onlyNums.length <= 3) {
+        return onlyNums;
+      } else if (onlyNums.length <= 7) {
+        return `${onlyNums.slice(0, 3)}-${onlyNums.slice(3)}`;
+      } else {
+        return `${onlyNums.slice(0, 3)}-${onlyNums.slice(3, 7)}-${onlyNums.slice(7)}`;
+      }
+    };
+
     // 통합 검증 함수
     const validateForm = () => {
       const newErrors = {};
@@ -61,22 +84,6 @@ export default function AccountForm({
           errorMessage = SIGNUP_ERRORS["M400-3"] || "이메일 인증이 완료되지 않았습니다.";
         }
 
-        // 전화번호 검증
-        if (!formData.phoneNumber || formData.phoneNumber.trim() === "") {
-          newErrors.phoneNumber = true;
-          if (!errorKey) {
-            errorMessage = "전화번호를 입력해주세요.";
-          }
-        } else {
-          const phoneRegex = /^[0-9]{10,11}$/;
-          if (!phoneRegex.test(formData.phoneNumber)) {
-            newErrors.phoneNumber = true;
-            if (!errorKey) {
-              errorMessage = "올바른 전화번호를 입력해주세요. (10-11자리 숫자)";
-            }
-          }
-        }
-
         // 비밀번호 검증
         if (!passwordValidation) {
           newErrors.password = true;
@@ -90,6 +97,24 @@ export default function AccountForm({
           newErrors.passwordCheck = true;
           if (!errorKey) {
             errorMessage = "비밀번호 확인이 올바르지 않습니다.";
+          }
+        }
+      }
+
+      // 전화번호 검증 (소셜 로그인 포함 모든 경우)
+      if (!formData.phoneNumber || formData.phoneNumber.trim() === "") {
+        newErrors.phoneNumber = true;
+        if (!errorKey) {
+          errorMessage = "전화번호를 입력해주세요.";
+        }
+      } else {
+        // 하이픈을 제거한 숫자만으로 검증
+        const phoneNums = formData.phoneNumber.replace(/[^0-9]/g, "");
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (!phoneRegex.test(phoneNums)) {
+          newErrors.phoneNumber = true;
+          if (!errorKey) {
+            errorMessage = "올바른 전화번호를 입력해주세요. (10-11자리 숫자)";
           }
         }
       }
@@ -189,41 +214,6 @@ export default function AccountForm({
             approveText={verificationApproveText}
             disapproveText={verificationApproveText}
           />
-              <Input
-                title="전화번호"
-                type="text"
-                name="phoneNumber"
-                placeholder="000-0000-0000"
-                value={formData.phoneNumber || ""}
-                essentialText="전화번호를 입력해주세요."
-                disapproveText="올바른 전화번호를 입력해주세요. (10-11자리 숫자)"
-                isValidateTrigger={validationErrors.phoneNumber || errors.phoneNumber}
-                subtitle="하이픈(-)을 포함해주세요."
-                onChange={(e) => {
-                  const onlyNums = e.target.value.replace(/[^0-9]/g, "").slice(0, 11);
-                  handleInputChange("phoneNumber", { target: { value: onlyNums } });
-                  if (validationErrors.phoneNumber) {
-                    setValidationErrors((prev) => ({ ...prev, phoneNumber: false }));
-                  }
-                }}
-                onKeyDown={(e) => {
-                  const allowedKeys = [
-                    "Backspace",
-                    "Delete",
-                    "ArrowLeft",
-                    "ArrowRight",
-                    "Tab",
-                  ];
-                  if (!/^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
-                    e.preventDefault();
-                  }
-                }}
-                onPaste={(e) => {
-                  e.preventDefault();
-                  const pasted = e.clipboardData.getData("text").replace(/[^0-9]/g, "").slice(0, 11);
-                  handleInputChange("phoneNumber", { target: { value: pasted } });
-                }}
-              />
           <Input
             title="비밀번호"
             type="password"
@@ -261,6 +251,43 @@ export default function AccountForm({
           />
         </>
       )}
+      {/* 전화번호 입력 (소셜 로그인 포함 모든 경우) */}
+      <Input
+        title="전화번호"
+        type="text"
+        name="phoneNumber"
+        placeholder="000-0000-0000"
+        value={formData.phoneNumber || ""}
+        essentialText="전화번호를 입력해주세요."
+        disapproveText="올바른 전화번호를 입력해주세요. (10-11자리 숫자)"
+        isValidateTrigger={validationErrors.phoneNumber || errors.phoneNumber}
+        subtitle="하이픈(-)을 포함해주세요."
+        onChange={(e) => {
+          const formatted = formatPhoneNumber(e.target.value);
+          handleInputChange("phoneNumber", { target: { value: formatted } });
+          if (validationErrors.phoneNumber) {
+            setValidationErrors((prev) => ({ ...prev, phoneNumber: false }));
+          }
+        }}
+        onKeyDown={(e) => {
+          const allowedKeys = [
+            "Backspace",
+            "Delete",
+            "ArrowLeft",
+            "ArrowRight",
+            "Tab",
+          ];
+          if (!/^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
+            e.preventDefault();
+          }
+        }}
+        onPaste={(e) => {
+          e.preventDefault();
+          const pasted = e.clipboardData.getData("text");
+          const formatted = formatPhoneNumber(pasted);
+          handleInputChange("phoneNumber", { target: { value: formatted } });
+        }}
+      />
       {/* STEP 1: 약관 동의 */}
       <div className="w-full flex flex-col gap-4 mb-8 bg-stone-50 p-4 rounded-lg">
         <h3 className="text-2xl font-bold text-left">약관 동의</h3>

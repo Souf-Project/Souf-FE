@@ -17,7 +17,8 @@ export default function Join({}) {
     registrationToken: location.state.registrationToken
   } : null;
 
-  const [step, setStep] = useState(1);
+  // location.state에서 step이 있으면 그것을 초기값으로 사용 (소셜 로그인 신규 사용자)
+  const [step, setStep] = useState(location.state?.step || 1);
   const [selectedType, setSelectedType] = useState(null);
 
   return (

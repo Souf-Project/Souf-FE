@@ -5,7 +5,7 @@ import FilterDropdown from "../filterDropdown";
 import DaumPostcode from "react-daum-postcode";
 import ButtonInput from "../buttonInput";
 import infoIcon from "../../assets/images/infoIcon.svg";
-import { postSignUp } from "../../api/member";
+import { postSignUp, postSignupFileUpload, uploadToS3 } from "../../api/member";
 
 export default function AuthForm({ 
     selectedType = "MEMBER",
@@ -204,13 +204,6 @@ export default function AuthForm({
             return;
         }
 
-        console.log("===== AuthForm에서 받은 parentFormData =====");
-        console.log("isPersonalInfoAgreed:", parentFormData.isPersonalInfoAgreed);
-        console.log("isServiceUtilizationAgreed:", parentFormData.isServiceUtilizationAgreed);
-        console.log("isMarketingAgreed:", parentFormData.isMarketingAgreed);
-        console.log("isSuitableAged:", parentFormData.isSuitableAged);
-        console.log("============================================");
-
         // 학생 계정의 경우 schoolEmail과 schoolAuthenticatedImageFileName 검증
         if (selectedType === "STUDENT") {
             // schoolEmail 검증 (ac.kr 형식만 가능)
@@ -355,7 +348,90 @@ export default function AuthForm({
         };
 
         if (signUp) {
-            signUp.mutate(finalFormData);
+            // signUp.mutate를 사용하여 mutation의 onSuccess가 자동으로 호출되도록 함
+            signUp.mutate(finalFormData, {
+                onSuccess: async (response) => {
+                    const result = response.data?.result;
+                    const memberId = result?.memberId;
+                    const dtoList = result?.dtoList;
+                    
+                    console.log("memberId:", memberId);
+                    console.log("dtoList:", dtoList);
+                    
+                    const filesToUpload = [];
+                    
+                    // dtoList가 배열인지 단일 객체인지 확인
+                    const dtoArray = dtoList 
+                        ? (Array.isArray(dtoList) ? dtoList : [dtoList])
+                        : [];
+                    
+                    // 학생 인증 파일 업로드
+                    if (selectedType === "STUDENT" && schoolAuthenticatedImageFileName) {
+                        const studentDto = dtoArray.find(dto => 
+                            (dto.contentType?.includes('image') || dto.contentType?.includes('pdf'))
+                        ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                        
+                        if (studentDto && studentDto.presignedUrl) {
+                            filesToUpload.push({
+                                file: schoolAuthenticatedImageFileName,
+                                dto: studentDto
+                            });
+                        }
+                    }
+                    
+                    // 사업자등록증 파일 업로드
+                    if (selectedType === "MEMBER" && selectedMemberType === "사업자" && formData.businessRegistrationFile) {
+                        const businessDto = dtoArray.find(dto => 
+                            dto.contentType?.includes('pdf')
+                        ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                        
+                        if (businessDto && businessDto.presignedUrl) {
+                            filesToUpload.push({
+                                file: formData.businessRegistrationFile,
+                                dto: businessDto
+                            });
+                        }
+                    }
+                    
+                    // 파일 업로드 실행
+                    if (filesToUpload.length > 0) {
+                        try {
+                            // 각 파일을 순차적으로 업로드
+                            await Promise.all(
+                                filesToUpload.map(async ({ file, dto }) => {
+                                    // 1. presignedUrl로 S3에 파일 업로드
+                                    if (dto?.presignedUrl) {
+                                        await uploadToS3(dto.presignedUrl, file);
+                                        console.log(`파일 업로드 성공: ${file.name}`);
+                                        
+                                        // 2. S3 업로드 성공 후 서버에 파일 정보 전송
+                                        const fileUrl = [dto.fileUrl];
+                                        const fileName = [file.name];
+                                        const fileType = [file.type.split('/')[1]?.toUpperCase() || 'PDF'];
+                                        const purpose = ["SIGNUP"];
+                                        await postSignupFileUpload(
+                                            memberId,
+                                            fileUrl,
+                                            fileName,
+                                            fileType,
+                                            purpose
+                                        );
+                                        console.log(`파일 정보 저장 성공: ${fileName[0]}`);
+                                    }
+                                })
+                            );
+                            console.log("모든 파일 업로드 완료");
+                        } catch (error) {
+                            console.error("파일 업로드 중 오류 발생:", error);
+                            alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
+                        }
+                    }
+                  
+                },
+                onError: (error) => {
+                    console.error("회원가입 실패:", error);
+                }
+            });
         }
     };
     
@@ -629,9 +705,17 @@ export default function AuthForm({
               )}
             </div>
            </div>
-           <button className="mt-8 w-full py-3 rounded-md text-xl font-semibold transition-all bg-blue-main text-white shadow-md"
+           <button 
+           className={`mt-8 w-full py-3 rounded-md text-xl font-semibold transition-all shadow-md ${
+             (signUp?.isPending || socialSignUp?.isPending)
+               ? "bg-gray-400 text-gray-600 cursor-not-allowed" 
+               : "bg-blue-main text-white hover:shadow-lg"
+           }`}
            onClick={handleSignup}
-           >가입 신청하기</button>
+           disabled={signUp?.isPending || socialSignUp?.isPending}
+           >
+             {(signUp?.isPending || socialSignUp?.isPending) ? "가입 신청 중..." : "가입 신청하기"}
+           </button>
         </div>
     )
 }

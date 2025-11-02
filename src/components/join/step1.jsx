@@ -14,6 +14,7 @@ export default function Step1({ setStep }) {
 
   const handleKakaoLogin = () => {
     localStorage.setItem("socialProvider", "KAKAO");
+    localStorage.setItem("isSignup", "true"); // 회원가입 플로우 표시
     window.location.href = KAKAO_AUTH_URL;
   };
 
@@ -24,6 +25,7 @@ export default function Step1({ setStep }) {
 
   const handleGoogleLogin = () => {
     localStorage.setItem("socialProvider", "GOOGLE");
+    localStorage.setItem("isSignup", "true"); // 회원가입 플로우 표시
     window.location.href = GOOGLE_AUTH_URL;
   };
 
