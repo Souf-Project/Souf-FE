@@ -7,7 +7,9 @@ import { useMutation } from "@tanstack/react-query";
 import { UserStore } from "../store/userStore";
 import kakaoLogo from "../assets/images/kakaoLogo.png";
 import googleLogo from "../assets/images/googleLogo.png";
+import { LOGIN_ERRORS } from "../constants/user";
 import SEO from "../components/seo";
+import AlertModal from "../components/alertModal";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -16,6 +18,9 @@ export default function Login() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [showError, setShowError] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
+  const [errorAction, setErrorAction] = useState("");
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
@@ -35,13 +40,11 @@ export default function Login() {
     },
 
     onError: (error) => {
-      const errorKey = error.response.data.errorKey === "RP401-1";
-
-      const apiErrorMessage = errorKey
-        ? "신고된 회원입니다."
-        : "이메일 또는 비밀번호가 일치하지 않습니다.";
-      setEmailError(apiErrorMessage);
-      setPasswordError(apiErrorMessage);
+      const errorKey = error.response.data.errorKey;
+      const errorInfo = LOGIN_ERRORS[errorKey];
+      setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+      setErrorAction(errorInfo?.action || "redirect");
+      setErrorModal(true);
     },
   });
 
@@ -224,6 +227,24 @@ export default function Login() {
           <img src={loginImg} className=" w-1/2" />
         </div>
       </div>
+      {errorModal && (
+        <AlertModal
+        type="simple"
+        title="잘못된 접근"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          if (errorAction === "redirect") {
+              navigate("/feed");
+          }else if(errorAction === "login"){
+            localStorage.clear();
+            navigate("/login");
+          }else{
+            window.location.reload();
+          }
+        }}
+          />
+      )}
     </>
   );
 }

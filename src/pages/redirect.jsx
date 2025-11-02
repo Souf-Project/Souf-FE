@@ -1,11 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { postSocialLogin, postSocialLoginLink } from "../api/social";
 import { UserStore } from "../store/userStore";
+import { LOGIN_ERRORS } from "../constants/user";
+import AlertModal from "../components/alertModal";
 
 export default function Redirect() {
   const navigate = useNavigate();
   const hasProcessed = useRef(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
+  const [errorAction, setErrorAction] = useState("");
   
   // URL 경로를 통해 provider 감지
   const getProviderFromPath = () => {
@@ -102,15 +107,16 @@ export default function Redirect() {
             }
              else {
             // console.log(result)
+              // 신규 회원가입 사용자: step2부터 시작
               navigate("/join", { 
                 state: { 
+                  step: 2,
                   socialLogin: true,
                   provider: detectedProvider || {},
                   email: result.prefill.email || {},
                   username: result.prefill.name || {},
                   registrationToken: result.message,
                 },
-                
               });
             }
           } else {
@@ -120,13 +126,27 @@ export default function Redirect() {
         .catch((error) => {
           console.error("소셜 로그인 에러:", error);
           
-          // 409 에러 (이미 가입된 이메일) 처리
-          if (error.response?.status === 409) {
-            const errorMessage = error.response?.data?.message || "이미 가입된 이메일입니다. 마이페이지에서 소셜 계정을 연결해주세요.";
-            alert(errorMessage);
+          // 에러 키 추출 및 LOGIN_ERRORS에서 해당 에러 정보 가져오기
+          const errorKey = error.response?.data?.errorKey;
+          const errorInfo = errorKey ? LOGIN_ERRORS[errorKey] : null;
+          
+          if (errorInfo) {
+            // LOGIN_ERRORS에 정의된 에러인 경우 모달로 표시
+            setErrorDescription(errorInfo.message);
+            setErrorAction(errorInfo.action || "redirect");
+            setErrorModal(true);
+          } else if (error.response?.status === 400 || error.response?.status === 409) {
+            // 에러 키가 없거나 LOGIN_ERRORS에 없지만 400/409 에러인 경우
+            const errorMessage = error.response?.data?.message || "소셜 로그인에 실패했습니다.";
+            setErrorDescription(errorMessage);
+            setErrorAction("redirect");
+            setErrorModal(true);
+          } else {
+            // 기타 에러는 로그인 페이지로 이동
+            navigate("/login");
           }
           
-          navigate("/login");
+          localStorage.removeItem('socialProvider');
         });
       }
     } else {
@@ -140,11 +160,32 @@ export default function Redirect() {
   }, [navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-point mx-auto mb-4"></div>
-        <p className="text-lg text-gray-600">{getProviderDisplayName(currentProvider)} 로그인 처리 중...</p>
+    <>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-point mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">{getProviderDisplayName(currentProvider)} 로그인 처리 중...</p>
+        </div>
       </div>
-    </div>
+      {errorModal && (
+        <AlertModal
+          type="simple"
+          title="로그인 오류"
+          description={errorDescription}
+          TrueBtnText="확인"
+          onClickTrue={() => {
+            setErrorModal(false);
+            if (errorAction === "redirect") {
+              navigate("/login");
+            } else if (errorAction === "login") {
+              localStorage.clear();
+              navigate("/login");
+            } else {
+              window.location.reload();
+            }
+          }}
+        />
+      )}
+    </>
   );
 }

@@ -352,13 +352,10 @@ const DesktopHeader = () => (
         <div className="flex items-center gap-x-4">
           {memberId ? (
             // 로그인 상태
-            <div className="flex items-center gap-x-4">
-              <button className="p-2" onClick={() => handleNavigation("/chat")}>
-                <img src={ChatIcon} alt="chat" className="w-6 h-6" />
-              </button>
+            
               <div className="relative user-menu-container">
                 <button
-                  className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
+                  className="text-white bg-blue-main min-w-36 py-2 w-full px-2 font-bold rounded-lg w-36 shadow-md"
                   onClick={toggleUserMenu}
                 >
                   <UserTypeLabel />
@@ -395,14 +392,6 @@ const DesktopHeader = () => (
                         공고문 작성하기
                       </button>
                     )}
-                    {roleType === "MEMBER" && (
-                      <button
-                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
-                        onClick={() => handleNavigation("/verifyStudent")}
-                      >
-                        대학생 인증하기
-                      </button>
-                    )}
                     {roleType === "STUDENT" && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
@@ -420,7 +409,6 @@ const DesktopHeader = () => (
                   </div>
                 )}
               </div>
-            </div>
           ) : (
             // 로그아웃 상태
             <>

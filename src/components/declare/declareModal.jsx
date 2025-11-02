@@ -163,7 +163,7 @@ export default function DeclareModal({
             취소
           </button>
           <button
-            className="py-3 px-8 bg-yellow-main rounded-[10px] font-semibold text-base"
+            className="py-3 px-8 bg-blue-main rounded-[10px] font-semibold text-base text-white"
             onClick={handleSubmit}
           >
             신고

@@ -1,5 +1,8 @@
-import fillCheckBox from "../assets/images/fillCheckBox.png";
-import noneCheckBox from "../assets/images/noneCheckBox.png";
+
+import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
+import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
+
+
 
 const ReasonCheckbox = ({ index, label, isSelected, onChange }) => (
   <div className="flex items-center gap-2">
@@ -9,7 +12,7 @@ const ReasonCheckbox = ({ index, label, isSelected, onChange }) => (
       className="flex items-center justify-center"
     >
       <img 
-        src={isSelected ? fillCheckBox : noneCheckBox} 
+        src={isSelected ? checkBoxIcon : notCheckBoxIcon} 
         alt="checkbox" 
         className="w-5 h-5 transition-all duration-300 ease-in-out"
       />
