@@ -376,6 +376,7 @@ export default function AccountForm({
                 alt="개인정보 동의"
                 className="w-5 h-5"
               />
+              <p>
               <span 
                 className="text-zinc-700 text-lg font-normal underline cursor-pointer"
                 onClick={(e) => {
@@ -384,8 +385,10 @@ export default function AccountForm({
                 }}
               >
                 개인정보 수집 및 이용 동의
-                <span className="text-sm text-red-500 ml-1">*</span>
+               
               </span>
+              <span className="text-sm text-red-500 ml-1">*</span>
+              </p>
             </button>
           </div>
          
@@ -405,6 +408,7 @@ export default function AccountForm({
                 alt="서비스 이용 약관 동의"
                 className="w-5 h-5"
               />
+              <p>
               <span 
                 className="text-zinc-700 text-lg font-normal underline cursor-pointer"
                 onClick={(e) => {
@@ -413,8 +417,9 @@ export default function AccountForm({
                 }}
               >
                 서비스 이용 약관 동의
-                <span className="text-sm text-red-500 ml-1">*</span>
-              </span>
+                </span>
+              <span className="text-sm text-red-500 ml-1">*</span>
+              </p>
             </button>
           </div>
           
@@ -429,7 +434,10 @@ export default function AccountForm({
                 alt="마케팅 수신 동의"
                 className="w-5 h-5"
               />
-              <span className="text-zinc-700 text-lg font-normal underline">마케팅 수신 동의 (선택)</span>
+              <p>
+              <span className="text-zinc-700 text-lg font-normal underline">마케팅 수신 동의</span>
+              <span className="text-zinc-700 text-lg font-normal"> (선택)</span>
+              </p>
             </button>
           </div>
         </div>
