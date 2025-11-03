@@ -15,6 +15,9 @@ export default function Input({
   value = "",
   disabled = false,
   width = "w-full",
+  maxLength,
+  onKeyDown,
+  onPaste,
 }) {
   const [inputValue, setInputValue] = useState(value);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -88,6 +91,9 @@ export default function Input({
         onChange={handleChange}
         onFocus={() => setHasInteracted(true)}
         disabled={disabled}
+        maxLength={maxLength}
+        onKeyDown={onKeyDown}
+        onPaste={onPaste}
       />
 
       {displayMessage && (

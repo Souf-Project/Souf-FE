@@ -84,17 +84,36 @@ export default function UserForm({
         }
       }
 
-      // 전공 검증 (첫 번째 전공은 필수)
-      if (!majorFields[0]?.major || !majorFields[0].major.trim()) {
-        newErrors.major = true;
-        if (!errorMessage) {
-          errorMessage = "전공을 입력해주세요.";
+      // 전공 검증 (모든 전공 필드 필수)
+      majorFields.forEach((field, index) => {
+        if (!field.major || !field.major.trim()) {
+          newErrors.major = true;
+          if (!errorMessage) {
+            errorMessage = "전공을 입력해주세요.";
+          }
         }
-      }
-      if (!majorFields[0]?.majorType || !majorFields[0].majorType.trim()) {
+        if (!field.majorType || !field.majorType.trim()) {
+          newErrors.major = true;
+          if (!errorMessage) {
+            errorMessage = "전공 타입을 선택해주세요.";
+          }
+        }
+      });
+
+      // 주전공(MAJOR)이 최소 하나 있는지 검증
+      const hasMajor = majorFields.some(field => {
+        const specialtyMap = {
+          "1": "MAJOR",
+          "2": "MINOR",
+          "3": "DOUBLE_MAJOR"
+        };
+        return field.majorType && specialtyMap[field.majorType] === "MAJOR";
+      });
+      
+      if (majorFields.length > 0 && !hasMajor) {
         newErrors.major = true;
         if (!errorMessage) {
-          errorMessage = "전공 타입을 선택해주세요.";
+          errorMessage = "주전공을 입력해주세요.";
         }
       }
     }
@@ -311,7 +330,7 @@ export default function UserForm({
                   return educationTypeMap[eduType] || eduType || "";
                 })(),
                 majorReqDtos: majorFields
-                  .filter(field => field.major && field.major.trim()) // 전공명이 있는 것만 필터링
+                  .filter(field => field.major && field.major.trim() && field.majorType) // 전공명과 타입이 모두 있는 것만 필터링
                   .map(field => {
                     const specialtyMap = {
                       "1": "MAJOR",
@@ -402,6 +421,14 @@ export default function UserForm({
   const handleAddMajor = () => {
     if (majorFields.length < 2) {
       setMajorFields([...majorFields, { major: "", majorType: "" }]);
+    }
+  };
+
+  // 전공 필드 제거
+  const handleRemoveMajor = (index) => {
+    if (index > 0 && majorFields.length > 1) {
+      const updatedFields = majorFields.filter((_, i) => i !== index);
+      setMajorFields(updatedFields);
     }
   };
 
@@ -508,7 +535,7 @@ export default function UserForm({
               </p>
             )}
           </div>
-          <div className="text-black text-lg md:text-2xl font-regular mb-2">
+          <div className="text-black text-lg md:text-2xl font-regular mt-4">
             전공
           </div>
           {majorFields.map((field, index) => (
@@ -518,29 +545,41 @@ export default function UserForm({
                   value={field.major}
                   onChange={(e) => {
                     handleMajorInputChange(index, e.target.value);
-                    if (validationErrors.major && index === 0) {
+                    if (validationErrors.major) {
                       setValidationErrors((prev) => ({ ...prev, major: false }));
                     }
                   }}
                   placeholder="전공을 입력해주세요."
                   disapproveText="전공을 입력해주세요."
                   essentialText="전공을 입력해주세요."
-                  isValidateTrigger={(validationErrors.major || errors.major) && index === 0}
+                  isValidateTrigger={(validationErrors.major || errors.major)}
                 />
               </div>
-              <div className="flex items-center mb-8">
+              <div className="flex items-center gap-2 mb-8">
                 <FilterDropdown
                   placeholder="전공 선택"
                   options={majorOptions}
                   selectedValue={field.majorType}
                   onSelect={(value) => {
                     handleMajorTypeChange(index, value);
-                    if (validationErrors.major && index === 0) {
+                    if (validationErrors.major) {
                       setValidationErrors((prev) => ({ ...prev, major: false }));
                     }
                   }}
                   width="w-32"
                 />
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMajor(index)}
+                    className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white hover:shadow-md"
+                    title="전공 입력칸 제거"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
           ))}

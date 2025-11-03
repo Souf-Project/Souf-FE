@@ -31,6 +31,12 @@ export default function AuthForm({
     const [zonecode, setZonecode] = useState("");
     const [selectedMemberType, setSelectedMemberType] = useState("일반");
     const [schoolAuthenticatedImageFileName, setSchoolAuthenticatedImageFileName] = useState(null);
+    const [businessFileError, setBusinessFileError] = useState(false);
+    const [businessValidationErrors, setBusinessValidationErrors] = useState({
+        businessClassification: false,
+        businessRegistrationNumber: false,
+        businessStatus: false,
+    });
 
     // 대학생 인증용 상태 (STUDENT일 때 사용)
     const [studentFormData, setStudentFormData] = useState({
@@ -103,9 +109,20 @@ export default function AuthForm({
             if (numbers.length <= 10) {
                 const formatted = formatbusinessRegistrationNumber(value);
                 setFormData({ ...formData, [name]: formatted });
+                // 입력 시 에러 상태 해제
+                if (businessValidationErrors.businessRegistrationNumber) {
+                    setBusinessValidationErrors(prev => ({ ...prev, businessRegistrationNumber: false }));
+                }
             }
         } else {
             setFormData({ ...formData, [name]: value });
+            // 입력 시 해당 필드 에러 상태 해제
+            if (name === 'businessStatus' && businessValidationErrors.businessStatus) {
+                setBusinessValidationErrors(prev => ({ ...prev, businessStatus: false }));
+            }
+            if (name === 'businessClassification' && businessValidationErrors.businessClassification) {
+                setBusinessValidationErrors(prev => ({ ...prev, businessClassification: false }));
+            }
         }
     };
     
@@ -115,6 +132,7 @@ export default function AuthForm({
             // PDF 파일만 허용
             if (file.type === 'application/pdf') {
                 setFormData({ ...formData, businessRegistrationFile: file });
+                setBusinessFileError(false); // 파일 업로드 시 에러 상태 해제
             } else {
                 alert('PDF 파일만 업로드 가능합니다.');
             }
@@ -263,6 +281,33 @@ export default function AuthForm({
                     isCompany: false,
                 };
             } else if (selectedMemberType === "사업자") {
+                // 사업자 필수 필드 검증
+                const newErrors = {
+                    businessClassification: !formData.businessClassification || formData.businessClassification.trim() === "",
+                    businessRegistrationNumber: !formData.businessRegistrationNumber || formData.businessRegistrationNumber.trim() === "",
+                    businessStatus: !formData.businessStatus || formData.businessStatus.trim() === "",
+                };
+                
+                // 에러가 있으면 상태 업데이트하고 종료
+                if (newErrors.businessClassification || newErrors.businessRegistrationNumber || newErrors.businessStatus) {
+                    setBusinessValidationErrors(newErrors);
+                    return;
+                }
+                
+                // 사업자 등록증 파일 검증
+                if (!formData.businessRegistrationFile) {
+                    setBusinessFileError(true);
+                    return;
+                }
+                
+                // 모든 검증 통과 시 에러 상태 초기화
+                setBusinessValidationErrors({
+                    businessClassification: false,
+                    businessRegistrationNumber: false,
+                    businessStatus: false,
+                });
+                setBusinessFileError(false);
+                
                 // 사업자: isCompany를 true로 설정하고 사업자 정보 추가
                 // businessStatus와 businessClassification을 숫자에서 문자열로 변환
                 const selectedBusinessStatus = businessStatusOptions.find(option => option.value === formData.businessStatus);
@@ -295,7 +340,7 @@ export default function AuthForm({
             const isMarketingAgreed = parentFormData.isMarketingAgreed || false;
 
             let registrationToken = socialLoginInfo.registrationToken;
-            
+            console.log("registrationToken:", registrationToken);
             if (!registrationToken || registrationToken === null || registrationToken === undefined) {
                 console.error("registrationToken이 없습니다:", registrationToken);
                 alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
@@ -343,6 +388,33 @@ export default function AuthForm({
                 };
             } else if (selectedType === "MEMBER") {
                 if (selectedMemberType === "사업자") {
+                    // 사업자 필수 필드 검증
+                    const newErrors = {
+                        businessClassification: !formData.businessClassification || formData.businessClassification.trim() === "",
+                        businessRegistrationNumber: !formData.businessRegistrationNumber || formData.businessRegistrationNumber.trim() === "",
+                        businessStatus: !formData.businessStatus || formData.businessStatus.trim() === "",
+                    };
+                    
+                    // 에러가 있으면 상태 업데이트하고 종료
+                    if (newErrors.businessClassification || newErrors.businessRegistrationNumber || newErrors.businessStatus) {
+                        setBusinessValidationErrors(newErrors);
+                        return;
+                    }
+                    
+                    // 사업자 등록증 파일 검증
+                    if (!formData.businessRegistrationFile) {
+                        setBusinessFileError(true);
+                        return;
+                    }
+                    
+                    // 모든 검증 통과 시 에러 상태 초기화
+                    setBusinessValidationErrors({
+                        businessClassification: false,
+                        businessRegistrationNumber: false,
+                        businessStatus: false,
+                    });
+                    setBusinessFileError(false);
+                    
                     // CompanySignupReqDto 구성 (사업자)
                     const selectedBusinessStatus = businessStatusOptions.find(option => option.value === formData.businessStatus);
                     const selectedBusinessClassification = businessClassificationOptions.find(option => option.value === formData.businessClassification);
@@ -398,7 +470,7 @@ export default function AuthForm({
                 registrationToken: registrationToken,
                 signupReqDto: signupReqDto,
             };
-            // console.log("socialSignupData:", socialSignupData);
+            console.log("socialSignupData:", socialSignupData);
 
             if (socialSignUp) {
                 socialSignUp.mutate(socialSignupData);
@@ -630,7 +702,11 @@ export default function AuthForm({
                 <div className="text-black text-lg md:text-xl font-regular mb-2">사업자 번호</div>
                 <input
                     type="text"
-                    className={`w-full py-2 px-2 font-medium text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 border-[#898989] ${
+                    className={`w-full py-2 px-2 font-medium text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 ${
+                        businessValidationErrors.businessRegistrationNumber
+                            ? "border-red-500"
+                            : "border-[#898989]"
+                    } ${
                         isDisabled ? "bg-gray-200 cursor-not-allowed" : "bg-[#F6F6F6] focus:border-blue-main"
                     }`}
                     placeholder="000-00-00000"
@@ -644,6 +720,9 @@ export default function AuthForm({
                     }}
                     disabled={isDisabled}
                 />
+                {businessValidationErrors.businessRegistrationNumber && (
+                    <p className="text-red-500 text-sm font-medium mt-1">사업자 번호를 입력해주세요.</p>
+                )}
             </div>
         
            <div>
@@ -710,6 +789,9 @@ export default function AuthForm({
                 width="w-full"
                 disabled={isDisabled}
             />
+            {businessValidationErrors.businessStatus && (
+                <p className="text-red-500 text-sm font-medium mt-1">업태를 선택해주세요.</p>
+            )}
            </div>
            <div className="mb-8">
             <p className="text-black text-lg md:text-xl font-regular mb-2">사업자 구분</p>
@@ -721,6 +803,9 @@ export default function AuthForm({
                 width="w-1/2"
                 disabled={isDisabled}
             />
+            {businessValidationErrors.businessClassification && (
+                <p className="text-red-500 text-sm font-medium mt-1">사업자 구분을 선택해주세요.</p>
+            )}
            </div>
            <div>
             <div className="flex items-center gap-2 mb-2">
@@ -762,7 +847,11 @@ export default function AuthForm({
               ) : (
                 <label
                   htmlFor="business-registration-upload"
-                  className="w-1/3 h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-blue-main hover:bg-blue-50 transition-colors duration-200"
+                  className={`w-1/3 h-64 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-4 cursor-pointer transition-colors duration-200 ${
+                    businessFileError 
+                      ? "border-red-500 bg-red-50" 
+                      : "border-gray-300 hover:border-blue-main hover:bg-blue-50"
+                  }`}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="gray" className="w-12 h-12">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -771,6 +860,9 @@ export default function AuthForm({
                 </label>
               )}
             </div>
+            {businessFileError && (
+              <p className="text-red-500 text-sm font-medium mt-2">사업자 등록증을 업로드해주세요.</p>
+            )}
            </div>
            <button 
            className={`mt-8 w-full py-3 rounded-md text-xl font-semibold transition-all shadow-md ${
