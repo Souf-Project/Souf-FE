@@ -84,7 +84,6 @@ export async function postEmailVerify(email, code, purpose) {
 
       }
     );
-  
     return response.data;
   } catch (error) {
     console.error("요청 실패:", error);

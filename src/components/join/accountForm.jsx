@@ -213,6 +213,9 @@ export default function AccountForm({
             isConfirmed={verificationCheck}
             approveText={verificationApproveText}
             disapproveText={verificationApproveText}
+            isLoading={emailVerify.isPending}
+            disabled={verificationCheck}
+            btnDisabled={verificationCheck}
           />
           <Input
             title="비밀번호"
