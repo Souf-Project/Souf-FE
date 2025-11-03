@@ -14,9 +14,9 @@ export async function postLogin(email, password) {
 /* 회원가입 */
 //store 별도로 생성 시 사용하기
 export async function postSignUp(formData) {
-  console.log(formData);
+  // console.log(formData);
   const response = await client.post("/api/v1/auth/signup", formData);
-  console.log(response); 
+  // console.log(response); 
   return response;
 }
 

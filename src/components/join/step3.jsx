@@ -221,7 +221,13 @@ export default function Step3({ socialLoginInfo, selectedType }) {
     },
     onSignUpSuccess: (data) => {
       setModalTitle("회원가입이 완료되었습니다.");
-      setDescription("로그인 페이지로 이동합니다.");
+      if (selectedType === "STUDENT") {
+        setDescription(`인증 완료까지 최대 5일이 소요됩니다.\n인증 전까지 피드 생성과 외주 지원을 진행할 수 없습니다.`);
+      } else if (selectedType === "MEMBER") {
+        setDescription(`인증 완료까지 최대 5일이 소요됩니다.\n인증 전까지 외주 활동을 진행할 수 없습니다.`);
+      } else {
+        setDescription("로그인 페이지로 이동합니다.");
+      }
       setSuccessModal(true);
     },
     onSignUpError: (error) => {
