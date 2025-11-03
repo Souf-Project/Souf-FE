@@ -42,7 +42,7 @@ export default function AccountForm({
     const [showPrivacyContent, setShowPrivacyContent] = useState(false);
     const [showServiceContent, setShowServiceContent] = useState(false);
 
-    // 소셜 로그인 정보가 있으면 이메일과 전화번호를 자동으로 설정
+    // 소셜 로그인 정보가 있으면 이메일자동으로 설정
     React.useEffect(() => {
       if (socialLoginInfo?.socialLogin && socialLoginInfo?.email) {
         // 이메일이 아직 설정되지 않았을 때만 설정
@@ -108,13 +108,12 @@ export default function AccountForm({
           errorMessage = "전화번호를 입력해주세요.";
         }
       } else {
-        // 하이픈을 제거한 숫자만으로 검증
-        const phoneNums = formData.phoneNumber.replace(/[^0-9]/g, "");
-        const phoneRegex = /^[0-9]{10,11}$/;
-        if (!phoneRegex.test(phoneNums)) {
+        // 010-0000-0000 형식 검증 (010으로 시작, 하이픈 포함)
+        const phoneRegex = /^010-\d{4}-\d{4}$/;
+        if (!phoneRegex.test(formData.phoneNumber.trim())) {
           newErrors.phoneNumber = true;
           if (!errorKey) {
-            errorMessage = "올바른 전화번호를 입력해주세요. (10-11자리 숫자)";
+            errorMessage = `올바른 전화번호 형식을 입력해주세요.\n(010-0000-0000)`;
           }
         }
       }
@@ -259,15 +258,18 @@ export default function AccountForm({
         title="전화번호"
         type="text"
         name="phoneNumber"
-        placeholder="000-0000-0000"
+        placeholder="010-0000-0000"
         value={formData.phoneNumber || ""}
         essentialText="전화번호를 입력해주세요."
-        disapproveText="올바른 전화번호를 입력해주세요. (10-11자리 숫자)"
+        disapproveText="올바른 전화번호를 입력해주세요. (010-0000-0000)"
         isValidateTrigger={validationErrors.phoneNumber || errors.phoneNumber}
         subtitle="하이픈(-)을 포함해주세요."
+        maxLength={13}
         onChange={(e) => {
           const formatted = formatPhoneNumber(e.target.value);
-          handleInputChange("phoneNumber", { target: { value: formatted } });
+          // 13자리 초과 시 자르기
+          const limitedValue = formatted.length > 13 ? formatted.slice(0, 13) : formatted;
+          handleInputChange("phoneNumber", { target: { value: limitedValue } });
           if (validationErrors.phoneNumber) {
             setValidationErrors((prev) => ({ ...prev, phoneNumber: false }));
           }
@@ -280,6 +282,12 @@ export default function AccountForm({
             "ArrowRight",
             "Tab",
           ];
+          // 13자리 도달 시 숫자 입력 차단
+          const currentValue = formData.phoneNumber || "";
+          if (currentValue.length >= 13 && /^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
+            e.preventDefault();
+            return;
+          }
           if (!/^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
             e.preventDefault();
           }
@@ -288,7 +296,9 @@ export default function AccountForm({
           e.preventDefault();
           const pasted = e.clipboardData.getData("text");
           const formatted = formatPhoneNumber(pasted);
-          handleInputChange("phoneNumber", { target: { value: formatted } });
+          // 13자리 초과 시 자르기
+          const limitedValue = formatted.length > 13 ? formatted.slice(0, 13) : formatted;
+          handleInputChange("phoneNumber", { target: { value: limitedValue } });
         }}
       />
       {/* STEP 1: 약관 동의 */}

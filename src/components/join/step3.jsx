@@ -246,8 +246,12 @@ export default function Step3({ socialLoginInfo, selectedType }) {
       setSuccessModal(true);
     },
     onSocialSignUpError: (error) => {
+      const errorCode = error.response.data.errorKey;
+      const errorMsg = errorCode
+        ? SIGNUP_ERRORS[errorCode]
+        : "소셜 회원가입에 실패했습니다. 다시 시도해주세요.";
       setModalTitle("소셜 회원가입 실패");
-      setDescription("소셜 회원가입에 실패했습니다. 다시 시도해주세요.");
+      setDescription(errorMsg);
       setEmailModal(true);
     },
   });
