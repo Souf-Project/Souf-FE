@@ -33,7 +33,19 @@ export const useSignupMutations = ({
   const emailVerify = useMutation({
     mutationFn: ({ email, verification }) =>
       postEmailVerify(email, verification, "SIGNUP"),
-    onSuccess: onEmailVerifySuccess,
+    onSuccess: (response) => {
+      if (response?.result === true) {
+        onEmailVerifySuccess({ data: response });
+      } else {
+        onEmailVerifyError({
+          response: {
+            data: {
+              message: response?.message || "인증번호가 일치하지 않습니다.",
+            }
+          }
+        });
+      }
+    },
     onError: onEmailVerifyError,
   });
 
