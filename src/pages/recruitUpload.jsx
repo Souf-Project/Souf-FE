@@ -433,6 +433,7 @@ export default function RecruitUpload() {
         originalFileNames: formData.newFiles.map((file) => file.name),
         existingImageUrls: formData.existingImages.map((file) => file.fileUrl),
       };
+      console.log("formDataToSend:", formDataToSend);
   
       
       let response;
