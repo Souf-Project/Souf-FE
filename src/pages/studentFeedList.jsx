@@ -69,7 +69,7 @@ const {
       </div>
 
 
-      <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center mx-auto">
         {isLoading ? (
           <Loading />
         ) : feedData?.result?.content && feedData.result.content.length > 0 ? (
