@@ -28,7 +28,7 @@ export default function RecommendRecruit() {
     const checkWidth = () => {
       if (containerRef.current) {
         const width = containerRef.current.offsetWidth;
-        setDisplayCount(width <= 700 ? 3 : 4);
+        setDisplayCount(width <= 720 ? 3 : 4);
       }
     };
 
