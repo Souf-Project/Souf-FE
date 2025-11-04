@@ -101,6 +101,12 @@ export default function Redirect() {
               });
               UserStore.getState().setAccessToken(result.token.accessToken);
               localStorage.setItem("accessToken", result.token.accessToken);
+              
+              // RefreshToken 저장 (응답에 포함된 경우)
+              if (result.token.refreshToken || result.refreshToken) {
+                localStorage.setItem("refreshToken", result.token.refreshToken || result.refreshToken);
+              }
+              
               localStorage.removeItem('socialProvider');
               
               navigate("/");
@@ -115,7 +121,7 @@ export default function Redirect() {
                   provider: detectedProvider || {},
                   email: result.prefill.email || {},
                   username: result.prefill.name || {},
-                  registrationToken: result.message,
+                  registrationToken: result.registrationToken,
                 },
               });
             }
