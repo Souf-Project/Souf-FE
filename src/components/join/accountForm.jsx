@@ -188,6 +188,7 @@ export default function AccountForm({
         title="이메일"
         btnText="인증요청"
         essentialText="이메일을 입력해주세요."
+        subtitle="자주 쓰는 이메일로 등록해주세요."
         disapproveText={SIGNUP_ERRORS["M400-3"] || "이메일 인증이 완료되지 않았습니다."}
         onClick={() => emailVerificationMutation.mutate(email)}
         isValidateTrigger={validationErrors.email || errors.email}
@@ -263,7 +264,6 @@ export default function AccountForm({
         essentialText="전화번호를 입력해주세요."
         disapproveText="올바른 전화번호를 입력해주세요. (010-0000-0000)"
         isValidateTrigger={validationErrors.phoneNumber || errors.phoneNumber}
-        subtitle="하이픈(-)을 포함해주세요."
         maxLength={13}
         onChange={(e) => {
           const formatted = formatPhoneNumber(e.target.value);

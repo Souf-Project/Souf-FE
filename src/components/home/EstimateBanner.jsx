@@ -46,17 +46,17 @@ export default function FreeEstimate({color}) {
         </div>
       )}
       {color=="blue" && (
-        <div className="relative bg-blue-500 w-full rounded-2xl px-12 py-8 flex justify-between items-center">
+        <div className="relative bg-blue-500 w-full rounded-2xl px-8 py-8 flex justify-between items-center whitespace-nowrap">
           <div>
             <h2 className="text-orange-100 text-xl font-bold">웹사이트 제작<span className="text-white"> 견적을 무료로 받아보세요!</span></h2>
             <h3 className="text-white text-xl font-bold mt-2">인증된 전문가들이 견적을 보내요</h3>
           </div>
-          <button className="bg-white text-blue-500 text-xl font-bold px-8 py-6 rounded-xl"
+          <button className="bg-white text-blue-500 text-xl font-bold px-6 py-6 rounded-xl"
           onClick={handleRecruitUploadClick}>무료로 프로젝트 등록</button>
         </div>
       )}
       {color=="yellow" && (
-        <div className="relative bg-yellow-main w-full rounded-2xl px-12 py-2 flex justify-between items-center">
+        <div className="relative bg-yellow-main w-full rounded-2xl px-8 py-2 flex justify-between items-center">
           <div className="flex">
           <div className="flex flex-col gap-2 mb-auto mt-6">
             <h2 className="text-white text-xl font-bold">스프 프로 작업자들의</h2>

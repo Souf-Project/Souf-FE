@@ -4,6 +4,9 @@ import heartOn from "../../assets/images/heartOn.svg";
 import heartOff from "../../assets/images/heartOff.svg";
 import commentIco from "../../assets/images/commentIco.svg";
 import shareIco from "../../assets/images/shareIco.svg";
+import temperatureIcon from "../../assets/images/temperatureIcon.svg";
+import starOn from "../../assets/images/starOn.svg";
+import starOff from "../../assets/images/starOff.svg";
 import { deleteFeed, getFeedDetail } from "../../api/feed";
 import { patchLike} from "../../api/additionalFeed";
 import { useState } from "react";
@@ -27,6 +30,10 @@ import PageHeader from "../pageHeader";
 import RecommendRecruit from "../recruit/recommendRecruit";
 import basicLogoImg from "../../assets/images/basiclogoimg.png";
 import { FEED_ERRORS } from "../../constants/post";
+import { getCategoryNames } from "../../utils/categoryUtils";
+import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
+import { handleApiError } from "../../utils/apiErrorHandler";
+import { FAVORITE_ERRORS } from "../../constants/user";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -53,6 +60,10 @@ export default function PostDetail() {
   const [errorModal, setErrorModal] = useState(false);
   const [errorDescription, setErrorDescription] = useState("잘못된 접근");
   const [errorAction, setErrorAction] = useState("redirect");
+  const fromMemberId = UserStore.getState().memberId;
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [star, setStar] = useState(false);
+
 
     const {
     data: feedData,
@@ -68,13 +79,13 @@ export default function PostDetail() {
         });
       
         setWorksData(data.result);
-        console.log("mediaData", data.result.mediaResDtos);
+        // console.log("worksData", data.result);
+        // console.log("mediaData", data.result.mediaResDtos);
         setMediaData(data.result.mediaResDtos);
         
         // 좋아요 상태 초기화
         if (data.result.liked !== undefined) {
           setIsLiked(data.result.liked);
-        
         }
         
         return data;
@@ -251,6 +262,70 @@ const handleDeleteClick = () => {
     });
     setShowShareModal(false);
   };
+
+  const handleStarClick = () => {
+    setIsAnimating(true);
+    setStar(!star);
+    
+    // 애니메이션 완료 후 상태 초기화
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 200);
+  };
+
+  const handleFavorite = async () => {
+    // 로그인 체크
+    if (!UserStore.getState().memberId) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    if (!fromMemberId || !worksData.memberId) {
+      console.error("ID가 없습니다. fromMemberId:", fromMemberId, "worksData.memberId:", worksData.memberId);
+      return;
+    }
+    
+    try {
+      if (!star) {
+        await postFavorite(fromMemberId, worksData.memberId);
+      } else {
+        await deleteFavorite(fromMemberId, worksData.memberId);
+      }
+      
+      // API 호출 성공 후 UI 상태 변경
+      handleStarClick();
+    } catch (error) {
+      console.error("즐겨찾기 처리 에러:", error);
+      // 에러 발생 시 UI 상태 변경하지 않음
+      handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, FAVORITE_ERRORS);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFavoriteStatus = async () => {
+      // 로그인한 사용자이고 본인이 아닐 때만 즐겨찾기 상태 확인
+      if (!fromMemberId || !worksData.memberId || fromMemberId === worksData.memberId) {
+        setStar(false);
+        return;
+      }
+
+      try {
+        const response = await getFavorite(fromMemberId, 0, 100);
+        const favoriteList = response.result?.content || [];
+        const favoriteIds = favoriteList.map(favorite => favorite.id);
+        const isFavorited = favoriteIds.includes(worksData.memberId);
+        setStar(isFavorited);
+      } catch (error) {
+        console.error("즐겨찾기 상태 확인 에러:", error);
+        setStar(false);
+        handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, FAVORITE_ERRORS);
+      }
+    };
+
+    if (worksData.memberId) {
+      fetchFavoriteStatus();
+    }
+  }, [worksData.memberId, fromMemberId]);
 
   if (isLoading) {
     return <Loading text="게시글을 불러오는 중..." />;
@@ -491,26 +566,57 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer"
-        onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
+        <div className="w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer">
         <div className="flex justify-between">
         {worksData.profileImageUrl ? (
           <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-24 object-cover rounded-full" />
         ) : (
           <img src={basicLogoImg} alt="profileImage" className="w-24 h-24 object-cover rounded-full" />
         )}
-        <button></button>
+        {/* 즐겨찾기 버튼 - 로그인한 사용자이고 본인이 아닐 때만 */}
+        {UserStore.getState().memberId && UserStore.getState().memberId !== worksData.memberId && (
+          <button
+            className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
+              isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
+            } hover:scale-110 `}
+            onClick={handleFavorite}
+          >
+            <img 
+              src={star ? starOn : starOff} 
+              alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+              className="w-8 h-8"
+            />
+          </button>
+        )}
         </div>
         <div>
+          <div className="flex items-center gap-2 justify-between">
           {worksData.nickname && (
             <p className="text-lg font-bold">{worksData.nickname}</p>
           )}
+           {worksData.temperature && (
+            <div className="flex items-center gap-2">
+              <img src={temperatureIcon} alt="temperatureIcon" className="w-4 h-4" />
+            <p className="text-sm text-gray-500">{worksData.temperature}도</p>
+            </div>
+          )}
+          </div>
           {worksData.intro && (
             <p className="text-sm text-gray-500">{worksData.intro}</p>
           )}
+         
           {worksData.personalUrl && (
             <p className="text-sm text-gray-500">{worksData.personalUrl}</p>
           )}
+          {worksData.studentCategories && worksData.studentCategories.length > 0 && (
+            <div className="flex gap-1 mt-4">
+              {getCategoryNames(worksData.studentCategories).map((categoryName, index) => (
+                <p key={index} className="text-sm text-gray-500 bg-blue-bright px-2 py-1 rounded-md">#{categoryName}</p>
+              ))}
+            </div>
+          )}
+          <button className="bg-blue-main text-white px-4 py-2 rounded-md text-sm mt-4 hover:shadow-md transition-all duration-300 ease-in-out"
+                  onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>프로필 보기</button>
         </div>
        
         </div>

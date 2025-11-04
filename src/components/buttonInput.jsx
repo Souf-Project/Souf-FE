@@ -8,6 +8,7 @@ export default function ButtonInput({
   onClick,
   placeholder,
   onChange,
+  subtitle = "",
   disapproveText = "",
   essentialText = "",
   approveText = "",
@@ -34,9 +35,11 @@ export default function ButtonInput({
             disapproveText={disapproveText}
             onValidChange={onValidChange}
             value={value}
+            subtitle={subtitle}
             disabled={disabled}
           />
         </div>
+        
         {btnText && (
           <button
             onClick={onClick}
