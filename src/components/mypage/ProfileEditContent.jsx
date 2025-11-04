@@ -357,8 +357,70 @@ export default function ProfileEditContent() {
               value={formData.email}
               isEditing={false}
             />
+            <EditBox 
+              title="휴대폰 번호" 
+              value={formData.phoneNumber}
+              isEditing={false}
+              margin="mt-4"
+            />
+           
           </div>
         </div>
+       
+          {roleType === "MEMBER" && formData.detail && (
+             <div className="bg-gray-50 p-6 rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">사업자 정보</h2>
+            <div>
+            <div className="grid grid-cols-2 gap-4">
+              <EditBox 
+              title="회사명" 
+              value={formData.detail.companyName}
+              isEditing={false}
+            />
+             <EditBox 
+              title="사업자 구분" 
+              value={formData.detail.businessClassification}
+              isEditing={false}
+            />
+             <EditBox 
+              title="사업자 번호" 
+              value={formData.detail.businessRegistrationNumber}
+              isEditing={false}
+            />
+             <EditBox 
+              title="업태" 
+              value={formData.detail.businessStatus}
+              isEditing={false}
+            />
+            <div className="col-span-2">
+              <label className="block text-black font-semibold text-xl mb-2">주소</label>
+              <div className="flex flex-col gap-3">
+                {/* 우편번호 */}
+                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                  <div className="bg-[#F7F7F7] px-4 py-4 border-r border-gray-300 text-gray-600 font-semibold min-w-[120px]">
+                    우편번호
+                  </div>
+                  <div className="flex-1 p-4 pl-7 bg-[#F7F7F7] text-gray-600">
+                    {formData.detail?.addressReqDto?.zipCode || formData.detail?.zipCode || '-'}
+                  </div>
+                </div>
+                {/* 도로명 주소 */}
+                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                  <div className="bg-[#F7F7F7] px-4 py-4 border-r border-gray-300 text-gray-600 font-semibold min-w-[120px]">
+                    도로명 주소
+                  </div>
+                  <div className="flex-1 p-4 pl-7 bg-[#F7F7F7] text-gray-600">
+                    {formData.detail?.addressReqDto?.roadNameAddress || formData.detail?.roadNameAddress || '-'} {formData.detail?.addressReqDto?.detailedAddress || formData.detail?.detailedAddress || '-'}
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+             </div>
+            </div>
+            </div>
+          )}
+
         {roleType === "STUDENT" &&
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">프로필 정보</h2>
@@ -377,7 +439,30 @@ export default function ProfileEditContent() {
             />
           </div>
         </div> }
-        
+        {roleType === "STUDENT" && formData.detail && (
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h2 className="text-2xl font-bold mb-4">대학생 인증 정보</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <EditBox 
+                title={formData.detail.educationType === "GRADUATE" ? "대학원명" : "대학교명"} 
+                value={formData.detail.schoolName}
+                isEditing={isEditing}
+              />
+              <EditBox 
+                title="전공" 
+                value={formData.detail.specialties && formData.detail.specialties.length > 0 
+                  ? formData.detail.specialties.map(s => s.specialtyName).join(', ')
+                  : '-'}
+                isEditing={isEditing}
+              />
+              <EditBox 
+                title="학교 이메일" 
+                value={formData.detail.schoolEmail}
+                isEditing={isEditing}
+              />
+            </div>
+          </div>
+        )}
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">관심분야</h2>
           <div className="grid grid-cols-3 gap-4 ">

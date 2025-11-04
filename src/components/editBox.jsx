@@ -2,9 +2,9 @@ import React from 'react';
 import editIco from '../assets/images/editIco.svg';
 import checkBtnIco from '../assets/images/checkBtnIco.svg';
 
-export default function EditBox({title, value, onChange, isEditing}) {
+export default function EditBox({title, value, onChange, isEditing, margin}) {
   return (
-    <div className="flex-1">
+    <div className={`flex-1 ${margin}`}>
       <label className="block text-black font-semibold text-xl mb-2">{title}</label>
       <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
         <input 
