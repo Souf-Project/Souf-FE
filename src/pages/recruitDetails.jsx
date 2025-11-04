@@ -337,22 +337,7 @@ export default function RecruitDetail() {
             />
             )}
           </div>
-          <div className="flex items-center gap-2 my-2">
-          {categoryNames.map((category, index) => (
-        
-        <div key={index}>
-          {category.third ? (
-            <span className="font-medium text-neutral-500 text-xs">#{category.third}</span>
-          ) : category.second ? (
-            <span>#{category.second}</span>
-          ) : (
-            <span>#{category.first}</span>
-          )}
-        </div>
-      ))}
-          </div>
-         
-         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
          {displayData.logoUrl? 
              <img 
                src={`${S3_BUCKET_URL}${displayData.logoUrl}`} 
@@ -360,21 +345,25 @@ export default function RecruitDetail() {
                className="w-8 h-8 object-cover rounded-full shadow-sm border-2 border-gray-200"
              /> 
              : <></>}
-              <div className="text-xs font-bold mb-2">{displayData?.hostName}</div>
+              <div className="text-md font-bold my-2">{displayData?.hostName}</div>
          </div>
          
-          <div className="flex justify-between items-center">
-            {displayData?.preferentialTreatmentTags && displayData?.preferentialTreatmentTags.length > 0 ? (
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-700 text-lg font-bold mr-2">우대사항 키워드</span>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[0]}</div>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[1]}</div>
-          </div>
-) : (
-  <></>
-)}
-
-         
+          <div className="flex items-center">
+          {categoryNames.map((category, index) => (
+       
+        <div key={index} className="flex items-center">
+          {category.third ? (
+            <span className="font-medium text-neutral-500 text-md">{category.third}</span>
+          ) : category.second ? (
+            <span className="font-medium text-neutral-500 text-md">{category.second}</span>
+          ) : (
+            <span className="font-medium text-neutral-500 text-md">{category.first}</span>
+          )}
+          {index < categoryNames.length - 1 && (
+            <span className="font-medium text-neutral-500 text-md mx-1">/</span>
+          )}
+        </div>
+      ))}
           </div>
          
 
@@ -504,6 +493,17 @@ export default function RecruitDetail() {
                 <span className="font-lg">{displayData?.cityName} {displayData?.cityDetailName}</span>
 
               </div>
+              {displayData?.preferentialTreatmentTags && displayData?.preferentialTreatmentTags.length > 0 ? (
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-600 mb-1 whitespace-nowrap">우대사항 키워드</span>
+              <div className="flex items-center">
+                {displayData?.preferentialTreatmentTags[0] && <div className="font-lg">{displayData?.preferentialTreatmentTags[0]}</div>}
+                {displayData?.preferentialTreatmentTags[1] && <div className="font-lg">, {displayData?.preferentialTreatmentTags[1]}</div>}
+             </div>
+          </div>
+) : (
+  <></>
+)}
             </div>
             {isAuthor ? (
             <></>
