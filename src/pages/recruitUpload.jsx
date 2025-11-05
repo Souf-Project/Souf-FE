@@ -10,6 +10,7 @@ import infoIcon from '../assets/images/infoIcon.svg';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import AlertModal from '../components/alertModal';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function RecruitUpload() {
   const [estimateType, setEstimateType] = useState(initialEstimateType);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [validationModal, setValidationModal] = useState(null);
   const contentTextareaRef = useRef(null);
   const imageInputRef = useRef(null);
 
@@ -369,6 +371,43 @@ export default function RecruitUpload() {
   }, []);
 
 
+  const validateRequiredFields = () => {
+    const requiredFields = [
+      { field: 'companyName', label: '기업 또는 개인명', value: formData.companyName?.trim() },
+      { field: 'briefIntroduction', label: '기업 또는 간략 소개', value: formData.briefIntroduction?.trim() },
+      { field: 'title', label: '공고문 제목', value: formData.title?.trim() },
+      { field: 'content', label: '공고문 내용', value: formData.content?.trim() },
+      { field: 'startDate', label: '채용 기간 (시작일)', value: formData.startDate },
+      { field: 'deadline', label: '채용 기간 (마감일)', value: formData.deadline },
+      { field: 'workType', label: '근무 형태', value: formData.workType },
+    ];
+
+    // 지역 검증 (지역 무관이 아닐 때만)
+    if (!formData.isregionIrrelevant) {
+      if (!formData.city?.trim()) {
+        return { field: 'city', label: '지역 (시/도)' };
+      }
+      if (!formData.region?.trim()) {
+        return { field: 'region', label: '지역 (상세 지역)' };
+      }
+    }
+
+    // 카테고리 검증
+    const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
+    if (cleanedCategories.length === 0) {
+      return { field: 'categoryDtos', label: '공고에 맞는 카테고리 선택' };
+    }
+
+    // 나머지 필수 필드 검증
+    for (const { field, label, value } of requiredFields) {
+      if (!value) {
+        return { field, label };
+      }
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -378,17 +417,24 @@ export default function RecruitUpload() {
       return;
     }
 
-    // 카테고리 검증 (업로드 버튼 클릭 시에만 실행)
-    const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
-    
-    if (cleanedCategories.length === 0) {
-      alert("최소 1개 이상의 카테고리를 선택해주세요.");
+    // 필수 필드 검증
+    const validationError = validateRequiredFields();
+    if (validationError) {
+      setValidationModal({
+        type: 'simple',
+        title: '입력 필수',
+        description: `${validationError.label}을(를) 입력해주세요.`,
+        TrueBtnText: '확인',
+        onClickTrue: () => setValidationModal(null),
+      });
       return;
     }
 
     setIsLoading(true);
 
     try {
+      // 카테고리 필터링 (검증은 이미 완료됨)
+      const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
 
       let cityId = null;
       let cityDetailId = null;
@@ -599,7 +645,7 @@ export default function RecruitUpload() {
 
         <div>
           <label className="block text-xl font-semibold text-gray-700 mb-2">
-              기업 또는 개인명
+              기업 또는 개인명 <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -655,7 +701,7 @@ export default function RecruitUpload() {
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              기업 또는 간략 소개
+              기업 또는 간략 소개 <span className="text-red-500">*</span>
             </label>
             <textarea
               name="briefIntroduction"
@@ -678,7 +724,7 @@ export default function RecruitUpload() {
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              공고문 제목
+              공고문 제목 <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -693,7 +739,7 @@ export default function RecruitUpload() {
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              공고문 내용
+              공고문 내용 <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-2 mb-2">
               <button
@@ -902,7 +948,7 @@ export default function RecruitUpload() {
 
           <div className="flex flex-col gap-6">
             <label className="block text-xl font-semibold text-gray-700">
-              채용 기간
+              채용 기간 <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2 items-center">
               <input
@@ -927,7 +973,7 @@ export default function RecruitUpload() {
 
           <div>
             <label className="block text-xl font-semibold text-gray-700 mb-2">
-              근무 형태
+              근무 형태 <span className="text-red-500">*</span>
             </label>
             <select
               name="workType"
@@ -942,7 +988,7 @@ export default function RecruitUpload() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xl font-semibold text-black">
-                지역
+                지역 <span className="text-red-500">*</span>
               </label>
               <div className="flex items-center gap-2">
                 <input
@@ -1128,7 +1174,7 @@ export default function RecruitUpload() {
 
         <div>
             <label className="block text-xl font-semibold text-black mb-2">
-              공고에 맞는 카테고리 선택
+              공고에 맞는 카테고리 선택 <span className="text-red-500">*</span>
           </label>
             <p className="flex items-center gap-2 mb-2 text-base">
               <img src={infoIcon} alt="infoIcon" className="w-4 h-4" />
@@ -1183,6 +1229,17 @@ export default function RecruitUpload() {
       </form>
         <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
       </div>
+      
+      {/* 검증 모달 */}
+      {validationModal && (
+        <AlertModal
+          type={validationModal.type}
+          title={validationModal.title}
+          description={validationModal.description}
+          TrueBtnText={validationModal.TrueBtnText}
+          onClickTrue={validationModal.onClickTrue}
+        />
+      )}
     </div>
   );
 } 
