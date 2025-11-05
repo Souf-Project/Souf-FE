@@ -112,7 +112,7 @@ export default function Redirect() {
               navigate("/");
             }
              else {
-            console.log(result)
+            // console.log(result)
               // 신규 회원가입 사용자: step2부터 시작
               navigate("/join", { 
                 state: { 
