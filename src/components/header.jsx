@@ -154,8 +154,9 @@ useEffect(() => {
       setShowMobileMenu(false);
     }
   };
-  const handleNavigationGuideCategory = () => {
-    navigate(`/guide`);
+  const handleNavigationGuideCategory = (tab) => {
+    const tabParam = tab === 'inquiry' ? '?tab=inquiry' : '';
+    navigate(`/guide${tabParam}`);
     setShowMobileMenu(false);
   };
   const deleteCookie = (name) => {
@@ -329,8 +330,8 @@ const DesktopHeader = () => (
               onMouseEnter={() => handleDropdownEnter('guide')}
               onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
-              {/* 이용가이드 드롭다운 */}
+              <span className="cursor-pointer" onClick={() => navigate("/guide")}>고객센터</span>
+              {/* 고객센터 드롭다운 */}
                 {activeDropdown === 'guide' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
@@ -338,7 +339,8 @@ const DesktopHeader = () => (
                    onMouseLeave={handleDropdownLeave}
                  >
                    <ul className="flex flex-col gap-1">
-                     <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
+                     <li><button onClick={() => handleNavigationGuideCategory('faq')} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">FAQ</button></li>
+                     <li><button onClick={() => handleNavigationGuideCategory('inquiry')} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">문의 센터</button></li>
                    </ul>
                  </div>
               )} 
