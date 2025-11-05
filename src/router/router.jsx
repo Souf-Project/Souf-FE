@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -31,9 +32,26 @@ import ReviewDetail from "../pages/reviewDetail";
 import Inspection from "../pages/inspection";
 import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
+import AlertModal from "../components/alertModal";
+
 function AppRouter() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isChatPage = location.pathname === "/chat";
+  const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
+
+  useEffect(() => {
+    // 세션 만료 이벤트 리스너
+    const handleSessionExpired = (event) => {
+      setShowSessionExpiredModal(true);
+    };
+
+    window.addEventListener('showSessionExpiredModal', handleSessionExpired);
+
+    return () => {
+      window.removeEventListener('showSessionExpiredModal', handleSessionExpired);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -73,6 +91,22 @@ function AppRouter() {
       </main>
       {!isChatPage && <Footer />}
       {!isChatPage && <FloatingChatButton />}
+      
+      {/* 세션 만료 모달 */}
+      {showSessionExpiredModal && (
+        <AlertModal
+          type="simple"
+          title="로그인 만료"
+          description="로그인 시간이 만료되었습니다. 재로그인해주세요"
+          TrueBtnText="로그인하러 가기"
+          onClickTrue={() => {
+            setShowSessionExpiredModal(false);
+            if (!location.pathname.includes('/login')) {
+              navigate('/login');
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
