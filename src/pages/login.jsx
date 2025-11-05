@@ -10,6 +10,7 @@ import googleLogo from "../assets/images/googleLogo.png";
 import { LOGIN_ERRORS } from "../constants/user";
 import SEO from "../components/seo";
 import AlertModal from "../components/alertModal";
+import { setCookie } from "../api/client";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -40,6 +41,8 @@ export default function Login() {
       // RefreshToken 저장 (응답에 포함된 경우)
       if (result.refreshToken) {
         localStorage.setItem("refreshToken", result.refreshToken);
+        // 리프레시 토큰을 쿠키에도 저장
+        setCookie("refreshToken", result.refreshToken, 30);
       }
 
       navigate("/");

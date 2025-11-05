@@ -36,12 +36,27 @@ const extractTokenFromResponse = (response) => {
          extractTokenFromHeaders(response.headers);
 };
 
+// 쿠키 저장 함수
+export const setCookie = (name, value, days = 30) => {
+  const expires = new Date();
+  expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+  const expiresString = expires.toUTCString();
+  
+  // 기본 경로로 쿠키 설정
+  document.cookie = `${name}=${value}; expires=${expiresString}; path=/; SameSite=Lax`;
+  
+  // 도메인 포함 쿠키 설정 (서브도메인 포함)
+  document.cookie = `${name}=${value}; expires=${expiresString}; path=/; domain=${window.location.hostname}; SameSite=Lax`;
+};
+
 // 토큰 저장
 const saveTokens = (accessToken, refreshToken = null) => {
   UserStore.getState().updateAccessToken(accessToken);
   localStorage.setItem("accessToken", accessToken);
   if (refreshToken) {
     localStorage.setItem("refreshToken", refreshToken);
+    // 리프레시 토큰을 쿠키에도 저장
+    setCookie("refreshToken", refreshToken, 30);
   }
 };
 
@@ -76,7 +91,7 @@ const handleRefreshFailure = async () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     
-    // 3. 쿠키에서 RT 삭제 (일반적인 쿠키 이름들 시도)
+    // 3. 쿠키에서 RT 삭제 이름뭐지... 
     deleteCookie("refreshToken");
     deleteCookie("RefreshToken");
     deleteCookie("refresh_token");
@@ -100,8 +115,8 @@ const handleRefreshFailure = async () => {
 // 토큰 재발급 API 호출
 const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
-  // console.log("refresh API 호출:", `${SERVER_URL}/api/v1/auth/refresh`);
-  // console.log("refreshToken 존재:", !!refreshToken);
+  console.log("refresh API 호출:", `${SERVER_URL}/api/v1/auth/refresh`);
+  console.log("refreshToken 존재:", !!refreshToken);
   
   const response = await axios.post(
     `${SERVER_URL}/api/v1/auth/refresh`,
@@ -109,7 +124,7 @@ const refreshAccessToken = async () => {
     { withCredentials: true, headers: { "Content-Type": "application/json" } }
   );
   
-  // console.log("refresh API 응답:", response.status, response.data);
+  console.log("refresh API 응답:", response.status, response.data);
   
   const newAccessToken = extractTokenFromResponse(response);
   if (!newAccessToken) {
@@ -191,7 +206,7 @@ client.interceptors.response.use(
         // console.log("refresh API 호출 시작");
         try {
           const newAccessToken = await refreshAccessToken();
-          // console.log("토큰 재발급 성공");
+          console.log("토큰 재발급 성공");
           processQueue(null, newAccessToken);
           return retryRequest(originalRequest, newAccessToken);
         } catch (refreshError) {

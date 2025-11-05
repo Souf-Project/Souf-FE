@@ -4,6 +4,7 @@ import { postSocialLogin, postSocialLoginLink } from "../api/social";
 import { UserStore } from "../store/userStore";
 import { LOGIN_ERRORS } from "../constants/user";
 import AlertModal from "../components/alertModal";
+import { setCookie } from "../api/client";
 
 export default function Redirect() {
   const navigate = useNavigate();
@@ -104,7 +105,10 @@ export default function Redirect() {
               
               // RefreshToken 저장 (응답에 포함된 경우)
               if (result.token.refreshToken || result.refreshToken) {
-                localStorage.setItem("refreshToken", result.token.refreshToken || result.refreshToken);
+                const refreshToken = result.token.refreshToken || result.refreshToken;
+                localStorage.setItem("refreshToken", refreshToken);
+                // 리프레시 토큰을 쿠키에도 저장
+                setCookie("refreshToken", refreshToken, 30);
               }
               
               localStorage.removeItem('socialProvider');
