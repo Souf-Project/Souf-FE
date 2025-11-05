@@ -36,6 +36,11 @@ export default function Login() {
 
       UserStore.getState().setAccessToken(result.accessToken);
       localStorage.setItem("accessToken", result.accessToken);
+      
+      // RefreshToken 저장 (응답에 포함된 경우)
+      if (result.refreshToken) {
+        localStorage.setItem("refreshToken", result.refreshToken);
+      }
 
       navigate("/");
     },

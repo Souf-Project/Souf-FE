@@ -45,10 +45,6 @@ export default function Profile({
   };
 
   const clickHandler = (memberId) => {
-    if (!currentMemberId) {
-      setShowLoginModal(true);
-      return;
-    }
     navigate(`/profileDetail/${memberId}`);
   };
 
@@ -62,7 +58,7 @@ export default function Profile({
       
       <div className="w-full flex items-center justify-start gap-8"
       onClick={() => clickHandler(memberId)}>
-        <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8">
+        <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8 ">
         <img 
           src={profileImageUrl || getDefaultImage()} 
           className="rounded-full min-w-24 h-24 border border-gray-200 " 
@@ -96,7 +92,7 @@ export default function Profile({
           </div>
         )}
       </div>
-      
+{/*       
       {showLoginModal && (
         <AlertModal
           type="simple"
@@ -110,7 +106,7 @@ export default function Profile({
           }}
           onClickFalse={() => setShowLoginModal(false)}
         />
-      )}
+      )} */}
     </div>
   );
 }
