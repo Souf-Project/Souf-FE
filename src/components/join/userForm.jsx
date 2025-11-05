@@ -49,7 +49,7 @@ export default function UserForm({
         if (!formData.username || !formData.username.trim()) {
           newErrors.username = true;
           if (!errorMessage) {
-            errorMessage = "대표자명을 입력해주세요.";
+            errorMessage = "이름을 입력해주세요.";
           }
         }
       }
@@ -70,6 +70,15 @@ export default function UserForm({
 
     // 대학생 회원가입
     if (selectedType === "STUDENT") {
+      // 이름 검증
+      if (!socialLoginInfo?.socialLogin) {
+        if (!formData.username || !formData.username.trim()) {
+          newErrors.username = true;
+          if (!errorMessage) {
+            errorMessage = "이름을 입력해주세요.";
+          }
+        }
+      }
       // 학교 검증
       if (!formData.schoolName || !formData.schoolName.trim()) {
         newErrors.schoolName = true;

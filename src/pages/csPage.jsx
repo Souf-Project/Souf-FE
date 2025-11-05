@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import SEO from "../components/seo";
 import Pageheader from "../components/pageHeader";
 import FAQcontent from "../components/cs/FAQcontent";
@@ -9,11 +9,29 @@ import { UserStore } from "../store/userStore";
 
 export default function CsPage() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { memberId } = UserStore();
     const [activeTab, setActiveTab] = useState(0);
     const [searchQuery, setSearchQuery] = useState("");
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [isInquiryCompleted, setIsInquiryCompleted] = useState(false);
-    const { memberId } = UserStore();
+    
+    // URL 쿼리 파라미터에서 탭 정보 읽기
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const tab = searchParams.get('tab');
+        if (tab === 'inquiry') {
+            // 문의 센터는 로그인이 필요하므로 확인
+            if (!memberId) {
+                setShowLoginModal(true);
+                setActiveTab(0); // 로그인 안되어 있으면 FAQ로
+            } else {
+                setActiveTab(1);
+            }
+        } else {
+            setActiveTab(0); // 기본값은 FAQ
+        }
+    }, [location.search, memberId]);
     
     const handleTabChange = (tab) => {
         if (tab === 1 && !memberId) {

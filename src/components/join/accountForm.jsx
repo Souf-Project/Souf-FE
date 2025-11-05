@@ -6,6 +6,7 @@ import { SIGNUP_ERRORS } from "../../constants/join";
 import checkBoxIcon from "../../assets/images/checkBoxIcon.svg";
 import notCheckBoxIcon from "../../assets/images/notCheckBoxIcon.svg";
 import backArrow from "../../assets/images/backArrow.svg";
+import { isValidPassword, isPasswordMatch } from "../../utils/passwordCheck";
 
 export default function AccountForm({
   setSubStep,
@@ -41,6 +42,8 @@ export default function AccountForm({
     const [errorModalDescription, setErrorModalDescription] = useState("");
     const [showPrivacyContent, setShowPrivacyContent] = useState(false);
     const [showServiceContent, setShowServiceContent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordCheck, setShowPasswordCheck] = useState(false);
 
     // 소셜 로그인 정보가 있으면 이메일자동으로 설정
     React.useEffect(() => {
@@ -145,6 +148,29 @@ export default function AccountForm({
 
     // 다음 단계로 이동
     const handleNextStep = () => {
+      // 소셜 로그인이 아닌 경우 비밀번호 재검증
+      if (!socialLoginInfo?.socialLogin) {
+        // 비밀번호 형식 검증
+        const isPasswordValid = isValidPassword(formData.password || "");
+        if (!isPasswordValid) {
+          setValidationErrors((prev) => ({ ...prev, password: true }));
+          setErrorModalTitle("입력 오류");
+          setErrorModalDescription("비밀번호 형식이 올바르지 않습니다.");
+          setShowErrorModal(true);
+          return;
+        }
+
+        // 비밀번호 확인 검증
+        const isPasswordMatchValid = isPasswordMatch(formData.password || "", formData.passwordCheck || "");
+        if (!isPasswordMatchValid) {
+          setValidationErrors((prev) => ({ ...prev, passwordCheck: true }));
+          setErrorModalTitle("입력 오류");
+          setErrorModalDescription("비밀번호 확인이 일치하지 않습니다.");
+          setShowErrorModal(true);
+          return;
+        }
+      }
+
       if (validateForm() && setSubStep && setFormData) {
         // 계정 타입별로 데이터 구분해서 저장
         const accountFormData = {
@@ -217,41 +243,79 @@ export default function AccountForm({
             disabled={verificationCheck}
             btnDisabled={verificationCheck}
           />
-          <Input
-            title="비밀번호"
-            type="password"
-            name="password"
-            essentialText="비밀번호를 입력해주세요."
-            disapproveText="비밀번호 형식이 올바르지 않습니다."
-            subtitle="영문자, 숫자, 특수문자(@,$,!,%,*,#,?,&) 포함 / 8자~20자"
-            value={formData.password}
-            onChange={(e) => {
-              handleInputChange("password", e);
-              if (validationErrors.password) {
-                setValidationErrors((prev) => ({ ...prev, password: false }));
-              }
-            }}
-            isValidateTrigger={validationErrors.password || errors.password}
-            isConfirmed={passwordValidation}
-            approveText="올바른 비밀번호 형식입니다."
-          />
-          <Input
-            title="비밀번호 확인"
-            type="password"
-            name="passwordCheck"
-            essentialText="비밀번호 확인을 입력해주세요."
-            disapproveText="비밀번호 확인이 올바르지 않습니다."
-            value={formData.passwordCheck}
-            isConfirmed={passwordCheckValidation}
-            onChange={(e) => {
-              handleInputChange("passwordCheck", e);
-              if (validationErrors.passwordCheck) {
-                setValidationErrors((prev) => ({ ...prev, passwordCheck: false }));
-              }
-            }}
-            isValidateTrigger={validationErrors.passwordCheck || errors.passwordCheck}
-            approveText="비밀번호 확인이 완료되었습니다."
-          />
+          <div className="relative w-full mb-8">
+            <Input
+              title="비밀번호"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              essentialText="비밀번호를 입력해주세요."
+              disapproveText="비밀번호 형식이 올바르지 않습니다."
+              subtitle="영문자, 숫자, 특수문자 포함 / 8자~20자"
+              value={formData.password}
+              onChange={(e) => {
+                handleInputChange("password", e);
+                if (validationErrors.password) {
+                  setValidationErrors((prev) => ({ ...prev, password: false }));
+                }
+              }}
+              isValidateTrigger={validationErrors.password || errors.password}
+              isConfirmed={passwordValidation}
+              approveText="올바른 비밀번호 형식입니다."
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-10 p-1 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+              aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보이기"}
+            >
+              {showPassword ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+          </div>
+          <div className="relative w-full mb-8">
+            <Input
+              title="비밀번호 확인"
+              type={showPasswordCheck ? "text" : "password"}
+              name="passwordCheck"
+              essentialText="비밀번호 확인을 입력해주세요."
+              disapproveText="비밀번호 확인이 올바르지 않습니다."
+              value={formData.passwordCheck}
+              isConfirmed={passwordCheckValidation}
+              onChange={(e) => {
+                handleInputChange("passwordCheck", e);
+                if (validationErrors.passwordCheck) {
+                  setValidationErrors((prev) => ({ ...prev, passwordCheck: false }));
+                }
+              }}
+              isValidateTrigger={validationErrors.passwordCheck || errors.passwordCheck}
+              approveText="비밀번호 확인이 완료되었습니다."
+            />
+            <button
+              type="button"
+              onClick={() => setShowPasswordCheck(!showPasswordCheck)}
+              className="absolute right-2 top-10 p-1 text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+              aria-label={showPasswordCheck ? "비밀번호 숨기기" : "비밀번호 보이기"}
+            >
+              {showPasswordCheck ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              )}
+            </button>
+          </div>
         </>
       )}
       {/* 전화번호 입력 (소셜 로그인 포함 모든 경우) */}
