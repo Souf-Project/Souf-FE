@@ -52,7 +52,7 @@ export default function Login() {
       const errorKey = error.response.data.errorKey;
       const errorInfo = LOGIN_ERRORS[errorKey];
       setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
-      setErrorAction(errorInfo?.action || "redirect");
+      setErrorAction(errorInfo?.action || "refresh");
       setErrorModal(true);
     },
   });

@@ -47,6 +47,8 @@ export const setCookie = (name, value, days = 30) => {
   
   // 도메인 포함 쿠키 설정 (서브도메인 포함)
   document.cookie = `${name}=${value}; expires=${expiresString}; path=/; domain=${window.location.hostname}; SameSite=Lax`;
+  
+  console.log(`✅ 쿠키 저장 완료: ${name} (만료: ${days}일 후)`);
 };
 
 // 토큰 저장
@@ -56,7 +58,10 @@ const saveTokens = (accessToken, refreshToken = null) => {
   if (refreshToken) {
     localStorage.setItem("refreshToken", refreshToken);
     // 리프레시 토큰을 쿠키에도 저장
+    console.log("🔄 리프레시 토큰 쿠키 저장 시도:", refreshToken ? "있음" : "없음");
     setCookie("refreshToken", refreshToken, 30);
+  } else {
+    console.log("⚠️ 리프레시 토큰이 없어 쿠키에 저장하지 않음");
   }
 };
 
@@ -114,9 +119,19 @@ const handleRefreshFailure = async () => {
 
 // 토큰 재발급 API 호출
 const refreshAccessToken = async () => {
-  const refreshToken = localStorage.getItem("refreshToken");
-  console.log("refresh API 호출:", `${SERVER_URL}/api/v1/auth/refresh`);
-  console.log("refreshToken 존재:", !!refreshToken);
+  // localStorage와 쿠키 둘 다에서 refreshToken 확인
+  const refreshTokenFromStorage = localStorage.getItem("refreshToken");
+  const refreshTokenFromCookie = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('refreshToken='))
+    ?.split('=')[1];
+  
+  const refreshToken = refreshTokenFromStorage || refreshTokenFromCookie;
+  
+  console.log("🔄 토큰 재발급 API 호출:", `${SERVER_URL}/api/v1/auth/refresh`);
+  console.log("📦 localStorage refreshToken 존재:", !!refreshTokenFromStorage);
+  console.log("🍪 쿠키 refreshToken 존재:", !!refreshTokenFromCookie);
+  console.log("✅ 사용할 refreshToken:", refreshToken ? "있음" : "없음");
   
   const response = await axios.post(
     `${SERVER_URL}/api/v1/auth/refresh`,
@@ -124,7 +139,7 @@ const refreshAccessToken = async () => {
     { withCredentials: true, headers: { "Content-Type": "application/json" } }
   );
   
-  console.log("refresh API 응답:", response.status, response.data);
+  console.log("✅ refresh API 응답:", response.status, response.data);
   
   const newAccessToken = extractTokenFromResponse(response);
   if (!newAccessToken) {
@@ -132,6 +147,9 @@ const refreshAccessToken = async () => {
   }
   
   const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
+  console.log("🔄 새 리프레시 토큰 수신:", newRefreshToken ? "있음" : "없음");
+  
+  // 새 토큰 저장 (localStorage와 쿠키 모두)
   saveTokens(newAccessToken, newRefreshToken);
   
   return newAccessToken;

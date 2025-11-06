@@ -579,7 +579,7 @@ export default function AuthForm({
         return (
             <div className="w-full">
                  <div className="flex flex-col items-start gap-2 mb-8">
-              <p className="text-black text-lg md:text-xl font-regular">학교 인증</p>
+              <p className="text-black text-lg md:text-xl font-regular">학교 인증 <span className="text-red-500">*</span></p>
               <p className="text-black text-sm md:text-base font-regular">학교 인증을 위한 학생증이나 재학증명서를 업로드해주세요.</p>
               <p className="text-gray-500 text-sm md:text-base font-regular">(PNG, JPG, JPEG, PDF 업로드 가능)</p>
                 </div>
