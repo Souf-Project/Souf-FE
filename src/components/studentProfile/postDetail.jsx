@@ -27,7 +27,7 @@ import SEO from "../seo";
 import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
-import RecommendRecruit from "../recruit/recommendRecruit";
+// import RecommendRecruit from "../recruit/recommendRecruit";
 import basicLogoImg from "../../assets/images/basiclogoimg.png";
 import { FEED_ERRORS } from "../../constants/post";
 import { getCategoryNames } from "../../utils/categoryUtils";
@@ -562,7 +562,7 @@ const handleDeleteClick = () => {
           </div>
           <CommentList />
           <div className="mb-12">
-          <RecommendRecruit />
+          {/* <RecommendRecruit /> */}
           </div>
         
         </div>
