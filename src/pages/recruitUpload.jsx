@@ -1196,10 +1196,11 @@ export default function RecruitUpload() {
             </div>
         </div>
 
-          <div className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mb-4 mt-16">
+          <div className="flex items-center justify-between gap-2 text-xl nanum-myeongjo-extrabold text-[#2969E0] w-full text-left border-b-2 border-black pb-2 mt-16">
             LAST STEP . 
             {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
         </div>
+        <p className="text-sm text-neutral-500 mb-8">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p>
 
         <div className="flex gap-4 items-center justify-center">
         <button
@@ -1226,7 +1227,9 @@ export default function RecruitUpload() {
               작성 초기화/취소
           </button>
         </div>
+       
       </form>
+      
         <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
       </div>
       
