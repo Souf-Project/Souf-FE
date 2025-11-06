@@ -225,6 +225,13 @@ useEffect(() => {
           <span className="font-normal">{nickname}</span>
         </div>
       );
+    }  else if (roleType === "CLUB") {
+      return (
+        <div className="flex items-center gap-2 text-white justify-center">
+          <span className="font-bold">동아리</span>
+          <span className="font-normal">{nickname}</span>
+        </div>
+      );
     } else {
       return (
         <div className="flex items-center gap-2 text-white justify-center">

@@ -26,7 +26,7 @@ const processQueue = (error, token = null) => {
 const extractTokenFromHeaders = (headers) => {
   return headers['new-access-token'] || 
          headers['New-Access-Token'] || 
-         headers['X-New-Access-Token'];
+         headers['accessToken'];
 };
 
 // 응답에서 AccessToken 추출
@@ -34,6 +34,15 @@ const extractTokenFromResponse = (response) => {
   return response.data?.result?.accessToken || 
          response.data?.accessToken ||
          extractTokenFromHeaders(response.headers);
+};
+
+// 쿠키에서 값 읽기
+export const getCookie = (name) => {
+  const value = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${name}=`))
+    ?.split('=')[1];
+  return value || null;
 };
 
 // 쿠키 저장 함수
@@ -47,21 +56,31 @@ export const setCookie = (name, value, days = 30) => {
   
   // 도메인 포함 쿠키 설정 (서브도메인 포함)
   document.cookie = `${name}=${value}; expires=${expiresString}; path=/; domain=${window.location.hostname}; SameSite=Lax`;
-  
-  console.log(`✅ 쿠키 저장 완료: ${name} (만료: ${days}일 후)`);
+
 };
 
 // 토큰 저장
 const saveTokens = (accessToken, refreshToken = null) => {
   UserStore.getState().updateAccessToken(accessToken);
   localStorage.setItem("accessToken", accessToken);
+  
+  // refreshToken이 제공된 경우에만 저장 (서버에서 쿠키로 관리하는 경우가 많음)
   if (refreshToken) {
     localStorage.setItem("refreshToken", refreshToken);
-    // 리프레시 토큰을 쿠키에도 저장
-    console.log("🔄 리프레시 토큰 쿠키 저장 시도:", refreshToken ? "있음" : "없음");
+    // 리프레시 토큰을 쿠키에도 저장 (fallback)
+   
     setCookie("refreshToken", refreshToken, 30);
+    
   } else {
-    console.log("⚠️ 리프레시 토큰이 없어 쿠키에 저장하지 않음");
+    // refreshToken이 없으면 쿠키에서 확인
+    setTimeout(() => {
+      const refreshTokenFromCookie = getCookie("refreshToken"); 
+                                    
+      if (refreshTokenFromCookie) {
+        localStorage.setItem("refreshToken", refreshTokenFromCookie);
+      
+      }
+    }, 100);
   }
 };
 
@@ -121,21 +140,15 @@ const handleRefreshFailure = async () => {
 const refreshAccessToken = async () => {
   // localStorage와 쿠키 둘 다에서 refreshToken 확인
   const refreshTokenFromStorage = localStorage.getItem("refreshToken");
-  const refreshTokenFromCookie = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('refreshToken='))
-    ?.split('=')[1];
+  const refreshTokenFromCookie = getCookie("refreshToken") 
   
   const refreshToken = refreshTokenFromStorage || refreshTokenFromCookie;
   
-  console.log("🔄 토큰 재발급 API 호출:", `${SERVER_URL}/api/v1/auth/refresh`);
-  console.log("📦 localStorage refreshToken 존재:", !!refreshTokenFromStorage);
-  console.log("🍪 쿠키 refreshToken 존재:", !!refreshTokenFromCookie);
-  console.log("✅ 사용할 refreshToken:", refreshToken ? "있음" : "없음");
-  
+  // 쿠키로 refreshToken이 전송되므로 withCredentials: true만 사용
+  // body에 refreshToken을 보내지 않아도 쿠키로 자동 전송됨
   const response = await axios.post(
     `${SERVER_URL}/api/v1/auth/refresh`,
-    refreshToken ? { refreshToken } : {},
+    {},
     { withCredentials: true, headers: { "Content-Type": "application/json" } }
   );
   
@@ -146,19 +159,55 @@ const refreshAccessToken = async () => {
     throw new Error("토큰 재발급 응답에 새 토큰이 없습니다");
   }
   
-  const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
-  console.log("🔄 새 리프레시 토큰 수신:", newRefreshToken ? "있음" : "없음");
+  // 새 refreshToken은 쿠키로 받아옴
+  setTimeout(() => {
+    const newRefreshTokenFromCookie = getCookie("refreshToken")
+    if (newRefreshTokenFromCookie) {
+      localStorage.setItem("refreshToken", newRefreshTokenFromCookie);
+     
+    } else {
+      // 응답 데이터에 refreshToken이 있는 경우 (fallback)
+      const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
+      if (newRefreshToken) {
+        localStorage.setItem("refreshToken", newRefreshToken);
+       
+      } else {
+      }
+    }
+  }, 100);
   
-  // 새 토큰 저장 (localStorage와 쿠키 모두)
-  saveTokens(newAccessToken, newRefreshToken);
+  // 새 accessToken 저장
+  saveTokens(newAccessToken);
   
   return newAccessToken;
 };
 
 // 요청에 토큰 적용 및 재시도
-const retryRequest = (request, token) => {
-  request.headers.Authorization = `Bearer ${token}`;
-  return client(request);
+const retryRequest = (originalRequest, token) => {
+  // 원본 요청의 모든 정보를 보존하면서 새 토큰으로 재시도
+  // axios config 객체를 직접 수정하여 모든 속성 보존
+  const retryConfig = {
+    ...originalRequest,
+    // Authorization 헤더만 업데이트
+    headers: {
+      ...originalRequest.headers,
+      Authorization: `Bearer ${token}`,
+    },
+    // _retry 플래그를 제거하여 정상 요청으로 처리 (무한 루프 방지)
+    _retry: undefined,
+  };
+  
+  // 원본 요청의 모든 데이터 보존 (JSON, FormData, Blob 등)
+  // data는 이미 originalRequest에 포함되어 있으므로 별도 처리 불필요
+  
+  console.log("🔄 실패한 요청 재시도:", {
+    method: retryConfig.method,
+    url: retryConfig.url,
+    hasData: !!retryConfig.data,
+    dataType: retryConfig.data ? (retryConfig.data instanceof FormData ? 'FormData' : typeof retryConfig.data) : 'none',
+  });
+  
+  return client(retryConfig);
 };
 
 // 요청 인터셉터 추가
@@ -195,25 +244,28 @@ client.interceptors.response.use(
     // 401 에러 발생 시 토큰 재발급 시도
     if (status === 401 && !originalRequest._retry) {
       const requestUrl = originalRequest.url || originalRequest._fullUrl || '';
-      // console.log("401 에러 - 요청 URL:", requestUrl);
       
       // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
       if (requestUrl.includes('/api/v1/auth/refresh')) {
-        // console.log("refresh API 자체가 401 에러 발생 - 로그아웃 처리");
         await handleRefreshFailure();
         return Promise.reject(error);
       }
 
-      // console.log("401 에러 발생 - 토큰 재발급 시도 시작");
+      console.log("🔐 401 에러 발생 - 토큰 재발급 후 요청 재시도:", {
+        method: originalRequest.method,
+        url: originalRequest.url,
+        hasData: !!originalRequest.data,
+      });
+      
       originalRequest._retry = true;
 
       // 1. 헤더에 새 토큰이 포함된 경우
       const headerToken = extractTokenFromHeaders(error.response?.headers);
       if (headerToken) {
-        // console.log("헤더에서 새 토큰 발견");
+        console.log("✅ 헤더에서 새 토큰 발견 - 요청 재시도");
         saveTokens(headerToken);
         return retryRequest(originalRequest, headerToken).catch(err => {
-          console.error("재시도 요청 실패:", err);
+          console.error("❌ 재시도 요청 실패:", err);
           return Promise.reject(err);
         });
       }
@@ -221,10 +273,9 @@ client.interceptors.response.use(
       // 2. refresh API 호출
       if (!isRefreshing) {
         isRefreshing = true;
-        // console.log("refresh API 호출 시작");
         try {
           const newAccessToken = await refreshAccessToken();
-          console.log("토큰 재발급 성공");
+          console.log("✅ 토큰 재발급 성공 - 대기 중인 모든 요청 재시도");
           processQueue(null, newAccessToken);
           return retryRequest(originalRequest, newAccessToken);
         } catch (refreshError) {
@@ -238,10 +289,16 @@ client.interceptors.response.use(
         }
       } else {
         // 이미 재발급 중인 경우 대기
-        // console.log("이미 토큰 재발급 진행 중 - 대기");
+        console.log("⏳ 토큰 재발급 진행 중 - 요청 대기 중...");
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then(token => retryRequest(originalRequest, token));
+          failedQueue.push({ 
+            resolve: (token) => {
+              console.log("✅ 대기 중인 요청 재시도");
+              resolve(retryRequest(originalRequest, token));
+            }, 
+            reject 
+          });
+        });
       }
     }
 
@@ -250,9 +307,10 @@ client.interceptors.response.use(
       originalRequest._retry = true;
       const headerToken = extractTokenFromHeaders(error.response?.headers);
       if (headerToken) {
+        console.log("🔐 403 에러 - 헤더에서 새 토큰 발견, 요청 재시도");
         saveTokens(headerToken);
         return retryRequest(originalRequest, headerToken).catch(err => {
-          console.error("🔁 재시도 요청 실패:", err);
+          console.error("❌ 재시도 요청 실패:", err);
           return Promise.reject(err);
         });
       }
