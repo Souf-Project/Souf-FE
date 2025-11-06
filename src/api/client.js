@@ -152,7 +152,7 @@ const refreshAccessToken = async () => {
     { withCredentials: true, headers: { "Content-Type": "application/json" } }
   );
   
-  console.log("✅ refresh API 응답:", response.status, response.data);
+  // console.log(" refresh API 응답:", response.status, response.data);
   
   const newAccessToken = extractTokenFromResponse(response);
   if (!newAccessToken) {
@@ -200,12 +200,12 @@ const retryRequest = (originalRequest, token) => {
   // 원본 요청의 모든 데이터 보존 (JSON, FormData, Blob 등)
   // data는 이미 originalRequest에 포함되어 있으므로 별도 처리 불필요
   
-  console.log("🔄 실패한 요청 재시도:", {
-    method: retryConfig.method,
-    url: retryConfig.url,
-    hasData: !!retryConfig.data,
-    dataType: retryConfig.data ? (retryConfig.data instanceof FormData ? 'FormData' : typeof retryConfig.data) : 'none',
-  });
+  // console.log("실패한 요청 재시도:", {
+  //   method: retryConfig.method,
+  //   url: retryConfig.url,
+  //   hasData: !!retryConfig.data,
+  //   dataType: retryConfig.data ? (retryConfig.data instanceof FormData ? 'FormData' : typeof retryConfig.data) : 'none',
+  // });
   
   return client(retryConfig);
 };
@@ -221,7 +221,7 @@ client.interceptors.request.use(
       config.headers.set("Authorization", `Bearer ${accessToken}`);
       // console.log("Authorization 헤더 설정됨:", `Bearer ${accessToken.substring(0, 20)}...`);
     } else {
-      console.log("❌ 액세스 토큰이 없음");
+      // console.log("❌ 액세스 토큰이 없음");
     }
     
     return config;
@@ -251,18 +251,18 @@ client.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      console.log("🔐 401 에러 발생 - 토큰 재발급 후 요청 재시도:", {
-        method: originalRequest.method,
-        url: originalRequest.url,
-        hasData: !!originalRequest.data,
-      });
+      // console.log("401 에러 발생 - 토큰 재발급 후 요청 재시도:", {
+      //   method: originalRequest.method,
+      //   url: originalRequest.url,
+      //   hasData: !!originalRequest.data,
+      // });
       
       originalRequest._retry = true;
 
       // 1. 헤더에 새 토큰이 포함된 경우
       const headerToken = extractTokenFromHeaders(error.response?.headers);
       if (headerToken) {
-        console.log("✅ 헤더에서 새 토큰 발견 - 요청 재시도");
+        // console.log("헤더에서 새 토큰 발견 - 요청 재시도");
         saveTokens(headerToken);
         return retryRequest(originalRequest, headerToken).catch(err => {
           console.error("❌ 재시도 요청 실패:", err);
@@ -275,7 +275,7 @@ client.interceptors.response.use(
         isRefreshing = true;
         try {
           const newAccessToken = await refreshAccessToken();
-          console.log("✅ 토큰 재발급 성공 - 대기 중인 모든 요청 재시도");
+          // console.log("토큰 재발급 성공 - 대기 중인 모든 요청 재시도");
           processQueue(null, newAccessToken);
           return retryRequest(originalRequest, newAccessToken);
         } catch (refreshError) {
@@ -289,11 +289,11 @@ client.interceptors.response.use(
         }
       } else {
         // 이미 재발급 중인 경우 대기
-        console.log("⏳ 토큰 재발급 진행 중 - 요청 대기 중...");
+        // console.log("토큰 재발급 진행 중 - 요청 대기 중...");
         return new Promise((resolve, reject) => {
           failedQueue.push({ 
             resolve: (token) => {
-              console.log("✅ 대기 중인 요청 재시도");
+              // console.log("대기 중인 요청 재시도");
               resolve(retryRequest(originalRequest, token));
             }, 
             reject 
@@ -307,7 +307,7 @@ client.interceptors.response.use(
       originalRequest._retry = true;
       const headerToken = extractTokenFromHeaders(error.response?.headers);
       if (headerToken) {
-        console.log("🔐 403 에러 - 헤더에서 새 토큰 발견, 요청 재시도");
+        // console.log("403 에러 - 헤더에서 새 토큰 발견, 요청 재시도");
         saveTokens(headerToken);
         return retryRequest(originalRequest, headerToken).catch(err => {
           console.error("❌ 재시도 요청 실패:", err);
