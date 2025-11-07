@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import SouFLogo from '../assets/images/SouFLogo.svg';
 import backArrow from '../assets/images/backArrow.svg';
 
 export default function Footer() {
+  const navigate = useNavigate();
   return (
     <footer className="w-full z-30 bg-[#FCFEFF] border-t border-gray-200 py-8">
       <div className="flex flex-col gap-6 md:w-full md:max-w-[60rem] w-screen px-4 mx-auto">
@@ -42,7 +44,7 @@ export default function Footer() {
         <div className="flex gap-10 font-semibold text-md w-full text-gray-500">
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580c9a7e0e27d42c77ae5?source=copy_link', '_blank')}
+            onClick={navigate('/policy/page1')}
           >
             이용약관
           </div>
@@ -90,7 +92,7 @@ export default function Footer() {
         <div className="flex flex-col gap-1 font-semibold text-md w-full text-gray-500">
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580c9a7e0e27d42c77ae5?source=copy_link', '_blank')}
+            onClick={navigate('/policy/page1')}
           >
             이용약관
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-10" />
