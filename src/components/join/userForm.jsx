@@ -677,26 +677,34 @@ export default function UserForm({
           관심분야 {" "}
           <span className="text-gray-500 text-sm">(최소 1개 이상 선택)</span>
         </div>
-        {formData?.categoryDtos?.map((category, index) => (
+        {(formData?.categoryDtos || []).map((category, index) => (
           <CategorySelectBox
             key={index}
             title=""
             content=""
-            defaultValue={category}
+            defaultValue={category || {
+              firstCategory: null,
+              secondCategory: null,
+              thirdCategory: null,
+            }}
             type="text"
             isEditing={true}
             onChange={handleCategoryChange(index)}
           />
         ))}
-        {formData?.categoryDtos.length < 3 && (
+        {(!formData?.categoryDtos || formData?.categoryDtos.length < 3) && (
           <CategorySelectBox
-            key={formData?.categoryDtos.length + 1}
+            key={formData?.categoryDtos?.length || 0}
             title=""
             content=""
-            defaultValue={category}
+            defaultValue={{
+              firstCategory: null,
+              secondCategory: null,
+              thirdCategory: null,
+            }}
             type="text"
             isEditing={true}
-            onChange={handleCategoryChange(formData?.categoryDtos.length + 1)}
+            onChange={handleCategoryChange(formData?.categoryDtos?.length || 0)}
           />
         )}
       </div>

@@ -242,26 +242,31 @@ export default function AuthForm({
         }
 
         // 카테고리 데이터 정리 (null 값 제거)
-        const cleanedCategories = (parentFormData.categoryDtos || [])
-            .map((category) => {
-                if (!category) return null;
-                const cleaned = {};
-                if (category.firstCategory !== null && category.firstCategory !== undefined) {
-                    cleaned.firstCategory = Number(category.firstCategory);
-                }
-                if (category.secondCategory !== null && category.secondCategory !== undefined) {
-                    cleaned.secondCategory = Number(category.secondCategory);
-                }
-                if (category.thirdCategory !== null && category.thirdCategory !== undefined) {
-                    cleaned.thirdCategory = Number(category.thirdCategory);
-                }
-                return Object.keys(cleaned).length > 0 ? cleaned : null;
-            })
-            .filter(Boolean); // null 제거
+        // parentFormData가 없거나 categoryDtos가 없을 경우를 대비한 안전한 처리
+        const categoryDtos = parentFormData?.categoryDtos || [];
+        const cleanedCategories = Array.isArray(categoryDtos)
+            ? categoryDtos
+                .map((category) => {
+                    if (!category) return null;
+                    const cleaned = {};
+                    if (category.firstCategory !== null && category.firstCategory !== undefined) {
+                        cleaned.firstCategory = Number(category.firstCategory);
+                    }
+                    if (category.secondCategory !== null && category.secondCategory !== undefined) {
+                        cleaned.secondCategory = Number(category.secondCategory);
+                    }
+                    if (category.thirdCategory !== null && category.thirdCategory !== undefined) {
+                        cleaned.thirdCategory = Number(category.thirdCategory);
+                    }
+                    return Object.keys(cleaned).length > 0 ? cleaned : null;
+                })
+                .filter(Boolean) // null 제거
+            : [];
 
         // 최종 회원가입 데이터 생성
+        // parentFormData가 없을 경우를 대비한 안전한 처리
         let finalFormData = {
-            ...parentFormData,
+            ...(parentFormData || {}),
             categoryDtos: cleanedCategories,
         };
 
@@ -335,9 +340,9 @@ export default function AuthForm({
         // 소셜 로그인 회원가입인 경우
         if (socialLoginInfo?.socialLogin) {
             // parentFormData에서 약관 동의 값을 그대로 사용
-            const isPersonalInfoAgreed = parentFormData.isPersonalInfoAgreed || false;
-            const isServiceUtilizationAgreed = parentFormData.isServiceUtilizationAgreed || false;
-            const isMarketingAgreed = parentFormData.isMarketingAgreed || false;
+            const isPersonalInfoAgreed = parentFormData?.isPersonalInfoAgreed || false;
+            const isServiceUtilizationAgreed = parentFormData?.isServiceUtilizationAgreed || false;
+            const isMarketingAgreed = parentFormData?.isMarketingAgreed || false;
 
             let registrationToken = socialLoginInfo.registrationToken;
             console.log("registrationToken:", registrationToken);
@@ -378,7 +383,7 @@ export default function AuthForm({
                     passwordCheck: "qwerty123!",
                     schoolAuthenticatedImageFileName: finalFormData.schoolAuthenticatedImageFileName || "",
                     isPersonalInfoAgreed: finalFormData.isPersonalInfoAgreed || true,
-                    isServiceUtilizationAgreed: parentFormData.isServiceUtilizationAgreed || true,
+                    isServiceUtilizationAgreed: parentFormData?.isServiceUtilizationAgreed || true,
                     isMarketingAgreed: finalFormData.isMarketingAgreed || true,
                     isSuitableAged: finalFormData.isSuitableAged || true,
                     schoolName: finalFormData.schoolName || "",
@@ -440,7 +445,7 @@ export default function AuthForm({
                         businessClassification: selectedBusinessClassification ? selectedBusinessClassification.label : formData.businessClassification || "",
                         businessRegistrationFile: formData.businessRegistrationFile ? formData.businessRegistrationFile.name : "",
                         isPersonalInfoAgreed: finalFormData.isPersonalInfoAgreed || true,
-                        isServiceUtilizationAgreed: parentFormData.isServiceUtilizationAgreed || true,
+                        isServiceUtilizationAgreed: parentFormData?.isServiceUtilizationAgreed || true,
                         isMarketingAgreed: finalFormData.isMarketingAgreed || true,
                         isSuitableAged: finalFormData.isSuitableAged || true,
 
@@ -458,7 +463,7 @@ export default function AuthForm({
                         password: "qwerty123!",
                         passwordCheck: "qwerty123!",
                         isPersonalInfoAgreed: finalFormData.isPersonalInfoAgreed || true,
-                        isServiceUtilizationAgreed: parentFormData.isServiceUtilizationAgreed || true,
+                        isServiceUtilizationAgreed: parentFormData?.isServiceUtilizationAgreed || true,
                         isMarketingAgreed: finalFormData.isMarketingAgreed || true,
                         isSuitableAged: finalFormData.isSuitableAged || true,
 
@@ -480,9 +485,9 @@ export default function AuthForm({
 
         // 일반 회원가입인 경우
         // parentFormData에서 약관 동의 값을 그대로 사용 (재계산하지 않음)
-        const isPersonalInfoAgreed = parentFormData.isPersonalInfoAgreed || false;
-        const isServiceUtilizationAgreed = parentFormData.isServiceUtilizationAgreed || false;
-        const isMarketingAgreed = parentFormData.isMarketingAgreed || false;
+        const isPersonalInfoAgreed = parentFormData?.isPersonalInfoAgreed || false;
+        const isServiceUtilizationAgreed = parentFormData?.isServiceUtilizationAgreed || false;
+        const isMarketingAgreed = parentFormData?.isMarketingAgreed || false;
 
         finalFormData = {
             ...finalFormData,
