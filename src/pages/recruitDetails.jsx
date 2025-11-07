@@ -503,7 +503,7 @@ export default function RecruitDetail() {
             )}
 
           </div>
-          <p className="text-sm text-neutral-500 my-4">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p>
+          {/* <p className="text-sm text-neutral-500 my-4">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p> */}
           {/* <RecommendRecruit /> */}
           <EstimateBanner color="blue" />
 

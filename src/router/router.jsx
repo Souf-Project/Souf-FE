@@ -33,7 +33,10 @@ import Inspection from "../pages/inspection";
 import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
 import AlertModal from "../components/alertModal";
-import Page1 from "../pages/policy/page1";
+import TermsPage from "../pages/policy/terms";
+import PrivacyPage from "../pages/policy/privacy";
+import ComplainPage from "../pages/policy/complain";
+
 function AppRouter() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -87,7 +90,9 @@ function AppRouter() {
           <Route path="/withdraw" element={<Withdraw/>} />
           <Route path="/forbidden" element={<Forbidden/>} />
           <Route path="/guide" element={<CsPage/>} />
-          <Route path="/policy/page1" element={<Page1/>} />
+          <Route path="/policy/terms" element={<TermsPage/>} />
+          <Route path="/policy/privacy" element={<PrivacyPage/>} />
+          <Route path="/policy/complaintDispute" element={<ComplainPage/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

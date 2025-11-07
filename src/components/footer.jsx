@@ -34,7 +34,7 @@ export default function Footer() {
           <p>개인정보 관리자 : 박정곤</p>
        
         </div>
-        <p className="text-neutral-400 text-md">해당 사이트에서 판매되는 모든 상품에 대한 환불 및 모든 민원의 책임은 스프에 있습니다.</p>
+        {/* <p className="text-neutral-400 text-md">해당 사이트에서 판매되는 모든 상품에 대한 환불 및 모든 민원의 책임은 스프에 있습니다.</p> */}
 
        </div>
 
@@ -44,28 +44,28 @@ export default function Footer() {
         <div className="flex gap-10 font-semibold text-md w-full text-gray-500">
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={navigate('/policy/page1')}
+            onClick={() => navigate('/policy/terms')}
           >
             이용약관
           </div>
           
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={() => window.open('https://www.notion.so/293adbfeb0858054beecca8fe3d2e5cf?source=copy_link', '_blank')}
+            onClick={() => navigate('/policy/privacy')}
           >
             개인정보처리방침
           </div>
           
-          <div 
+          {/* <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
             onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580eda58dec894c1c9463?source=copy_link', '_blank')}
           >
           결제·정산·환불(에스크로) 정책
-          </div>
+          </div> */}
           
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580b59ce9c871ba2f2fb3?source=copy_link', '_blank')}
+            onClick={() => navigate('/policy/complaintDispute')}
           >
           분쟁처리방침
             </div>
@@ -84,7 +84,7 @@ export default function Footer() {
           <p>주소 : 서울특별시 광진구 광나루로19길 23, 103호</p>
           <p>개인정보 관리자 : 박정곤</p>
         </div>
-        <p className="text-neutral-400 text-md">해당 사이트에서 판매되는 모든 상품에 대한 환불 및 모든 민원의 책임은 스프에 있습니다.</p>
+        {/* <p className="text-neutral-400 text-md">해당 사이트에서 판매되는 모든 상품에 대한 환불 및 모든 민원의 책임은 스프에 있습니다.</p> */}
 
        </div>
        <div className="block md:hidden">
@@ -92,7 +92,7 @@ export default function Footer() {
         <div className="flex flex-col gap-1 font-semibold text-md w-full text-gray-500">
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={navigate('/policy/page1')}
+            onClick={() => navigate('/policy/terms')}
           >
             이용약관
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-10" />
@@ -100,23 +100,23 @@ export default function Footer() {
           
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={() => window.open('https://www.notion.so/293adbfeb0858054beecca8fe3d2e5cf?source=copy_link', '_blank')}
+            onClick={() => navigate('/policy/privacy')}
           >
             개인정보처리방침
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-10" />
           </div>
           
-          <div 
+          {/* <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
             onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580eda58dec894c1c9463?source=copy_link', '_blank')}
           >
           결제·정산·환불(에스크로) 정책
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-10" />
-          </div>
+          </div> */}
           
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
-            onClick={() => window.open('https://www.notion.so/SouF-293adbfeb08580b59ce9c871ba2f2fb3?source=copy_link', '_blank')}
+            onClick={() => navigate('/policy/complaintDispute')}
           >
           분쟁처리방침
             <img src={backArrow} alt="backArrow" className="w-6 h-6 rotate-180 brightness-10" />
