@@ -122,11 +122,18 @@ export default function AccountForm({
       }
 
       // 약관 동의 검증 (마케팅 수신 동의는 선택 사항이므로 제외)
+      // 별도로 검증하여 각 항목마다 다른 에러 메시지 표시
+      let agreementError = null;
       if (!isSuitableAged || !isPersonalInfoAgreed || !isServiceUtilizationAgreed) {
         newErrors.agreement = true;
-        if (!errorKey) {
-          errorKey = "M400-5";
-          errorMessage = SIGNUP_ERRORS["M400-5"] || "개인정보 동의서에 동의해야 합니다.";
+        
+        // 제일 위에 있는 항목부터 순서대로 체크하여 첫 번째로 체크되지 않은 항목의 에러 메시지 표시
+        if (!isSuitableAged) {
+          agreementError = "만 18세 이상임에 동의해주세요.";
+        } else if (!isPersonalInfoAgreed) {
+          agreementError = "개인정보 수집 및 이용에 동의해주세요.";
+        } else if (!isServiceUtilizationAgreed) {
+          agreementError = "서비스 이용 약관에 동의해주세요.";
         }
       }
 
@@ -135,7 +142,15 @@ export default function AccountForm({
         setErrors((prev) => ({ ...prev, ...newErrors }));
       }
 
-      // 에러가 있으면 모달 표시
+      // 약관 동의 에러가 있으면 별도로 모달 표시
+      if (agreementError) {
+        setErrorModalTitle("약관 동의 필요");
+        setErrorModalDescription(agreementError);
+        setShowErrorModal(true);
+        return false;
+      }
+
+      // 다른 에러가 있으면 모달 표시
       if (errorKey || Object.keys(newErrors).length > 0) {
         setErrorModalTitle("입력 오류");
         setErrorModalDescription(errorMessage || "필수 항목을 모두 입력해주세요.");
@@ -371,7 +386,13 @@ export default function AccountForm({
         <p className="text-black text-base font-normal border-t border-gray-200 pt-4">회원 가입 시에 기입된 정보는 회원 관리 및 서비스 이용 등의 목적으로 수집 및 관리하고 있습니다.</p>
         {validationErrors.agreement && (
           <p className="text-xs font-medium text-red-500">
-            {SIGNUP_ERRORS["M400-5"] || "개인정보 동의서에 동의해야 합니다."}
+            {!isSuitableAged 
+              ? "만 18세 이상임에 동의해주세요."
+              : !isPersonalInfoAgreed
+              ? "개인정보 수집 및 이용에 동의해주세요."
+              : !isServiceUtilizationAgreed
+              ? "서비스 이용 약관에 동의해주세요."
+              : "필수 약관에 동의해주세요."}
           </p>
         )}
         {/* 전체 선택 버튼 */}
