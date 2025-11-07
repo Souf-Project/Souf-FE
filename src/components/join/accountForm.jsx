@@ -451,7 +451,7 @@ export default function AccountForm({
               />
               <span className="text-zinc-700 text-lg font-normal">
                 만 18세 이상입니다.
-                <span className="text-sm text-red-500 ml-1">*</span>
+                <span className="text-lg text-red-500 ml-1">*</span>
               </span>
             </button>
           </div>
@@ -482,7 +482,7 @@ export default function AccountForm({
                 개인정보 수집 및 이용 동의
                
               </span>
-              <span className="text-sm text-red-500 ml-1">*</span>
+              <span className="text-lg text-red-500 ml-1">*</span>
               </p>
             </button>
           </div>
@@ -513,7 +513,7 @@ export default function AccountForm({
               >
                 서비스 이용 약관 동의
                 </span>
-              <span className="text-sm text-red-500 ml-1">*</span>
+              <span className="text-lg text-red-500 ml-1">*</span>
               </p>
             </button>
           </div>
