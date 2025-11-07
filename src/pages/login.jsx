@@ -46,17 +46,14 @@ export default function Login() {
         
         if (refreshTokenFromCookie) {
           localStorage.setItem("refreshToken", refreshTokenFromCookie);
-          console.log("🔐 [로그인] 쿠키에서 리프레시 토큰 읽기 성공:", "✅ 저장됨");
-          console.log("🔐 [로그인] 쿠키 값:", `${refreshTokenFromCookie.substring(0, 20)}...`);
+       
         } else {
           // 응답 데이터에 refreshToken이 있는 경우 (fallback)
           if (result.refreshToken) {
             localStorage.setItem("refreshToken", result.refreshToken);
             setCookie("refreshToken", result.refreshToken, 30);
-            console.log("🔐 [로그인] 응답에서 리프레시 토큰 저장:", "✅ 저장됨");
-          } else {
-            console.log("⚠️ [로그인] 리프레시 토큰을 찾을 수 없음 (쿠키 및 응답 모두 확인)");
-          }
+           
+          } 
         }
       }, 100);
 

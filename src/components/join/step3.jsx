@@ -402,6 +402,35 @@ export default function Step3({ socialLoginInfo, selectedType }) {
 
   const handleBack = () => {
     if (subStep > 1) {
+      // 이전 단계로 돌아갈 때 formData 보존
+      // categoryDtos가 없을 경우를 대비하여 기본값 설정
+      setFormData((prev) => {
+        const updatedFormData = { ...prev };
+        
+        // categoryDtos가 없거나 배열이 아닌 경우 기본값 설정
+        if (!updatedFormData.categoryDtos || !Array.isArray(updatedFormData.categoryDtos)) {
+          updatedFormData.categoryDtos = [
+            {
+              firstCategory: null,
+              secondCategory: null,
+              thirdCategory: null,
+            },
+            {
+              firstCategory: null,
+              secondCategory: null,
+              thirdCategory: null,
+            },
+            {
+              firstCategory: null,
+              secondCategory: null,
+              thirdCategory: null,
+            },
+          ];
+        }
+        
+        return updatedFormData;
+      });
+      
       setSubStep(subStep - 1);
     }
   };
