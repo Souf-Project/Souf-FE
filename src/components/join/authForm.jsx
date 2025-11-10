@@ -6,6 +6,7 @@ import DaumPostcode from "react-daum-postcode";
 import ButtonInput from "../buttonInput";
 import infoIcon from "../../assets/images/infoIcon.svg";
 import { postSignUp, postSignupFileUpload, uploadToS3 } from "../../api/member";
+import { postSocialSignUp } from "../../api/social";
 
 export default function AuthForm({ 
     selectedType = "MEMBER",
@@ -339,13 +340,22 @@ export default function AuthForm({
 
         // 소셜 로그인 회원가입인 경우
         if (socialLoginInfo?.socialLogin) {
+            console.log("🔐 [소셜 회원가입] 시작");
+            console.log("🔐 [소셜 회원가입] 계정 타입:", selectedType);
+            
             // parentFormData에서 약관 동의 값을 그대로 사용
             const isPersonalInfoAgreed = parentFormData?.isPersonalInfoAgreed || false;
             const isServiceUtilizationAgreed = parentFormData?.isServiceUtilizationAgreed || false;
             const isMarketingAgreed = parentFormData?.isMarketingAgreed || false;
+            
+            console.log("🔐 [소셜 회원가입] 약관 동의 상태:", {
+                isPersonalInfoAgreed,
+                isServiceUtilizationAgreed,
+                isMarketingAgreed
+            });
 
             let registrationToken = socialLoginInfo.registrationToken;
-            console.log("registrationToken:", registrationToken);
+            console.log("🔐 [소셜 회원가입] registrationToken (원본):", registrationToken);
             if (!registrationToken || registrationToken === null || registrationToken === undefined) {
                 console.error("registrationToken이 없습니다:", registrationToken);
                 alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
@@ -370,6 +380,14 @@ export default function AuthForm({
             let signupReqDto = {};
 
             if (selectedType === "STUDENT") {
+                console.log("🎓 [소셜 회원가입] 학생 계정 처리 시작");
+                console.log("🎓 [소셜 회원가입] 학생 인증 파일:", {
+                    hasFile: !!schoolAuthenticatedImageFileName,
+                    fileName: schoolAuthenticatedImageFileName?.name || "없음",
+                    fileSize: schoolAuthenticatedImageFileName?.size || 0,
+                    fileType: schoolAuthenticatedImageFileName?.type || "없음"
+                });
+                
                 // StudentSignupReqDto 구성
                 signupReqDto = {
                     roleType: "STUDENT",
@@ -389,10 +407,26 @@ export default function AuthForm({
                     schoolName: finalFormData.schoolName || "",
                     educationType: finalFormData.educationType || "",
                     majorReqDtos: finalFormData.majorReqDtos || [],
-                    schoolAuthenticatedImageFileName: finalFormData.schoolAuthenticatedImageFileName || "",
                 };
+                
+                console.log("🎓 [소셜 회원가입] 학생 signupReqDto:", {
+                    ...signupReqDto,
+                    categoryDtos: cleanedCategories.length,
+                    majorReqDtos: signupReqDto.majorReqDtos?.length || 0
+                });
             } else if (selectedType === "MEMBER") {
+                console.log("💼 [소셜 회원가입] 일반 회원 계정 처리 시작");
+                console.log("💼 [소셜 회원가입] 회원 타입:", selectedMemberType);
+                
                 if (selectedMemberType === "사업자") {
+                    console.log("💼 [소셜 회원가입] 사업자 계정 처리");
+                    console.log("💼 [소셜 회원가입] 사업자등록증 파일:", {
+                        hasFile: !!formData.businessRegistrationFile,
+                        fileName: formData.businessRegistrationFile?.name || "없음",
+                        fileSize: formData.businessRegistrationFile?.size || 0,
+                        fileType: formData.businessRegistrationFile?.type || "없음"
+                    });
+                    
                     // 사업자 필수 필드 검증
                     const newErrors = {
                         businessClassification: !formData.businessClassification || formData.businessClassification.trim() === "",
@@ -400,14 +434,18 @@ export default function AuthForm({
                         businessStatus: !formData.businessStatus || formData.businessStatus.trim() === "",
                     };
                     
+                    console.log("💼 [소셜 회원가입] 사업자 필드 검증:", newErrors);
+                    
                     // 에러가 있으면 상태 업데이트하고 종료
                     if (newErrors.businessClassification || newErrors.businessRegistrationNumber || newErrors.businessStatus) {
+                        console.error("💼 [소셜 회원가입] 사업자 필드 검증 실패");
                         setBusinessValidationErrors(newErrors);
                         return;
                     }
                     
                     // 사업자 등록증 파일 검증
                     if (!formData.businessRegistrationFile) {
+                        console.error("💼 [소셜 회원가입] 사업자등록증 파일 없음");
                         setBusinessFileError(true);
                         return;
                     }
@@ -450,8 +488,15 @@ export default function AuthForm({
                         isSuitableAged: finalFormData.isSuitableAged || true,
 
                     };
+                    
+                    console.log("💼 [소셜 회원가입] 사업자 signupReqDto:", {
+                        ...signupReqDto,
+                        categoryDtos: cleanedCategories.length,
+                        businessRegistrationFile: signupReqDto.businessRegistrationFile
+                    });
                 } else {
                     // 일반 회원 (isCompany: false)
+                    console.log("💼 [소셜 회원가입] 일반 회원 (사업자 아님)");
                     signupReqDto = {
                         roleType: "MEMBER",
                         email: finalFormData.email || "",
@@ -468,6 +513,11 @@ export default function AuthForm({
                         isSuitableAged: finalFormData.isSuitableAged || true,
 
                     };
+                    
+                    console.log("💼 [소셜 회원가입] 일반 회원 signupReqDto:", {
+                        ...signupReqDto,
+                        categoryDtos: cleanedCategories.length
+                    });
                 }
             }
 
@@ -475,10 +525,120 @@ export default function AuthForm({
                 registrationToken: registrationToken,
                 signupReqDto: signupReqDto,
             };
-            console.log("socialSignupData:", socialSignupData);
+            
+            console.log("📤 [소셜 회원가입] 전송할 데이터:", {
+                registrationToken: registrationToken ? `${registrationToken.substring(0, 20)}...` : "없음",
+                signupReqDto: {
+                    roleType: signupReqDto.roleType,
+                    email: signupReqDto.email,
+                    nickname: signupReqDto.nickname,
+                    categoryDtos: signupReqDto.categoryDtos?.length || 0,
+                    hasSchoolFile: !!signupReqDto.schoolAuthenticatedImageFileName,
+                    hasBusinessFile: !!signupReqDto.businessRegistrationFile,
+                }
+            });
 
             if (socialSignUp) {
-                socialSignUp.mutate(socialSignupData);
+                console.log("🚀 [소셜 회원가입] API 호출 시작");
+                socialSignUp.mutate(socialSignupData, {
+                    onSuccess: async (response) => {
+                        console.log("✅ [소셜 회원가입] API 호출 성공");
+                        console.log("✅ [소셜 회원가입] 응답 데이터:", response);
+                        
+                        const result = response?.result || response?.data?.result;
+                        const memberId = result?.memberId;
+                        
+                        // dtoList 또는 presignedUrlResDto 확인
+                        const dtoList = result?.dtoList;
+                        const presignedUrlResDto = result?.presignedUrlResDto;
+                        
+                        console.log("✅ [소셜 회원가입] 회원가입 결과:", {
+                            memberId,
+                            hasDtoList: !!dtoList,
+                            hasPresignedUrlResDto: !!presignedUrlResDto,
+                            dtoListLength: Array.isArray(dtoList) ? dtoList.length : (dtoList ? 1 : 0),
+                            presignedUrlResDto: presignedUrlResDto
+                        });
+                        
+                        const filesToUpload = [];
+                        
+                        // dtoList 또는 presignedUrlResDto를 배열로 변환
+                        let dtoArray = [];
+                        if (dtoList) {
+                            dtoArray = Array.isArray(dtoList) ? dtoList : [dtoList];
+                        } else if (presignedUrlResDto) {
+                            // presignedUrlResDto가 단일 객체인 경우 배열로 변환
+                            dtoArray = [presignedUrlResDto];
+                        }
+                        
+                        // 학생 인증 파일 업로드
+                        if (selectedType === "STUDENT" && schoolAuthenticatedImageFileName) {
+                            const studentDto = dtoArray.find(dto => 
+                                (dto.contentType?.includes('image') || dto.contentType?.includes('pdf'))
+                            ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                            
+                            if (studentDto && studentDto.presignedUrl) {
+                                filesToUpload.push({
+                                    file: schoolAuthenticatedImageFileName,
+                                    dto: studentDto
+                                });
+                            }
+                        }
+                        
+                        // 사업자등록증 파일 업로드
+                        if (selectedType === "MEMBER" && selectedMemberType === "사업자" && formData.businessRegistrationFile) {
+                            const businessDto = dtoArray.find(dto => 
+                                dto.contentType?.includes('pdf')
+                            ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                            
+                            if (businessDto && businessDto.presignedUrl) {
+                                filesToUpload.push({
+                                    file: formData.businessRegistrationFile,
+                                    dto: businessDto
+                                });
+                            }
+                        }
+                        
+                        // 파일 업로드 실행
+                        if (filesToUpload.length > 0) {
+                            try {
+                                // 각 파일을 순차적으로 업로드
+                                await Promise.all(
+                                    filesToUpload.map(async ({ file, dto }) => {
+                                        // 1. presignedUrl로 S3에 파일 업로드
+                                        if (dto?.presignedUrl) {
+                                            await uploadToS3(dto.presignedUrl, file);
+                                        
+                                            // 2. S3 업로드 성공 후 서버에 파일 정보 전송
+                                            const fileUrl = [dto.fileUrl];
+                                            const fileName = [file.name];
+                                            const fileType = [file.type.split('/')[1]?.toUpperCase() || 'PDF'];
+                                            const purpose = [];
+                                            await postSignupFileUpload(
+                                                memberId,
+                                                fileUrl,
+                                                fileName,
+                                                fileType,
+                                                purpose
+                                            );
+                                        }
+                                    })
+                                );
+                            } catch (error) {
+                                console.error("❌ [소셜 회원가입] 파일 업로드 중 오류 발생:", error);
+                                alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
+                            }
+                        }
+                    },
+                    onError: (error) => {
+                        console.error("❌ [소셜 회원가입] API 호출 실패:", error);
+                        console.error("❌ [소셜 회원가입] 에러 상세:", {
+                            message: error.message,
+                            response: error.response?.data,
+                            status: error.response?.status
+                        });
+                    }
+                });
             }
             return;
         }
