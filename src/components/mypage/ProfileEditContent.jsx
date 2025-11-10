@@ -97,6 +97,13 @@ export default function ProfileEditContent() {
         return urlParts[urlParts.length - 1];
       };
 
+      console.log("📤 [프로필 수정] 시작");
+      console.log("📤 [프로필 수정] selectedFile:", selectedFile ? {
+        name: selectedFile.name,
+        size: selectedFile.size,
+        type: selectedFile.type
+      } : null);
+      
       const updatePayload = {
         username: dataToSave.username,
         nickname: dataToSave.nickname,
@@ -106,29 +113,66 @@ export default function ProfileEditContent() {
         profileOriginalFileName: selectedFile ? selectedFile.name : null,
         marketingAgreement: marketingAgreement, // 마케팅 동의 여부 추가
       };
-
       // 이미지를 수정하지 않을 때만 profileImageUrl 추가
       if (!selectedFile && formData.profileImageUrl) {
         updatePayload.profileImageUrl = formData.profileImageUrl;
       }
-      const updateResponse = await updateProfileInfo(updatePayload);
+
+      let updateResponse;
+      try {
+        updateResponse = await updateProfileInfo(updatePayload);
+      } catch (error) {
+        console.error("❌ [프로필 수정] API 호출 실패:", error);
+        console.error("❌ [프로필 수정] 에러 상세:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+          payload: updatePayload
+        });
+        throw error; 
+      }
+  
 
       // 2. 새 파일이 있고, 서버가 Presigned URL을 반환한 경우
-      if (selectedFile && updateResponse.result?.dtoList?.presignedUrl) {
-        const { memberId, dtoList } = updateResponse.result;
-        const { presignedUrl, fileUrl } = dtoList;
+      // dtoList 또는 presignedUrlResDto 확인
+      const result = updateResponse.result;
+      const dtoList = result?.dtoList;
+      const presignedUrlResDto = result?.presignedUrlResDto;
+      
+      // presignedUrl과 fileUrl 추출
+      let presignedUrl = null;
+      let fileUrl = null;
+      let memberId = result?.memberId;
+      
+      if (dtoList?.presignedUrl) {
+        presignedUrl = dtoList.presignedUrl;
+        fileUrl = dtoList.fileUrl;
+      } else if (presignedUrlResDto?.presignedUrl) {
+        presignedUrl = presignedUrlResDto.presignedUrl;
+        fileUrl = presignedUrlResDto.fileUrl;
+      } else if (dtoList && typeof dtoList === 'object' && dtoList.presignedUrl) {
+        presignedUrl = dtoList.presignedUrl;
+        fileUrl = dtoList.fileUrl;
+      }
+      
+      
+      if (selectedFile && presignedUrl) {
 
-        // 2a. S3에 파일 업로드
+        // 2. S3에 파일 업로드
         await uploadToS3(presignedUrl, selectedFile);
 
-        // 2b. S3 업로드 완료 후, 서버에 최종 정보 전송
         await confirmImageUpload({
           postId: memberId,
           fileUrl: `${S3_BUCKET_URL}${fileUrl}`,
           fileName: [selectedFile.name],
-          fileType: [selectedFile.type.split('/')[1].toLowerCase()] // ✅ JS 배열
+          fileType: [selectedFile.type.split('/')[1].toLowerCase()],
         });
         
+      } else {
+        console.warn("⚠️ [프로필 수정] 파일 업로드 조건 불만족:", {
+          hasSelectedFile: !!selectedFile,
+          hasPresignedUrl: !!presignedUrl
+        });
       }
       
       return updateResponse;

@@ -24,6 +24,7 @@ export async function confirmImageUpload({ postId, fileUrl, fileName, fileType }
       fileType: Array.isArray(fileType)
     ? fileType.map(type => type.toUpperCase())
     : [fileType.toUpperCase()],
+    filePurpose: []
 };
     
     console.log("S3 업로드 후 /upload 엔드포인트로 전송될 최종 데이터:", requestData);
