@@ -660,16 +660,23 @@ export default function AuthForm({
             // signUp.mutate를 사용하여 mutation의 onSuccess가 자동으로 호출되도록 함
             signUp.mutate(finalFormData, {
                 onSuccess: async (response) => {
-                    const result = response.data?.result;
+                    const result = response?.result || response?.data?.result;
                     const memberId = result?.memberId;
+                    
+                    // dtoList 또는 presignedUrlResDto 확인
                     const dtoList = result?.dtoList;
+                    const presignedUrlResDto = result?.presignedUrlResDto;
                     
                     const filesToUpload = [];
                     
-                    // dtoList가 배열인지 단일 객체인지 확인
-                    const dtoArray = dtoList 
-                        ? (Array.isArray(dtoList) ? dtoList : [dtoList])
-                        : [];
+                    // dtoList 또는 presignedUrlResDto를 배열로 변환
+                    let dtoArray = [];
+                    if (dtoList) {
+                        dtoArray = Array.isArray(dtoList) ? dtoList : [dtoList];
+                    } else if (presignedUrlResDto) {
+                        // presignedUrlResDto가 단일 객체인 경우 배열로 변환
+                        dtoArray = [presignedUrlResDto];
+                    }
                     
                     // 학생 인증 파일 업로드
                     if (selectedType === "STUDENT" && schoolAuthenticatedImageFileName) {
@@ -688,7 +695,7 @@ export default function AuthForm({
                     // 사업자등록증 파일 업로드
                     if (selectedType === "MEMBER" && selectedMemberType === "사업자" && formData.businessRegistrationFile) {
                         const businessDto = dtoArray.find(dto => 
-                            dto.contentType?.includes('pdf')
+                            dto.contentType?.toLowerCase().includes('pdf') || dto.contentType?.toLowerCase() === 'application/pdf'
                         ) || (dtoArray.length > 0 ? dtoArray[0] : null);
                         
                         if (businessDto && businessDto.presignedUrl) {
@@ -713,7 +720,7 @@ export default function AuthForm({
                                         const fileUrl = [dto.fileUrl];
                                         const fileName = [file.name];
                                         const fileType = [file.type.split('/')[1]?.toUpperCase() || 'PDF'];
-                                        const purpose = ["SIGNUP"];
+                                        const purpose = [];
                                         await postSignupFileUpload(
                                             memberId,
                                             fileUrl,
@@ -721,19 +728,23 @@ export default function AuthForm({
                                             fileType,
                                             purpose
                                         );
-                                       
                                     }
                                 })
                             );
                         } catch (error) {
-                            console.error("파일 업로드 중 오류 발생:", error);
+                            console.error("❌ [일반 회원가입] 파일 업로드 중 오류 발생:", error);
                             alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
                         }
                     }
                   
                 },
                 onError: (error) => {
-                    console.error("회원가입 실패:", error);
+                    console.error("❌ [일반 회원가입] 회원가입 실패:", error);
+                    console.error("❌ [일반 회원가입] 에러 상세:", {
+                        message: error.message,
+                        response: error.response?.data,
+                        status: error.response?.status
+                    });
                 }
             });
         }

@@ -575,7 +575,7 @@ export default function Home() {
         {/* <ReviewBox /> */}
 
       {/* 실시간 매칭 금액 섹션 */}
-    <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4">
+  {/* <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4"> */}
     {/* <div className="flex items-center mb-8 gap-4">
       <h2 className="text-2xl font-semibold">
         실시간 매칭 금액
@@ -616,12 +616,12 @@ export default function Home() {
           </>
         )}
       </div> */}
-      </div>
+      {/* </div> */}
 
       {/* 무료 외주 등록 섹션 */}
-      <div className="flex mt-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
+      {/* <div className="flex mt-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
         <EstimateBanner color="black" />
-      </div>
+      </div> */}
 
       <div className="flex flex-col gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
        <div className="flex w-full justify-between items-end">
