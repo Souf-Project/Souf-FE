@@ -229,7 +229,7 @@ const handleDeleteClick = () => {
   };
 
   const handleDeclareClick = (declareData) => {
-    console.log('프로필 신고 데이터:', declareData);
+    // console.log('프로필 신고 데이터:', declareData);
     // 여기에 신고 API 호출
   };
 
@@ -500,7 +500,11 @@ const handleDeleteClick = () => {
                      
                   </div>
                   <DeclareButton 
-                contentType="프로필" 
+                postType="PROFILE"
+                postId={worksId}
+                title={worksData?.topic || worksData?.content || "작품"}
+                reporterId={memberId}
+                reportedMemberId={worksData?.memberId || id}
                 onDeclare={handleDeclareClick}
                 iconClassName="w-7 h-7 cursor-pointer ml-auto"
               />
