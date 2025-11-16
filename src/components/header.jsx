@@ -120,7 +120,7 @@ useEffect(() => {
       setShowFeedAlertModal(true);
       return false;
     }
-    if (roleType !== "STUDENT" && roleType !== "ADMIN") {
+    if (roleType !== "STUDENT" && roleType !== "CLUB") {
       setShowFeedAlertModal(true);
       return false;
     }
@@ -401,7 +401,7 @@ const DesktopHeader = () => (
                         공고문 작성하기
                       </button>
                     )}
-                    {roleType === "STUDENT" && (
+                    {(roleType === "STUDENT" || roleType === "CLUB") && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
                         onClick={() => handleNavigation("/postUpload")}
@@ -511,14 +511,22 @@ const DesktopHeader = () => (
         >
           마이페이지
         </button>
-        <button
-          className="block w-full px-3 py-2 text-left text-gray-700"
-          onClick={() =>
-            handleNavigation(roleType === "MEMBER" ? "/recruitUpload" : "/postUpload")
-          }
-        >
-          {roleType === "MEMBER" ? "공고문 작성하기" : "피드 작성하기"}
-        </button>
+        {roleType === "MEMBER" && (
+          <button
+            className="block w-full px-3 py-2 text-left text-gray-700"
+            onClick={() => handleNavigation("/recruitUpload")}
+          >
+            공고문 작성하기
+          </button>
+        )}
+        {(roleType === "STUDENT" || roleType === "CLUB") && (
+          <button
+            className="block w-full px-3 py-2 text-left text-gray-700"
+            onClick={() => handleNavigation("/postUpload")}
+          >
+            피드 작성하기
+          </button>
+        )}
         <button
           className="block w-full px-3 py-2 text-left text-gray-700"
           onClick={toggleLogin}
@@ -578,7 +586,7 @@ const DesktopHeader = () => (
         <AlertModal
           type="simple"
           title="권한이 없습니다"
-          description="피드 등록은 학생 계정만 이용할 수 있습니다."
+          description="피드 등록은 학생 또는 동아리 계정만 이용할 수 있습니다."
           TrueBtnText="로그인하러 가기"
           FalseBtnText="취소"
           onClickTrue={() => {

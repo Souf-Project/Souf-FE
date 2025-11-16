@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
 import starOn from "../../assets/images/starOn.svg";
 import starOff from "../../assets/images/starOff.svg";
-import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
+import basicLogoImg from "../../assets/images/basiclogoimg.png";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProfileDetail } from "../../api/profile";
@@ -13,6 +13,219 @@ import SEO from "../seo";
 import DeclareButton from "../declare/declareButton";
 import { FAVORITE_ERRORS } from "../../constants/user";
 import { handleApiError } from "../../utils/apiErrorHandler";
+
+// 학생 계정 프로필 UI 컴포넌트
+const StudentProfileUI = ({
+  userData,
+  userWorks,
+  star,
+  isAnimating,
+  showIntroSkeleton,
+  handleFavorite,
+  handleDeclareClick,
+  onWorkClick,
+  S3_BUCKET_URL,
+  basicLogoImg
+}) => {
+  return (
+    <div className="rounded-2xl border border-gray p-6 md:p-8 mb-8 mt-4 w-full">
+      <div className="flex gap-12 mb-4 md:mb-6 pl-6">
+        {/* 프로필 이미지 */}
+        <img 
+          src={userData?.profileImageUrl || basicLogoImg} 
+          className="rounded-full w-[15%] md:w-1/4 object-cover" 
+          alt="프로필 이미지"
+          onError={(e) => {
+            e.target.src = basicLogoImg;
+          }}
+        />
+        
+        <div className="flex flex-col gap-1 md:gap-2 max-sm:text-[14px] md:mt-4 w-full overflow-hidden">
+          <div className="flex justify-between">
+            {/* 닉네임 */}
+            {userData?.nickname ? (
+              <div className="font-semibold text-[20px] md:text-[23px]">{userData.nickname}</div>
+            ) : (
+              <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+            )}
+            
+            <div className="flex items-center gap-2">
+              {/* 즐겨찾기 버튼 - 로그인한 사용자이고 본인이 아닐 때만 */}
+              {UserStore.getState().memberId && UserStore.getState().memberId !== userData?.id && (
+                <button
+                  className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
+                    isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
+                  } hover:scale-110 `}
+                  onClick={handleFavorite}
+                >
+                  <img 
+                    src={star ? starOn : starOff} 
+                    alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                    className="w-8 h-8"
+                  />
+                </button>
+              )}
+              <DeclareButton 
+                contentType="프로필" 
+                onDeclare={handleDeclareClick}
+                iconClassName="w-7 h-7 cursor-pointer ml-auto"
+              />
+            </div>
+          </div>
+        
+          {/* 자기소개 */}
+          {userData?.intro ? (
+            <div className="text-[#5B5B5B] break-words w-full">{userData.intro}</div>
+          ) : showIntroSkeleton ? (
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+          ) : (
+            <div className="text-[#5B5B5B] opacity-50"></div>
+          )}
+          
+          {/* 개인 URL */}
+          {userData?.personalUrl ? (
+            <div className="text-[#5B5B5B] break-words w-full">{userData.personalUrl}</div>
+          ) : showIntroSkeleton ? (
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+          ) : (
+            <div className="text-[#5B5B5B] opacity-50"></div>
+          )}
+        </div>
+      </div>
+      <hr className="border-t border-gray-200 my-6" />
+      {userWorks && userWorks.length > 0 ? (
+        <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
+          {userWorks.map((data) => (
+            <img
+              key={data.feedId}
+              src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : basicLogoImg}
+              className="w-full h-44 sm:h-64 object-cover rounded-lg"
+              onClick={() => onWorkClick(data.feedId)}
+              alt="작품 이미지"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="text-gray-500 text-lg">등록된 피드가 없습니다.</div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 동아리 계정 프로필 UI 컴포넌트
+const ClubProfileUI = ({
+  userData,
+  userWorks,
+  star,
+  isAnimating,
+  showIntroSkeleton,
+  handleFavorite,
+  handleDeclareClick,
+  onWorkClick,
+  S3_BUCKET_URL,
+  basicLogoImg
+}) => {
+  return (
+    <div className="flex max-w-[60rem] w-full justify-center gap-4">
+      <div className="mb-8 mt-4 w-full">
+      <div className="flex gap-12 mb-4 md:mb-6">
+        {/* 프로필 이미지 */}
+        <img 
+          src={userData?.profileImageUrl || basicLogoImg} 
+          className="rounded-lg md:w-1/3 object-cover" 
+          alt="프로필 이미지"
+          onError={(e) => {
+            e.target.src = basicLogoImg;
+          }}
+        />
+        
+        <div className="flex flex-col gap-1 md:gap-2 max-sm:text-[14px] md:mt-4 w-full overflow-hidden">
+          <div className="flex justify-between">
+            {/* 닉네임 */}
+            {userData?.nickname ? (
+              <div className="font-semibold text-[20px] md:text-3xl">{userData.nickname}</div>
+            ) : (
+              <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+            )}
+            
+            <div className="flex items-center gap-2">
+              {/* 즐겨찾기 버튼 - 로그인한 사용자이고 본인이 아닐 때만 */}
+              {UserStore.getState().memberId && UserStore.getState().memberId !== userData?.id && (
+                <button
+                  className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
+                    isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
+                  } hover:scale-110 `}
+                  onClick={handleFavorite}
+                >
+                  <img 
+                    src={star ? starOn : starOff} 
+                    alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
+                    className="w-8 h-8"
+                  />
+                </button>
+              )}
+              <DeclareButton 
+                contentType="프로필" 
+                onDeclare={handleDeclareClick}
+                iconClassName="w-7 h-7 cursor-pointer ml-auto"
+              />
+            </div>
+          </div>
+        
+          {/* 자기소개 */}
+          {userData?.intro ? (
+            <div className="border-t border-gray-200 pt-4 text-[#5B5B5B] break-words w-full text-xl">{userData.intro}</div>
+          ) : showIntroSkeleton ? (
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+          ) : (
+            <div className="text-[#5B5B5B] opacity-50"></div>
+          )}
+          
+          {/* 개인 URL */}
+          {userData?.personalUrl ? (
+            <div className="text-[#5B5B5B] break-words w-full">{userData.personalUrl}</div>
+          ) : showIntroSkeleton ? (
+            <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
+          ) : (
+            <div className="text-[#5B5B5B] opacity-50"></div>
+          )}
+        </div>
+      </div>
+      <hr className="border-t border-gray-200 my-6" />
+      {userWorks && userWorks.length > 0 ? (
+        <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
+          {userWorks.map((data) => (
+            <img
+              key={data.feedId}
+              src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : basicLogoImg}
+              className="w-full h-44 sm:h-64 object-cover rounded-lg"
+              onClick={() => onWorkClick(data.feedId)}
+              alt="작품 이미지"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <div className="text-gray-500 text-lg">등록된 피드가 없습니다.</div>
+        </div>
+      )}
+      </div>
+{/* 동아리원 파트 */}
+      {/* <div className="bg-[#FFFDFD] rounded-xl border border-gray p-6 md:p-4 mb-8 w-1/3">
+      <h3 className="text-2xl font-semibold">동아리 멤버</h3>
+      <div className="flex gap-2 bg-white items-center p-2 rounded-lg shadow-md">
+        <img src={basicLogoImg} alt="동아리원 프로필 이미지" className="w-10 h-10 rounded-full" />
+        <div className="flex flex-col">
+          <p>동아리원 1</p>
+          <p>동아리원 1 소개</p>
+        </div>
+      </div>
+      </div> */}
+    </div>
+  );
+};
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -38,6 +251,8 @@ export default function ProfileDetail({}) {
       queryKey: ["profileDetail"],
       queryFn: async () => {
         const data = await getProfileDetail(id);
+        console.log('프로필 상세 API 응답:', data);
+        console.log('memberResDto:', data.result.memberResDto);
        
         setUserData(data.result.memberResDto);
         setUserWorks(data.result.feedSimpleResDtoPage.content)
@@ -148,6 +363,19 @@ export default function ProfileDetail({}) {
     // 여기에 신고 API 호출 
   };
 
+  // 계정 타입 확인 - 여러 가능한 필드명 확인
+  // console.log('userData 전체:', userData);
+
+  // 여러 가능한 필드명에서 계정 타입 찾기
+  const accountType = userData?.roleType || 
+                      userData?.role || 
+                      userData?.userType || 
+                      userData?.accountType || 
+                      userData?.memberType || 
+                      "STUDENT"; // 기본값은 STUDENT
+  const isStudentAccount = accountType === "STUDENT";
+  const isClubAccount = accountType === "CLUB";
+  console.log('최종 계정 타입:', accountType, 'isStudentAccount:', isStudentAccount, 'isClubAccount:', isClubAccount);
 
   return (
     <>
@@ -158,7 +386,7 @@ export default function ProfileDetail({}) {
           subTitle="스프"
         />
       )}
-      <div className="flex flex-col pt-16 sm:pt-24 px-4 max-w-4xl w-full ">
+      <div className="flex flex-col pt-12 max-w-[60rem] w-full ">
         <button
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
           onClick={handleGoBack}
@@ -166,92 +394,37 @@ export default function ProfileDetail({}) {
           <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
           <span>목록으로 돌아가기</span>
         </button>
-        <div className="rounded-2xl border border-gray p-6 md:p-8 mb-8 mt-4 w-full">
-          
-
-          <div className="flex gap-12 mb-4 md:mb-6 pl-6">
-            {/* 프로필 이미지 */}
-            <img 
-              src={userData?.profileImageUrl || BasicImg4} 
-              className="rounded-full w-[15%] md:w-1/4 object-cover" 
-              alt="프로필 이미지"
-              onError={(e) => {
-                e.target.src = BasicImg4;
-              }}
-            />
-            
-            <div className="flex flex-col gap-1 md:gap-2 max-sm:text-[14px] md:mt-4 w-full overflow-hidden">
-              <div className="flex justify-between">
-                {/* 닉네임 */}
-                {userData?.nickname ? (
-                  <div className="font-semibold text-[20px] md:text-[23px]">{userData.nickname}</div>
-                ) : (
-                  <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
-                )}
-                
-                <div className="flex items-center gap-2">
-{/* 즐겨찾기 버튼 - 로그인한 사용자이고 본인이 아닐 때만 */}
-{UserStore.getState().memberId && UserStore.getState().memberId !== userData?.id && (
-                  <button
-                    className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
-                      isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
-                    } hover:scale-110 `}
-                    onClick={handleFavorite}
-                  >
-                    <img 
-                      src={star ? starOn : starOff} 
-                      alt={star ? "즐겨찾기 해제" : "즐겨찾기 추가"}
-                      className="w-8 h-8"
-                    />
-                  </button>
-                )}
-                 <DeclareButton 
-                contentType="프로필" 
-                onDeclare={handleDeclareClick}
-                iconClassName="w-7 h-7 cursor-pointer ml-auto"
-              />
-                </div>
-                
-              </div>
-            
-              {/* 자기소개 */}
-              {userData?.intro ? (
-                <div className="text-[#5B5B5B] break-words w-full">{userData.intro}</div>
-              ) : showIntroSkeleton ? (
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
-              ) : (
-                <div className="text-[#5B5B5B] opacity-50"></div>
-              )}
-              
-              {/* 개인 URL */}
-              {userData?.personalUrl ? (
-                <div className="text-[#5B5B5B] break-words w-full">{userData.personalUrl}</div>
-              ) : showIntroSkeleton ? (
-                <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-2"></div>
-              ) : (
-                <div className="text-[#5B5B5B] opacity-50"></div>
-              )}
-             
-            </div>
-          </div>
-          <hr className="border-t border-gray-200 my-6" />
-          {userWorks && userWorks.length > 0 ? (
-            <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
-              {userWorks.map((data) => (
-                <img
-                  src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : BasicImg4}
-                  className="w-full h-44 sm:h-64 object-cover rounded-lg"
-                  onClick={() => onWorkClick(data.feedId)}
-                  alt="작품 이미지"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-500 text-lg">등록된 피드가 없습니다.</div>
-            </div>
-          )}
-        </div>
+        
+        {/* 계정 타입에 따라 다른 UI 렌더링 */}
+        {isStudentAccount && (
+          <StudentProfileUI 
+            userData={userData}
+            userWorks={userWorks}
+            star={star}
+            isAnimating={isAnimating}
+            showIntroSkeleton={showIntroSkeleton}
+            handleFavorite={handleFavorite}
+            handleDeclareClick={handleDeclareClick}
+            onWorkClick={onWorkClick}
+            S3_BUCKET_URL={S3_BUCKET_URL}
+            basicLogoImg={basicLogoImg}
+          />
+        )}
+        
+        {isClubAccount && (
+          <ClubProfileUI 
+            userData={userData}
+            userWorks={userWorks}
+            star={star}
+            isAnimating={isAnimating}
+            showIntroSkeleton={showIntroSkeleton}
+            handleFavorite={handleFavorite}
+            handleDeclareClick={handleDeclareClick}
+            onWorkClick={onWorkClick}
+            S3_BUCKET_URL={S3_BUCKET_URL}
+            basicLogoImg={basicLogoImg}
+          />
+        )}
         {showLoginModal && (
         <AlertModal
         type="simple"
