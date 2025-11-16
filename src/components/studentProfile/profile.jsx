@@ -45,16 +45,12 @@ export default function Profile({
   };
 
   const clickHandler = (memberId) => {
-    if (!currentMemberId) {
-      setShowLoginModal(true);
-      return;
-    }
     navigate(`/profileDetail/${memberId}`);
   };
 
   return (
     <div
-      className="flex relative items-center justify-start lg:w-[70%] w-full bg-blue-bright rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
+      className="flex relative items-center justify-start lg:w-[70%] w-full bg-white border-4 border-blue-200 rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
       <div className="absolute top-4 right-4 bg-blue-main p-2 rounded-lg">
       <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
@@ -62,7 +58,7 @@ export default function Profile({
       
       <div className="w-full flex items-center justify-start gap-8"
       onClick={() => clickHandler(memberId)}>
-        <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8">
+        <div className="flex flex-col items-center justify-center border-r border-gray-200 pr-8 ">
         <img 
           src={profileImageUrl || getDefaultImage()} 
           className="rounded-full min-w-24 h-24 border border-gray-200 " 
@@ -96,7 +92,7 @@ export default function Profile({
           </div>
         )}
       </div>
-      
+{/*       
       {showLoginModal && (
         <AlertModal
           type="simple"
@@ -110,7 +106,7 @@ export default function Profile({
           }}
           onClickFalse={() => setShowLoginModal(false)}
         />
-      )}
+      )} */}
     </div>
   );
 }

@@ -14,6 +14,10 @@ export default function Input({
   subtitle = "",
   value = "",
   disabled = false,
+  width = "w-full",
+  maxLength,
+  onKeyDown,
+  onPaste,
 }) {
   const [inputValue, setInputValue] = useState(value);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -77,14 +81,19 @@ export default function Input({
 
       <input
         type={type}
-        className={`w-full py-2 px-2 font-medium bg-[#F6F6F6] text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 ${borderColor} ${
-          validationType !== "error" ? "focus:border-blue-main" : ""
+        className={`${width} py-2 px-2 font-medium text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 border-[#898989] ${
+          disabled 
+            ? "bg-gray-200 cursor-not-allowed" 
+            : `bg-[#F6F6F6] ${validationType !== "error" ? "focus:border-blue-main" : ""}`
         }`}
         placeholder={placeholder}
         value={inputValue}
         onChange={handleChange}
         onFocus={() => setHasInteracted(true)}
         disabled={disabled}
+        maxLength={maxLength}
+        onKeyDown={onKeyDown}
+        onPaste={onPaste}
       />
 
       {displayMessage && (

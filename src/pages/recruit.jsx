@@ -12,7 +12,7 @@ import { getFirstCategoryNameById } from "../utils/getCategoryById";
 import EstimateBanner from "../components/home/EstimateBanner";
 import FilterDropdown from "../components/filterDropdown";
 import PageHeader from "../components/pageHeader";
-import RecommendRecruit from "../components/recruit/recommendRecruit";
+// import RecommendRecruit from "../components/recruit/recommendRecruit";
 import AlertModal from "../components/alertModal";
 import { UserStore } from "../store/userStore";
 
@@ -365,7 +365,7 @@ export default function Recruit() {
             <>
               {filteredRecruits.map((recruit, index) => {
                  const isOddPage = (currentPage + 1) % 2 === 1;
-                 const showRecommendRecruit = isOddPage && index === 2;
+                //  const showRecommendRecruit = isOddPage && index === 2;
                  const showEstimateBanner = isOddPage && index === 5;
 
                 return (
@@ -392,11 +392,11 @@ export default function Recruit() {
                         <EstimateBanner color="black" />
                       </div>
                     )}
-                    {showRecommendRecruit && (
+                    {/* {showRecommendRecruit && (
                       <div className="my-8">
                         <RecommendRecruit />
                       </div>
-                    )}
+                    )} */}
                   </div>
                 );
               })}

@@ -34,7 +34,8 @@ export default function PostUpload() {
   const [warningText, setWarningText] = useState("업로드 실패");
   const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
-  const { memberId } = UserStore();
+  const { memberId, approvedStatus } = UserStore();
+  const S3_BASE_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const [videoFiles, setVideoFiles] = useState([]);
   const navigate = useNavigate();
@@ -86,7 +87,11 @@ export default function PostUpload() {
     if (errorInfo) {
       setErrorDescription(errorInfo.message);
       setErrorAction(errorInfo.action);
-    } else {
+    } else if (error?.response?.status === 403 && approvedStatus === "PENDING") {
+      setErrorDescription("승인 대기 중인 유저는\n피드 생성 권한이 없습니다.");
+      setErrorAction("redirect");
+    }
+    else {
       setErrorDescription("업로드 중 예상치 못한 오류가 발생했습니다.\n다시 시도해주세요.");
       setErrorAction("refresh"); 
     }
@@ -231,32 +236,33 @@ export default function PostUpload() {
         const fileNames = [];
         const fileTypes = [];
 
-        if (imageFiles.length > 0) {
-          fileUrls.push(...dtoList.map(({ fileUrl }) => fileUrl));
+        // 이미지 파일 정보 추가
+        if (imageFiles.length > 0 && dtoList?.length > 0) {
+          fileUrls.push(...dtoList.map(({ fileUrl }) => `${fileUrl}`));
           fileNames.push(...imageFiles.map((file) => file.name));
           fileTypes.push(
             ...imageFiles.map((file) => file.type.split("/")[1].toUpperCase())
           );
-        
         }
 
+        // 비디오 파일 정보 추가
         if (videoFiles.length > 0 && videoUploadResponse?.result) {
-          // videoUploadResponse.result가 문자열이므로 videoDto.fileName을 사용
-          fileUrls.push(videoDto.fileName);
+          fileUrls.push(`${S3_BASE_URL}${videoDto.fileName}`);
           fileNames.push(videoFiles[0].name);
           fileTypes.push(videoFiles[0].type.split("/")[1].toUpperCase());
         }
 
         // 4. 통합 올림 서버에
         if (fileUrls.length > 0) {
-        
           try {
-            const mediaResponse = await postMedia({
-              feedId,
+            const mediaData = {
+              postId: feedId,
               fileUrl: fileUrls,
               fileName: fileNames,
               fileType: fileTypes,
-            });
+            };
+
+            const mediaResponse = await postMedia(mediaData);
           
           } catch (mediaError) {
             console.error("미디어 서버 업로드 실패:", mediaError);

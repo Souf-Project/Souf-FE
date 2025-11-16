@@ -44,3 +44,18 @@ export const MEMBER_ERRORS = {
     action: "refresh",
   },
 };
+
+export const LOGIN_ERRORS = {
+  "S400-2" : {
+    message: "이미 가입된 이메일입니다. 마이페이지에서 소셜 계정을 연결해주세요.",
+    action: "redirect",
+  },
+  "M404-1": {
+    message: "올바르지 않은 계정입니다.\n이메일 정보를 확인해주세요.",
+    action: "refresh",
+  },
+  "RP401-1": {
+    message: "신고된 회원입니다.",
+    action: "refresh",
+  }
+}

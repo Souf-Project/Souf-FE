@@ -97,6 +97,13 @@ export default function ProfileEditContent() {
         return urlParts[urlParts.length - 1];
       };
 
+      console.log("📤 [프로필 수정] 시작");
+      console.log("📤 [프로필 수정] selectedFile:", selectedFile ? {
+        name: selectedFile.name,
+        size: selectedFile.size,
+        type: selectedFile.type
+      } : null);
+      
       const updatePayload = {
         username: dataToSave.username,
         nickname: dataToSave.nickname,
@@ -106,29 +113,66 @@ export default function ProfileEditContent() {
         profileOriginalFileName: selectedFile ? selectedFile.name : null,
         marketingAgreement: marketingAgreement, // 마케팅 동의 여부 추가
       };
-
       // 이미지를 수정하지 않을 때만 profileImageUrl 추가
       if (!selectedFile && formData.profileImageUrl) {
         updatePayload.profileImageUrl = formData.profileImageUrl;
       }
-      const updateResponse = await updateProfileInfo(updatePayload);
+
+      let updateResponse;
+      try {
+        updateResponse = await updateProfileInfo(updatePayload);
+      } catch (error) {
+        console.error("❌ [프로필 수정] API 호출 실패:", error);
+        console.error("❌ [프로필 수정] 에러 상세:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+          payload: updatePayload
+        });
+        throw error; 
+      }
+  
 
       // 2. 새 파일이 있고, 서버가 Presigned URL을 반환한 경우
-      if (selectedFile && updateResponse.result?.dtoList?.presignedUrl) {
-        const { memberId, dtoList } = updateResponse.result;
-        const { presignedUrl, fileUrl } = dtoList;
+      // dtoList 또는 presignedUrlResDto 확인
+      const result = updateResponse.result;
+      const dtoList = result?.dtoList;
+      const presignedUrlResDto = result?.presignedUrlResDto;
+      
+      // presignedUrl과 fileUrl 추출
+      let presignedUrl = null;
+      let fileUrl = null;
+      let memberId = result?.memberId;
+      
+      if (dtoList?.presignedUrl) {
+        presignedUrl = dtoList.presignedUrl;
+        fileUrl = dtoList.fileUrl;
+      } else if (presignedUrlResDto?.presignedUrl) {
+        presignedUrl = presignedUrlResDto.presignedUrl;
+        fileUrl = presignedUrlResDto.fileUrl;
+      } else if (dtoList && typeof dtoList === 'object' && dtoList.presignedUrl) {
+        presignedUrl = dtoList.presignedUrl;
+        fileUrl = dtoList.fileUrl;
+      }
+      
+      
+      if (selectedFile && presignedUrl) {
 
-        // 2a. S3에 파일 업로드
+        // 2. S3에 파일 업로드
         await uploadToS3(presignedUrl, selectedFile);
 
-        // 2b. S3 업로드 완료 후, 서버에 최종 정보 전송
         await confirmImageUpload({
           postId: memberId,
           fileUrl: `${S3_BUCKET_URL}${fileUrl}`,
           fileName: [selectedFile.name],
-          fileType: [selectedFile.type.split('/')[1].toLowerCase()] // ✅ JS 배열
+          fileType: [selectedFile.type.split('/')[1].toLowerCase()],
         });
         
+      } else {
+        console.warn("⚠️ [프로필 수정] 파일 업로드 조건 불만족:", {
+          hasSelectedFile: !!selectedFile,
+          hasPresignedUrl: !!presignedUrl
+        });
       }
       
       return updateResponse;
@@ -357,8 +401,70 @@ export default function ProfileEditContent() {
               value={formData.email}
               isEditing={false}
             />
+            <EditBox 
+              title="휴대폰 번호" 
+              value={formData.phoneNumber}
+              isEditing={false}
+              margin="mt-4"
+            />
+           
           </div>
         </div>
+       
+          {roleType === "MEMBER" && formData.detail && (
+             <div className="bg-gray-50 p-6 rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">사업자 정보</h2>
+            <div>
+            <div className="grid grid-cols-2 gap-4">
+              <EditBox 
+              title="회사명" 
+              value={formData.detail.companyName}
+              isEditing={false}
+            />
+             <EditBox 
+              title="사업자 구분" 
+              value={formData.detail.businessClassification}
+              isEditing={false}
+            />
+             <EditBox 
+              title="사업자 번호" 
+              value={formData.detail.businessRegistrationNumber}
+              isEditing={false}
+            />
+             <EditBox 
+              title="업태" 
+              value={formData.detail.businessStatus}
+              isEditing={false}
+            />
+            <div className="col-span-2">
+              <label className="block text-black font-semibold text-xl mb-2">주소</label>
+              <div className="flex flex-col gap-3">
+                {/* 우편번호 */}
+                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                  <div className="bg-[#F7F7F7] px-4 py-4 border-r border-gray-300 text-gray-600 font-semibold min-w-[120px]">
+                    우편번호
+                  </div>
+                  <div className="flex-1 p-4 pl-7 bg-[#F7F7F7] text-gray-600">
+                    {formData.detail?.addressReqDto?.zipCode || formData.detail?.zipCode || '-'}
+                  </div>
+                </div>
+                {/* 도로명 주소 */}
+                <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                  <div className="bg-[#F7F7F7] px-4 py-4 border-r border-gray-300 text-gray-600 font-semibold min-w-[120px]">
+                    도로명 주소
+                  </div>
+                  <div className="flex-1 p-4 pl-7 bg-[#F7F7F7] text-gray-600">
+                    {formData.detail?.addressReqDto?.roadNameAddress || formData.detail?.roadNameAddress || '-'} {formData.detail?.addressReqDto?.detailedAddress || formData.detail?.detailedAddress || '-'}
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+             </div>
+            </div>
+            </div>
+          )}
+
         {roleType === "STUDENT" &&
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">프로필 정보</h2>
@@ -377,7 +483,30 @@ export default function ProfileEditContent() {
             />
           </div>
         </div> }
-        
+        {roleType === "STUDENT" && formData.detail && (
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <h2 className="text-2xl font-bold mb-4">대학생 인증 정보</h2>
+            <div className="grid grid-cols-1 gap-4">
+              <EditBox 
+                title={formData.detail.educationType === "GRADUATE" ? "대학원명" : "대학교명"} 
+                value={formData.detail.schoolName}
+                isEditing={isEditing}
+              />
+              <EditBox 
+                title="전공" 
+                value={formData.detail.specialties && formData.detail.specialties.length > 0 
+                  ? formData.detail.specialties.map(s => s.specialtyName).join(', ')
+                  : '-'}
+                isEditing={isEditing}
+              />
+              <EditBox 
+                title="학교 이메일" 
+                value={formData.detail.schoolEmail}
+                isEditing={isEditing}
+              />
+            </div>
+          </div>
+        )}
         <div className="bg-gray-50 p-6 rounded-lg">
           <h2 className="text-2xl font-bold mb-4">관심분야</h2>
           <div className="grid grid-cols-3 gap-4 ">

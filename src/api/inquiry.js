@@ -4,6 +4,7 @@ import axios from "axios";
 export const postInquiry = async (requestBody) => {
     try {
         const response = await client.post("/api/v1/inquiry", requestBody);
+        console.log(response);
         return response.data;
     } catch (error) {
         console.error("문의 생성 에러:", error);
@@ -26,30 +27,19 @@ export async function getInquiryList(pageable) {
     const accessToken = localStorage.getItem("accessToken");
     const response = await client.get("/api/v1/inquiry/my", {
       params: pageable,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     });
     return response;
   }
   
   export async function deleteInquiry(inquiryId) {
     const accessToken = localStorage.getItem("accessToken");
-    const response = await client.delete(`/api/v1/inquiry/${inquiryId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await client.delete(`/api/v1/inquiry/${inquiryId}`);
     return response;
   }
   
   export async function patchInquiry(inquiryId, requestBody) {
     const accessToken = localStorage.getItem("accessToken");
-    const response = await client.patch(`/api/v1/inquiry/${inquiryId}`, requestBody, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await client.patch(`/api/v1/inquiry/${inquiryId}`, requestBody);
     return response;
   }
 
