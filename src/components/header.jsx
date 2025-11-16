@@ -418,6 +418,7 @@ const DesktopHeader = () => (
                   </div>
                 )}
               </div>
+            </div>
           ) : (
             // 로그아웃 상태
             <>
@@ -438,8 +439,8 @@ const DesktopHeader = () => (
             </>
           )}
         </div>
+        </div>
         
-      </div>
     </header>
   </div>
 );

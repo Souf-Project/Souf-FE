@@ -15,8 +15,9 @@ import plusIco from "../../assets/images/plusIco.svg"
 import AlertModal from "../alertModal";
 import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
-import chatImgIcon from "../../assets/images/chatImgIcon.png"
-import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
+import chatImgIcon from "../../assets/images/chatImgIcon.svg"
+import chatVideoIcon from "../../assets/images/chatVideoIcon.svg"
+import chatContractIcon from "../../assets/images/chatContractIcon.svg"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/SouFLogo.svg";
@@ -78,7 +79,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     });
 
     return () => {
-      console.log("채팅 소켓 연결 해제");
+      // console.log("채팅 소켓 연결 해제");
       disconnectChatSocket();
     };
   }, [roomId, nickname, pendingImageUpload]);
@@ -104,7 +105,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     const success = sendChatMessage(messageObj);
     if (success) {
     setNewMessage("");
-      console.log("메시지 전송 완료");
+      // console.log("메시지 전송 완료");
     } else {
       console.error("메시지 전송 실패");
       
@@ -116,7 +117,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   };
 
   const handleButton1Click = () => {
-    console.log("버튼 1 클릭");
+    // console.log("버튼 1 클릭");
     setShowCheckout(true);
     setShowButtonList(false);
   };
@@ -261,7 +262,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           
           const success = sendChatMessage(videoMessage);
           if (success) {
-            console.log("동영상 메시지 전송 완료");
+            // console.log("동영상 메시지 전송 완료");
           } else {
             console.error("동영상 메시지 전송 실패");
           }
@@ -311,7 +312,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   };
 
   const handleButton3Click = () => {
-    console.log("버튼 3 클릭");
+    // console.log("버튼 3 클릭");
     setShowAlertModal(true);
     setShowButtonList(false);
   };
@@ -330,15 +331,19 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     document.body.removeChild(link);
   };
 
+  const handleContractClick = () => {
+    navigate("/contract");
+  };
+
   const handleDeleteChatRoom = async (roomId) => {
     try {
       // 사용자 확인
       const isConfirmed = window.confirm("정말로 이 채팅방을 나가시겠습니까?");
       if (!isConfirmed) return;
 
-      console.log("채팅방 삭제 시작:", roomId);
+      // console.log("채팅방 삭제 시작:", roomId);
       await deleteChatRoom(roomId);
-      console.log("채팅방 삭제 완료");
+      // console.log("채팅방 삭제 완료");
       
       // 채팅 목록 페이지로 이동
       navigate("/chat");
@@ -521,28 +526,34 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           토스
         </button> */}
         <button 
-          className="bg-green-500 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200 text-sm lg:text-base"
+          className="bg-gray-100 shadow-md text-black px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleImgButtonClick}
         >
           <img src={chatImgIcon} alt="파일 첨부" className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
         <button 
-          className="bg-blue-500 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm lg:text-base"
+          className="bg-gray-100 shadow-md text-black px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleVideoButtonClick}
         >
           <img src={chatVideoIcon} alt="동영상" className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
         {/* <button 
-          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          className="bg-gray-100 shadow-md text-black px-6 py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200"
           onClick={handleFileButtonClick}
         >
           <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
         </button> */}
-        <button 
-          className="bg-blue-300 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-blue-400 transition-colors duration-200 text-sm lg:text-base"
+        {/* <button 
+          className="bg-blue-200 text-black px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleButton3Click}
         >
           SouF 온도 남기기 
+        </button> */}
+        <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+        onClick={handleContractClick}
+        >
+        <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+          계약서 작성하기
         </button>
       </div>
     )}
@@ -566,7 +577,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         TrueBtnText="확인"
         onClickFalse={() => setShowDegreeModal(false)}
         onClickTrue={() => {
-          console.log("온도 평가 확인");
+          // console.log("온도 평가 확인");
           setShowDegreeModal(false);
         }}
       />
