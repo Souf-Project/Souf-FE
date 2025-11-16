@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
 import starOn from "../../assets/images/starOn.svg";
 import starOff from "../../assets/images/starOff.svg";
+import spoonMark from "../../assets/images/spoonMark.svg";
 import basicLogoImg from "../../assets/images/basiclogoimg.png";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -145,7 +146,10 @@ const ClubProfileUI = ({
           <div className="flex justify-between">
             {/* 닉네임 */}
             {userData?.nickname ? (
+              <div className="flex items-center gap-2 w-full">
+                <img src={spoonMark} alt="spoonMark" className="w-8 h-8" />
               <div className="font-semibold text-[20px] md:text-3xl">{userData.nickname}</div>
+              </div>
             ) : (
               <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
             )}
