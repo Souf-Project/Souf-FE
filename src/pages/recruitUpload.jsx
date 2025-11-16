@@ -7,6 +7,7 @@ import { filterEmptyCategories } from '../utils/filterEmptyCategories';
 import Loading from '../components/loading';
 import StepIndicator from '../components/StepIndicator';
 import infoIcon from '../assets/images/infoIcon.svg';
+import calendarIcon from '../assets/images/calendarIcon.svg';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -959,6 +960,7 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
+              <img src={calendarIcon} alt="calendarIcon" className="w-6 h-6" />
               <p>~</p>
               <input
                 type="date"
@@ -968,6 +970,7 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
+              <img src={calendarIcon} alt="calendarIcon" className="w-6 h-6" />
             </div>
           </div>
 
