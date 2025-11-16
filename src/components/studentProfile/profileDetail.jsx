@@ -99,7 +99,7 @@ const StudentProfileUI = ({
             <img
               key={data.feedId}
               src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : basicLogoImg}
-              className="w-full h-44 sm:h-64 object-cover rounded-lg"
+              className="w-full aspect-square object-cover rounded-lg"
               onClick={() => onWorkClick(data.feedId)}
               alt="작품 이미지"
             />
@@ -200,7 +200,7 @@ const ClubProfileUI = ({
             <img
               key={data.feedId}
               src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : basicLogoImg}
-              className="w-full h-44 sm:h-64 object-cover rounded-lg"
+              className="w-full aspect-square object-cover rounded-lg"
               onClick={() => onWorkClick(data.feedId)}
               alt="작품 이미지"
             />
