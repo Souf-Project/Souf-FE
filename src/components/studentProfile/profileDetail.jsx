@@ -255,8 +255,8 @@ export default function ProfileDetail({}) {
       queryKey: ["profileDetail"],
       queryFn: async () => {
         const data = await getProfileDetail(id);
-        console.log('프로필 상세 API 응답:', data);
-        console.log('memberResDto:', data.result.memberResDto);
+        // console.log('프로필 상세 API 응답:', data);
+        // console.log('memberResDto:', data.result.memberResDto);
        
         setUserData(data.result.memberResDto);
         setUserWorks(data.result.feedSimpleResDtoPage.content)
@@ -379,7 +379,7 @@ export default function ProfileDetail({}) {
                       "STUDENT"; // 기본값은 STUDENT
   const isStudentAccount = accountType === "STUDENT";
   const isClubAccount = accountType === "CLUB";
-  console.log('최종 계정 타입:', accountType, 'isStudentAccount:', isStudentAccount, 'isClubAccount:', isClubAccount);
+  // console.log('최종 계정 타입:', accountType, 'isStudentAccount:', isStudentAccount, 'isClubAccount:', isClubAccount);
 
   return (
     <>
