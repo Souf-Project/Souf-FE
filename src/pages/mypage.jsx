@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import SEO from '../components/seo';
 // import { useNavigate } from 'react-router-dom';
 import profileIcon from '../assets/images/profileIcon.svg'
 import starIcon from '../assets/images/starIcon.svg'
 import applyIcon from '../assets/images/applyIcon.svg'
 import feedIcon from '../assets/images/feedIcon.svg'
 import inquiryIcon from '../assets/images/inquiryIcon.svg'
+import clubIcon from '../assets/images/clubIcon.svg'
 
 import ProfileEditContent from '../components/mypage/ProfileEditContent';
 import ApplicationsContent from '../components/mypage/ApplicationsContent';
 import FavoritesContent from '../components/mypage/FavoritesContent';
 import InquiryContent from '../components/mypage/inquiryContent';
 import CompanyApplicants from '../components/companyMyPage/companyApplicants';
+import ClubList from '../components/mypage/clubList';
 import { UserStore } from '../store/userStore';
 import MyFeed from '../components/mypage/myFeed';
 
@@ -42,6 +45,8 @@ export default function MyPage() {
         return <MyFeed/>;
       case 'inquiry':
         return <InquiryContent/>;
+      case 'clubList':
+        return <ClubList/>;
       default:
         return <ProfileEditContent />;
     }
@@ -81,6 +86,11 @@ export default function MyPage() {
         label: '내 피드',
         icon: feedIcon
       });
+      roleSpecificMenus.push({
+        id: 'clubList',
+        label: '내 동아리',
+        icon: clubIcon
+      });
     }
     
     // MEMBER: 기업 지원 내역 보여줌
@@ -113,12 +123,27 @@ export default function MyPage() {
       
     }
 
+    if (roleType === 'CLUB') {
+      roleSpecificMenus.push({
+        id: 'myFeed',
+        label: '내 피드',
+        icon: feedIcon
+      });
+      roleSpecificMenus.push({
+        id: 'clubList',
+        label: '동아리 목록',
+        icon: clubIcon
+      });
+    }
+
     return [...baseMenus, ...roleSpecificMenus];
   };
 
   const menuItems = renderMenuItems();
 
   return (
+    <>
+    <SEO title="마이페이지" description="스프 SouF 마이페이지" subTitle="스프"/>
     <div className="min-h-screen w-screen bg-white pb-24">
       {/* 모바일 메뉴 버튼 */}
       <button
@@ -232,5 +257,6 @@ export default function MyPage() {
         </div>
       </div>
     </div>
+    </>
   );
 } 
