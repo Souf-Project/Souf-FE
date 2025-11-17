@@ -33,10 +33,7 @@ export default function ClubList() {
         page: currentPage,
         size: pageSize,
     };
-    const {data, isLoading, error} = useQuery({
-        queryKey: ['clubList', memberId, currentPage],
-        queryFn: () => getClubList(memberId, pageable),
-    });
+   
 
     const {data: clubMemberList, isLoading: clubMemberListLoading, error: clubMemberListError} = useQuery({
         queryKey: ['clubMemberList', memberId, currentPage],

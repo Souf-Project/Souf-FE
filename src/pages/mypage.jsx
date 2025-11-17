@@ -125,6 +125,11 @@ export default function MyPage() {
 
     if (roleType === 'CLUB') {
       roleSpecificMenus.push({
+        id: 'myFeed',
+        label: '내 피드',
+        icon: feedIcon
+      });
+      roleSpecificMenus.push({
         id: 'clubList',
         label: '동아리 목록',
         icon: clubIcon

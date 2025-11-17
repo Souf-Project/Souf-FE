@@ -1,8 +1,8 @@
 import client from "./client";
 
 
-export async function getClubList(clubId, pageable) {
-    const response = await client.get(`/api/v1/clubs/${clubId}/members`, {
+export async function getClubList(pageable) {
+    const response = await client.get(`/api/v1/clubs`, {
       params: pageable,
     });
     return response;
