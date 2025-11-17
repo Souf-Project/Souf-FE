@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProfileDetail } from "../../api/profile";
 import { getFavorite, postFavorite, deleteFavorite } from "../../api/favorite";
+import { postClubMemberJoin } from "../../api/mypage";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import SEO from "../seo";
@@ -126,7 +127,8 @@ const ClubProfileUI = ({
   handleDeclareClick,
   onWorkClick,
   S3_BUCKET_URL,
-  basicLogoImg
+  basicLogoImg,
+  handleClubMemberJoin
 }) => {
   return (
     <div className="flex max-w-[60rem] w-full justify-center gap-4">
@@ -217,8 +219,9 @@ const ClubProfileUI = ({
       )}
       </div>
 {/* 동아리원 파트 */}
-      {/* <div className="bg-[#FFFDFD] rounded-xl border border-gray p-6 md:p-4 mb-8 w-1/3">
-      <h3 className="text-2xl font-semibold">동아리 멤버</h3>
+      <div className="bg-[#FFFDFD] rounded-xl border border-gray p-6 md:p-4 mb-8 w-1/3">
+      <h3 className="text-2xl font-semibold mb-4">동아리 멤버</h3>
+      <div className="flex flex-col gap-2">
       <div className="flex gap-2 bg-white items-center p-2 rounded-lg shadow-md">
         <img src={basicLogoImg} alt="동아리원 프로필 이미지" className="w-10 h-10 rounded-full" />
         <div className="flex flex-col">
@@ -226,7 +229,11 @@ const ClubProfileUI = ({
           <p>동아리원 1 소개</p>
         </div>
       </div>
-      </div> */}
+      <button className="mx-auto px-4 py-2 bg-blue-main text-white rounded-lg mt-4 shadow-md"
+      onClick={handleClubMemberJoin}>동아리 멤버 신청</button>
+      </div>
+      
+      </div>
     </div>
   );
 };
@@ -243,6 +250,8 @@ export default function ProfileDetail({}) {
   const [errorModal, setErrorModal] = useState(false);
   const [errorDescription, setErrorDescription] = useState("잘못된 접근");
   const [errorAction, setErrorAction] = useState("redirect");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const fromMemberId = UserStore.getState().memberId;
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -381,6 +390,22 @@ export default function ProfileDetail({}) {
   const isClubAccount = accountType === "CLUB";
   // console.log('최종 계정 타입:', accountType, 'isStudentAccount:', isStudentAccount, 'isClubAccount:', isClubAccount);
 
+  const handleClubMemberJoin = async () => {
+    try {
+      const response = await postClubMemberJoin(userData.id);
+      if (response.data && response.data.code === 200) {
+        setSuccessMessage(response.data.result || "동아리 지원이 완료되었습니다.");
+        setShowSuccessModal(true);
+      }
+    } catch (error) {
+      console.error("동아리 멤버 신청 에러:", error);
+      setErrorDescription(error.response?.data?.message || "동아리 멤버 신청 중 오류가 발생했습니다.");
+      setErrorAction("redirect");
+      setErrorModal(true);
+    }
+  }
+
+
   return (
     <>
       {userData?.nickname && (
@@ -427,6 +452,7 @@ export default function ProfileDetail({}) {
             onWorkClick={onWorkClick}
             S3_BUCKET_URL={S3_BUCKET_URL}
             basicLogoImg={basicLogoImg}
+            handleClubMemberJoin={handleClubMemberJoin}
           />
         )}
         {showLoginModal && (
@@ -463,6 +489,17 @@ export default function ProfileDetail({}) {
             }
           }}
             />
+        )}
+        {showSuccessModal && (
+          <AlertModal
+            type="simple"
+            title="신청 완료"
+            description={successMessage}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setShowSuccessModal(false);
+            }}
+          />
         )}
       </div>
     </>

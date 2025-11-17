@@ -366,7 +366,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
    
    
       <button className="bg-red-600 rounded-md p-2 text-white flex items-center gap-2" onClick={() => handleDeleteChatRoom(roomId)}>
-      <img src={outIcon} alt="outIcon" className="w-4 h-4" />
+      <img src={outIcon} alt="outIcon" className="w-4 h-4 brightness-0 invert" />
        나가기
       </button>
     </div>
@@ -377,7 +377,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       className="bg-red-600 rounded-md p-2 text-white flex items-center gap-2 text-sm" 
       onClick={() => handleDeleteChatRoom(roomId)}
     >
-      <img src={outIcon} alt="outIcon" className="w-3 h-3" />
+      <img src={outIcon} alt="outIcon" className="w-3 h-3 brightness-0 invert" />
       나가기
     </button>
   </div>
