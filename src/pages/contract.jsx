@@ -9,9 +9,7 @@ export default function Contract() {
   const [selectedBrokerage, setSelectedBrokerage] = useState("");
   const [contractAmount, setContractAmount] = useState("");
   const [inspectionPeriod, setInspectionPeriod] = useState("");
-  const [maintenancePeriod, setMaintenancePeriod] = useState("");
   const [warrantyPeriod, setWarrantyPeriod] = useState("");
-  const [maintenanceUnit, setMaintenanceUnit] = useState(0);
   const [warrantyUnit, setWarrantyUnit] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
