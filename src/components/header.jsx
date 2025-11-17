@@ -164,6 +164,9 @@ useEffect(() => {
   };
 
   const toggleLogin = () => {
+    // 사용자가 직접 로그아웃했음을 표시하는 플래그 설정
+    localStorage.setItem("manualLogout", "true");
+    
     UserStore.getState().clearUser();
     localStorage.removeItem("isLogin");
     localStorage.removeItem("userType");

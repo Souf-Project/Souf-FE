@@ -91,7 +91,7 @@ const deleteCookie = (name) => {
 };
 
 // 강제 로그아웃 처리 (refresh 실패 시)
-const handleRefreshFailure = async () => {
+const handleRefreshFailure = async (skipModal = false) => {
   try {
     // 1. 로그아웃 API 호출 (204 응답 확인)
     const logoutResponse = await axios.post(
@@ -120,13 +120,21 @@ const handleRefreshFailure = async () => {
     deleteCookie("RefreshToken");
     deleteCookie("refresh_token");
     
-    // 4. 로그인 만료 모달 표시를 위한 커스텀 이벤트 발생
-    const event = new CustomEvent('showSessionExpiredModal', {
-      detail: {
-        message: "로그인 시간이 만료되었습니다. 재로그인해주세요"
-      }
-    });
-    window.dispatchEvent(event);
+    // 4. 로그인 만료 모달 표시를 위한 커스텀 이벤트 발생 (사용자가 직접 로그아웃한 경우 제외)
+    // 사용자가 직접 로그아웃한 경우 localStorage에 플래그가 설정되어 있음
+    const isManualLogout = localStorage.getItem("manualLogout") === "true";
+    if (!skipModal && !isManualLogout) {
+      const event = new CustomEvent('showSessionExpiredModal', {
+        detail: {
+          message: "로그인 시간이 만료되었습니다. 재로그인해주세요"
+        }
+      });
+      window.dispatchEvent(event);
+    }
+    // 플래그 제거
+    if (isManualLogout) {
+      localStorage.removeItem("manualLogout");
+    }
     
     // 5. 로그인 페이지로 리다이렉트 (모달 닫힌 후 이동)
     // 모달에서 처리하도록 주석 처리
