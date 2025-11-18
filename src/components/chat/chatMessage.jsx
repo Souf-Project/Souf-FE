@@ -448,7 +448,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
             ×
           </button>
         </div>
-        <Contract />
+        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole}/>
       </div>
     </div>
   )}
