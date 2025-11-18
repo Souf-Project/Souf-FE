@@ -2,12 +2,18 @@ import ContractInput from "../components/contractInput";
 import FilterDropdown from "../components/filterDropdown";
 import { useState, useEffect } from "react";
 import calendarIcon from "../assets/images/calendarIcon.svg";
+import { UserStore } from "../store/userStore";
+
 export default function Contract() {
+  const roleType = UserStore.getState().roleType;
+  const isMember = roleType === "MEMBER";
+  const isStudent = roleType === "STUDENT";
 
   const [selectedType, setSelectedType] = useState("");
   const [selectedBank, setSelectedBank] = useState("");
   const [selectedBrokerage, setSelectedBrokerage] = useState("");
   const [contractAmount, setContractAmount] = useState("");
+  const [advancePaymentRatio, setAdvancePaymentRatio] = useState("");
   const [inspectionPeriod, setInspectionPeriod] = useState("");
   const [warrantyPeriod, setWarrantyPeriod] = useState("");
   const [warrantyUnit, setWarrantyUnit] = useState(0);
@@ -158,37 +164,46 @@ export default function Contract() {
       <div className="flex flex-col gap-8 mt-10 mb-12">
         <div className="flex flex-col gap-2">
             <h3 className="text-2xl font-bold mt-6">1. 계약 당사자</h3>
-            <p className="text-xl font-semibold">발주자</p>
-            <ContractInput title="회사명" value="스프(SouF)" />
-            <ContractInput title="대표자" placeholder="대표자명을 입력하세요" />
-            <ContractInput title="사업자 등록 번호" placeholder="000-00-00000" businessNumber={true} value={businessRegistrationNumber} onChange={(value) => setBusinessRegistrationNumber(value)} />
-            <ContractInput title="주소" placeholder="" value="서울특별시 광진구 광나루로19길 23, 103호"/>
-            <ContractInput title="전화번호" placeholder="010-0000-0000" phoneNumber={true} value={phoneNumber1} onChange={(value) => setPhoneNumber1(value)} />
-            <ContractInput title="이메일" placeholder="souf@souf.com" />
-            <div className="flex gap-2">
-            <ContractInput title="담당자 성명" placeholder="담당자 성명을 입력하세요" />
-            <ContractInput title="담당자 직책" placeholder="직책을 입력해주세요" />
-            </div>
-
-
-            <p className="text-xl font-semibold mt-8">수급자</p>
-            <ContractInput title="이름" placeholder="이름을 입력하세요" />
-            <ContractInput title="생년월일" placeholder="생년월일을 입력하세요" />
-            <ContractInput title="소속 학교" placeholder="학교명을 입력하세요" />
-            <ContractInput title="이메일" placeholder="souf@souf.com" />
-            <ContractInput title="전화번호" placeholder="010-0000-0000" phoneNumber={true} value={phoneNumber2} onChange={(value) => setPhoneNumber2(value)} />
-           <div>
-            <label className="text-lg font-medium">은행/증권명</label>
-            <div className="flex gap-2">
-            <FilterDropdown options={typeOptions} placeholder="은행/증권명을 선택하세요" selectedValue={selectedType} onSelect={handleTypeSelect}/>
-            {selectedType === 0 && <FilterDropdown options={bankOptions} placeholder="은행명을 선택하세요" selectedValue={selectedBank} onSelect={handleBankSelect} width="w-48"/>}
-            {selectedType === 1 && <FilterDropdown options={brokerageOptions} placeholder="증권명을 선택하세요" selectedValue={selectedBrokerage} onSelect={handleBrokerageSelect} width="w-48"/>}
-           </div>
-            </div>
             
-           <ContractInput title="계좌번호" placeholder="계좌번호를 입력하세요" />
-           <ContractInput title="예금주" placeholder="예금주를 입력하세요" />
+           
+              <>
+                <p className="text-xl font-semibold">발주자</p>
+                <ContractInput title="회사명" value="스프(SouF)" />
+                <ContractInput title="대표자" placeholder="대표자명을 입력하세요" />
+                <ContractInput title="사업자 등록 번호" placeholder="000-00-00000" businessNumber={true} value={businessRegistrationNumber} onChange={(value) => setBusinessRegistrationNumber(value)} />
+                <ContractInput title="주소" placeholder="" value="서울특별시 광진구 광나루로19길 23, 103호"/>
+                <ContractInput title="전화번호" placeholder="010-0000-0000" phoneNumber={true} value={phoneNumber1} onChange={(value) => setPhoneNumber1(value)} />
+                <ContractInput title="이메일" placeholder="souf@souf.com" />
+                <div className="flex gap-2">
+                  <ContractInput title="담당자 성명" placeholder="담당자 성명을 입력하세요" />
+                  <ContractInput title="담당자 직책" placeholder="직책을 입력해주세요" />
+                </div>
+              </>
+           
 
+            {/* 수급자 - 학생 계정일 때만 표시 */}
+            {isStudent && (
+              <>
+                <p className="text-xl font-semibold mt-8">수급자</p>
+                <ContractInput title="이름" placeholder="이름을 입력하세요" />
+                <ContractInput title="생년월일" placeholder="생년월일을 입력하세요" />
+                <ContractInput title="소속 학교" placeholder="학교명을 입력하세요" />
+                <ContractInput title="이메일" placeholder="souf@souf.com" />
+                <ContractInput title="전화번호" placeholder="010-0000-0000" phoneNumber={true} value={phoneNumber2} onChange={(value) => setPhoneNumber2(value)} />
+                <div>
+                  <label className="text-lg font-medium z-10">은행/증권명</label>
+                  <div className="flex gap-2">
+                    <FilterDropdown options={typeOptions} placeholder="은행/증권명을 선택하세요" selectedValue={selectedType} onSelect={handleTypeSelect} zIndex="z-10"/>
+                    {selectedType === 0 && <FilterDropdown options={bankOptions} placeholder="은행명을 선택하세요" selectedValue={selectedBank} onSelect={handleBankSelect} width="w-48" zIndex="z-10"/>}
+                    {selectedType === 1 && <FilterDropdown options={brokerageOptions} placeholder="증권명을 선택하세요" selectedValue={selectedBrokerage} onSelect={handleBrokerageSelect} width="w-48" zIndex="z-10"/>}
+                  </div>
+                </div>
+                <ContractInput title="계좌번호" placeholder="계좌번호를 입력하세요" />
+                <ContractInput title="예금주" placeholder="예금주를 입력하세요" />
+              </>
+            )}
+
+<span className="w-full h-[2px] bg-gray-300 mt-8"></span>
 
            <h3 className="text-2xl font-bold mt-6">2. 계약 목적 및 작업 범위</h3>
             <ContractInput title="수행 작업명" placeholder="iOS/Android 앱 프로토타입 제작 및 백엔드 연동" />
@@ -207,11 +222,26 @@ export default function Contract() {
 
             <h3 className="text-2xl font-bold mt-6">4. 대금</h3>
             <ContractInput title="총 계약 금액" placeholder="계약 금액을 입력하세요" unit="원" type="text" width="w-1/2" value={contractAmount} onChange={handleAmountChange} />
-       
+            <ContractInput title="선금 지급 비율" placeholder="선금 지급 비율을 입력하세요" unit="%" type="text" width="w-1/2" value={advancePaymentRatio} onChange={(value) => setAdvancePaymentRatio(value)} numbersOnly={true}/>
+            <div className="flex flex-col gap-2">
+            <label className="text-lg font-medium">선금 지급 금액</label>
+            <p>{(() => {
+              const amount = contractAmount ? parseInt(contractAmount.replace(/,/g, '')) : 0;
+              const ratio = advancePaymentRatio ? parseFloat(advancePaymentRatio) : 0;
+              if (amount > 0 && ratio > 0) {
+                const advanceAmount = Math.floor(amount * ratio / 100);
+                return `${advanceAmount.toLocaleString()}원`;
+              }
+              return "-";
+            })()}</p>
+            </div>
 
             <h3 className="text-2xl font-bold mt-6">5. 검수</h3>
             <ContractInput title="검수 기한" placeholder="검수 기한을 입력하세요" unit="일" type="text" width="w-1/2" value={inspectionPeriod} onChange={(value) => setInspectionPeriod(value)} numbersOnly={true}/>
            
+
+            <span className="w-full h-[2px] bg-gray-300 mt-8"></span>
+
 
             <h3 className="text-2xl font-bold mt-6">6. 저작권·지식재산권</h3>
             <div className="flex flex-col gap-2">

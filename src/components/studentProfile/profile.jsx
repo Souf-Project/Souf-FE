@@ -1,8 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import sendIco from "../../assets/images/sendIco.svg";
 import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
-import { postChatrooms } from "../../api/chat";
 import { UserStore } from "../../store/userStore";
 import SoufLogoBlack from "../../assets/images/SouFLogoBlack.png"
 import AlertModal from "../alertModal";
@@ -19,25 +17,6 @@ export default function Profile({
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { memberId: currentMemberId } = UserStore();
-
-  const handleChat = async (memberId) => {
-    if (!currentMemberId) {
-      setShowLoginModal(true);
-      return;
-    }
-    
-    try {
-      const response = await postChatrooms(memberId);
-
-      // 채팅방 생성 후 해당 채팅방으로 이동
-      if (response.roomId) {
-        navigate(`/chat`);
-      } else {
-      }
-    } catch (error) {
-      console.error("채팅방 생성 실패:", error);
-    }
-  };
   
   // 기본 이미지
   const getDefaultImage = () => {
@@ -52,9 +31,7 @@ export default function Profile({
     <div
       className="flex relative items-center justify-start lg:w-[70%] w-full bg-white border-4 border-blue-200 rounded-[20px] p-2 pl-8 gap-2 cursor-pointer hover:shadow-md transition-all"
     >
-      <div className="absolute top-4 right-4 bg-blue-main p-2 rounded-lg">
-      <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(memberId)} />
-      </div>
+   
       
       <div className="w-full flex items-center justify-start gap-8"
       onClick={() => clickHandler(memberId)}>

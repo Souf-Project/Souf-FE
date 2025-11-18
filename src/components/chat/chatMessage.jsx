@@ -22,6 +22,7 @@ import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/SouFLogo.svg";
 import outIcon from "../../assets/images/outIcon.svg";
+import Contract from "../../pages/contract";
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
@@ -34,6 +35,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const scrollRef = useRef(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
@@ -332,7 +334,8 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   };
 
   const handleContractClick = () => {
-    navigate("/contract");
+    setShowContractModal(true);
+    setShowButtonList(false);
   };
 
   const handleDeleteChatRoom = async (roomId) => {
@@ -430,6 +433,24 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       imageUrl={selectedImage} 
       onClose={() => setSelectedImage(null)} 
     />
+  )}
+
+  {/* 계약서 모달 */}
+  {showContractModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-[60rem] w-full mx-4 my-8 max-h-[90vh] overflow-y-auto border border-blue-main">
+        <div className="flex justify-between items-center p-4 mb-4 sticky top-0 bg-blue-main pb-4 border-b z-[100]">
+          <h2 className="text-2xl font-semibold text-white">계약서 작성</h2>
+          <button 
+            onClick={() => setShowContractModal(false)}
+            className="text-white text-3xl font-bold leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <Contract />
+      </div>
+    </div>
   )}
 
   {/* 채팅 메시지 영역 */}
@@ -549,12 +570,14 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         >
           SouF 온도 남기기 
         </button> */}
-        <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
-        onClick={handleContractClick}
-        >
-        <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
-          계약서 작성하기
-        </button>
+        {UserStore.getState().roleType === "MEMBER" && (
+          <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleContractClick}
+          >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+            계약서 작성하기
+          </button>
+        )}
       </div>
     )}
     {showAlertModal && (

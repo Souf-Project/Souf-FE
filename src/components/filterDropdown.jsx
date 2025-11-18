@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-export default function FilterDropdown({ options, selectedValue, onSelect, placeholder = "정렬 기준", width="w-full", disabled = false, maxHeight="max-h-40"}) {
+export default function FilterDropdown({ options, selectedValue, onSelect, placeholder = "정렬 기준", width="w-full", disabled = false, maxHeight="max-h-40", zIndex="z-50"}) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -56,7 +56,7 @@ export default function FilterDropdown({ options, selectedValue, onSelect, place
       </button>
 
       {isOpen && (
-        <div className={`${maxHeight} overflow-y-auto absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 flex flex-col ${width}`}>
+        <div className={`${maxHeight} overflow-y-auto absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg ${zIndex} flex flex-col ${width}`}>
           {options.map((option) => (
             <button
               key={option.value}
