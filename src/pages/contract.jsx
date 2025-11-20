@@ -4,6 +4,17 @@ import { useState, useEffect } from "react";
 import calendarIcon from "../assets/images/calendarIcon.svg";
 import { UserStore } from "../store/userStore";
 import { getOrdererInfo, postContractOrderer } from "../api/contract";
+import AlertModal from "../components/alertModal";
+import { handleApiError } from "../utils/apiErrorHandler";
+import { 
+  CONTRACT_ORDERER_PREVIEW_ERRORS, 
+  CONTRACT_ORDERER_ERRORS, 
+  CONTRACT_BENEFICIARY_PREVIEW_ERRORS,
+  CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS,
+  CONTRACT_BENEFICIARY_ERRORS,
+  CONTRACT_VIEW_ERRORS,
+  CONTRACT_ORDERER_UPLOAD_ERRORS
+} from "../constants/contract";
 
 export default function Contract({ roomId, opponentId, opponentRole }) {
   const roleType = UserStore.getState().roleType;
@@ -38,6 +49,10 @@ export default function Contract({ roomId, opponentId, opponentRole }) {
   const [competentCourt, setCompetentCourt] = useState("");
   const [ordererId, setOrdererId] = useState("");
   const [beneficiaryId, setBeneficiaryId] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
+  const [errorAction, setErrorAction] = useState("redirect");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const typeOptions = [
     { value: 0, label: "은행" },
@@ -224,7 +239,12 @@ export default function Contract({ roomId, opponentId, opponentRole }) {
       }
     } catch (error) {
       console.error("발주자 정보 불러오기 실패:", error);
-      alert("발주자 정보를 불러오는데 실패했습니다.");
+      handleApiError(error, {
+        setShowLoginModal,
+        setErrorModal: setShowErrorModal,
+        setErrorDescription,
+        setErrorAction,
+      }, CONTRACT_ORDERER_PREVIEW_ERRORS);
     }
   }
 
@@ -283,7 +303,12 @@ export default function Contract({ roomId, opponentId, opponentRole }) {
       alert("계약서가 생성되었습니다.");
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
-      alert("계약서 작성하는데 실패했습니다.");
+      handleApiError(error, {
+        setShowLoginModal,
+        setErrorModal: setShowErrorModal,
+        setErrorDescription,
+        setErrorAction,
+      }, CONTRACT_ORDERER_ERRORS);
     }
   };
   return (
@@ -404,6 +429,40 @@ export default function Contract({ roomId, opponentId, opponentRole }) {
             <h3 className="text-2xl font-bold mt-6">9. 분쟁 해결·증빙·관할</h3>
             <ContractInput title="관할 법원" placeholder="서울중앙지방법원" value={competentCourt} onChange={(value) => setCompetentCourt(value)} />
         </div>
+
+        {/* 에러 모달 */}
+        {showErrorModal && (
+          <AlertModal
+            type="simple"
+            title="계약서 작성 오류"
+            description={errorDescription}
+            TrueBtnText="확인"
+            onClickTrue={() => {
+              setShowErrorModal(false);
+              if (errorAction === "redirect") {
+                window.location.href = "/chat";
+              } else if (errorAction === "reload") {
+                window.location.reload();
+              }
+            }}
+          />
+        )}
+
+        {/* 로그인 모달 */}
+        {showLoginModal && (
+          <AlertModal
+            type="simple"
+            title="로그인이 필요합니다"
+            description="계약서 작성을 위해 로그인이 필요합니다."
+            TrueBtnText="로그인하러 가기"
+            FalseBtnText="취소"
+            onClickTrue={() => {
+              setShowLoginModal(false);
+              window.location.href = "/login";
+            }}
+            onClickFalse={() => setShowLoginModal(false)}
+          />
+        )}
         
         <button className="bg-blue-main text-white px-4 py-2 rounded-md"
          onClick={handlePostContractOrderer}>계약서 작성하기</button>
