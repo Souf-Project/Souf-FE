@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function ContractInput({ title, placeholder, value, icon, width = "w-full", type = "text", unit = "", onChange, numbersOnly = false, datePicker = false, phoneNumber = false, businessNumber = false }) {
+export default function ContractInput({ title, placeholder, value, required = false, icon, width = "w-full", type = "text", unit = "", onChange, numbersOnly = false, datePicker = false, phoneNumber = false, businessNumber = false, readOnly = false, birthDate = false, email = false }) {
     const [inputValue, setInputValue] = useState(value || "");
     const inputRef = useRef(null);
     
@@ -49,6 +49,26 @@ export default function ContractInput({ title, placeholder, value, icon, width =
         }
     };
 
+    // 생년월일 포맷팅 함수 (YYYY-MM-DD)
+    const formatBirthDate = (value) => {
+        const numbers = value.replace(/[^0-9]/g, '').slice(0, 8);
+        if (numbers.length === 0) {
+            return '';
+        } else if (numbers.length <= 4) {
+            return numbers;
+        } else if (numbers.length <= 6) {
+            return `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
+        } else {
+            return `${numbers.slice(0, 4)}-${numbers.slice(4, 6)}-${numbers.slice(6)}`;
+        }
+    };
+
+    // 이메일 검증 함수
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const handleChange = (e) => {
         let newValue = e.target.value;
         
@@ -61,6 +81,12 @@ export default function ContractInput({ title, placeholder, value, icon, width =
         } else if (businessNumber) {
             // 사업자 등록 번호 포맷팅
             newValue = formatBusinessNumber(newValue);
+        } else if (birthDate) {
+            // 생년월일 포맷팅
+            newValue = formatBirthDate(newValue);
+        } else if (email) {
+            // 이메일은 그대로 유지 (검증은 blur 시)
+            newValue = newValue;
         } else if (numbersOnly) {
             // numbersOnly가 true이면 숫자만 허용
             newValue = newValue.replace(/[^0-9]/g, '');
@@ -69,6 +95,15 @@ export default function ContractInput({ title, placeholder, value, icon, width =
         setInputValue(newValue);
         if (onChange) {
             onChange(newValue);
+        }
+    };
+
+    const handleBlur = (e) => {
+        if (email && e.target.value) {
+            if (!validateEmail(e.target.value)) {
+                // 이메일 형식이 올바르지 않으면 경고 (선택사항)
+                // 여기서는 onChange를 통해 부모 컴포넌트에서 처리하도록 함
+            }
         }
     };
 
@@ -92,18 +127,33 @@ export default function ContractInput({ title, placeholder, value, icon, width =
             if (numbers.length >= 10 && e.key.match(/[0-9]/)) {
                 e.preventDefault();
             }
+        } else if (birthDate) {
+            const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "-"];
+            const currentValue = displayValue || "";
+            const numbers = currentValue.replace(/[^0-9]/g, '');
+            // 8자리 도달 시 숫자 입력 차단
+            if (numbers.length >= 8 && /^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
+                e.preventDefault();
+                return;
+            }
+            // 숫자와 허용된 키만 입력 가능
+            if (!/^[0-9]$/.test(e.key) && !allowedKeys.includes(e.key)) {
+                e.preventDefault();
+            }
         }
     };
 
     const handlePaste = (e) => {
-        if (phoneNumber || businessNumber) {
+        if (phoneNumber || businessNumber || birthDate) {
             e.preventDefault();
             const pasted = e.clipboardData.getData("text");
             let formatted;
             if (phoneNumber) {
                 formatted = formatPhoneNumber(pasted);
-            } else {
+            } else if (businessNumber) {
                 formatted = formatBusinessNumber(pasted);
+            } else if (birthDate) {
+                formatted = formatBirthDate(pasted);
             }
             setInputValue(formatted);
             if (onChange) {
@@ -117,18 +167,24 @@ export default function ContractInput({ title, placeholder, value, icon, width =
 
     return (
         <div>
-            <label className="text-lg font-medium">{title}</label>
+        <div className="flex items-center gap-1">
+        <label className="text-lg font-medium">{title}</label>
+        {required && <span className="text-red-500">*</span>}
+        </div>
+          
             <div className="flex items-center gap-1">
             <input
                 ref={inputRef}
                 type={inputType}
-                className={`${width} p-2 border border-gray-300 rounded-md`}
+                className={`${width} p-2 border border-gray-300 rounded-md ${readOnly ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                 placeholder={datePicker ? undefined : placeholder}
                 value={formattedInputValue}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
-                maxLength={phoneNumber ? 13 : businessNumber ? 12 : undefined}
+                onBlur={handleBlur}
+                maxLength={phoneNumber ? 13 : businessNumber ? 12 : birthDate ? 10 : undefined}
+                readOnly={readOnly}
             />
             {icon && <img src={icon} alt="icon" className="w-6 h-6 cursor-pointer" onClick={() => {
                 if (datePicker && inputRef.current) {

@@ -23,6 +23,7 @@ import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/SouFLogo.svg";
 import outIcon from "../../assets/images/outIcon.svg";
 import Contract from "../../pages/contract";
+import {patchContract} from "../../api/contract";
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
@@ -36,6 +37,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);
+  const [contractData, setContractData] = useState(null);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
@@ -338,6 +340,21 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     setShowButtonList(false);
   };
 
+  const handleContractViewClick = async () => {
+    setShowContractModal(true);
+    try {
+      const response = await patchContract(roomId, {
+        inviteToken: "1TojXX0SXt5CER8F1giCd2VujJa9NxfYYOx0L00zsKH4TDrw3vHJOjuVzz6G9NRl",
+      });
+      console.log(response);
+      if (response && response.code === 200 && response.result) {
+        setContractData(response.result);
+      }
+    } catch (error) {
+      console.error("계약서 조회 실패:", error);
+    }
+  };
+
   const handleDeleteChatRoom = async (roomId) => {
     try {
       // 사용자 확인
@@ -448,7 +465,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
             ×
           </button>
         </div>
-        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole}/>
+        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData}/>
       </div>
     </div>
   )}
@@ -573,6 +590,14 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         {UserStore.getState().roleType === "MEMBER" && (
           <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleContractClick}
+          >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+            계약서 작성하기
+          </button>
+        )}
+        {UserStore.getState().roleType === "STUDENT" && (
+          <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleContractViewClick}
           >
           <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
             계약서 작성하기
