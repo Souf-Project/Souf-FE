@@ -3,7 +3,7 @@ import FilterDropdown from "../components/filterDropdown";
 import { useState, useEffect } from "react";
 import calendarIcon from "../assets/images/calendarIcon.svg";
 import { UserStore } from "../store/userStore";
-import { getOrdererInfo,getBeneficiaryInfo, postContractOrderer, postContractBeneficiary,  } from "../api/contract";
+import { getOrdererInfo, getBeneficiaryInfo, postContractOrderer, postContractBeneficiary } from "../api/contract";
 import AlertModal from "../components/alertModal";
 import { handleApiError } from "../utils/apiErrorHandler";
 import { 
@@ -16,7 +16,7 @@ import {
   CONTRACT_ORDERER_UPLOAD_ERRORS
 } from "../constants/contract";
 
-export default function Contract({ roomId, opponentId, opponentRole, contractData }) {
+export default function Contract({ roomId, opponentId, opponentRole, contractData, onContractCreated }) {
   const roleType = UserStore.getState().roleType;
   const currentMemberId = UserStore.getState().memberId;
   const isMember = roleType === "MEMBER";
@@ -348,7 +348,18 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     try {
       const response = await postContractOrderer(roomId, payload);
       console.log(response);
-      alert("계약서가 생성되었습니다.");
+      // alert("계약서가 생성되었습니다.");
+      console.log("계약서 생성 성공");
+      
+      // 계약서 생성 성공 시 채팅 메시지 전송 (부모 컴포넌트의 함수 사용)
+      if (onContractCreated) {
+        onContractCreated();
+      }
+      
+      // 메시지 전송 후 약간의 지연을 두고 리로드
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 500);
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
       handleApiError(error, {

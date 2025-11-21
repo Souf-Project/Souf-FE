@@ -20,10 +20,11 @@ import chatVideoIcon from "../../assets/images/chatVideoIcon.svg"
 import chatContractIcon from "../../assets/images/chatContractIcon.svg"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
-import SouFLogo from "../../assets/images/SouFLogo.svg";
+import SouFLogo from "../../assets/images/basiclogoimg.png";
 import outIcon from "../../assets/images/outIcon.svg";
 import Contract from "../../pages/contract";
 import {patchContract} from "../../api/contract";
+
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
@@ -63,7 +64,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
    // 기존 메시지와 실시간 메시지를 합쳐서 표시
   const allMessages = [...(chatMessages || []), ...realtimeMessages];
 
-  // console.log("모든 메시지:", allMessages);
+  console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -341,6 +342,14 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   };
 
   const handleContractViewClick = async () => {
+    const roleType = UserStore.getState().roleType;
+    
+    // 발주자(기업)가 클릭한 경우 알림만 표시하고 모달 열기 방지
+    if (roleType === "MEMBER") {
+      alert("학생 측 정보 기입 버튼입니다!");
+      return;
+    }
+    
     setShowContractModal(true);
     try {
       const response = await patchContract(roomId, {
@@ -352,6 +361,25 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       }
     } catch (error) {
       console.error("계약서 조회 실패:", error);
+    }
+  };
+
+  const handleSendContractMessage = () => {
+    const contractMessage = {
+      roomId: roomId,
+      sender: "admin",
+      type: "ADMIN",
+      content: "계약서 생성이 완료되었습니다! 학생 측 계약서 정보 기입을 완료해주세요.",
+      createdTime: new Date().toISOString(),
+      timestamp: Date.now()
+    };
+    console.log("계약서 메시지 전송 시도:", contractMessage);
+    const messageSent = sendChatMessage(contractMessage);
+    console.log("메시지 전송 결과:", messageSent);
+    
+    // 메시지 전송 성공 시 즉시 로컬 상태에 추가
+    if (messageSent) {
+      setRealtimeMessages(prev => [...prev, contractMessage]);
     }
   };
 
@@ -465,7 +493,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
             ×
           </button>
         </div>
-        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData}/>
+        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData} onContractCreated={handleSendContractMessage}/>
       </div>
     </div>
   )}
@@ -506,6 +534,31 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
               onImageClick={handleImageClick}
               onFileClick={handleFileClick}
         />
+      ) : chat.type === "ADMIN" || chat.sender === "admin" || chat.sender === "souf" || (chat.content && chat.content.includes("계약서 생성이 완료되었습니다")) ? (
+        // Admin 메시지 UI
+        <div className="flex items-start gap-2 mb-4">
+          <img 
+            src={SouFLogo} 
+            className="w-10 h-10 rounded-full object-cover"
+            alt="SouF 로고"
+          />
+          <div className="flex gap-2 items-end">
+            <div className="max-w-xs bg-blue-50 border border-blue-200 text-black px-4 py-3 rounded-lg rounded-bl-none shadow">
+              <p className="text-sm mb-3">{chat.content}</p>
+              {(chat.type === "ADMIN" || chat.sender === "admin" || (chat.content && chat.content.includes("계약서 생성이 완료되었습니다"))) && (
+                <button 
+                  className="flex items-center gap-2 bg-blue-main text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm"
+                  onClick={handleContractViewClick}
+                >
+                  학생 측 계약서 완성하기
+                </button>
+              )}
+            </div>
+            <span className="text-xs text-gray-500 block text-right mt-1">
+              {chat.createdTime ? new Date(chat.createdTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}
+            </span>
+          </div>
+        </div>
       ) : (
         <ReceiverMessage 
           content={chat.content} 
