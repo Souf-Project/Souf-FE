@@ -14,19 +14,19 @@ export const CONTRACT_ORDERER_PREVIEW_ERRORS = {
 export const CONTRACT_ORDERER_ERRORS = {
   "M404-1": {
     message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO403-1": {
     message: "계약서 작성 권한이 없습니다. 로그인 상태를 확인해주세요.",
-    action: "reload",
+    action: "",
   },
   "CH404-2": {
     message: "채팅방을 찾을 수 없습니다. 채팅 목록으로 돌아가 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO403-2": {
     message: "계약서를 작성할 권한이 없습니다. 올바른 채팅방에서 시도해주세요.",
-    action: "reload",
+    action: "",
   },
 };
 
@@ -62,31 +62,35 @@ export const CONTRACT_BENEFICIARY_PREVIEW_ERRORS = {
 export const CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS = {
   "M404-1": {
     message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO410-2": {
-    message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
+    message: "이미 작성된 계약서입니다.",
     action: "reload",
   },
   "CO409-2": {
     message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO410-1": {
     message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO403-2": {
     message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO403-1": {
     message: "사용자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
-    action: "reload",
+    action: "",
   },
   "CO404-1": {
     message: "계약서를 찾을 수 없습니다. 계약서를 다시 작성해주세요.",
-    action: "reload",
+    action: "",
+  },
+  "CO404-2": {
+    message: "계약서를 찾을 수 없습니다. 계약서를 다시 작성해주세요.",
+    action: "",
   },
 };
 
@@ -97,7 +101,7 @@ export const CONTRACT_BENEFICIARY_ERRORS = {
     action: "reload",
   },
   "CO410-2": {
-    message: "계약 당사자 정보를 찾을 수 없습니다. 다시 시도해주세요.",
+    message: "계약서 작성 시간이 만료되었습니다. 계약서 생성을 다시 요청해주세요.",
     action: "reload",
   },
   "CO409-2": {

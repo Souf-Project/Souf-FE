@@ -24,6 +24,8 @@ import SouFLogo from "../../assets/images/basiclogoimg.png";
 import outIcon from "../../assets/images/outIcon.svg";
 import Contract from "../../pages/contract";
 import {patchContract} from "../../api/contract";
+import { handleApiError } from "../../utils/apiErrorHandler";
+import { CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS } from "../../constants/contract";
 
 
 
@@ -36,11 +38,16 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const [showCheckout, setShowCheckout] = useState(false);
   const scrollRef = useRef(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
+  const [errorAction, setErrorAction] = useState("redirect");
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);
   const [contractData, setContractData] = useState(null);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
+  const documentFileInputRef = useRef(null);
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -54,24 +61,58 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     queryKey: ["chatRoom", roomId],
     queryFn: async () => {
       const data = await getChatRooms(roomId);
-      
-      
-      return data;
+      // API 응답 구조에 따라 메시지 배열 추출
+      const messages = data?.result?.content || data?.result || data || [];
+      return messages;
     },
     keepPreviousData: true,
   });
 
    // 기존 메시지와 실시간 메시지를 합쳐서 표시
-  const allMessages = [...(chatMessages || []), ...realtimeMessages];
+  // chatMessages는 배열이어야 함
+  const chatMessagesArray = Array.isArray(chatMessages) ? chatMessages : [];
+  const allMessages = [...chatMessagesArray, ...realtimeMessages];
 
-  console.log("모든 메시지:", allMessages);
+  // content에서 pdfUrl을 추출하는 헬퍼 함수
+  const extractPdfUrl = (content) => {
+    if (!content) return null;
+    // content에서 줄바꿈(\n) 이후의 URL을 추출
+    const lines = content.split('\n');
+    const pdfUrlLine = lines.find(line => line.trim() && (line.includes('http') || line.includes('contract/')));
+    return pdfUrlLine ? pdfUrlLine.trim() : null;
+  };
+
+  // content에서 pdfUrl을 제거하고 순수 텍스트만 반환하는 헬퍼 함수
+  const getCleanContent = (content) => {
+    if (!content) return "";
+    const lines = content.split('\n');
+    // pdfUrl이 포함된 줄을 제외하고 나머지를 합침
+    const cleanLines = lines.filter(line => {
+      const trimmed = line.trim();
+      return trimmed && !(trimmed.includes('http') || trimmed.includes('contract/'));
+    });
+    return cleanLines.join('\n').trim();
+  };
+
+  // console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
   
         connectChatSocket(roomId, (incomingMessage) => {
-    
-      setRealtimeMessages((prev) => [...prev, incomingMessage]);
+      // WebSocket을 통해 받은 메시지를 realtimeMessages에 추가
+      // 중복 체크: 같은 chatId나 timestamp를 가진 메시지가 이미 있는지 확인
+      setRealtimeMessages((prev) => {
+        const isDuplicate = prev.some(msg => 
+          (msg.chatId && incomingMessage.chatId && msg.chatId === incomingMessage.chatId) ||
+          (msg.timestamp && incomingMessage.timestamp && msg.timestamp === incomingMessage.timestamp) ||
+          (msg.content === incomingMessage.content && msg.type === incomingMessage.type && msg.sender === incomingMessage.sender && Math.abs(new Date(msg.createdTime) - new Date(incomingMessage.createdTime)) < 1000)
+        );
+        if (isDuplicate) {
+          return prev;
+        }
+        return [...prev, incomingMessage];
+      });
   
       const isFileOrImage = ["IMAGE", "FILE"].includes(incomingMessage.type);
       
@@ -161,6 +202,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         sender: nickname,
         type: messageType,
         content: uploadInfo.fileUrl,
+        fileName: file.name, // 원본 파일명 추가
       };
      
       const success = sendChatMessage(fileMessage);
@@ -294,8 +336,17 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     videoInputRef.current?.click();
   };
 
-  const handleFileButtonClick = () => {
+  const handleDocumentFileButtonClick = () => {
     setShowButtonList(false);
+    documentFileInputRef.current?.click();
+  };
+
+  const handleDocumentFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+    event.target.value = '';
   };
 
   // 이미지 업로드 완료 처리
@@ -326,11 +377,12 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     setSelectedImage(imageUrl);
   };
 
-  const handleFileClick = (fileUrl) => {
+  const handleFileClick = (fileUrl, fileName) => {
     // 파일 다운로드
     const link = document.createElement('a');
     link.href = fileUrl;
-    link.download = fileUrl.split('/').pop();
+    // 원본 파일명이 있으면 사용하고, 없으면 URL에서 추출
+    link.download = fileName || fileUrl.split('/').pop();
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -353,7 +405,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     setShowContractModal(true);
     try {
       const response = await patchContract(roomId, {
-        inviteToken: "1TojXX0SXt5CER8F1giCd2VujJa9NxfYYOx0L00zsKH4TDrw3vHJOjuVzz6G9NRl",
+        inviteToken: "oO45FZGPaSjJCijR0jT35doKEzwY40uuz9NiW5ER_9u4ywFDfKmAgsEmF2xNRM_H",
       });
       console.log(response);
       if (response && response.code === 200 && response.result) {
@@ -361,15 +413,33 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       }
     } catch (error) {
       console.error("계약서 조회 실패:", error);
+      handleApiError(error, {
+        setShowLoginModal,
+        setErrorModal: setShowErrorModal,
+        setErrorDescription,
+        setErrorAction,
+      }, CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS);
     }
   };
 
   const handleSendContractMessage = () => {
+    // 현재 시간에서 6시간 추가
+    const now = new Date();
+    const expiryTime = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6시간 = 6 * 60 * 60 * 1000ms
+    
+    // 한국 시간으로 포맷팅 (YYYY년 MM월 DD일 HH시 MM분)
+    const year = expiryTime.getFullYear();
+    const month = String(expiryTime.getMonth() + 1).padStart(2, '0');
+    const day = String(expiryTime.getDate()).padStart(2, '0');
+    const hours = String(expiryTime.getHours()).padStart(2, '0');
+    const minutes = String(expiryTime.getMinutes()).padStart(2, '0');
+    const formatExpiryTime = `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
+    
     const contractMessage = {
       roomId: roomId,
       sender: "admin",
-      type: "ADMIN",
-      content: "계약서 생성이 완료되었습니다! 학생 측 계약서 정보 기입을 완료해주세요.",
+      type: "NOTIFICATION",
+      content: `계약서 생성이 완료되었습니다! \n학생 측 계약서 정보 기입을 ${formatExpiryTime}까지 완료해주세요.`,
       createdTime: new Date().toISOString(),
       timestamp: Date.now()
     };
@@ -377,10 +447,23 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     const messageSent = sendChatMessage(contractMessage);
     console.log("메시지 전송 결과:", messageSent);
     
-    // 메시지 전송 성공 시 즉시 로컬 상태에 추가
-    if (messageSent) {
-      setRealtimeMessages(prev => [...prev, contractMessage]);
-    }
+  };
+
+  const handleSendContractCompleteMessage = (pdfUrl) => {
+    const contractCompleteMessage = {
+      roomId: roomId,
+      sender: "admin",
+      type: "NOTIFICATION",
+      content: `계약서 작성이 완료되었습니다. 다운로드 후 서명을 진행해주세요. \n${pdfUrl}`,
+      createdTime: new Date().toISOString(),
+      timestamp: Date.now(),
+    };
+    console.log("계약서 완성 메시지 전송 시도:", contractCompleteMessage);
+    const messageSent = sendChatMessage(contractCompleteMessage);
+    console.log("계약서 완성 메시지 전송 결과:", messageSent);
+    
+    // WebSocket을 통해 메시지를 보내면 서버가 브로드캐스트하고
+    // 같은 클라이언트도 그 메시지를 받아서 realtimeMessages에 자동으로 추가됩니다.
   };
 
   const handleDeleteChatRoom = async (roomId) => {
@@ -454,6 +537,15 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     style={{ display: 'none' }}
   />
 
+  {/* 숨겨진 문서 파일 입력 (PDF, Excel, Word 등) */}
+  <input
+    type="file"
+    ref={documentFileInputRef}
+    onChange={handleDocumentFileSelect}
+    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.hwp,.zip"
+    style={{ display: 'none' }}
+  />
+
   {/* Checkout 모달 */}
   {showCheckout && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -493,7 +585,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
             ×
           </button>
         </div>
-        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData} onContractCreated={handleSendContractMessage}/>
+        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData} onContractCreated={handleSendContractMessage} onContractCompleted={handleSendContractCompleteMessage}/>
       </div>
     </div>
   )}
@@ -526,15 +618,8 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           )}
           
           {/* 메시지 */}
-          {isMyMessage ? (
-        <SenderMessage 
-          content={chat.content} 
-          createdTime={chat.createdTime}
-              type={chat.type}
-              onImageClick={handleImageClick}
-              onFileClick={handleFileClick}
-        />
-      ) : chat.type === "ADMIN" || chat.sender === "admin" || chat.sender === "souf" || (chat.content && chat.content.includes("계약서 생성이 완료되었습니다")) ? (
+          {/* NOTIFICATION 타입은 admin 메시지로 처리 (서버가 sender를 덮어쓰므로 type으로 먼저 체크) */}
+          {chat.type === "NOTIFICATION" || chat.sender === "admin" || chat.sender === "souf" || (chat.content && (chat.content.includes("계약서 생성이 완료되었습니다") || chat.content.includes("계약서 작성이 완료되었습니다"))) ? (
         // Admin 메시지 UI
         <div className="flex items-start gap-2 mb-4">
           <img 
@@ -544,13 +629,40 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           />
           <div className="flex gap-2 items-end">
             <div className="max-w-xs bg-blue-50 border border-blue-200 text-black px-4 py-3 rounded-lg rounded-bl-none shadow">
-              <p className="text-sm mb-3">{chat.content}</p>
-              {(chat.type === "ADMIN" || chat.sender === "admin" || (chat.content && chat.content.includes("계약서 생성이 완료되었습니다"))) && (
+              <p className="text-sm mb-3 whitespace-pre-line">{getCleanContent(chat.content)}</p>
+              {(chat.type === "NOTIFICATION" && (chat.content && chat.content.includes("계약서 생성이 완료되었습니다"))) && (
                 <button 
                   className="flex items-center gap-2 bg-blue-main text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm"
                   onClick={handleContractViewClick}
                 >
                   학생 측 계약서 완성하기
+                </button>
+              )}
+              {chat.type === "NOTIFICATION" && (chat.content && chat.content.includes("계약서 작성이 완료되었습니다")) && extractPdfUrl(chat.content) && (
+                <button 
+                  className="flex items-center gap-2 bg-blue-main text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm mt-2"
+                  onClick={() => {
+                    const pdfUrl = extractPdfUrl(chat.content);
+                    // pdfUrl이 이미 전체 URL인지 확인하고, 아니면 S3_BUCKET_URL과 합침
+                    let downloadUrl;
+                    if (pdfUrl.startsWith('http')) {
+                      downloadUrl = pdfUrl;
+                    } else {
+                      // S3_BUCKET_URL 끝의 / 제거, pdfUrl 시작의 / 제거 후 하나의 /로 합침
+                      const baseUrl = S3_BUCKET_URL.endsWith('/') ? S3_BUCKET_URL.slice(0, -1) : S3_BUCKET_URL;
+                      const path = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : pdfUrl;
+                      downloadUrl = `${baseUrl}/${path}`;
+                    }
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = '계약서.pdf';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  PDF 다운로드
                 </button>
               )}
             </div>
@@ -559,14 +671,24 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
             </span>
           </div>
         </div>
+      ) : isMyMessage ? (
+        <SenderMessage 
+          content={chat.content} 
+          createdTime={chat.createdTime}
+              type={chat.type}
+              fileName={chat.fileName}
+              onImageClick={handleImageClick}
+              onFileClick={(fileUrl) => handleFileClick(fileUrl, chat.fileName)}
+        />
       ) : (
         <ReceiverMessage 
           content={chat.content} 
           createdTime={chat.createdTime}
           opponentProfileImageUrl={opponentProfileImageUrl}
           type={chat.type}
+          fileName={chat.fileName}
           onImageClick={handleImageClick}
-          onFileClick={handleFileClick}
+          onFileClick={(fileUrl) => handleFileClick(fileUrl, chat.fileName)}
           opponentId={opponentId}
           opponentRole={opponentRole}
         />
@@ -656,6 +778,16 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
             계약서 작성하기
           </button>
         )}
+        {/* 파일 전송 버튼 */}
+        <button 
+          className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleDocumentFileButtonClick}
+        >
+          파일 전송
+        </button>
+        
+      
+        
       </div>
     )}
     {showAlertModal && (
@@ -681,6 +813,40 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           // console.log("온도 평가 확인");
           setShowDegreeModal(false);
         }}
+      />
+    )}
+
+    {/* 에러 모달 */}
+    {showErrorModal && (
+      <AlertModal
+        type="simple"
+        title="계약서 조회 오류"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          setShowErrorModal(false);
+          if (errorAction === "redirect") {
+            window.location.href = "/chat";
+          } else if (errorAction === "reload") {
+            window.location.reload();
+          }
+        }}
+      />
+    )}
+
+    {/* 로그인 모달 */}
+    {showLoginModal && (
+      <AlertModal
+        type="simple"
+        title="로그인이 필요합니다"
+        description="계약서 조회를 위해 로그인이 필요합니다."
+        TrueBtnText="로그인하러 가기"
+        FalseBtnText="취소"
+        onClickTrue={() => {
+          setShowLoginModal(false);
+          window.location.href = "/login";
+        }}
+        onClickFalse={() => setShowLoginModal(false)}
       />
     )}
   </div>

@@ -5,6 +5,7 @@ import calendarIcon from "../assets/images/calendarIcon.svg";
 import { UserStore } from "../store/userStore";
 import { getOrdererInfo, getBeneficiaryInfo, postContractOrderer, postContractBeneficiary } from "../api/contract";
 import AlertModal from "../components/alertModal";
+import LoadingModal from "../components/loadingModal";
 import { handleApiError } from "../utils/apiErrorHandler";
 import { 
   CONTRACT_ORDERER_PREVIEW_ERRORS, 
@@ -16,7 +17,8 @@ import {
   CONTRACT_ORDERER_UPLOAD_ERRORS
 } from "../constants/contract";
 
-export default function Contract({ roomId, opponentId, opponentRole, contractData, onContractCreated }) {
+export default function Contract({ roomId, opponentId, opponentRole, contractData, onContractCreated, onContractCompleted }) {
+  const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
   const roleType = UserStore.getState().roleType;
   const currentMemberId = UserStore.getState().memberId;
   const isMember = roleType === "MEMBER";
@@ -294,6 +296,33 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     }
   }
 
+  const handleGetBeneficiaryInfo = async (roomId) => {
+    try {
+      // contractData에서 inviteToken 가져오기 (contractUuid가 inviteToken일 수 있음)
+      // const inviteToken = contractData?.contractUuid || "";
+      const inviteToken = "znd2OoS93HapSLQguUReIP6XxnQP_X1Rmjjh8ZF9_ZE4vGhilKeafJIQlGj1zBS7";
+      const response = await getBeneficiaryInfo(roomId, inviteToken);
+      console.log("수급자 정보 응답:", response);
+      
+      if (response && response.code === 200 && response.result) {
+        const data = response.result;
+        
+        if (data.beneficiaryName) setBeneficiaryName(data.beneficiaryName);
+        if (data.schoolName) setBeneficiarySchool(data.schoolName);
+        if (data.email) setBeneficiaryEmail(data.email);
+        if (data.phoneNumber) setBeneficiaryPhone(data.phoneNumber);
+      }
+    } catch (error) {
+      console.error("수급자 정보 불러오기 실패:", error);
+      handleApiError(error, {
+        setShowLoginModal,
+        setErrorModal: setShowErrorModal,
+        setErrorDescription,
+        setErrorAction,
+      }, CONTRACT_BENEFICIARY_PREVIEW_ERRORS);
+    }
+  }
+
   const handlePostContractOrderer = async () => {
     const managerWithPosition =
       managerName && managerPosition
@@ -347,27 +376,33 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     setIsOrdererLoading(true);
     try {
       const response = await postContractOrderer(roomId, payload);
-      console.log(response);
-      // alert("계약서가 생성되었습니다.");
-      console.log("계약서 생성 성공");
+      // console.log(response);
+      alert("계약서가 생성되었습니다.");
       
-      // 계약서 생성 성공 시 채팅 메시지 전송 (부모 컴포넌트의 함수 사용)
       if (onContractCreated) {
         onContractCreated();
       }
       
-      // 메시지 전송 후 약간의 지연을 두고 리로드
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 500);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
-      handleApiError(error, {
-        setShowLoginModal,
-        setErrorModal: setShowErrorModal,
-        setErrorDescription,
-        setErrorAction,
-      }, CONTRACT_ORDERER_ERRORS);
+      
+      // 400 에러인 경우 서버에서 보낸 메시지를 그대로 표시
+      if (error?.response?.status === 400 || error?.response?.data?.code === 400) {
+        const errorMessage = error?.response?.data?.message || "요청이 올바르지 않습니다.";
+        setErrorDescription(errorMessage);
+        setErrorAction("reload");
+        setShowErrorModal(true);
+      } else {
+        handleApiError(error, {
+          setShowLoginModal,
+          setErrorModal: setShowErrorModal,
+          setErrorDescription,
+          setErrorAction,
+        }, CONTRACT_ORDERER_ERRORS);
+      }
     } finally {
       setIsOrdererLoading(false);
     }
@@ -406,6 +441,43 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
       return;
     }
 
+    // 계좌번호 형식 검증
+    const accountRegex = /^\d+$/;
+    if (!accountRegex.test(beneficiaryBankAccount)) {
+      alert("계좌번호는 숫자만 입력 가능합니다.");
+      return;
+    }
+
+    // 생년월일 YYYY-MM-DD 형식 검증
+    const birthRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!birthRegex.test(beneficiaryBirth)) {
+      alert("생년월일은 YYYY-MM-DD 형식으로 입력해주세요.");
+      return;
+    }
+
+    // 유효한 날짜인지 검증
+    const birthDate = new Date(beneficiaryBirth);
+    const [year, month, day] = beneficiaryBirth.split('-').map(Number);
+    
+    if (birthDate.getFullYear() !== year || 
+        birthDate.getMonth() + 1 !== month || 
+        birthDate.getDate() !== day) {
+      alert("올바른 날짜를 입력해주세요.");
+      return;
+    }
+
+    // 2025년 이하 출생인지 검증
+    if (year > 2025) {
+      alert("생년월일 년도를 올바르게 입력해주세요.");
+      return;
+    }
+
+    // 1900년 이상 출생인지 검증
+    if (year < 1900) {
+      alert("생년월일 년도를 올바르게 입력해주세요.");
+      return;
+    }
+
     // 은행/증권 정보 구성
     let bankInfo = "";
     if (selectedType === 0) {
@@ -417,7 +489,7 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     }
 
     const payload = {
-        inviteToken: "1TojXX0SXt5CER8F1giCd2VujJa9NxfYYOx0L00zsKH4TDrw3vHJOjuVzz6G9NRl" || "",
+        inviteToken: "oO45FZGPaSjJCijR0jT35doKEzwY40uuz9NiW5ER_9u4ywFDfKmAgsEmF2xNRM_H" || "",
         username: beneficiaryName,
         birth: beneficiaryBirth, 
         schoolName: beneficiarySchool, 
@@ -431,8 +503,24 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     try {
       const response = await postContractBeneficiary(roomId, payload);
       console.log(response);
-      alert("계약서가 완성되었습니다.");
-      window.location.reload();
+
+      if (response && response.code === 200) {
+        alert("계약서가 완성되었습니다.");
+        
+        // 계약서 완성 성공 시 채팅 메시지 전송
+        // PDF 다운로드 링크를 포함하여 전송
+        const pdfUrl = response.result || "";
+        if (onContractCompleted) {
+          onContractCompleted(pdfUrl);
+        }
+        
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
+      } else {
+        alert("계약서가 완성되었습니다.");
+        window.location.reload();
+      }
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
       handleApiError(error, {
@@ -454,8 +542,14 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         <div className="flex flex-col gap-2">
           <div className="flex items-end justify-between">
             <h3 className="text-2xl font-bold mt-6">1. 계약 당사자</h3>
-            <button className="bg-blue-main text-white px-4 py-2 rounded-md"
-             onClick={() => handleGetOrdererInfo(roomId)}>내 정보 불러오기</button>
+            {isMember && !contractData && (
+              <button className="bg-blue-main text-white px-4 py-2 rounded-md"
+               onClick={() => handleGetOrdererInfo(roomId)}>내 정보 불러오기</button>
+            )}
+            {isStudent && contractData && (
+              <button className="bg-blue-main text-white px-4 py-2 rounded-md"
+               onClick={() => handleGetBeneficiaryInfo(roomId)}>내 정보 불러오기</button>
+            )}
           </div>
            
               <>
@@ -609,23 +703,28 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
             onClickFalse={() => setShowLoginModal(false)}
           />
         )}
+
+        {/* 로딩 모달 */}
+        {(isOrdererLoading || isBeneficiaryLoading) && (
+          <LoadingModal text="처리 중입니다..." />
+        )}
         
         {isMember && !contractData && (
           <button 
-            className={`px-4 py-2 rounded-md ${isOrdererLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-main'} text-white`}
+            className="px-4 py-2 rounded-md bg-blue-main text-white"
             onClick={handlePostContractOrderer}
             disabled={isOrdererLoading}
           >
-            {isOrdererLoading ? '처리 중...' : '계약서 작성하기'}
+            계약서 작성하기
           </button>
         )}
         {isStudent && contractData && (
           <button 
-            className={`px-4 py-2 rounded-md ${isBeneficiaryLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-main'} text-white`}
+            className="px-4 py-2 rounded-md bg-blue-main text-white"
             onClick={handlePostContractBeneficiary}
             disabled={isBeneficiaryLoading}
           >
-            {isBeneficiaryLoading ? '처리 중...' : '계약서 완성하기'}
+            계약서 완성하기
           </button>
         )}
 

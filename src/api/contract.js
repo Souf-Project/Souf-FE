@@ -5,8 +5,12 @@ export const getOrdererInfo = async (roomId) => {
   return response.data;
 };
 
-export const getBeneficiaryInfo = async (roomId) => {
-  const response = await client.get(`/api/v1/contract/${roomId}/beneficiary/preview`);
+export const getBeneficiaryInfo = async (roomId, inviteToken) => {
+  const response = await client.get(`/api/v1/contract/${roomId}/beneficiary/preview`, {
+    params: {
+      inviteToken: inviteToken || ""
+    }
+  });
   return response.data;
 };
 

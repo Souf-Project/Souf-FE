@@ -91,6 +91,7 @@ export const sendChatMessage = (message) => {
       sender: message.sender,
       type: message.type,
       content: message.content,
+      ...(message.pdfUrl && { pdfUrl: message.pdfUrl }), // pdfUrl이 있으면 포함
     };
     
     console.log("전송할 메시지:", messageToSend);
