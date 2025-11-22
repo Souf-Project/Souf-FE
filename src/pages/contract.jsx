@@ -508,10 +508,16 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         alert("계약서가 완성되었습니다.");
         
         // 계약서 완성 성공 시 채팅 메시지 전송
-        // PDF 다운로드 링크를 포함하여 전송
-        const pdfUrl = response.result || "";
+        // contractId와 pdfUrl을 포함하여 전송
+        const result = response.result || {};
+        const contractId = result.contractId || "";
+        const pdfUrl = result.pdfUrl || "";
+        
+        // contractId와 pdfUrl을 구분 가능한 형식으로 전달
+        const contractData = `contractId:${contractId}\npdfUrl:${pdfUrl}`;
+        
         if (onContractCompleted) {
-          onContractCompleted(pdfUrl);
+          onContractCompleted(contractData);
         }
         
         setTimeout(() => {

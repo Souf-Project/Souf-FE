@@ -28,6 +28,10 @@ export const CONTRACT_ORDERER_ERRORS = {
     message: "계약서를 작성할 권한이 없습니다. 올바른 채팅방에서 시도해주세요.",
     action: "",
   },
+  "C0409-3": {
+    message: "이미 진행 중인 계약이 존재합니다. 이전 계약을 먼저 완료해주세요.",
+    action: "reload",
+  }
 };
 
 // /{roomId}/beneficiary/preview (GET) - 수급자 정보 조회 API 에러

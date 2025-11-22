@@ -28,3 +28,8 @@ export const patchContract = async (roomId, requestBody) => {
   const response = await client.patch(`/api/v1/contract/${roomId}/beneficiary/preview/contract`, requestBody);
   return response.data;
 };
+
+export const postOrdererUpload = async (roomId, requestBody) => {
+  const response = await client.post(`/api/v1/contract/${roomId}/orderer/upload`, requestBody);
+  return response.data;
+};
