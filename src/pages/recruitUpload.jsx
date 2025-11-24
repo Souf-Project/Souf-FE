@@ -1200,7 +1200,7 @@ export default function RecruitUpload() {
             LAST STEP . 
             {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
         </div>
-        <p className="text-sm text-neutral-500 mb-8">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p>
+        {/* <p className="text-sm text-neutral-500 mb-8">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p> */}
 
         <div className="flex gap-4 items-center justify-center">
         <button
