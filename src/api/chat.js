@@ -1,7 +1,7 @@
 import client from "./client";
 import axios from "axios";
 
-export const getChat = async (memberId,feedId) => {
+export const getChat = async () => {
   try {
     const response = await client.get(`/api/v1/chatrooms`);
     return response.data;

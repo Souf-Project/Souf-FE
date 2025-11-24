@@ -376,16 +376,16 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     setIsOrdererLoading(true);
     try {
       const response = await postContractOrderer(roomId, payload);
-      // console.log(response);
+      console.log(response);
       alert("계약서가 생성되었습니다.");
       
       if (onContractCreated) {
         onContractCreated();
       }
       
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 500);
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
       
@@ -489,7 +489,7 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     }
 
     const payload = {
-        inviteToken: "oO45FZGPaSjJCijR0jT35doKEzwY40uuz9NiW5ER_9u4ywFDfKmAgsEmF2xNRM_H" || "",
+        inviteToken: "Vuipf5XSMNXLHcDDxwbeZ8y3jn1p1LJ0glQEetAft-uadmn7JziTK70XxC5ZIPip" || "",
         username: beneficiaryName,
         birth: beneficiaryBirth, 
         schoolName: beneficiarySchool, 
@@ -510,7 +510,7 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         // 계약서 완성 성공 시 채팅 메시지 전송
         // contractId와 pdfUrl을 포함하여 전송
         const result = response.result || {};
-        const contractId = result.contractId || "";
+        const contractId = result.contractUuid || "";
         const pdfUrl = result.pdfUrl || "";
         
         // contractId와 pdfUrl을 구분 가능한 형식으로 전달

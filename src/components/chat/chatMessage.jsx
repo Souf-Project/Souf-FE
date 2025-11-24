@@ -23,7 +23,7 @@ import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/basiclogoimg.png";
 import outIcon from "../../assets/images/outIcon.svg";
 import Contract from "../../pages/contract";
-import {patchContract, postOrdererUpload} from "../../api/contract";
+import {patchContract, postOrdererUpload, getFinalContract} from "../../api/contract";
 import { handleApiError } from "../../utils/apiErrorHandler";
 import { CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS } from "../../constants/contract";
 
@@ -115,7 +115,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     return cleanLines.join('\n').trim();
   };
 
-  console.log("모든 메시지:", allMessages);
+  // console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -425,9 +425,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     setShowContractModal(true);
     try {
       const response = await patchContract(roomId, {
-        inviteToken: "oO45FZGPaSjJCijR0jT35doKEzwY40uuz9NiW5ER_9u4ywFDfKmAgsEmF2xNRM_H",
+        inviteToken: "Vuipf5XSMNXLHcDDxwbeZ8y3jn1p1LJ0glQEetAft-uadmn7JziTK70XxC5ZIPip",
       });
-      console.log(response);
+      // console.log(response);
       if (response && response.code === 200 && response.result) {
         setContractData(response.result);
       }
@@ -463,9 +463,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       createdTime: new Date().toISOString(),
       timestamp: Date.now()
     };
-    console.log("계약서 메시지 전송 시도:", contractMessage);
+    // console.log("계약서 메시지 전송 시도:", contractMessage);
     const messageSent = sendChatMessage(contractMessage);
-    console.log("메시지 전송 결과:", messageSent);
+    // console.log("메시지 전송 결과:", messageSent);
     
   };
 
@@ -500,9 +500,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       createdTime: new Date().toISOString(),
       timestamp: Date.now(),
     };
-    console.log("계약서 완성 메시지 전송 시도:", contractCompleteMessage);
+    // console.log("계약서 완성 메시지 전송 시도:", contractCompleteMessage);
     const messageSent = sendChatMessage(contractCompleteMessage);
-    console.log("계약서 완성 메시지 전송 결과:", messageSent);
+    // console.log("계약서 완성 메시지 전송 결과:", messageSent);
 
   };
 
@@ -574,16 +574,28 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     }
 
     try {
+      // console.log(contractIdToUse, pdfUrlToUse);
       const response = await postOrdererUpload(roomId, {
-        postId: contractIdToUse, // contractId 사용
-        fileUrl: [pdfUrlToUse], // pdfUrl 사용 (기존 마지막 서명 전 계약서)
-        fileName: [file.name], // 사용자가 선택한 파일의 원본 파일명
+        postId: contractIdToUse,
+        fileUrl: [pdfUrlToUse], 
+        fileName: [file.name],
         fileType: ["PDF"],
-        filePurpose: "CONTRACT"
+        filePurpose: ["CONTRACT"]
       });
-      console.log("계약서 업로드 성공:", response);
+      // console.log("계약서 업로드 성공:", response);
       if (response && response.code === 200 && response.result) {
-        console.log("계약서 업로드 성공:", response.result);
+        // console.log("계약서 업로드 성공:", response.result);
+        // 계약서 업로드 성공 시 채팅 메시지 전송
+        const contractCompleteMessage = {
+          roomId: roomId,
+          sender: "admin",
+          type: "NOTIFICATION",
+          content: `최종 계약서가 업로드되었습니다.\n계약서 조회 탭에서 계약서를 확인해주세요.`,
+          createdTime: new Date().toISOString(),
+          timestamp: Date.now(),
+        };
+        const messageSent = sendChatMessage(contractCompleteMessage);
+        // console.log("메시지 전송 결과:", messageSent);
         alert("계약서가 성공적으로 업로드되었습니다.");
       }
     } catch (error) {
@@ -592,6 +604,22 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     }
 
     event.target.value = '';
+  };
+
+  const handleFinalContractViewClick = async () => {
+    try {
+      const response = await getFinalContract(roomId);
+      // console.log(response);
+      if (response && response.code === 200 && response.result) {
+        // console.log("계약서 조회 성공:", response.result);
+        window.open(S3_BUCKET_URL + response.result.fileUrl, "_blank");
+
+      }
+    } catch (error) {
+      console.error("계약서 조회 실패:", error);
+      alert("계약서 조회에 실패했습니다. 다시 시도해주세요.");
+    }
+
   };
 
   const handleDeleteChatRoom = async (roomId) => {
@@ -932,6 +960,12 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           최종 계약서 업로드
         </button>
         )}
+        <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleFinalContractViewClick}
+        >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+          계약서 조회
+        </button> 
         
       
         
