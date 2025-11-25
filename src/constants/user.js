@@ -58,8 +58,4 @@ export const LOGIN_ERRORS = {
     message: "신고된 회원입니다.",
     action: "refresh",
   },
-  "M409-2": {
-    message: "인증 정보가 필요합니다. \n 인증 정보 입력 페이지로 이동합니다.",
-    action: "/",
-  }
 }

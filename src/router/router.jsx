@@ -36,6 +36,7 @@ import AlertModal from "../components/alertModal";
 import TermsPage from "../pages/policy/terms";
 import PrivacyPage from "../pages/policy/privacy";
 import ComplainPage from "../pages/policy/complain";
+import AdditionalInfo from "../pages/additionalInfo";
 
 function AppRouter() {
   const location = useLocation();
@@ -73,6 +74,7 @@ function AppRouter() {
           <Route path="/recruitsAll" element={<RecruitsAll />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/join" element={<Join />} />
+          <Route path="/additionalInfo" element={<AdditionalInfo />} />
           <Route path="/pwdFind" element={<PwdFind />} />
           <Route path="/students" element={<StudentProfileList />} />
           <Route path="/profileDetail/:id" element={<ProfileDetail />} />
