@@ -62,7 +62,7 @@ function AppRouter() {
       <main className="flex-grow w-full mt-16">
         <Routes>
           <Route path="/" element={<Home />} />
-          {/* <Route path="/" element={<Inspection />} /> */}
+          <Route path="/error" element={<Inspection />} />
          <Route path="/login" element={<Login />} />
           <Route path="/oauth/kakao/callback" element={<Redirect />} />
           <Route path="/oauth/google/callback" element={<Redirect />} />

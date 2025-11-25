@@ -327,6 +327,15 @@ client.interceptors.response.use(
     if (error.code === "ERR_NETWORK") {
       console.error("서버 연결 실패");
     }
+
+    // 서버가 다운되었거나 응답 자체가 없는 경우 처리
+    if (!error.response) {
+      console.error("❌ 서버 연결 실패 또는 서버 다운");
+      processQueue(error, null);
+      window.location.href = "/error";
+      return Promise.reject(error);
+    }
+
     return Promise.reject(error);
   }
 );

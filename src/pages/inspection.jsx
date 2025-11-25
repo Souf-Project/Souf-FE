@@ -19,7 +19,7 @@ export default function Inspection() {
         <div className="flex flex-col ml-auto text-sm text-gray-500">
             <p>사업자 번호 ㅣ 508-24-95706</p>
             <p>(주)스프 ㅣ 통신판매업</p>
-            <p>서울특별시 광진구 자양로 585 2층</p>
+            <p>서울특별시 광진구 광나루로19길 23, 103호</p>
             <p className="mt-4">© 2025 SOUF. All rights reserved.</p>
         </div>
       </div>
