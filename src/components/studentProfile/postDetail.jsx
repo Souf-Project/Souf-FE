@@ -141,6 +141,8 @@ const handleDeleteClick = () => {
       await deleteFeed(worksId);
       setShowDeleteModal(false);
       setShowCompleteModal(true);
+
+      
     } catch (err) {
       //console.log("실패 넘어요", err);
       setShowDeleteModal(false);
@@ -163,7 +165,7 @@ const handleDeleteClick = () => {
 
   const handleCompleteConfirm = () => {
     setShowCompleteModal(false);
-    navigate("/");
+    navigate(-1);
   };
 
   // SNS 공유 훅 사용
