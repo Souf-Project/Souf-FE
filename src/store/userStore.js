@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { getUnreadNotificationCount, getNotifications } from "../api/notification";
+import { getUnreadChatCount, getNotificationList } from "../api/notification";
 
 export const UserStore = create(
   persist(
@@ -72,8 +72,8 @@ export const UserStore = create(
       // 알림 초기화 (로그인 시 호출)
       initializeNotifications: async () => {
         try {
-          const unreadCountResponse = await getUnreadNotificationCount();
-          const notificationsResponse = await getNotifications(0, 20);
+          const unreadCountResponse = await getUnreadChatCount();
+          const notificationsResponse = await getNotificationList(0, 20);
           
           // 알림 store에 데이터 설정 (외부에서 호출)
           return {

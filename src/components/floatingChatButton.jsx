@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UserStore } from "../store/userStore";
 import useUnreadSSE from "../hooks/useUnreadSSE";
 import useUnreadStore from "../store/useUnreadStore";
-import { getNotifications } from "../api/notification";
+import { getUnreadChatCount } from "../api/notification";
 
 export default function FloatingChatButton() {
     const navigate = useNavigate();
@@ -16,7 +16,7 @@ export default function FloatingChatButton() {
         const fetchInitialData = async () => {
             try {
               const [notificationData] = await Promise.all([
-                getNotifications(),
+                getUnreadChatCount(),
               ]);
       
               setNotifications(notificationData.notifications);

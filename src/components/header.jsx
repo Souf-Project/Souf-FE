@@ -5,8 +5,10 @@ import ChatIcon from "../assets/images/chatIco.svg";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
+import useUnreadStore from "../store/useUnreadStore";
 import SOUFLogo from "../assets/images/SouFLogo.svg";
 import backArrow from "../assets/images/backArrow.svg";
+import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
 
 export default function Header() {
@@ -22,15 +24,11 @@ export default function Header() {
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
-  //const username = UserStore((state) => state.username);
-  //const roleType = UserStore((state) => state.roleType);
-  //const memberId = UserStore((state) => state.memberId);
+  const { unreadCount } = useUnreadStore();
+  console.log(unreadCount);
   const [menuAnimating, setMenuAnimating] = useState(false);
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
-
-
-
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
@@ -257,7 +255,7 @@ const DesktopHeader = () => (
           <img src={SOUFLogo} alt="SouF" className="w-24 cursor-pointer" onClick={() => handleNavigation("/")}/>
           <ul className="flex items-center font-bold text-lg text-black cursor-pointer gap-1">
             <li 
-              className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" || location.pathname === "/recruit" ? "text-orange-point" : ""}`}
+              className={`relative py-5 flex items-center gap-1 w-36 ${location.pathname === "/recruitUpload" ? "text-orange-point" : ""}`}
               onMouseEnter={() => handleDropdownEnter('recruit')}
               onMouseLeave={handleDropdownLeave}
             >
@@ -276,7 +274,30 @@ const DesktopHeader = () => (
                          navigate("/recruitUpload", { state: { estimateType: 'estimate' } });
                        }
                      }} className="w-full flex justify-center items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">무료 외주 견적 받기</button></li>
-                       <li><button onClick={() => handleNavigationCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">카테고리별 외주</button></li>
+                      
+                   </ul>
+                 </div>
+              )}
+            </li>
+            <li 
+              className={`relative py-5 flex items-center gap-2 w-28 ${location.pathname === "/recruit" ? "text-orange-point" : ""}`}
+              onMouseEnter={() => handleDropdownEnter('find')}
+              onMouseLeave={handleDropdownLeave}
+            >
+              <div className="flex items-center gap-1">
+              <span className="cursor-pointer" onClick={() => navigate("/recruit")}>외주 찾기</span>
+              <img src={backArrow} alt="backArrow" className="w-4 h-4 rotate-[270deg] ml-2" />
+              </div>
+             
+              {/* 외주 찾기 드롭다운 */}
+              {activeDropdown === 'find' && (
+                 <div 
+                   className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-32 py-2 z-[-10] animate-slideDown"
+                   onMouseEnter={() => handleDropdownEnter('find')}
+                   onMouseLeave={handleDropdownLeave}
+                 >
+                   <ul className="flex flex-col gap-1">
+                     <li><button onClick={() => handleNavigationCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">카테고리별 외주</button></li>
                    </ul>
                  </div>
               )}
@@ -330,20 +351,19 @@ const DesktopHeader = () => (
                  </div>
               )} 
                </li>
-               <li 
-              className={`relative py-5 w-28 ${location.pathname === "/csPage" ? "text-orange-point" : ""}`}
-              onMouseEnter={() => handleDropdownEnter('guide')}
-              onMouseLeave={handleDropdownLeave}
-            >
-              <span className="cursor-pointer" onClick={() => navigate("/csPage")}>고객센터</span>
-              </li>
-
-            
-
+              
           </ul>
         </div>
 
         <div className="flex items-center gap-x-4">
+          {memberId && (
+            <button className="cursor-pointer relative" >
+              <img src={notiIcon} alt="noti" className="w-6 h-6" />
+              {unreadCount > 0 && (
+                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+              )}
+            </button>
+          )}
           {memberId ? (
             // 로그인 상태
             

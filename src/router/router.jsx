@@ -35,7 +35,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
 import useUnreadStore from "../store/useUnreadStore";
 import { UserStore } from "../store/userStore";
-import { getUnreadNotificationCount, getNotifications } from "../api/notification";
+import { getUnreadChatCount, getNotificationList } from "../api/notification";
 import useUnreadSSE from "../hooks/useUnreadSSE";
 import AlertModal from "../components/alertModal";
 import TermsPage from "../pages/policy/terms";
@@ -48,11 +48,28 @@ function AppRouter() {
   const navigate = useNavigate();
   const isChatPage = location.pathname === "/chat";
 
-  const { nickname } = UserStore();
+  const { nickname, memberId } = UserStore();
   const { setUnreadCount, setNotifications, unreadCount } = useUnreadStore();
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
+
+  // 초기 unreadCount 로드 (로그인한 경우만)
+  useEffect(() => {
+    if (memberId) {
+      const fetchInitialData = async () => {
+        try {
+          const response = await getUnreadChatCount();
+          const notificationListResponse = await getNotificationList(0, 20);
+          setUnreadCount(response.unreadCount);
+          setNotifications(notificationListResponse.result);
+        } catch (error) {
+          console.error('초기 데이터 로드 실패:', error);
+        }
+      };
+      fetchInitialData();
+    }
+  }, [memberId, setUnreadCount, setNotifications]);
 
   useEffect(() => {
     // 세션 만료 이벤트 리스너

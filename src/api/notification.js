@@ -1,7 +1,7 @@
 import client from './client';
 
 // 읽지 않은 알림 개수 조회
-export const getUnreadNotificationCount = async () => {
+export const getUnreadChatCount = async () => {
   try {
     const response = await client.get('/api/v1/chatrooms/unread-count');
     console.log(response.data);
@@ -13,7 +13,7 @@ export const getUnreadNotificationCount = async () => {
 };
 
 // 알림 목록 조회
-export const getNotifications = async (page = 0, size = 20) => {
+export const getNotificationList = async (page = 0, size = 20) => {
   try {
     const response = await client.get('/api/v1/notifications/unread-count');
       return response.data;
