@@ -32,7 +32,7 @@ export const CONTRACT_ORDERER_ERRORS = {
     message: "이미 진행 중인 계약이 존재합니다. 이전 계약을 먼저 완료해주세요.",
     action: "reload",
   },
-  "C0409-3": {
+  "CO409-3": {
     message: "이미 진행 중인 계약이 존재합니다. 이전 계약을 먼저 완료해주세요.",
     action: "reload",
   },

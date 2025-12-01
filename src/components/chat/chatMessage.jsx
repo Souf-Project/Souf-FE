@@ -115,7 +115,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     return cleanLines.join('\n').trim();
   };
 
-  // console.log("모든 메시지:", allMessages);
+  console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -424,9 +424,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     
     setShowContractModal(true);
     try {
-      const response = await patchContract(roomId, {
-        inviteToken: "Vuipf5XSMNXLHcDDxwbeZ8y3jn1p1LJ0glQEetAft-uadmn7JziTK70XxC5ZIPip",
-      });
+      const response = await patchContract(roomId);
       // console.log(response);
       if (response && response.code === 200 && response.result) {
         setContractData(response.result);
@@ -463,9 +461,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       createdTime: new Date().toISOString(),
       timestamp: Date.now()
     };
-    // console.log("계약서 메시지 전송 시도:", contractMessage);
+    console.log("계약서 메시지 전송 시도:", contractMessage);
     const messageSent = sendChatMessage(contractMessage);
-    // console.log("메시지 전송 결과:", messageSent);
+    console.log("메시지 전송 결과:", messageSent);
     
   };
 

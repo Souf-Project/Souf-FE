@@ -298,10 +298,9 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
 
   const handleGetBeneficiaryInfo = async (roomId) => {
     try {
-      // contractData에서 inviteToken 가져오기 (contractUuid가 inviteToken일 수 있음)
-      // const inviteToken = contractData?.contractUuid || "";
-      const inviteToken = "znd2OoS93HapSLQguUReIP6XxnQP_X1Rmjjh8ZF9_ZE4vGhilKeafJIQlGj1zBS7";
-      const response = await getBeneficiaryInfo(roomId, inviteToken);
+     
+    
+      const response = await getBeneficiaryInfo(roomId);
       console.log("수급자 정보 응답:", response);
       
       if (response && response.code === 200 && response.result) {
@@ -389,13 +388,17 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
       
-      // 400 에러인 경우 서버에서 보낸 메시지를 그대로 표시
-      if (error?.response?.status === 400 || error?.response?.data?.code === 400) {
-        const errorMessage = error?.response?.data?.message || "요청이 올바르지 않습니다.";
-        setErrorDescription(errorMessage);
-        setErrorAction("reload");
+      const errorKey = error?.response?.data?.errorKey?.trim();
+
+      const errorInfo = errorKey ? CONTRACT_ORDERER_ERRORS[errorKey] : null;
+
+      if (errorInfo) {
+        // constants에서 정의된 메시지와 액션 사용
+        setErrorDescription(errorInfo.message);
+        setErrorAction(errorInfo.action || "redirect");
         setShowErrorModal(true);
       } else {
+        // errorKey가 없거나 정의되지 않은 경우 handleApiError 사용
         handleApiError(error, {
           setShowLoginModal,
           setErrorModal: setShowErrorModal,
@@ -489,7 +492,6 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
     }
 
     const payload = {
-        inviteToken: "Vuipf5XSMNXLHcDDxwbeZ8y3jn1p1LJ0glQEetAft-uadmn7JziTK70XxC5ZIPip" || "",
         username: beneficiaryName,
         birth: beneficiaryBirth, 
         schoolName: beneficiarySchool, 
