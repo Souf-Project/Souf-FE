@@ -63,6 +63,11 @@ export default function ProfileDetail({}) {
     }, []);
 
     const handleFavorite = async () => {
+      // 로그인 체크
+      if (!UserStore.getState().memberId) {
+        setShowLoginModal(true);
+        return;
+      }
 
       // if (!fromMemberId || !userData.id) {
       //   console.error("ID가 없습니다. fromMemberId:", fromMemberId, "userData.id:", userData.id);
@@ -89,6 +94,12 @@ export default function ProfileDetail({}) {
 
     useEffect(() => {
       const fetchFavoriteStatus = async () => {
+        // 로그인한 사용자이고 본인이 아닐 때만 즐겨찾기 상태 확인
+        if (!UserStore.getState().memberId || UserStore.getState().memberId === userData?.id) {
+          setStar(false);
+          return;
+        }
+
          try {
             const response = await getFavorite(fromMemberId, 0, 100);
          
@@ -179,8 +190,8 @@ export default function ProfileDetail({}) {
                 )}
                 
                 <div className="flex items-center gap-2">
-{/* 즐겨찾기 버튼 - 본인이 아닐 때만 */}
-{UserStore.getState().memberId !== userData?.id && (
+{/* 즐겨찾기 버튼 - 로그인한 사용자이고 본인이 아닐 때만 */}
+{UserStore.getState().memberId && UserStore.getState().memberId !== userData?.id && (
                   <button
                     className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
                       isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'

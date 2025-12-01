@@ -138,8 +138,13 @@ useEffect(() => {
     setShowMobileMenu(false);
   };
 
-  const handleNavigationFeedCategory = () => {
+  const handleNavigationStudentList = () => {
     navigate(`/feed`);
+    setShowMobileMenu(false);
+  };
+
+  const handleNavigationFeedList = () => {
+    navigate(`/studentFeedList`);
     setShowMobileMenu(false);
   };
 
@@ -149,12 +154,9 @@ useEffect(() => {
       setShowMobileMenu(false);
     }
   };
-  const handleNavigationGuideCategory = () => {
-    navigate(`/guide`);
-    setShowMobileMenu(false);
-  };
-  const handleNavigationCsPageCategory = () => {
-    navigate(`/csPage`);
+  const handleNavigationGuideCategory = (tab) => {
+    const tabParam = tab === 'inquiry' ? '?tab=inquiry' : '';
+    navigate(`/guide${tabParam}`);
     setShowMobileMenu(false);
   };
   const deleteCookie = (name) => {
@@ -223,6 +225,13 @@ useEffect(() => {
           <span className="font-normal">{nickname}</span>
         </div>
       );
+    }  else if (roleType === "CLUB") {
+      return (
+        <div className="flex items-center gap-2 text-white justify-center">
+          <span className="font-bold">동아리</span>
+          <span className="font-normal">{nickname}</span>
+        </div>
+      );
     } else {
       return (
         <div className="flex items-center gap-2 text-white justify-center">
@@ -286,7 +295,8 @@ const DesktopHeader = () => (
                    onMouseLeave={handleDropdownLeave}
                  >
                    <ul className="flex flex-col gap-1">
-                     <li><button onClick={() => handleNavigationFeedCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">카테고리별 피드</button></li>
+                     <li><button onClick={() => handleNavigationStudentList()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">대학생 리스트</button></li>
+                     <li><button onClick={() => handleNavigationFeedList()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">카테고리별 피드</button></li>
                      <li><button onClick={() => handleNavigationFeedUpload()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">피드 등록하기</button></li>
                    </ul>
                  </div>
@@ -305,20 +315,20 @@ const DesktopHeader = () => (
               onMouseEnter={() => handleDropdownEnter('guide')}
               onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer" onClick={() => navigate("/guide")}>이용가이드</span>
-              {/* 이용가이드 드롭다운 */}
-                {/* {activeDropdown === 'guide' && (
+              <span className="cursor-pointer" onClick={() => navigate("/guide")}>고객센터</span>
+              {/* 고객센터 드롭다운 */}
+                {activeDropdown === 'guide' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.4rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 w-28 py-2 z-[-10] animate-slideDown"
                    onMouseEnter={() => handleDropdownEnter('guide')}
                    onMouseLeave={handleDropdownLeave}
                  >
                    <ul className="flex flex-col gap-1">
-                    <li><button onClick={() => handleNavigationGuideCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">가이드라인</button></li>
-                     <li><button onClick={() => handleNavigationCsPageCategory()} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">고객센터</button></li>
+                     <li><button onClick={() => handleNavigationGuideCategory('faq')} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">FAQ</button></li>
+                     <li><button onClick={() => handleNavigationGuideCategory('inquiry')} className="w-full flex justify-center items-center px-2 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200">문의 센터</button></li>
                    </ul>
                  </div>
-              )}  */}
+              )} 
                </li>
                <li 
               className={`relative py-5 w-28 ${location.pathname === "/csPage" ? "text-orange-point" : ""}`}
@@ -336,10 +346,10 @@ const DesktopHeader = () => (
         <div className="flex items-center gap-x-4">
           {memberId ? (
             // 로그인 상태
-            <div className="flex items-center gap-x-4">
+            
               <div className="relative user-menu-container">
                 <button
-                  className="text-white bg-blue-main py-2 font-bold rounded-lg w-36 shadow-md"
+                  className="text-white bg-blue-main min-w-36 py-2 w-full px-2 font-bold rounded-lg w-36 shadow-md"
                   onClick={toggleUserMenu}
                 >
                   <UserTypeLabel />
@@ -376,14 +386,6 @@ const DesktopHeader = () => (
                         공고문 작성하기
                       </button>
                     )}
-                    {roleType === "MEMBER" && (
-                      <button
-                        className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
-                        onClick={() => handleNavigation("/verifyStudent")}
-                      >
-                        대학생 인증하기
-                      </button>
-                    )}
                     {roleType === "STUDENT" && (
                       <button
                         className="block w-full px-4 py-2 text-md font-semibold text-gray-700 hover:text-blue-main"
@@ -401,7 +403,6 @@ const DesktopHeader = () => (
                   </div>
                 )}
               </div>
-            </div>
           ) : (
             // 로그아웃 상태
             <>

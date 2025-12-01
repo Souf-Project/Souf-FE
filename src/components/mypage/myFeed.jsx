@@ -24,6 +24,7 @@ export default function MyFeed() {
       try{
         const data = await getMemberFeed(memberId);
         setUserData(data.result.memberResDto);
+        // console.log("미디어", data.result.feedSimpleResDtoPage.content);
         setUserWorks(data.result.feedSimpleResDtoPage.content);
       return data;
       } catch (error) {
@@ -80,7 +81,7 @@ export default function MyFeed() {
             <div className="flex justify-center items-center h-[250px] overflow-hidden">
                 <img
                     key={data.feedId}
-                    src={S3_BUCKET_URL + data.mediaResDto?.fileUrl}
+                    src={`${S3_BUCKET_URL}${data.mediaResDto?.fileUrl}`}
                     className="w-full h-full object-cover"
                     onClick={() => onWorkClick(data.feedId)}
                     alt="피드 이미지"

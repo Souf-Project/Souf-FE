@@ -31,10 +31,8 @@ export default function RecruitDetail() {
   const recruitData = location.state;
   const [recruitDetail, setRecruitDetail] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
-  const { username, memberId } = UserStore();
-  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const [isApplySuccessModalOpen, setIsApplySuccessModalOpen] = useState(false);
-  const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+  const { username, memberId, approvedStatus, roleType } = UserStore();
+  const [modal, setModal] = useState(null);
   const [isCloseSuccessModalOpen, setIsCloseSuccessModalOpen] = useState(false);
   const [isAlreadyClosedModalOpen, setIsAlreadyClosedModalOpen] = useState(false);
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
@@ -136,7 +134,15 @@ export default function RecruitDetail() {
       setShowMenu(false);
     } else {
       // 마감 가능한 경우
-      setIsCloseModalOpen(true);
+      setModal({
+        type: 'warning',
+        title: '지원 마감',
+        description: '해당 공고문을 지원 마감 상태로 바꾸시겠습니까? ',
+        FalseBtnText: '취소',
+        TrueBtnText: '지원 마감',
+        onClickFalse: () => setModal(null),
+        onClickTrue: handleCloseRecruit,
+      });
       setShowMenu(false);
     }
   };
@@ -144,7 +150,7 @@ export default function RecruitDetail() {
   const handleCloseRecruit = async () => {
     try {
       await closeRecruit(id, memberId);
-      setIsCloseModalOpen(false);
+      setModal(null);
       setIsCloseSuccessModalOpen(true);
     } catch (error) {
       console.error('지원 마감 실패:', error);
@@ -156,10 +162,37 @@ export default function RecruitDetail() {
 
   const handleApply = () => {
     // console.log('지원 버튼 클릭');
+    
+    // 학생 계정인지 확인
+    if (roleType !== "STUDENT") {
+      setModal({
+        type: 'simple',
+        title: '지원 불가',
+        description: '학생 계정만 지원 기능을 이용할 수 있습니다.',
+        TrueBtnText: '확인',
+        onClickTrue: () => setModal(null),
+      });
+      return;
+    }
+    
+    if (approvedStatus === "PENDING") {
+      setErrorDescription("승인 대기 중인 유저는\n지원할 수 없습니다.");
+      setErrorAction("redirect");
+      setErrorModal(true);
+      return;
+    }
     if (!displayData?.price || displayData.price === '견적 희망') {
       setIsEstimateModalOpen(true);
     } else {
-      setIsApplyModalOpen(true);
+      setModal({
+        type: 'warning',
+        title: '해당 기업에 지원하시겠습니까?',
+        description: '지원 시 내 프로필 정보가 기업에게 전송됩니다.\n마이페이지에서 지원 취소가 가능합니다.\n지원 직후에는, 기업에게 지원 알림이 전송됩니다.',
+        FalseBtnText: '취소',
+        TrueBtnText: '지원',
+        onClickFalse: () => setModal(null),
+        onClickTrue: handleApplyTrue,
+      });
     }
   };
 
@@ -175,8 +208,14 @@ export default function RecruitDetail() {
        priceReason: priceReason,
       });
       // console.log("지원 성공:", response.data);
-      setIsApplyModalOpen(false);
-      setIsApplySuccessModalOpen(true);
+      setModal(null);
+      setModal({
+        type: 'success',
+        title: '지원 완료',
+        description: '지원이 완료되었습니다.',
+        TrueBtnText: '확인',
+        onClickTrue: () => setModal(null),
+      });
     } catch (error) {
       console.error("지원 실패:", error);
       // if (error.response?.status === 403) {
@@ -209,7 +248,13 @@ export default function RecruitDetail() {
       });
       // console.log("견적 제출 성공:", response.data);
       setIsEstimateModalOpen(false);
-      setIsApplySuccessModalOpen(true);
+      setModal({
+        type: 'success',
+        title: '지원 완료',
+        description: '지원이 완료되었습니다.',
+        TrueBtnText: '확인',
+        onClickTrue: () => setModal(null),
+      });
 
       setPriceOffer('');
       setPriceReason('');
@@ -331,22 +376,7 @@ export default function RecruitDetail() {
             />
             )}
           </div>
-          <div className="flex items-center gap-2 my-2">
-          {categoryNames.map((category, index) => (
-        
-        <div key={index}>
-          {category.third ? (
-            <span className="font-medium text-neutral-500 text-xs">#{category.third}</span>
-          ) : category.second ? (
-            <span>#{category.second}</span>
-          ) : (
-            <span>#{category.first}</span>
-          )}
-        </div>
-      ))}
-          </div>
-         
-         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
          {displayData.logoUrl? 
              <img 
                src={`${S3_BUCKET_URL}${displayData.logoUrl}`} 
@@ -354,17 +384,25 @@ export default function RecruitDetail() {
                className="w-8 h-8 object-cover rounded-full shadow-sm border-2 border-gray-200"
              /> 
              : <></>}
-              <div className="text-xs font-bold mb-2">{displayData?.hostName}</div>
+              <div className="text-md font-bold my-2">{displayData?.hostName}</div>
          </div>
          
-          <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <span className="text-zinc-700 text-lg font-bold mr-2">우대사항 키워드</span>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[0]}</div>
-            <div className="text-white font-semibold bg-blue-600 px-3 py-1 rounded-md"># {displayData?.preferentialTreatmentTags[1]}</div>
-          </div>
-
-         
+          <div className="flex items-center">
+          {categoryNames.map((category, index) => (
+       
+        <div key={index} className="flex items-center">
+          {category.third ? (
+            <span className="font-medium text-neutral-500 text-md">{category.third}</span>
+          ) : category.second ? (
+            <span className="font-medium text-neutral-500 text-md">{category.second}</span>
+          ) : (
+            <span className="font-medium text-neutral-500 text-md">{category.first}</span>
+          )}
+          {index < categoryNames.length - 1 && (
+            <span className="font-medium text-neutral-500 text-md mx-1">/</span>
+          )}
+        </div>
+      ))}
           </div>
          
 
@@ -465,8 +503,8 @@ export default function RecruitDetail() {
             )}
 
           </div>
-
-          <RecommendRecruit />
+          {/* <p className="text-sm text-neutral-500 my-4">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p> */}
+          {/* <RecommendRecruit /> */}
           <EstimateBanner color="blue" />
 
         </div>
@@ -494,6 +532,17 @@ export default function RecruitDetail() {
                 <span className="font-lg">{displayData?.cityName} {displayData?.cityDetailName}</span>
 
               </div>
+              {displayData?.preferentialTreatmentTags && displayData?.preferentialTreatmentTags.length > 0 ? (
+          <div className="flex items-center justify-between">
+            <span className="text-neutral-600 mb-1 whitespace-nowrap">우대사항 키워드</span>
+              <div className="flex items-center">
+                {displayData?.preferentialTreatmentTags[0] && <div className="font-lg">{displayData?.preferentialTreatmentTags[0]}</div>}
+                {displayData?.preferentialTreatmentTags[1] && <div className="font-lg">, {displayData?.preferentialTreatmentTags[1]}</div>}
+             </div>
+          </div>
+) : (
+  <></>
+)}
             </div>
             {isAuthor ? (
             <></>
@@ -515,41 +564,15 @@ export default function RecruitDetail() {
           )}
           <span className="text-zinc-500">이 외주를 총 <span className="text-black font-bold">{displayData?.totalViewCount}</span>명이 조회하였습니다.</span>
           </div>
-  {isApplyModalOpen && (
+      {modal && (
         <AlertModal
-          type="warning"
-          isOpen={isApplyModalOpen}
-          onClose={() => setIsApplyModalOpen(false)}
-          title="해당 기업에 지원하시겠습니까?"
-          description={`지원 시 내 프로필 정보가 기업에게 전송됩니다.\n마이페이지에서 지원 취소가 가능합니다.\n지원 직후에는, 기업에게 지원 알림이 전송됩니다.`}
-          FalseBtnText = "취소"
-          TrueBtnText = "지원"
-          onClickFalse={() => setIsApplyModalOpen(false)}
-          onClickTrue={handleApplyTrue}
-        />
-      )}
-      {isApplySuccessModalOpen && (
-        <AlertModal
-          type="success"
-          isOpen={isApplySuccessModalOpen}
-          onClose={() => setIsApplySuccessModalOpen(false)}
-          title="지원 완료"
-          description="지원이 완료되었습니다."
-          TrueBtnText = "확인"
-          onClickTrue={() => setIsApplySuccessModalOpen(false)}
-        />
-      )}
-      {isCloseModalOpen && (
-        <AlertModal
-          type="warning"
-          isOpen={isCloseModalOpen}
-          onClose={() => setIsCloseModalOpen(false)}
-          title="지원 마감"
-          description="해당 공고문을 지원 마감 상태로 바꾸시겠습니까? "
-          FalseBtnText = "취소"
-          TrueBtnText = "지원 마감"
-          onClickFalse={() => setIsCloseModalOpen(false)}
-          onClickTrue={handleCloseRecruit}
+          type={modal.type}
+          title={modal.title}
+          description={modal.description}
+          FalseBtnText={modal.FalseBtnText}
+          TrueBtnText={modal.TrueBtnText}
+          onClickFalse={modal.onClickFalse}
+          onClickTrue={modal.onClickTrue}
         />
       )}
       {isCloseSuccessModalOpen && (

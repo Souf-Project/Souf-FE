@@ -129,9 +129,13 @@ export default function Home() {
     return true;
   };
 
-  const handleRecruitUploadClick = () => {
-    if (checkRecruitUploadAccess()) {
+  const handleMainUploadClick = () => {
+    if (roleType === "MEMBER" || roleType === "ADMIN") {
       navigate("/recruitUpload");
+    } else if (roleType === "STUDENT") {
+      navigate("/postUpload");
+    } else {
+      navigate("/recruit");
     }
   };
 
@@ -418,7 +422,7 @@ export default function Home() {
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
-              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
+                            onClick={handleMainUploadClick}>{roleType === "MEMBER" ? "무료 외주 등록하기" : roleType === "STUDENT" ? "피드 업로드하기" : "외주 둘러보기"}</button>
               {/* <button 
                 className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
                 onClick={handleGuideClick}
@@ -541,7 +545,7 @@ export default function Home() {
           <BestRecruit />
           <div className="flex justify-center items-center gap-4 mt-4">
             <button className="bg-[#2582E0] text-white text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
-            onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
+            onClick={handleMainUploadClick}>무료 외주 등록하기</button>
             <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
             onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
   </div>
@@ -575,7 +579,7 @@ export default function Home() {
         {/* <ReviewBox /> */}
 
       {/* 실시간 매칭 금액 섹션 */}
-    <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4">
+  {/* <div className="flex mt-32 max-w-[60rem] mx-auto flex-col gap-4"> */}
     {/* <div className="flex items-center mb-8 gap-4">
       <h2 className="text-2xl font-semibold">
         실시간 매칭 금액
@@ -616,12 +620,12 @@ export default function Home() {
           </>
         )}
       </div> */}
-      </div>
+      {/* </div> */}
 
       {/* 무료 외주 등록 섹션 */}
-      <div className="flex mt-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
+      {/* <div className="flex mt-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
         <EstimateBanner color="black" />
-      </div>
+      </div> */}
 
       <div className="flex flex-col gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
        <div className="flex w-full justify-between items-end">

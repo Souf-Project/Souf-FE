@@ -12,6 +12,7 @@ export const getPopularRecruit = async () => {
 };
 
 export async function getRecruit(params = {}) {
+
     try {
         const {
             firstCategory,
@@ -72,17 +73,13 @@ export async function getRecruit(params = {}) {
                 categories: categories,
                 sortOption: sortOption
         };
-        // 토큰 확인
-        const token = localStorage.getItem('accessToken');
+      
         const response = await client.post('/api/v1/recruit/search', requestBody, {
             params: {
                 page: page,
                 size: size,
             },
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
+          
         });
           
         return response;
@@ -98,34 +95,29 @@ export async function getRecruitDetail(recruitId) {
         const token = localStorage.getItem('accessToken');
         const url = `/api/v1/recruit/${recruitId}`;
      
-        const response = await client.get(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await client.get(url);
         
         // console.log("API Response:", response);
         return response;
     } catch (error) {
-        console.error('Recruit Detail API 오류 발생:', error);
-        console.error('Error response:', error.response);
-        console.error('Error status:', error.response?.status);
-        console.error('Error data:', error.response?.data);
+        // console.error('Recruit Detail API 오류 발생:', error);
+        // console.error('Error response:', error.response);
+        // console.error('Error status:', error.response?.status);
+        // console.error('Error data:', error.response?.data);
         
-        if (error.response?.status === 403) {
-            console.error('403 Forbidden - 권한이 없습니다.');
-            console.error('Response data:', error.response.data);
+        // if (error.response?.status === 403) {
+        //     console.error('403 Forbidden - 권한이 없습니다.');
+        //     console.error('Response data:', error.response.data);
             
-            // 토큰이 만료되었거나 유효하지 않은 경우
-            if (error.response.data?.message?.includes('token') || 
-                error.response.data?.message?.includes('unauthorized')) {
-                console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
-                localStorage.removeItem('accessToken');
-                window.location.href = '/login';
-                return;
-            }
-        }
+        //     // 토큰이 만료되었거나 유효하지 않은 경우
+        //     if (error.response.data?.message?.includes('token') || 
+        //         error.response.data?.message?.includes('unauthorized')) {
+        //         console.log('토큰이 만료되었습니다. 로그인 페이지로 이동합니다.');
+        //         localStorage.removeItem('accessToken');
+        //         window.location.href = '/login';
+        //         return;
+        //     }
+        // }
         
         throw error;
     }
@@ -133,12 +125,7 @@ export async function getRecruitDetail(recruitId) {
 
 export async function uploadRecruit(data) {
     try {
-        const response = await client.post('/api/v1/recruit', data, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await client.post('/api/v1/recruit', data);
         return response;
     } catch (error) {
         console.error('Recruit Upload API 오류 발생:', error);
@@ -149,12 +136,7 @@ export async function uploadRecruit(data) {
 export async function updateRecruit(recruitId, data) {
     // console.log("data", data);
     try {
-        const response = await client.patch(`/api/v1/recruit/${recruitId}`, data, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await client.patch(`/api/v1/recruit/${recruitId}`, data);
         return response;
     } catch (error) {
         console.error('Recruit Update API 오류 발생:', error);
@@ -243,11 +225,6 @@ export async function closeRecruit(recruitId, memberId) {
     try {
         const response = await client.patch(`/api/v1/recruit/closure/${recruitId}`, {
             memberId: memberId
-        }, {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json'
-            }
         });
         return response;
     } catch (error) {
