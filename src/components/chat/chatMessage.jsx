@@ -117,7 +117,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     return cleanLines.join('\n').trim();
   };
 
-  console.log("모든 메시지:", allMessages);
+  // console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -466,9 +466,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       createdTime: new Date().toISOString(),
       timestamp: Date.now()
     };
-    console.log("계약서 메시지 전송 시도:", contractMessage);
+    // console.log("계약서 메시지 전송 시도:", contractMessage);
     const messageSent = sendChatMessage(contractMessage);
-    console.log("메시지 전송 결과:", messageSent);
+    // console.log("메시지 전송 결과:", messageSent);
     
   };
 
@@ -577,7 +577,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     }
 
     try {
-      console.log(contractIdToUse, pdfUrlToUse);
+      // console.log(contractIdToUse, pdfUrlToUse);
       const response = await postOrdererUpload(roomId, {
         postId: contractIdToUse,
         fileUrl: [pdfUrlToUse], 
@@ -612,7 +612,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const handleFinalContractViewClick = async () => {
     try {
       const response = await getContractList(roomId);
-      console.log(response);
+      // console.log(response);
       if (response && response.code === 200 && response.result) {
         const contracts = Array.isArray(response.result) ? response.result : [response.result];
         setContractList(contracts);

@@ -269,7 +269,7 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
   const handleGetOrdererInfo = async (roomId) => {
     try {
       const response = await getOrdererInfo(roomId);
-      console.log(response);
+      // console.log(response);
       
       if (response && response.code === 200 && response.result) {
         const data = response.result;
@@ -371,11 +371,11 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
       competentCourt,
      
     };
-    console.log(payload);
+    // console.log(payload);
     setIsOrdererLoading(true);
     try {
       const response = await postContractOrderer(roomId, payload);
-      console.log(response);
+      // console.log(response);
       alert("계약서가 생성되었습니다.");
       
       if (onContractCreated) {
@@ -384,9 +384,9 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         onContractCreated(contractUuid);
       }
       
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 500);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error("계약서 작성하기 실패:", error);
       
@@ -502,11 +502,11 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         bank: bankInfo, 
         bankAccount: beneficiaryBankAccount,
     };
-    console.log(payload);
+    // console.log(payload);
     setIsBeneficiaryLoading(true);
     try {
       const response = await postContractBeneficiary(roomId, payload);
-      console.log(response);
+      // console.log(response);
 
       if (response && response.code === 200) {
         alert("계약서가 완성되었습니다.");
@@ -517,9 +517,6 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         const contractId = result.contractUuid || result.contractId || "";
         const pdfUrl = result.pdfUrl || "";
         
-        console.log("계약서 완성 응답:", response);
-        console.log("추출된 contractId:", contractId);
-        console.log("추출된 pdfUrl:", pdfUrl);
         
         // contractId와 pdfUrl을 구분 가능한 형식으로 전달
         const contractData = `contractId:${contractId}\npdfUrl:${pdfUrl}`;
@@ -528,9 +525,9 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
           onContractCompleted(contractData);
         }
         
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 500);
+        setTimeout(() => {
+          window.location.reload();
+        }, 500);
       } else {
         alert("계약서가 완성되었습니다.");
         window.location.reload();
