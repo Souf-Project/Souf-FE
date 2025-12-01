@@ -3,7 +3,7 @@ import useUnreadStore from '../store/useUnreadStore';
 
 const useUnreadSSE = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-  const setUnreadCount = useUnreadStore((state) => state.setUnreadCount);
+  const setUnreadNotificationCount = useUnreadStore((state) => state.setUnreadNotificationCount);
   const addNotification = useUnreadStore((state) => state.addNotification);
 
   useEffect(() => {
@@ -28,9 +28,9 @@ const useUnreadSSE = () => {
       try {
         const data = JSON.parse(event.data);
 
-        // 서버가 보낸 내용에 따라 갱신
+        // 서버가 보낸 내용에 따라 갱신 (알림 개수만)
         if (data.unreadCount !== undefined) {
-          setUnreadCount(data.unreadCount);
+          setUnreadNotificationCount(data.unreadCount);
         }
 
         if (data.notification) {
@@ -58,7 +58,7 @@ const useUnreadSSE = () => {
       eventSource.close();
       console.log('SSE 연결 종료');
     };
-  }, [BASE_URL, setUnreadCount, addNotification]);
+  }, [BASE_URL, setUnreadNotificationCount, addNotification]);
 };
 
 export default useUnreadSSE;

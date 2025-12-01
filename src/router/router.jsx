@@ -49,27 +49,30 @@ function AppRouter() {
   const isChatPage = location.pathname === "/chat";
 
   const { nickname, memberId } = UserStore();
-  const { setUnreadCount, setNotifications, unreadCount } = useUnreadStore();
+  const { setUnreadChatCount, setNotifications } = useUnreadStore();
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
 
-  // 초기 unreadCount 로드 (로그인한 경우만)
+  // 초기 데이터 로드 (로그인한 경우만)
   useEffect(() => {
     if (memberId) {
       const fetchInitialData = async () => {
         try {
           const response = await getUnreadChatCount();
           const notificationListResponse = await getNotificationList(0, 20);
-          setUnreadCount(response.unreadCount);
-          setNotifications(notificationListResponse.result);
+          // 응답 구조: { code: 200, message: "...", result: 1 }
+          const chatCount = response?.result || 0;
+          setUnreadChatCount(chatCount);
+          setNotifications(notificationListResponse.result || []);
+          console.log('✅ 초기 채팅 개수 로드:', chatCount);
         } catch (error) {
           console.error('초기 데이터 로드 실패:', error);
         }
       };
       fetchInitialData();
     }
-  }, [memberId, setUnreadCount, setNotifications]);
+  }, [memberId, setUnreadChatCount, setNotifications]);
 
   useEffect(() => {
     // 세션 만료 이벤트 리스너

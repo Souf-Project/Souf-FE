@@ -24,8 +24,7 @@ export default function Header() {
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
-  const { unreadCount } = useUnreadStore();
-  console.log(unreadCount);
+  const { unreadNotificationCount } = useUnreadStore();
   const [menuAnimating, setMenuAnimating] = useState(false);
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
@@ -359,7 +358,7 @@ const DesktopHeader = () => (
           {memberId && (
             <button className="cursor-pointer relative" >
               <img src={notiIcon} alt="noti" className="w-6 h-6" />
-              {unreadCount > 0 && (
+              {unreadNotificationCount > 0 && (
                 <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
               )}
             </button>
