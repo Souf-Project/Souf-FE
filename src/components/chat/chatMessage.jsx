@@ -23,7 +23,7 @@ import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/basiclogoimg.png";
 import outIcon from "../../assets/images/outIcon.svg";
 import Contract from "../../pages/contract";
-import {patchContract, postOrdererUpload, getFinalContract} from "../../api/contract";
+import {getContract, postOrdererUpload, getFinalContract} from "../../api/contract";
 import { handleApiError } from "../../utils/apiErrorHandler";
 import { CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS } from "../../constants/contract";
 
@@ -115,7 +115,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     return cleanLines.join('\n').trim();
   };
 
-  console.log("모든 메시지:", allMessages);
+  // console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -161,7 +161,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
 
     const messageObj = {
       roomId,
-      sender: nickname,
+      // sender: nickname,
       type: "TALK",
       content: newMessage,
     };
@@ -424,7 +424,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     
     setShowContractModal(true);
     try {
-      const response = await patchContract(roomId);
+      const response = await getContract(roomId);
       // console.log(response);
       if (response && response.code === 200 && response.result) {
         setContractData(response.result);
@@ -455,7 +455,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     
     const contractMessage = {
       roomId: roomId,
-      sender: "admin",
+      // sender: "admin",
       type: "NOTIFICATION",
       content: `계약서 생성이 완료되었습니다! \n학생 측 계약서 정보 기입을 ${formatExpiryTime}까지 완료해주세요.`,
       createdTime: new Date().toISOString(),
@@ -492,7 +492,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     // contractId와 pdfUrl을 포함한 메시지 생성
     const contractCompleteMessage = {
       roomId: roomId,
-      sender: "admin",
+      // sender: "admin",
       type: "NOTIFICATION",
       content: `계약서 작성이 완료되었습니다. 다운로드 후 서명을 진행해주세요. \ncontractId:${contractId}\npdfUrl:${pdfUrl}`,
       createdTime: new Date().toISOString(),
@@ -586,7 +586,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         // 계약서 업로드 성공 시 채팅 메시지 전송
         const contractCompleteMessage = {
           roomId: roomId,
-          sender: "admin",
+          // sender: "admin",
           type: "NOTIFICATION",
           content: `최종 계약서가 업로드되었습니다.\n계약서 조회 탭에서 계약서를 확인해주세요.`,
           createdTime: new Date().toISOString(),
@@ -782,7 +782,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           
           {/* 메시지 */}
          
-          {chat.type === "NOTIFICATION" || chat.sender === "admin"  || (chat.content && (chat.content.includes("계약서 생성이 완료되었습니다") || chat.content.includes("계약서 작성이 완료되었습니다"))) ? (
+          {chat.type === "NOTIFICATION" || (chat.content && (chat.content.includes("계약서 생성이 완료되었습니다") || chat.content.includes("계약서 작성이 완료되었습니다"))) ? (
         // Admin 메시지 UI
         <div className="flex items-start gap-2 mb-4">
           <img 

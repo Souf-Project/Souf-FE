@@ -20,8 +20,8 @@ export const postContractBeneficiary = async (roomId, requestBody) => {
   return response.data;
 };
 
-export const patchContract = async (roomId, requestBody) => {
-  const response = await client.patch(`/api/v1/contract/${roomId}/beneficiary/preview/contract`, requestBody);
+export const getContract = async (roomId) => {
+  const response = await client.get(`/api/v1/contract/${roomId}/beneficiary/preview/contract`);
   return response.data;
 };
 

@@ -217,7 +217,7 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
 
   // ordererId와 beneficiaryId 설정
   useEffect(() => {
-    console.log(currentMemberId, opponentId, opponentRole, isMember, isStudent);
+    // console.log(currentMemberId, opponentId, opponentRole, isMember, isStudent);
     if (currentMemberId && opponentId) {
       if (isMember) {
         // 현재 사용자가 기업(MEMBER)이면 발주자, 상대방이 수급자
@@ -301,7 +301,7 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
      
     
       const response = await getBeneficiaryInfo(roomId);
-      console.log("수급자 정보 응답:", response);
+      // console.log("수급자 정보 응답:", response);
       
       if (response && response.code === 200 && response.result) {
         const data = response.result;
