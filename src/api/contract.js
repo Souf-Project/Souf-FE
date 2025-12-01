@@ -30,7 +30,7 @@ export const postOrdererUpload = async (roomId, requestBody) => {
   return response.data;
 };
 
-export const getFinalContract = async (roomId) => {
+export const getContractList = async (roomId) => {
   const response = await client.get(`/api/v1/contract/${roomId}`);
   return response.data;
 };

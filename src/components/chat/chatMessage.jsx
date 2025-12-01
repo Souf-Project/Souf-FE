@@ -23,7 +23,7 @@ import ImageModal from "./ImageModal";
 import SouFLogo from "../../assets/images/basiclogoimg.png";
 import outIcon from "../../assets/images/outIcon.svg";
 import Contract from "../../pages/contract";
-import {getContract, postOrdererUpload, getFinalContract} from "../../api/contract";
+import {getContract, postOrdererUpload, getContractList} from "../../api/contract";
 import { handleApiError } from "../../utils/apiErrorHandler";
 import { CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS } from "../../constants/contract";
 
@@ -45,6 +45,8 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const [showDegreeModal, setShowDegreeModal] = useState(false);
   const [showContractModal, setShowContractModal] = useState(false);
   const [contractData, setContractData] = useState(null);
+  const [showContractListModal, setShowContractListModal] = useState(false);
+  const [contractList, setContractList] = useState([]);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
   const documentFileInputRef = useRef(null);
@@ -609,18 +611,36 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
 
   const handleFinalContractViewClick = async () => {
     try {
-      const response = await getFinalContract(roomId);
-      // console.log(response);
+      const response = await getContractList(roomId);
+      console.log(response);
       if (response && response.code === 200 && response.result) {
-        // console.log("계약서 조회 성공:", response.result);
-        window.open(S3_BUCKET_URL + response.result.fileUrl, "_blank");
-
+        const contracts = Array.isArray(response.result) ? response.result : [response.result];
+        setContractList(contracts);
+        setShowContractListModal(true);
       }
     } catch (error) {
       console.error("계약서 조회 실패:", error);
       alert("계약서 조회에 실패했습니다. 다시 시도해주세요.");
     }
+  };
 
+  const handleContractSelect = (contract) => {
+    if (contract.resDto && contract.resDto.fileUrl) {
+      const fileUrl = contract.resDto.fileUrl.startsWith('http') 
+        ? contract.resDto.fileUrl 
+        : S3_BUCKET_URL + contract.resDto.fileUrl;
+      
+      // 다운로드 링크 생성
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = contract.resDto.fileName || contract.projectName || '계약서.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setShowContractListModal(false);
+    }
   };
 
   const handleDeleteChatRoom = async (roomId) => {
@@ -753,6 +773,45 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           </button>
         </div>
         <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData} onContractCreated={handleSendContractMessage} onContractCompleted={handleSendContractCompleteMessage}/>
+      </div>
+    </div>
+  )}
+
+  {/* 계약서 목록 모달 */}
+  {showContractListModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg max-w-xl w-full mx-8 my-8 min-h-80 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-xl font-semibold">계약서 목록</h2>
+          <button 
+            onClick={() => setShowContractListModal(false)}
+            className="text-gray-500 hover:text-gray-700 text-2xl font-bold leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div className="p-4">
+          {contractList.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">계약서가 없습니다.</p>
+          ) : (
+            <div className="space-y-2">
+              {contractList.map((contract, index) => (
+                <button
+                  key={contract.contractUuid || index}
+                  onClick={() => handleContractSelect(contract)}
+                  className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-main transition-colors text-left"
+                >
+                  <div className="font-semibold text-lg mb-1">
+                    {contract.projectName || "제목 없음"}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    UUID: {contract.contractUuid}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )}
