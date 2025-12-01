@@ -115,7 +115,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     return cleanLines.join('\n').trim();
   };
 
-  // console.log("모든 메시지:", allMessages);
+  console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -440,7 +440,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     }
   };
 
-  const handleSendContractMessage = () => {
+  const handleSendContractMessage = (contractUuid = "") => {
     // 현재 시간에서 6시간 추가
     const now = new Date();
     const expiryTime = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6시간 = 6 * 60 * 60 * 1000ms
@@ -453,11 +453,14 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     const minutes = String(expiryTime.getMinutes()).padStart(2, '0');
     const formatExpiryTime = `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
     
+    // contractUuid가 있으면 메시지에 포함
+    const contractIdPart = contractUuid ? `\ncontractId:${contractUuid}` : "";
+    
     const contractMessage = {
       roomId: roomId,
       // sender: "admin",
       type: "NOTIFICATION",
-      content: `계약서 생성이 완료되었습니다! \n학생 측 계약서 정보 기입을 ${formatExpiryTime}까지 완료해주세요.`,
+      content: `계약서 생성이 완료되었습니다! \n학생 측 계약서 정보 기입을 ${formatExpiryTime}까지 완료해주세요.${contractIdPart}`,
       createdTime: new Date().toISOString(),
       timestamp: Date.now()
     };
@@ -572,7 +575,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     }
 
     try {
-      // console.log(contractIdToUse, pdfUrlToUse);
+      console.log(contractIdToUse, pdfUrlToUse);
       const response = await postOrdererUpload(roomId, {
         postId: contractIdToUse,
         fileUrl: [pdfUrlToUse], 

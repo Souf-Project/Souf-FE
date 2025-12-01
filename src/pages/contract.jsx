@@ -379,7 +379,9 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
       alert("계약서가 생성되었습니다.");
       
       if (onContractCreated) {
-        onContractCreated();
+        // 응답에서 contractUuid 추출
+        const contractUuid = response?.result?.contractUuid || "";
+        onContractCreated(contractUuid);
       }
       
       // setTimeout(() => {
@@ -512,8 +514,12 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
         // 계약서 완성 성공 시 채팅 메시지 전송
         // contractId와 pdfUrl을 포함하여 전송
         const result = response.result || {};
-        const contractId = result.contractUuid || "";
+        const contractId = result.contractUuid || result.contractId || "";
         const pdfUrl = result.pdfUrl || "";
+        
+        console.log("계약서 완성 응답:", response);
+        console.log("추출된 contractId:", contractId);
+        console.log("추출된 pdfUrl:", pdfUrl);
         
         // contractId와 pdfUrl을 구분 가능한 형식으로 전달
         const contractData = `contractId:${contractId}\npdfUrl:${pdfUrl}`;
@@ -522,9 +528,9 @@ export default function Contract({ roomId, opponentId, opponentRole, contractDat
           onContractCompleted(contractData);
         }
         
-        setTimeout(() => {
-          window.location.reload();
-        }, 500);
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 500);
       } else {
         alert("계약서가 완성되었습니다.");
         window.location.reload();
