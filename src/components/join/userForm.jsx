@@ -419,12 +419,6 @@ export default function UserForm({
     "UNIV": "UNIV",
     "GRADUATE": "GRADUATE"
   };
-  
-  // API 값을 숫자로 변환하는 맵 (FilterDropdown 표시용)
-  const educationTypeToValueMap = {
-    "UNIV": "UNIV",
-    "GRADUATE": "GRADUATE"
-  };
 
   // 전공 추가하기 버튼 클릭
   const handleAddMajor = () => {

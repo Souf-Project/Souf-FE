@@ -28,7 +28,7 @@ export default function Login() {
     mutationFn: ({ email, password }) => postLogin(email, password),
     onSuccess: (response) => {
       const result = response.data?.result;
-      const phoneNumber = response.data?.phoneNumber;
+      const phoneNumber = result.phoneNumber;
 
       // 먼저 로그인 상태 설정 (UserStore에 정보 저장 및 토큰 저장)
       UserStore.getState().setUser({
@@ -38,6 +38,7 @@ export default function Login() {
         approvedStatus: result.approvedStatus,
         phoneNumber: phoneNumber || null, // 전화번호가 없어도 null로 저장
       });
+      console.log("UserStore:", UserStore.getState());
 
       UserStore.getState().setAccessToken(result.accessToken);
       localStorage.setItem("accessToken", result.accessToken);

@@ -9,6 +9,7 @@ export const UserStore = create(
       roleType: null,
       accessToken: null,
       approvedStatus: null,
+      
 
       setUser: ({ memberId, nickname, roleType, approvedStatus }) => {
         set({ memberId, nickname, roleType, approvedStatus });
