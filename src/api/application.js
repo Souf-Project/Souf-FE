@@ -54,12 +54,7 @@ export const postApplicationReject = async (applicationId) => {
 };
 
 /* 지원 취소 */
-export async function cancelApplication(recruitId) {
-  const accessToken = localStorage.getItem("accessToken");
-  const response = await client.delete(`/api/v1/applications/${recruitId}/apply`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
+export async function cancelApplication(applicationId) {
+  const response = await client.delete(`/api/v1/applications/${applicationId}`);
   return response;
 }

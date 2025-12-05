@@ -18,7 +18,11 @@ const useUnreadStore = create((set) => ({
   
   // 알림 목록 설정 (알림 목록에서 읽지 않은 개수 자동 계산)
   setNotifications: (notifications) => set((state) => {
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    // read 또는 isRead 필드 확인 (read 필드가 우선)
+    const unreadCount = notifications.filter(n => {
+      const read = n.read !== undefined ? n.read : n.isRead;
+      return read === false || read === undefined;
+    }).length;
     return { 
       notifications,
       unreadNotificationCount: unreadCount
@@ -38,7 +42,7 @@ const useUnreadStore = create((set) => ({
         ? { ...notification, isRead: true }
         : notification
     );
-    const unreadCount = updatedNotifications.filter(n => !n.isRead).length;
+    const unreadCount = updatedNotifications.filter(n => n.isRead === false || n.isRead === undefined).length;
     return {
       notifications: updatedNotifications,
       unreadNotificationCount: unreadCount

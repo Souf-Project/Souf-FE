@@ -215,7 +215,7 @@ export default function ApplicationsContent() {
                     <td className="px-3 text-center text-sm font-medium">
                       <button 
                         className="hover:opacity-70 transition-opacity bg-red-500 text-white px-2 py-2 rounded-md"
-                        onClick={() => openCancelModal(app.recruitId)}
+                        onClick={() => openCancelModal(app.applicationId)}
                       >
                         지원취소
                       </button>

@@ -44,6 +44,7 @@ const useUnreadSSE = () => {
 
     eventSource.onopen = () => {
       console.log('✅ SSE 연결 성공');
+      console.log('✅ SSE 연결 성공', eventSource);
     };
 
     eventSource.onerror = (err) => {

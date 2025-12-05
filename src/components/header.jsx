@@ -10,6 +10,7 @@ import SOUFLogo from "../assets/images/SouFLogo.svg";
 import backArrow from "../assets/images/backArrow.svg";
 import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
+import {getNotificationContent,  readNotification } from "../api/notification";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -24,10 +25,12 @@ export default function Header() {
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
-  const { unreadNotificationCount } = useUnreadStore();
+  const { unreadNotificationCount, notifications, markAsRead, setNotifications } = useUnreadStore();
   const [menuAnimating, setMenuAnimating] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
+  const notificationRef = useRef(null);
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
@@ -47,6 +50,31 @@ export default function Header() {
       setUserName("");
     }
   }, [memberId, roleType, nickname]);
+
+  // 알림 목록 가져오기
+  useEffect(() => {
+    if (memberId) {
+      const fetchNotifications = async () => {
+        try {
+          const response = await getNotificationContent();
+          if (response?.result?.content && Array.isArray(response.result.content)) {
+            // API 응답의 read 필드를 isRead로 변환
+            const normalizedNotifications = response.result.content.map(notification => ({
+              ...notification,
+              isRead: notification.read !== undefined ? notification.read : notification.isRead
+            }));
+            console.log('✅ 알림 목록 저장:', normalizedNotifications.length, '개', normalizedNotifications);
+            setNotifications(normalizedNotifications);
+          } else {
+            console.warn('⚠️ 알림 목록이 없거나 배열이 아닙니다:', response);
+          }
+        } catch (error) {
+          console.error('헤더 알림 내용 로드 실패:', error);
+        }
+      };
+      fetchNotifications();
+    }
+  }, [memberId, setNotifications]);
 
   useEffect(() => {
     // /recruit 경로 & 카테고리 쿼리 파라미터가 있는 경우만
@@ -71,12 +99,15 @@ export default function Header() {
       if (showUserMenu && !event.target.closest(".user-menu-container")) {
         setShowUserMenu(false);
       }
+      if (showNotificationDropdown && notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotificationDropdown(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showUserMenu]);
+  }, [showUserMenu, showNotificationDropdown]);
 
 useEffect(() => {
   function handleClickOutside(event) {
@@ -181,6 +212,39 @@ useEffect(() => {
 
   const toggleUserMenu = () => {
     setShowUserMenu(!showUserMenu);
+  };
+
+  const toggleNotificationDropdown = () => {
+    setShowNotificationDropdown(!showNotificationDropdown);
+  };
+
+  const handleNotificationClick = async (notification) => {
+    try {
+      // read 또는 isRead 필드 확인
+      const isUnread = notification.read === false || notification.isRead === false || 
+                       (notification.read === undefined && notification.isRead === undefined);
+      
+      if (isUnread) {
+        await readNotification(notification.id);
+        const updatedNotifications = notifications.filter(n => n.id !== notification.id);
+        setNotifications(updatedNotifications);
+      }
+
+      // 알림 유형에 따라 이동 처리
+      if (notification.refType === 'RECRUIT' && notification.refId && notification.type === 'APPLICANT_CREATED') {
+        navigate(`/mypage?tab=studentApplications`);
+      } else if (notification.refType === 'INQUIRY' && notification.refId) {
+        navigate(`/mypage?tab=inquiry`);
+      } else if (notification.refType === 'APPLICATION' && notification.refId) {
+        navigate(`/mypage?tab=applications`);
+      } else if (notification.refType === 'RECRUIT' && notification.type === 'RECRUIT_PUBLISHED') {
+        navigate(`/recruit`);
+      }
+
+      setShowNotificationDropdown(false);
+    } catch (error) {
+      console.error('알림 처리 에러:', error);
+    }
   };
 
   const toggleMobileMenu = () => {
@@ -356,12 +420,59 @@ const DesktopHeader = () => (
 
         <div className="flex items-center gap-x-4">
           {memberId && (
-            <button className="cursor-pointer relative" >
-              <img src={notiIcon} alt="noti" className="w-6 h-6" />
-              {unreadNotificationCount > 0 && (
-                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+            <div className="relative" ref={notificationRef}>
+              <button 
+                className="cursor-pointer relative" 
+                onClick={toggleNotificationDropdown}
+              >
+                <img src={notiIcon} alt="noti" className="w-6 h-6" />
+                {unreadNotificationCount > 0 && (
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
+              </button>
+              {/* 알림 드롭다운 */}
+              {showNotificationDropdown && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-[999999] max-h-96 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-200">
+                    <h3 className="font-bold text-lg">알림</h3>
+                  </div>
+                 
+                  {notifications && Array.isArray(notifications) && notifications.length > 0 ? (
+                    <div className="divide-y divide-gray-200">
+                      {notifications.map((notification) => (
+                        <button
+                          key={notification.id}
+                          onClick={() => handleNotificationClick(notification)}
+                          className={`w-full text-left p-4 hover:bg-gray-50 transition-colors ${
+                            (notification.read === false || notification.isRead === false || 
+                             (notification.read === undefined && notification.isRead === undefined)) ? 'bg-blue-50' : ''
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            {(notification.read === false || notification.isRead === false || 
+                              (notification.read === undefined && notification.isRead === undefined)) && (
+                              <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-sm text-gray-900 mb-1">
+                                {notification.title}
+                              </p>
+                              <p className="text-sm text-gray-600 line-clamp-2">
+                                {notification.body}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center text-gray-500">
+                      알림이 없습니다.
+                    </div>
+                  )}
+                </div>
               )}
-            </button>
+            </div>
           )}
           {memberId ? (
             // 로그인 상태

@@ -24,9 +24,9 @@ export const getNotificationList = async (page = 0, size = 20) => {
 };
   
 // 알림 읽음 처리
-export const markNotificationAsRead = async (notificationId) => {
+export const readNotification = async (notificationId) => {
   try {
-    const response = await client.patch(`/api/v1/notifications/${notificationId}/read`);
+    const response = await client.delete(`/api/v1/notifications/${notificationId}`);
     return response.data;
   } catch (error) {
     console.error('알림 읽음 처리 에러:', error);
@@ -34,13 +34,13 @@ export const markNotificationAsRead = async (notificationId) => {
   }
 };
 
-// 모든 알림 읽음 처리
-export const markAllNotificationsAsRead = async () => {
+// 알림 내용 조회
+export const getNotificationContent = async () => {
   try {
-    const response = await client.patch('/api/v1/notifications/read-all');
+    const response = await client.get(`/api/v1/notifications`);
     return response.data;
   } catch (error) {
-    console.error('모든 알림 읽음 처리 에러:', error);
+    console.error('알림 내용 조회 에러:', error);
     throw error;
   }
 };

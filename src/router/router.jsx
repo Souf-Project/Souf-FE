@@ -35,7 +35,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
 import useUnreadStore from "../store/useUnreadStore";
 import { UserStore } from "../store/userStore";
-import { getUnreadChatCount, getNotificationList } from "../api/notification";
+import { getUnreadChatCount, getNotificationList, getNotificationContent } from "../api/notification";
 import useUnreadSSE from "../hooks/useUnreadSSE";
 import AlertModal from "../components/alertModal";
 import TermsPage from "../pages/policy/terms";
@@ -74,6 +74,23 @@ function AppRouter() {
     }
   }, [memberId, setUnreadChatCount, setNotifications]);
 
+  useEffect(() => {
+    if (memberId) {
+      const fetchNotificationContent = async () => {
+        try {
+          const response = await getNotificationContent();
+          console.log('✅ 알림 내용 로드:', response);
+          // 알림 목록을 store에 저장
+          if (response?.result?.content) {
+            setNotifications(response.result.content);
+          }
+        } catch (error) {
+          console.error('알림 내용 로드 실패:', error);
+        }
+      };
+      fetchNotificationContent();
+    }
+  }, [memberId, setNotifications]);
   useEffect(() => {
     // 세션 만료 이벤트 리스너
     const handleSessionExpired = (event) => {
