@@ -42,7 +42,6 @@ export default function PostUpload() {
   const [formData, setFormData] = useState({
     topic: "",
     content: "",
-    tags: [],
     originalFileNames: [],
     categoryDtos: [
       {
@@ -147,7 +146,7 @@ export default function PostUpload() {
 
       if (invalidImage) {
         //const type = invalidImage.type.split("/");
-        console.log(invalidImage);
+        // console.log(invalidImage);
         setWarningText(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
         throw new Error(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
       }
@@ -162,12 +161,12 @@ export default function PostUpload() {
         ...formData,
         categoryDtos: cleanedCategories,
       };
+      // console.log('피드 업로드 데이터:', finalData);
 
       return postFeed(finalData);
     },
     onSuccess: async (response) => {
       const { feedId, dtoList, videoDto } = response.result;
-
       const chunkSize = 10 * 1024 * 1024;
       const chunkCount = Math.ceil(videoFiles[0]?.size / chunkSize);
       
@@ -260,6 +259,7 @@ export default function PostUpload() {
               fileUrl: fileUrls,
               fileName: fileNames,
               fileType: fileTypes,
+              filePurpose: ["FEED"],
             };
 
             const mediaResponse = await postMedia(mediaData);
@@ -275,7 +275,7 @@ export default function PostUpload() {
             throw mediaError;
           }
         } else {
-          console.log("업로드할 파일이 없음");
+          // console.log("업로드할 파일이 없음");
         }
 
         // feedId를 저장하고 모달 표시
@@ -291,8 +291,9 @@ export default function PostUpload() {
     },
     onError: (error) => {
       console.error("피드 업로드 에러:", error);
+
       if (typeof error.message === 'string' && !error.response) {
-        console.log("클라이언트 유효성 검사 실패:", error.message);
+        // console.log("클라이언트 유효성 검사 실패:", error.message);
         setWarningText(error.message);
         setIsWarningModal(true); // 기존 경고 모달을 사용
         return;
