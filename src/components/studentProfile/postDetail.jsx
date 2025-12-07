@@ -141,8 +141,6 @@ const handleDeleteClick = () => {
       await deleteFeed(worksId);
       setShowDeleteModal(false);
       setShowCompleteModal(true);
-
-      
     } catch (err) {
       //console.log("실패 넘어요", err);
       setShowDeleteModal(false);
@@ -165,7 +163,7 @@ const handleDeleteClick = () => {
 
   const handleCompleteConfirm = () => {
     setShowCompleteModal(false);
-    navigate(-1);
+    navigate("/");
   };
 
   // SNS 공유 훅 사용
@@ -231,7 +229,7 @@ const handleDeleteClick = () => {
   };
 
   const handleDeclareClick = (declareData) => {
-    console.log('프로필 신고 데이터:', declareData);
+    // console.log('프로필 신고 데이터:', declareData);
     // 여기에 신고 API 호출
   };
 
@@ -502,7 +500,11 @@ const handleDeleteClick = () => {
                      
                   </div>
                   <DeclareButton 
-                contentType="프로필" 
+                postType="PROFILE"
+                postId={worksId}
+                title={worksData?.topic || worksData?.content || "작품"}
+                reporterId={memberId}
+                reportedMemberId={worksData?.memberId || id}
                 onDeclare={handleDeclareClick}
                 iconClassName="w-7 h-7 cursor-pointer ml-auto"
               />

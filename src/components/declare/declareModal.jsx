@@ -54,10 +54,36 @@ export default function DeclareModal({
       return;
     }
 
+    // 필수 필드 검증
+    if (!postType || postId === null || postId === undefined || !title || reporterId === null || reportedMemberId === null || reportedMemberId === undefined) {
+      console.error("신고 필수 필드 누락:", {
+        postType,
+        postId,
+        title,
+        reporterId,
+        reportedMemberId
+      });
+      
+      return;
+    }
+
+    // selectedReasons를 1부터 시작하는 숫자 배열로 변환 (인덱스 + 1)
+    const reasons = selectedReasons.map(index => index + 1);
+
+    // 전송할 데이터 확인
+    const reportData = {
+      postType,
+      postId: Number(postId),
+      title,
+      reporterId: Number(reporterId),
+      reportedMemberId: Number(reportedMemberId),
+      reasons,
+      description
+    };
+
     try {
-      const response = await postReport(postType, postId, title, reporterId, reportedMemberId, selectedReasons, description);
-      // console.log("신고 API 응답:", response);
-    
+      const response = await postReport(postType, postId, title, reporterId, reportedMemberId, reasons, description);
+  
       setIsSubmitted(true);
       
       if (onSubmit) {
@@ -68,6 +94,12 @@ export default function DeclareModal({
       }
     } catch (error) {
       console.error("신고 접수 실패:", error);
+      console.error("신고 에러 상세:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        requestData: reportData
+      });
       handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction }, REPORT_ERRORS)
     }
   };
@@ -103,7 +135,7 @@ export default function DeclareModal({
           </div>
           <div className="w-full flex justify-center">
             <button
-              className="py-3 px-8 bg-yellow-main rounded-[10px] font-semibold text-base"
+              className="py-3 px-8 bg-blue-main rounded-[10px] font-semibold text-base text-white"
               onClick={handleClose}
             >
               확인

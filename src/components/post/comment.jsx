@@ -115,7 +115,11 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
                 <p className="text-sm font-medium">{comment.nickname}</p>
                 <p className="text-sm text-gray-400">{formatDate(comment.lastModifiedTime)}</p>
                 <DeclareButton 
-                contentType="댓글" 
+                postType="COMMENT"
+                postId={comment.commentId}
+                title={comment.content || "댓글"}
+                reporterId={memberId}
+                reportedMemberId={comment.writerId}
                 onDeclare={handleDeclareClick}
                 iconClassName="w-4 h-4 cursor-pointer ml-auto"
               />

@@ -371,7 +371,11 @@ export default function RecruitDetail() {
               </div>
             ) : (
               <DeclareButton 
-              contentType="공고문" 
+              postType="RECRUIT"
+              postId={id}
+              title={displayData?.title || recruitDetail?.title || "공고문"}
+              reporterId={memberId}
+              reportedMemberId={recruitDetail?.memberId}
               iconClassName="w-5 h-5 cursor-pointer"
             />
             )}

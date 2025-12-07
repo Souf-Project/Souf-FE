@@ -84,7 +84,7 @@ export default function Feed({ feedData, onFeedClick }) {
         setShowDeleteModal(false);
         setShowCompleteModal(true);
       } catch (err) {
-        // console.log("실패함" , err);
+        console.log("실패함" , err);
         const errorKey = err?.response?.data?.errorKey;
         if (err.response?.status === 403) {
           setShowLoginModal(true);
@@ -120,7 +120,7 @@ export default function Feed({ feedData, onFeedClick }) {
 
      const toggleExpand = () => setIsExpanded((prev) => !prev);
           const handleDeclareClick = (declareData) => {
-      //  console.log('신고 데이터:', declareData);
+       console.log('신고 데이터:', declareData);
      }
   return (
     <div
