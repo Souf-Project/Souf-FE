@@ -141,8 +141,6 @@ const handleDeleteClick = () => {
       await deleteFeed(worksId);
       setShowDeleteModal(false);
       setShowCompleteModal(true);
-
-      
     } catch (err) {
       //console.log("실패 넘어요", err);
       setShowDeleteModal(false);
@@ -165,7 +163,7 @@ const handleDeleteClick = () => {
 
   const handleCompleteConfirm = () => {
     setShowCompleteModal(false);
-    navigate(-1);
+    navigate("/");
   };
 
   // SNS 공유 훅 사용
@@ -231,7 +229,7 @@ const handleDeleteClick = () => {
   };
 
   const handleDeclareClick = (declareData) => {
-    console.log('프로필 신고 데이터:', declareData);
+    // console.log('프로필 신고 데이터:', declareData);
     // 여기에 신고 API 호출
   };
 
@@ -358,7 +356,7 @@ const handleDeleteClick = () => {
           </button>
 
         <div className="w-full flex max-w-[60rem]">
-          <div className="flex flex-col p-2 w-full max-w-[40rem] mr-4">
+          <div className="flex flex-col p-2 w-full w-2/3 mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
@@ -502,7 +500,11 @@ const handleDeleteClick = () => {
                      
                   </div>
                   <DeclareButton 
-                contentType="프로필" 
+                postType="PROFILE"
+                postId={worksId}
+                title={worksData?.topic || worksData?.content || "작품"}
+                reporterId={memberId}
+                reportedMemberId={worksData?.memberId || id}
                 onDeclare={handleDeclareClick}
                 iconClassName="w-7 h-7 cursor-pointer ml-auto"
               />
@@ -568,7 +570,8 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer">
+        <div className="min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer"
+        onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
         <div className="flex justify-between">
         {worksData.profileImageUrl ? (
           <img src={`${worksData.profileImageUrl}`} alt="profileImage" className="w-24 h-24 object-cover rounded-full" />

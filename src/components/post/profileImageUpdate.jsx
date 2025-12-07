@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
-import SouFLogo from '../../assets/images/SouFLogo.svg';
-
+import basiclogoimg from '../../assets/images/basiclogoimg.png';
 
 export default function ProfileImageUpdate({
   isEditing,
   initialImageUrl,
+  nickname,
   onFileSelect,
 }) {
   const [preview, setPreview] = useState(initialImageUrl);
@@ -41,11 +41,12 @@ export default function ProfileImageUpdate({
   };
 
   return (
-    <div className="flex items-center space-x-6">
+    <div className="flex space-x-6">
       <div 
         className={`w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden relative ${isEditing ? 'cursor-pointer' : ''}`}
         onClick={handleClick}
       >
+       
         {preview ? (
           <img
             src={preview}
@@ -53,7 +54,7 @@ export default function ProfileImageUpdate({
             className="w-full h-full object-cover"
           />
         ) : (
-          <img src={SouFLogo} alt="SouFLogo" className="w-full h-full object-cover border-2 border-gray-300 rounded-full" />
+          <img src={basiclogoimg} alt="basiclogoimg" className="w-full h-full object-cover border-2 border-gray-300 rounded-full" />
          
         )}
         {isEditing && (
@@ -62,7 +63,7 @@ export default function ProfileImageUpdate({
             </div>
         )}
       </div>
-      <div>
+      <div className="flex flex-col mt-4">
         <input
           type="file"
           id="profileImage"
@@ -72,6 +73,7 @@ export default function ProfileImageUpdate({
           className="hidden"
           disabled={!isEditing}
         />
+        <h1 className="text-4xl font-bold ">{nickname}</h1>
         <p className="text-sm text-gray-500 mt-2">
           PNG, JPG, JPEG 형식만 업로드 가능합니다.<br/>
           (최대 800x800px)

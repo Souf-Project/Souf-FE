@@ -129,13 +129,9 @@ export default function Home() {
     return true;
   };
 
-  const handleMainUploadClick = () => {
-    if (roleType === "MEMBER" || roleType === "ADMIN") {
+  const handleRecruitUploadClick = () => {
+    if (checkRecruitUploadAccess()) {
       navigate("/recruitUpload");
-    } else if (roleType === "STUDENT") {
-      navigate("/postUpload");
-    } else {
-      navigate("/recruit");
     }
   };
 
@@ -422,7 +418,7 @@ export default function Home() {
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
-                            onClick={handleMainUploadClick}>{roleType === "MEMBER" ? "무료 외주 등록하기" : roleType === "STUDENT" ? "피드 업로드하기" : "외주 둘러보기"}</button>
+              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
               {/* <button 
                 className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
                 onClick={handleGuideClick}
@@ -545,7 +541,7 @@ export default function Home() {
           <BestRecruit />
           <div className="flex justify-center items-center gap-4 mt-4">
             <button className="bg-[#2582E0] text-white text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
-            onClick={handleMainUploadClick}>무료 외주 등록하기</button>
+            onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
             <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
             onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
   </div>
@@ -636,7 +632,7 @@ export default function Home() {
           <p className="text-lg font-bold text-[#7393BA] mt-2">대학생, 석사, 박사, 동아리, 연구실 등 인증된</p>
           <p className="text-lg font-bold text-[#7393BA]">전문가를 만나보세요.</p>
         </div>
-        <div className="h-52 max-w-[25rem]">
+        <div className="h-52 max-w-[30rem]">
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={0}
