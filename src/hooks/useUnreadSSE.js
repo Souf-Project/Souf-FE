@@ -5,6 +5,7 @@ const useUnreadSSE = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const setUnreadNotificationCount = useUnreadStore((state) => state.setUnreadNotificationCount);
   const addNotification = useUnreadStore((state) => state.addNotification);
+  const setNotifications = useUnreadStore((state) => state.setNotifications);
 
   useEffect(() => {
     // accessToken 가져오기
@@ -27,15 +28,31 @@ const useUnreadSSE = () => {
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log('📨 SSE 메시지 수신:', data);
 
-        // 서버가 보낸 내용에 따라 갱신 (알림 개수만)
+        // 서버가 보낸 내용에 따라 갱신
         if (data.unreadCount !== undefined) {
           setUnreadNotificationCount(data.unreadCount);
         }
 
-        if (data.notification) {
-          addNotification(data.notification);
-          console.log(data.notification);
+        // 초기 알림 목록 (배열로 받는 경우)
+        if (Array.isArray(data.notifications)) {
+          const normalizedNotifications = data.notifications.map(notification => ({
+            ...notification,
+            isRead: notification.read !== undefined ? notification.read : notification.isRead
+          }));
+          setNotifications(normalizedNotifications);
+          console.log('✅ 초기 알림 목록 저장:', normalizedNotifications.length, '개');
+        }
+
+        // 새 알림 (단일 객체로 받는 경우)
+        if (data.notification && !Array.isArray(data.notification)) {
+          const normalizedNotification = {
+            ...data.notification,
+            isRead: data.notification.read !== undefined ? data.notification.read : data.notification.isRead
+          };
+          addNotification(normalizedNotification);
+          console.log('✅ 새 알림 추가:', normalizedNotification);
         }
       } catch (err) {
         console.error('SSE parse error:', err);

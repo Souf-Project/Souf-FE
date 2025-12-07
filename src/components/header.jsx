@@ -10,7 +10,7 @@ import SOUFLogo from "../assets/images/SouFLogo.svg";
 import backArrow from "../assets/images/backArrow.svg";
 import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
-import {getNotificationContent,  readNotification } from "../api/notification";
+import { readNotification } from "../api/notification";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -51,30 +51,7 @@ export default function Header() {
     }
   }, [memberId, roleType, nickname]);
 
-  // 알림 목록 가져오기
-  useEffect(() => {
-    if (memberId) {
-      const fetchNotifications = async () => {
-        try {
-          const response = await getNotificationContent();
-          if (response?.result?.content && Array.isArray(response.result.content)) {
-            // API 응답의 read 필드를 isRead로 변환
-            const normalizedNotifications = response.result.content.map(notification => ({
-              ...notification,
-              isRead: notification.read !== undefined ? notification.read : notification.isRead
-            }));
-            console.log('✅ 알림 목록 저장:', normalizedNotifications.length, '개', normalizedNotifications);
-            setNotifications(normalizedNotifications);
-          } else {
-            console.warn('⚠️ 알림 목록이 없거나 배열이 아닙니다:', response);
-          }
-        } catch (error) {
-          console.error('헤더 알림 내용 로드 실패:', error);
-        }
-      };
-      fetchNotifications();
-    }
-  }, [memberId, setNotifications]);
+  // 알림 목록은 SSE로 받아서 store에 저장되므로 별도로 가져올 필요 없음
 
   useEffect(() => {
     // /recruit 경로 & 카테고리 쿼리 파라미터가 있는 경우만

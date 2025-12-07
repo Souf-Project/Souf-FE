@@ -23,13 +23,13 @@ export const getNotificationList = async (page = 0, size = 20) => {
   }
 };
   
-// 알림 읽음 처리
+// 알림 삭제 처리
 export const readNotification = async (notificationId) => {
   try {
     const response = await client.delete(`/api/v1/notifications/${notificationId}`);
     return response.data;
   } catch (error) {
-    console.error('알림 읽음 처리 에러:', error);
+    console.error('알림 삭제 처리 에러:', error);
     throw error;
   }
 };
