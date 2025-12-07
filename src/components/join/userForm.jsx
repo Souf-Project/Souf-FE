@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Input from "../input";
 import ButtonInput from "../buttonInput";
 import Button from "../button";
@@ -36,6 +36,11 @@ export default function UserForm({
   const [majorFields, setMajorFields] = useState([
     { major: formData.major || "", majorType: formData.majorType || "" }
   ]);
+
+  // 학교 검색 드롭다운 상태
+  const [isSchoolDropdownOpen, setIsSchoolDropdownOpen] = useState(false);
+  const [schoolSearchQuery, setSchoolSearchQuery] = useState("");
+  const schoolDropdownRef = useRef(null);
 
   // 통합 검증 함수
   const validateForm = () => {
@@ -389,7 +394,29 @@ export default function UserForm({
     if (validationErrors.schoolName) {
       setValidationErrors((prev) => ({ ...prev, schoolName: false }));
     }
+    setIsSchoolDropdownOpen(false);
+    setSchoolSearchQuery("");
   };
+
+  // 학교 검색 필터링
+  const filteredSchoolOptions = schoolOptions.filter(option =>
+    option.label.toLowerCase().includes(schoolSearchQuery.toLowerCase())
+  );
+
+  // 학교 드롭다운 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (schoolDropdownRef.current && !schoolDropdownRef.current.contains(event.target)) {
+        setIsSchoolDropdownOpen(false);
+        setSchoolSearchQuery("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleEducationTypeChange = (value) => {
     // value가 "UNIV" 또는 "GRADUATE"이므로 그대로 저장
@@ -521,23 +548,78 @@ export default function UserForm({
               height="h-10"
               width="w-32"
             />
-            <FilterDropdown
-              options={schoolOptions}
-              selectedValue={(() => {
-                // formData.school이 학교 이름이므로, 학교 이름에 맞는 코드를 찾아서 반환
-                const foundSchool = schoolOptions.find(option => option.label === formData.schoolName);
-                return foundSchool ? foundSchool.value : formData.schoolName;
-              })()}
-              onSelect={(value) => {
-                handleSchoolChange(value);
-                if (validationErrors.schoolName) {
-                  setValidationErrors((prev) => ({ ...prev, schoolName: false }));
-                }
-              }}
-              placeholder="학교를 선택해주세요."
-              height="h-10"
-              width="w-72"
-            />
+            <div className="relative w-72" ref={schoolDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsSchoolDropdownOpen(!isSchoolDropdownOpen)}
+                className="flex items-center justify-between w-full px-4 py-2 border border-gray-300 rounded-lg transition-colors bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent h-10"
+              >
+                <span className="text-sm font-medium text-gray-700">
+                  {formData.schoolName || "학교를 선택해주세요."}
+                </span>
+                <svg
+                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                    isSchoolDropdownOpen ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {isSchoolDropdownOpen && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 flex flex-col w-72">
+                  {/* 검색창 */}
+                  <div className="p-2 border-b border-gray-200">
+                    <input
+                      type="text"
+                      value={schoolSearchQuery}
+                      onChange={(e) => setSchoolSearchQuery(e.target.value)}
+                      placeholder="학교명을 검색하세요..."
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      autoFocus
+                    />
+                  </div>
+
+                  {/* 검색 결과 목록 */}
+                  <div className="max-h-60 overflow-y-auto">
+                    {filteredSchoolOptions.length > 0 ? (
+                      filteredSchoolOptions.map((option) => {
+                        const isSelected = formData.schoolName === option.label;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              handleSchoolChange(option.value);
+                              if (validationErrors.schoolName) {
+                                setValidationErrors((prev) => ({ ...prev, schoolName: false }));
+                              }
+                            }}
+                            className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 transition-colors ${
+                              isSelected ? 'bg-blue-50 text-blue-600' : 'text-gray-700'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <div className="px-4 py-8 text-center text-sm text-gray-500">
+                        검색 결과가 없습니다.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             {validationErrors.schoolName && (
               <p className="absolute left-0 top-full mt-1 text-xs font-medium text-red-500">
                 학교를 선택해주세요.
