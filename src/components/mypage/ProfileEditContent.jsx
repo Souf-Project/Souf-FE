@@ -169,7 +169,7 @@ export default function ProfileEditContent() {
         });
         
       } else {
-        console.warn("⚠️ [프로필 수정] 파일 업로드 조건 불만족:", {
+        console.warn("[프로필 수정] 파일 업로드 조건 불만족:", {
           hasSelectedFile: !!selectedFile,
           hasPresignedUrl: !!presignedUrl
         });
@@ -353,10 +353,9 @@ export default function ProfileEditContent() {
             isEditing={isEditing}
             initialImageUrl={formData.profileImageUrl ? `${formData.profileImageUrl}` : null}
             onFileSelect={handleFileSelect}
+            nickname={formData.nickname}
         />
-         <div className="absolute top-[40px] left-[225px]">
-            <h1 className="text-4xl font-bold ">{formData.nickname}</h1>
-        </div>
+        
             {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="px-6 py-4 bg-blue-main text-white rounded-xl font-bold transition-colors mb-auto">수정하기</button>}
 
             </div>

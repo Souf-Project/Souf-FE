@@ -636,7 +636,7 @@ export default function Home() {
           <p className="text-lg font-bold text-[#7393BA] mt-2">대학생, 석사, 박사, 동아리, 연구실 등 인증된</p>
           <p className="text-lg font-bold text-[#7393BA]">전문가를 만나보세요.</p>
         </div>
-        <div className="h-52 max-w-[25rem]">
+        <div className="h-52 max-w-[30rem]">
           <Swiper
             modules={[Navigation, Pagination, Autoplay]}
             spaceBetween={0}

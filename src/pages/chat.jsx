@@ -9,14 +9,18 @@ import { patchChatRooms } from "../api/chat";
 import SouFLogo from "../assets/images/SouFLogo.svg";
 import Loading from "../components/loading";
 import SEO from "../components/seo";
+import AlertModal from "../components/alertModal";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Chat() {
+  const navigate = useNavigate();
   const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [clickRoomId, setClickRoomId] = useState(-1);
   const [showChatList, setShowChatList] = useState(true); // 모바일에서 채팅 목록 표시 여부
+  const [showLoginAlert, setShowLoginAlert] = useState(false); // 로그인 모달 표시 여부
   //const [nowCount,setNowCount] = useState(fal);
   // const VITE_S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -72,6 +76,11 @@ export default function Chat() {
       setChatList(data);
       return data;
     },
+    onError: (error) => {
+      if (error.response?.status === 403) {
+        setShowLoginAlert(true);
+      }
+    },
     keepPreviousData: true,
   });
 
@@ -104,13 +113,6 @@ export default function Chat() {
       return <Loading />;
     }
 
-    if (error) {
-      return (
-        <div className="flex justify-center items-center h-screen">
-          <div className="text-red-500">채팅 목록을 불러오는데 실패했습니다.</div>
-        </div>
-      );
-    }
 
   return (
     <>
@@ -311,6 +313,21 @@ export default function Chat() {
         </div>
       </div>
     </div>
+    
+    {/* 로그인 모달 */}
+    {showLoginAlert && (
+      <AlertModal
+        isOpen={showLoginAlert}
+        onClose={() => setShowLoginAlert(false)}
+        title="로그인이 필요합니다"
+        message="채팅 기능을 사용하려면 다시 로그인해주세요."
+        confirmText="로그인하기"
+        onConfirm={() => {
+          setShowLoginAlert(false);
+          navigate("/login");
+        }}
+      />
+    )}
     </>
   );
 }
