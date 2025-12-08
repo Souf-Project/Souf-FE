@@ -37,12 +37,12 @@ export const getNotificationList = async (page = 0, size = 20) => {
 
   
 // 알림 전체 삭제 처리
-export const deleteNotifications = async (notificationId) => {
+export const deleteNotifications = async () => {
   try {
-    const response = await client.delete(`/api/v1/notifications/${notificationId}`);
+    const response = await client.delete(`/api/v1/notifications`);
     return response.data;
   } catch (error) {
-    console.error('알림 삭제 처리 에러:', error);
+    console.error('알림 전체 삭제 처리 에러:', error);
     throw error;
   }
 };
@@ -53,7 +53,7 @@ export const deleteNotification = async (notificationId) => {
     const response = await client.delete(`/api/v1/notifications/${notificationId}`);
     return response.data;
   } catch (error) {
-    console.error('알림 삭제 처리 에러:', error);
+    console.error('알림 개별 삭제 처리 에러:', error);
     throw error;
   }
 };

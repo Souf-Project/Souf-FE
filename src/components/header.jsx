@@ -23,9 +23,9 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(true);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
+  const [activeDropdown, setActiveDropdown] = useState(null); 지금 
   const { nickname, roleType, memberId } = UserStore();
-  const { unreadNotificationCount, notifications, markAsRead, setNotifications, setUnreadNotificationCount } = useUnreadStore();
+  const { unreadNotificationCount, notifications, markAsRead, markAllAsRead, setNotifications, setUnreadNotificationCount } = useUnreadStore();
   const [menuAnimating, setMenuAnimating] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const mobileMenuRef = useRef(null);
@@ -221,7 +221,7 @@ useEffect(() => {
   };
 
   const handleNotificationClick = async (notification) => {
-    console.log(notification);
+    // console.log(notification);
     try {
 
       // read 또는 isRead 필드 확인
@@ -251,6 +251,7 @@ useEffect(() => {
         navigate(`/recruit`);
       }
 
+      markAsRead(notification.id);
       setShowNotificationDropdown(false);
     } catch (error) {
       console.error('알림 처리 에러:', error);
@@ -260,6 +261,7 @@ useEffect(() => {
   const handleMarkAllAsReadNotifications = async () => {
     try {
       await patchReadNotifications();
+      markAllAsRead();
       setNotifications([]);
     } catch (error) {
       console.error('알림 전체 읽음 에러:', error);
@@ -269,6 +271,7 @@ useEffect(() => {
   const handleDeleteAllNotifications = async () => {
     try {
       await deleteNotifications();
+      markAllAsRead();
       setNotifications([]);
     } catch (error) {
       console.error('알림 전체 삭제 에러:', error);
@@ -278,6 +281,7 @@ useEffect(() => {
   const handleDeleteNotification = async (e, notificationId) => {
     e.stopPropagation(); // 알림 클릭 이벤트 전파 방지
     try {
+      markAsRead(notificationId);
       await deleteNotification(notificationId);
       const updatedNotifications = notifications.filter(n => n.id !== notificationId);
       setNotifications(updatedNotifications);
