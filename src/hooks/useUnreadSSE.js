@@ -3,6 +3,7 @@ import useUnreadStore from '../store/useUnreadStore';
 
 const useUnreadSSE = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const setUnreadChatCount = useUnreadStore((state) => state.setUnreadChatCount);
   const setUnreadNotificationCount = useUnreadStore((state) => state.setUnreadNotificationCount);
   const addNotification = useUnreadStore((state) => state.addNotification);
   const setNotifications = useUnreadStore((state) => state.setNotifications);
@@ -30,8 +31,20 @@ const useUnreadSSE = () => {
         const data = JSON.parse(event.data);
         console.log('📨 SSE 메시지 수신:', data);
 
-        // 서버가 보낸 내용에 따라 갱신
-        if (data.unreadCount !== undefined) {
+        // 읽지 않은 채팅 개수 업데이트
+        if (data.unreadChatCount !== undefined) {
+          setUnreadChatCount(data.unreadChatCount);
+          console.log('✅ 채팅 개수 업데이트:', data.unreadChatCount);
+        }
+
+        // 읽지 않은 알림 개수 업데이트
+        if (data.unreadNotificationCount !== undefined) {
+          setUnreadNotificationCount(data.unreadNotificationCount);
+          console.log('✅ 알림 개수 업데이트:', data.unreadNotificationCount);
+        }
+
+        // 기존 unreadCount 필드 지원 (하위 호환성)
+        if (data.unreadCount !== undefined && data.unreadChatCount === undefined && data.unreadNotificationCount === undefined) {
           setUnreadNotificationCount(data.unreadCount);
         }
 
@@ -76,7 +89,7 @@ const useUnreadSSE = () => {
       eventSource.close();
       console.log('SSE 연결 종료');
     };
-  }, [BASE_URL, setUnreadNotificationCount, addNotification]);
+  }, [BASE_URL, setUnreadChatCount, setUnreadNotificationCount, addNotification, setNotifications]);
 };
 
 export default useUnreadSSE;

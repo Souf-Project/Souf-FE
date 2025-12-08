@@ -10,7 +10,7 @@ import SOUFLogo from "../assets/images/SouFLogo.svg";
 import backArrow from "../assets/images/backArrow.svg";
 import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
-import { readNotification } from "../api/notification";
+import { getNotificationCount, getNotificationList, patchReadNotifications, patchReadNotificationContent, deleteNotifications, deleteNotification } from "../api/notification";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function Header() {
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
   const { nickname, roleType, memberId } = UserStore();
-  const { unreadNotificationCount, notifications, markAsRead, setNotifications } = useUnreadStore();
+  const { unreadNotificationCount, notifications, markAsRead, setNotifications, setUnreadNotificationCount } = useUnreadStore();
   const [menuAnimating, setMenuAnimating] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const mobileMenuRef = useRef(null);
@@ -51,7 +51,21 @@ export default function Header() {
     }
   }, [memberId, roleType, nickname]);
 
-  // 알림 목록은 SSE로 받아서 store에 저장되므로 별도로 가져올 필요 없음
+  // 읽지 않은 알림 개수 조회
+  useEffect(() => {
+    if (memberId) {
+      const fetchNotificationCount = async () => {
+        try {
+          const response = await getNotificationCount();
+          const count = response?.result || 0;
+          setUnreadNotificationCount(count);
+        } catch (error) {
+          console.error('알림 개수 조회 실패:', error);
+        }
+      };
+      fetchNotificationCount();
+    }
+  }, [memberId, setUnreadNotificationCount]);
 
   useEffect(() => {
     // /recruit 경로 & 카테고리 쿼리 파라미터가 있는 경우만
@@ -191,7 +205,18 @@ useEffect(() => {
     setShowUserMenu(!showUserMenu);
   };
 
-  const toggleNotificationDropdown = () => {
+  const toggleNotificationDropdown = async () => {
+    if (!showNotificationDropdown && memberId) {
+      // 드롭다운을 열 때 알림 목록 조회
+      try {
+        const response = await getNotificationList(0, 20);
+        // 응답 구조에 따라 알림 목록 추출
+        const notificationList = response?.result?.content || response?.result || [];
+        setNotifications(notificationList);
+      } catch (error) {
+        console.error('알림 목록 조회 실패:', error);
+      }
+    }
     setShowNotificationDropdown(!showNotificationDropdown);
   };
 
@@ -202,7 +227,7 @@ useEffect(() => {
                        (notification.read === undefined && notification.isRead === undefined);
       
       if (isUnread) {
-        await readNotification(notification.id);
+        await getNotificationList();
         const updatedNotifications = notifications.filter(n => n.id !== notification.id);
         setNotifications(updatedNotifications);
       }

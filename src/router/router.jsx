@@ -35,7 +35,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
 import useUnreadStore from "../store/useUnreadStore";
 import { UserStore } from "../store/userStore";
-import { getUnreadChatCount, getNotificationList, getNotificationContent } from "../api/notification";
+import { getUnreadChatCount, getNotificationCount, getNotificationList } from "../api/notification";
 import useUnreadSSE from "../hooks/useUnreadSSE";
 import AlertModal from "../components/alertModal";
 import TermsPage from "../pages/policy/terms";
@@ -49,48 +49,45 @@ function AppRouter() {
   const isChatPage = location.pathname === "/chat";
 
   const { nickname, memberId } = UserStore();
-  const { setUnreadChatCount, setNotifications } = useUnreadStore();
+  const { setUnreadChatCount, setUnreadNotificationCount, setNotifications } = useUnreadStore();
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
 
-  // 초기 데이터 로드 (로그인한 경우만)
+  // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
   useEffect(() => {
     if (memberId) {
+      // SSE 구독 후 약간의 지연을 두고 API 호출 (SSE 연결이 완료될 시간 확보)
       const fetchInitialData = async () => {
         try {
-          const response = await getUnreadChatCount();
-          const notificationListResponse = await getNotificationList(0, 20);
-          // 응답 구조: { code: 200, message: "...", result: 1 }
-          const chatCount = response?.result || 0;
+          // SSE 구독 후 약간 대기
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // 읽지 않은 채팅 개수 조회
+          const chatCountResponse = await getUnreadChatCount();
+          const chatCount = chatCountResponse?.result || 0;
           setUnreadChatCount(chatCount);
-          setNotifications(notificationListResponse.result || []);
           console.log('✅ 초기 채팅 개수 로드:', chatCount);
+          
+          // 읽지 않은 알림 개수 조회
+          const notificationCountResponse = await getNotificationCount();
+          const notificationCount = notificationCountResponse?.result || 0;
+          setUnreadNotificationCount(notificationCount);
+          console.log('✅ 초기 알림 개수 로드:', notificationCount);
+          
+          // 알림 목록 조회
+          const notificationListResponse = await getNotificationList(0, 20);
+          const notificationList = notificationListResponse?.result?.content || notificationListResponse?.result || [];
+          setNotifications(notificationList);
+          console.log('✅ 초기 알림 목록 로드:', notificationList.length, '개');
         } catch (error) {
           console.error('초기 데이터 로드 실패:', error);
         }
       };
       fetchInitialData();
     }
-  }, [memberId, setUnreadChatCount, setNotifications]);
+  }, [memberId, setUnreadChatCount, setUnreadNotificationCount, setNotifications]);
 
-  useEffect(() => {
-    if (memberId) {
-      const fetchNotificationContent = async () => {
-        try {
-          const response = await getNotificationContent();
-          console.log('✅ 알림 내용 로드:', response);
-          // 알림 목록을 store에 저장
-          if (response?.result?.content) {
-            setNotifications(response.result.content);
-          }
-        } catch (error) {
-          console.error('알림 내용 로드 실패:', error);
-        }
-      };
-      fetchNotificationContent();
-    }
-  }, [memberId, setNotifications]);
   useEffect(() => {
     // 세션 만료 이벤트 리스너
     const handleSessionExpired = (event) => {
