@@ -23,7 +23,7 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(true);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null); 지금 
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const { nickname, roleType, memberId } = UserStore();
   const { unreadNotificationCount, notifications, markAsRead, markAllAsRead, setNotifications, setUnreadNotificationCount } = useUnreadStore();
   const [menuAnimating, setMenuAnimating] = useState(false);
