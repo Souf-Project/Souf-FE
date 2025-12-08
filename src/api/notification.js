@@ -61,10 +61,10 @@ export const deleteNotification = async (notificationId) => {
 // 알림 전체 읽음 처리
 export const patchReadNotifications = async () => {
   try {
-    const response = await client.patch(`/api/v1/notifications`);
+    const response = await client.patch(`/api/v1/notifications/read`);
     return response.data;
   } catch (error) {
-    console.error('알림 내용 조회 에러:', error);
+    console.error('알림 전체 읽음 처리 에러:', error);
     throw error;
   }
 };
@@ -72,10 +72,10 @@ export const patchReadNotifications = async () => {
 // 알림 개별 읽음 처리
 export const patchReadNotificationContent = async (notificationId) => {
   try {
-    const response = await client.patch(`/api/v1/notifications/${notificationId}`);
+    const response = await client.patch(`/api/v1/notifications/${notificationId}/read`);
     return response.data;
   } catch (error) {
-    console.error('알림 내용 조회 에러:', error);
+    console.error('알림 개별 읽음 처리 에러:', error);
     throw error;
   }
 };

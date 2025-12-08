@@ -221,13 +221,15 @@ useEffect(() => {
   };
 
   const handleNotificationClick = async (notification) => {
+    console.log(notification);
     try {
+
       // read 또는 isRead 필드 확인
-      const isUnread = notification.read === false || notification.isRead === false || 
-                       (notification.read === undefined && notification.isRead === undefined);
+      const isUnread = notification.read === false || 
+                       notification.read === undefined;
       
       if (isUnread) {
-        await getNotificationList();
+        await patchReadNotificationContent(notification.id);
         const updatedNotifications = notifications.filter(n => n.id !== notification.id);
         setNotifications(updatedNotifications);
       }
@@ -238,7 +240,13 @@ useEffect(() => {
       } else if (notification.refType === 'INQUIRY' && notification.refId) {
         navigate(`/mypage?tab=inquiry`);
       } else if (notification.refType === 'APPLICATION' && notification.refId) {
-        navigate(`/mypage?tab=applications`);
+        if (roleType === 'STUDENT') {
+          navigate(`/mypage?tab=studentApplications`);
+        } else if (roleType === 'MEMBER') {
+          navigate(`/mypage?tab=companyApplications`);
+        } else {
+          navigate(`/mypage?tab=studentApplications`);
+        }
       } else if (notification.refType === 'RECRUIT' && notification.type === 'RECRUIT_PUBLISHED') {
         navigate(`/recruit`);
       }
@@ -246,6 +254,35 @@ useEffect(() => {
       setShowNotificationDropdown(false);
     } catch (error) {
       console.error('알림 처리 에러:', error);
+    }
+  };
+
+  const handleMarkAllAsReadNotifications = async () => {
+    try {
+      await patchReadNotifications();
+      setNotifications([]);
+    } catch (error) {
+      console.error('알림 전체 읽음 에러:', error);
+    }
+  };
+
+  const handleDeleteAllNotifications = async () => {
+    try {
+      await deleteNotifications();
+      setNotifications([]);
+    } catch (error) {
+      console.error('알림 전체 삭제 에러:', error);
+    }
+  };
+
+  const handleDeleteNotification = async (e, notificationId) => {
+    e.stopPropagation(); // 알림 클릭 이벤트 전파 방지
+    try {
+      await deleteNotification(notificationId);
+      const updatedNotifications = notifications.filter(n => n.id !== notificationId);
+      setNotifications(updatedNotifications);
+    } catch (error) {
+      console.error('알림 삭제 에러:', error);
     }
   };
 
@@ -424,7 +461,7 @@ const DesktopHeader = () => (
           {memberId && (
             <div className="relative" ref={notificationRef}>
               <button 
-                className="cursor-pointer relative" 
+                className="cursor-pointer relative flex items-center justify-center" 
                 onClick={toggleNotificationDropdown}
               >
                 <img src={notiIcon} alt="noti" className="w-6 h-6" />
@@ -435,36 +472,63 @@ const DesktopHeader = () => (
               {/* 알림 드롭다운 */}
               {showNotificationDropdown && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-[999999] max-h-96 overflow-y-auto">
-                  <div className="p-4 border-b border-gray-200">
+                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                     <h3 className="font-bold text-lg">알림</h3>
+                    <div className="flex items-center gap-2">
+                      <button className="bg-gray-50 p-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-all duration-200" onClick={() => handleMarkAllAsReadNotifications()}>전체 읽음</button>
+                      <button className="bg-gray-50 p-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-all duration-200" onClick={() => handleDeleteAllNotifications()}>전체 삭제</button>
+                    </div>
                   </div>
                  
                   {notifications && Array.isArray(notifications) && notifications.length > 0 ? (
                     <div className="divide-y divide-gray-200">
                       {notifications.map((notification) => (
-                        <button
+                        <div
                           key={notification.id}
-                          onClick={() => handleNotificationClick(notification)}
-                          className={`w-full text-left p-4 hover:bg-gray-50 transition-colors ${
-                            (notification.read === false || notification.isRead === false || 
-                             (notification.read === undefined && notification.isRead === undefined)) ? 'bg-blue-50' : ''
+                          className={`group relative w-full p-4 hover:bg-gray-50 transition-colors ${
+                            (notification.read === false || 
+                             (notification.read === undefined)) ? 'bg-blue-50' : ''
                           }`}
                         >
-                          <div className="flex items-start gap-3">
-                            {(notification.read === false || notification.isRead === false || 
-                              (notification.read === undefined && notification.isRead === undefined)) && (
-                              <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm text-gray-900 mb-1">
-                                {notification.title}
-                              </p>
-                              <p className="text-sm text-gray-600 line-clamp-2">
-                                {notification.body}
-                              </p>
+                          <button
+                            onClick={() => handleNotificationClick(notification)}
+                            className="w-full text-left"
+                          >
+                            <div className="flex items-start gap-3">
+                              {(notification.read === false || notification.isRead === false || 
+                                (notification.read === undefined)) && (
+                                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm text-gray-900 mb-1">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-gray-600 line-clamp-2">
+                                  {notification.body}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </button>
+                          </button>
+                          <button
+                            onClick={(e) => handleDeleteNotification(e, notification.id)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-6 h-6 flex items-center justify-center"
+                            title="알림 삭제"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       ))}
                     </div>
                   ) : (
