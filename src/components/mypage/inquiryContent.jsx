@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { getInquiryList, deleteInquiry, patchInquiry } from '../../api/inquiry';
+import { getInquiryList, deleteInquiry, patchInquiry, getInquiryFile } from '../../api/inquiry';
 import { UserStore } from '../../store/userStore';
 import Loading from '../loading';
 import EditIcon from '../../assets/images/editIco.svg';
@@ -65,6 +65,8 @@ export default function InquiryContent() {
 
     const toggleInquiry = (inquiryId) => {
         setExpandedInquiry(expandedInquiry === inquiryId ? null : inquiryId);
+        const fileData = getInquiryFile(inquiryId);
+        console.log('File Data:', fileData);
     };
 
     const handleDeleteClick = (inquiryId) => {
@@ -215,7 +217,7 @@ export default function InquiryContent() {
                                         <div className='bg-gray-300 text-white px-2 py-1 rounded-md'>답변 대기중</div>
                                         )}
                                         {inquiry.status === 'RESOLVED' && (
-                                        <div className='bg-gray-300 text-gray-500 px-2 py-1 rounded-md'>답변 완료</div>
+                                        <div className='bg-green-300 text-gray-500 px-2 py-1 rounded-md'>답변 완료</div>
                                         )} 
                                         {inquiry.status === 'REJECTED' && (
                                         <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
@@ -227,12 +229,14 @@ export default function InquiryContent() {
                         <div className='flex flex-col gap-2 justify-between'>
                             <p>{formatDate(inquiry.createdTime)}</p>
                             <div className='flex gap-2 items-center justify-end'>
+                                {inquiry.status === 'PENDING' && (
                                 <img src={EditIcon} alt="EditIcon" className='w-6 h-6 cursor-pointer grayscale opacity-50' 
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleEditClick(inquiry);
                                 }}
                                 />
+                                )}
                                 <img src={DeleteIcon} alt="DeleteIcon" className='w-6 h-6 cursor-pointer grayscale' 
                                 onClick={(e) => {
                                     e.stopPropagation();

@@ -1,6 +1,14 @@
 import client from "./client";
 import axios from "axios";
 
+export const uploadToS3 = async (url, file) => {
+    return axios.put(url, file, {
+        headers: {
+            "Content-Type": file.type,
+        },
+    });
+};
+
 export const postInquiry = async (requestBody) => {
     try {
         const response = await client.post("/api/v1/inquiry", requestBody);
@@ -24,7 +32,6 @@ export const uploadInquiryFile = async (file) => {
 
 
 export async function getInquiryList(pageable) {
-    const accessToken = localStorage.getItem("accessToken");
     const response = await client.get("/api/v1/inquiry/my", {
       params: pageable,
     });
@@ -32,14 +39,16 @@ export async function getInquiryList(pageable) {
   }
   
   export async function deleteInquiry(inquiryId) {
-    const accessToken = localStorage.getItem("accessToken");
     const response = await client.delete(`/api/v1/inquiry/${inquiryId}`);
     return response;
   }
   
   export async function patchInquiry(inquiryId, requestBody) {
-    const accessToken = localStorage.getItem("accessToken");
     const response = await client.patch(`/api/v1/inquiry/${inquiryId}`, requestBody);
     return response;
   }
 
+export async function getInquiryFile(inquiryId) {
+    const response = await client.get(`/api/v1/inquiry/${inquiryId}`);
+    return response;
+}

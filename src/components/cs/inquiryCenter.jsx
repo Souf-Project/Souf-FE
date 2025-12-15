@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FilterDropdown from "../filterDropdown";
 import SEO from "../seo";
-import { postInquiry, uploadInquiryFile } from "../../api/inquiry";
+import { postInquiry, uploadInquiryFile, uploadToS3 } from "../../api/inquiry";
 
 export default function InquiryCenter({ onInquiryComplete }) {
     const [selectedValue, setSelectedValue] = useState("");
@@ -10,6 +10,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
         content: "",
         files: []
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const options = [
         {
             value: "1",
@@ -88,7 +89,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
             alert("내용은 최대 1000자까지 입력 가능합니다.");
             return;
         }
-        
+        setIsSubmitting(true);
         try {
             // 1. 문의 등록 API
             const inquiryData = {
@@ -106,7 +107,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
             const inquiryResponse = await postInquiry(inquiryData);
             
             // 2. 이미지 파일 존재 - presignedUrl 업로드
-            if (formData.files.length > 0 && inquiryResponse.data?.result?.dtoList) {
+            if (inquiryResponse.data?.result?.dtoList) {
                 const dtoList = inquiryResponse.data.result.dtoList;
                 
                 for (let i = 0; i < formData.files.length && i < dtoList.length; i++) {
@@ -114,14 +115,22 @@ export default function InquiryCenter({ onInquiryComplete }) {
                     const dto = dtoList[i];
                     
                     try {
+                        // 1. presignedUrl을 사용해서 S3에 직접 파일 업로드
+                        if (dto.presignedUrl) {
+                            await uploadToS3(dto.presignedUrl, file);
+                            console.log(`이미지 ${i + 1} S3 업로드 성공`);
+                        }
+                        
+                        // 2. S3 업로드 성공 후 서버에 파일 정보 전송
                         const uploadData = {
                             postId: inquiryResponse.data.result.inquiryId,
-                            fileUrl: dto.fileUrl,
-                            fileName: file.name,
-                            fileType: file.type.split('/')[1]
+                            fileUrl: [dto.fileUrl],
+                            fileName: [file.name],
+                            fileType: [file.type.split('/')[1]]
                         };
 
                         const uploadResponse = await uploadInquiryFile(uploadData);
+                        console.log('Upload Response:', uploadResponse);
                     } catch (error) {
                         console.error(`이미지 ${i + 1} 업로드 에러:`, error);
                     }
@@ -144,6 +153,8 @@ export default function InquiryCenter({ onInquiryComplete }) {
         } catch (error) {
             console.error("문의 등록 에러:", error);
             alert("문의 등록 중 오류가 발생했습니다.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -231,10 +242,23 @@ export default function InquiryCenter({ onInquiryComplete }) {
             </div>
             <button 
                 onClick={handleSubmit}
-                className="w-36 py-4 rounded-md bg-blue-500 text-white font-semibold mx-auto hover:bg-blue-600 transition-colors duration-200"
+                disabled={isSubmitting}
+                className={`w-36 py-4 rounded-md text-white font-semibold mx-auto transition-colors duration-200 ${
+                    isSubmitting ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                }`}
             >
-                문의 등록하기
+                {isSubmitting ? "등록 중..." : "문의 등록하기"}
             </button>
+
+            {isSubmitting && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-3 min-w-[240px]">
+                        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" aria-label="loading-spinner"></div>
+                        <p className="text-gray-800 font-semibold">문의 등록 중입니다...</p>
+                        <p className="text-sm text-gray-500">잠시만 기다려주세요.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
