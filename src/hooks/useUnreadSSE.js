@@ -26,6 +26,10 @@ const useUnreadSSE = () => {
       }
     );
 
+    eventSource.addEventListener = (event) => {
+      
+    }
+
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -71,6 +75,8 @@ const useUnreadSSE = () => {
         console.error('SSE parse error:', err);
       }
     };
+
+   
 
     eventSource.onopen = () => {
       console.log('✅ SSE 연결 성공');

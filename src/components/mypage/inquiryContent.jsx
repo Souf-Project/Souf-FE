@@ -40,7 +40,7 @@ export default function InquiryContent() {
     // console.log('API Response:', data);
     
     const inquiryList = data?.data?.result?.content || [];
-    // console.log('Inquiry List:', inquiryList);
+    console.log('Inquiry List:', inquiryList);
 
     const typeOptions = [
         { value: "1", label: "피드" },
@@ -50,6 +50,18 @@ export default function InquiryContent() {
         { value: "5", label: "계정/인증" },
         { value: "6", label: "기타" }
     ];
+
+    const formatDate = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        if (Number.isNaN(date.getTime())) return dateString;
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        const hh = String(date.getHours()).padStart(2, "0");
+        const min = String(date.getMinutes()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+    };
 
     const toggleInquiry = (inquiryId) => {
         setExpandedInquiry(expandedInquiry === inquiryId ? null : inquiryId);
@@ -123,6 +135,32 @@ export default function InquiryContent() {
             alert("문의 수정 중 오류가 발생했습니다.");
         }
     };
+    const inquiryTypeLabel = [
+        {
+            value:1,
+            label: "피드"
+        },
+        {
+            value:2,
+            label: "외주"
+        },
+        {
+            value: 3,
+            label: "후기"
+        },
+        {
+            value: 4,
+            label: "채팅"
+        },
+        {
+            value: 5,
+            label: "계정/인증"
+        },
+        {
+            value: 6,
+            label: "기타"
+        }
+    ]
 
     const handleDeleteCancel = () => {
         setShowDeleteModal(false);
@@ -171,21 +209,23 @@ export default function InquiryContent() {
                        
                         <div className="flex flex-col gap-2 ">
                             <div className='flex gap-2'>
-                                <div className='bg-blue-200 text-gray-500 px-2 py-1 rounded-md'>채팅</div>
-                                 {/* 문의 날짜랑 답변 상태 추가되면 수정하기 */}
-                                        {inquiry.status === 'FALSE' && (
-                                        <div className='bg-gray-400 text-white px-2 py-1 rounded-md'>미답변</div>
+                                <div className='bg-blue-200 text-gray-500 px-2 py-1 rounded-md'>{inquiryTypeLabel.find(type => type.value === inquiry.inquiryType)?.label}</div>
+                           
+                                        {inquiry.status === 'PENDING' && (
+                                        <div className='bg-gray-300 text-white px-2 py-1 rounded-md'>답변 대기중</div>
                                         )}
-                                        {inquiry.status === 'TRUE' && (
+                                        {inquiry.status === 'RESOLVED' && (
                                         <div className='bg-gray-300 text-gray-500 px-2 py-1 rounded-md'>답변 완료</div>
+                                        )} 
+                                        {inquiry.status === 'REJECTED' && (
+                                        <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
                                         )}
-                                        <div className='bg-red-400 text-white px-2 py-1 rounded-md'>미답변</div>
                                 </div>
                             <h2 className='text-lg font-medium'>{inquiry.title}</h2>
 
                         </div>
                         <div className='flex flex-col gap-2 justify-between'>
-                            <p>2025.10.14 00:00</p>
+                            <p>{formatDate(inquiry.createdTime)}</p>
                             <div className='flex gap-2 items-center justify-end'>
                                 <img src={EditIcon} alt="EditIcon" className='w-6 h-6 cursor-pointer grayscale opacity-50' 
                                 onClick={(e) => {
