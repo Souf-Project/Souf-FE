@@ -105,35 +105,45 @@ export default function InquiryCenter({ onInquiryComplete }) {
             };
             
             const inquiryResponse = await postInquiry(inquiryData);
+            const inquiryResult = inquiryResponse?.data?.result ?? inquiryResponse?.result;
             
-            // 2. 이미지 파일 존재 - presignedUrl 업로드
-            if (inquiryResponse.data?.result?.dtoList) {
-                const dtoList = inquiryResponse.data.result.dtoList;
-                
-                for (let i = 0; i < formData.files.length && i < dtoList.length; i++) {
-                    const file = formData.files[i];
-                    const dto = dtoList[i];
-                    
-                    try {
-                        // 1. presignedUrl을 사용해서 S3에 직접 파일 업로드
-                        if (dto.presignedUrl) {
-                            await uploadToS3(dto.presignedUrl, file);
-                            console.log(`이미지 ${i + 1} S3 업로드 성공`);
-                        }
-                        
-                        // 2. S3 업로드 성공 후 서버에 파일 정보 전송
-                        const uploadData = {
-                            postId: inquiryResponse.data.result.inquiryId,
-                            fileUrl: [dto.fileUrl],
-                            fileName: [file.name],
-                            fileType: [file.type.split('/')[1]]
-                        };
+            // 2. 이미지 파일 존재 - presignedUrl 업로드 (요청: 첫 번째 presignedUrl에 모두 전송)
+            const dtoList = inquiryResult?.dtoList;
+            const filesToUpload = formData.files;
 
-                        const uploadResponse = await uploadInquiryFile(uploadData);
-                        console.log('Upload Response:', uploadResponse);
-                    } catch (error) {
-                        console.error(`이미지 ${i + 1} 업로드 에러:`, error);
+            if (!Array.isArray(dtoList) || dtoList.length === 0) {
+              
+            } else if (!filesToUpload || filesToUpload.length === 0) {
+               
+            } else {
+                const firstDto = dtoList[0];
+                try {
+                    // 1) 모든 파일을 첫 presignedUrl로 업로드 (요청 사항 반영)
+                    for (let i = 0; i < filesToUpload.length; i++) {
+                        const file = filesToUpload[i];
+                        if (!firstDto?.presignedUrl) {
+                            console.warn("presignedUrl 이 없습니다.", firstDto);
+                            break;
+                        }
+                        await uploadToS3(firstDto.presignedUrl, file);
+                       
                     }
+
+                    // 2) 서버에 한 번에 파일 정보 전송 (첫 번째 fileUrl 사용, 나머지는 동일 값으로 전송)
+                    const uploadData = {
+                        postId: inquiryResult?.inquiryId ?? inquiryResult?.result?.inquiryId,
+                        fileUrl: filesToUpload.map(() => firstDto.fileUrl),
+                        fileName: filesToUpload.map((file) => file.name),
+                        fileType: filesToUpload.map(
+                            (file) => (file.type?.split("/")[1] || firstDto.contentType?.split("/")[1] || "").toUpperCase()
+                        ),
+                        filePurpose: []
+                    };
+
+                    const uploadResponse = await uploadInquiryFile(uploadData);
+                    
+                } catch (error) {
+                    console.error("첫 presignedUrl로 일괄 업로드 에러:", error);
                 }
             }
             

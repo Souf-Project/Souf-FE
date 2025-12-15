@@ -12,7 +12,7 @@ export const uploadToS3 = async (url, file) => {
 export const postInquiry = async (requestBody) => {
     try {
         const response = await client.post("/api/v1/inquiry", requestBody);
-        console.log(response);
+        // console.log(response);
         return response.data;
     } catch (error) {
         console.error("문의 생성 에러:", error);
