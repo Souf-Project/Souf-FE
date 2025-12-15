@@ -221,6 +221,14 @@ export default function Recruit() {
     setCurrentPage(0); 
   };
 
+  const handleCategoryReset = () => {
+    setSelectedCategory([null, null, null]);
+    setSelectedCategories([]);
+    setCurrentPage(0);
+    // URL 파라미터도 제거
+    navigate('/recruit', { replace: true });
+  };
+
   const handleSortChange = (value) => {
     setSortBy(value);
     setCurrentPage(0); 
@@ -316,6 +324,7 @@ export default function Recruit() {
                 thirdCategories={thirdCategories}
                 onSelect={handleCategorySelect}
                 onApply={handleCategoryApply}
+                onReset={handleCategoryReset}
                 selectedCategories={{
                   firstCategoryId: selectedCategory[0],
                   secondCategoryId: selectedCategory[1],
@@ -336,6 +345,7 @@ export default function Recruit() {
             thirdCategories={thirdCategories}
             onSelect={handleCategorySelect}
             onApply={handleCategoryApply}
+            onReset={handleCategoryReset}
             selectedCategories={{
               firstCategoryId: selectedCategory[0],
               secondCategoryId: selectedCategory[1],

@@ -42,13 +42,19 @@ export default function ApplicationsContent() {
         cat => cat.first_category_id === firstCatId
       )?.name || '';
 
-      const secondName = secondCategoryData.second_category.find(
-        cat => cat.second_category_id === secondCatId
-      )?.name || '';
+      // secondCategory가 null이거나 유효하지 않으면 빈 문자열
+      const secondName = secondCatId 
+        ? (secondCategoryData.second_category.find(
+            cat => cat.second_category_id === secondCatId
+          )?.name || '')
+        : '';
 
-      const thirdName = thirdCategoryData.third_category.find(
-        cat => cat.third_category_id === thirdCatId
-      )?.name || '';
+      // thirdCategory가 null이거나 유효하지 않으면 빈 문자열
+      const thirdName = thirdCatId
+        ? (thirdCategoryData.third_category.find(
+            cat => cat.third_category_id === thirdCatId
+          )?.name || '')
+        : '';
 
       const key = `${firstCatId}-${secondCatId}`;
       
@@ -197,9 +203,17 @@ export default function ApplicationsContent() {
                       <div className="text-sm text-gray-500">
                         {categoryNames.map((category, index) => (
                           <div key={index}>
-                            {category.first} 
-                            <br/>{'>'} {category.second} 
-                            <br/>{'>'} {category.thirds.join(', ')}
+                            {category.first}
+                            {category.second && category.second.trim().length > 0 && (
+                              <>
+                                <br/>{'>'} {category.second}
+                              </>
+                            )}
+                            {category.thirds && category.thirds.length > 0 && category.thirds.some(t => t && t.trim().length > 0) && (
+                              <>
+                                <br/>{'>'} {category.thirds.filter(t => t && t.trim().length > 0).join(', ')}
+                              </>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -217,7 +231,7 @@ export default function ApplicationsContent() {
                     <td className="px-3 text-center text-sm font-medium">
                       <button 
                         className="hover:opacity-70 transition-opacity bg-red-500 text-white px-2 py-2 rounded-md"
-                        onClick={() => openCancelModal(app.recruitId)}
+                        onClick={() => openCancelModal(app.applicationId)}
                       >
                         지원취소
                       </button>

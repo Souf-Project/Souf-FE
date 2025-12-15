@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FilterDropdown from "../filterDropdown";
 import SEO from "../seo";
-import { postInquiry, uploadInquiryFile } from "../../api/inquiry";
+import { postInquiry, uploadInquiryFile, uploadToS3 } from "../../api/inquiry";
 
 export default function InquiryCenter({ onInquiryComplete }) {
     const [selectedValue, setSelectedValue] = useState("");
@@ -10,6 +10,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
         content: "",
         files: []
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const options = [
         {
             value: "1",
@@ -88,7 +89,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
             alert("내용은 최대 1000자까지 입력 가능합니다.");
             return;
         }
-        
+        setIsSubmitting(true);
         try {
             // 1. 문의 등록 API
             const inquiryData = {
@@ -104,27 +105,45 @@ export default function InquiryCenter({ onInquiryComplete }) {
             };
             
             const inquiryResponse = await postInquiry(inquiryData);
+            const inquiryResult = inquiryResponse?.data?.result ?? inquiryResponse?.result;
             
-            // 2. 이미지 파일 존재 - presignedUrl 업로드
-            if (formData.files.length > 0 && inquiryResponse.data?.result?.dtoList) {
-                const dtoList = inquiryResponse.data.result.dtoList;
-                
-                for (let i = 0; i < formData.files.length && i < dtoList.length; i++) {
-                    const file = formData.files[i];
-                    const dto = dtoList[i];
-                    
-                    try {
-                        const uploadData = {
-                            postId: inquiryResponse.data.result.inquiryId,
-                            fileUrl: dto.fileUrl,
-                            fileName: file.name,
-                            fileType: file.type.split('/')[1]
-                        };
+            // 2. 이미지 파일 존재 - presignedUrl 업로드 (요청: 첫 번째 presignedUrl에 모두 전송)
+            const dtoList = inquiryResult?.dtoList;
+            const filesToUpload = formData.files;
 
-                        const uploadResponse = await uploadInquiryFile(uploadData);
-                    } catch (error) {
-                        console.error(`이미지 ${i + 1} 업로드 에러:`, error);
+            if (!Array.isArray(dtoList) || dtoList.length === 0) {
+              
+            } else if (!filesToUpload || filesToUpload.length === 0) {
+               
+            } else {
+                const firstDto = dtoList[0];
+                try {
+                    // 1) 모든 파일을 첫 presignedUrl로 업로드 (요청 사항 반영)
+                    for (let i = 0; i < filesToUpload.length; i++) {
+                        const file = filesToUpload[i];
+                        if (!firstDto?.presignedUrl) {
+                            console.warn("presignedUrl 이 없습니다.", firstDto);
+                            break;
+                        }
+                        await uploadToS3(firstDto.presignedUrl, file);
+                       
                     }
+
+                    // 2) 서버에 한 번에 파일 정보 전송 (첫 번째 fileUrl 사용, 나머지는 동일 값으로 전송)
+                    const uploadData = {
+                        postId: inquiryResult?.inquiryId ?? inquiryResult?.result?.inquiryId,
+                        fileUrl: filesToUpload.map(() => firstDto.fileUrl),
+                        fileName: filesToUpload.map((file) => file.name),
+                        fileType: filesToUpload.map(
+                            (file) => (file.type?.split("/")[1] || firstDto.contentType?.split("/")[1] || "").toUpperCase()
+                        ),
+                        filePurpose: []
+                    };
+
+                    const uploadResponse = await uploadInquiryFile(uploadData);
+                    
+                } catch (error) {
+                    console.error("첫 presignedUrl로 일괄 업로드 에러:", error);
                 }
             }
             
@@ -144,6 +163,8 @@ export default function InquiryCenter({ onInquiryComplete }) {
         } catch (error) {
             console.error("문의 등록 에러:", error);
             alert("문의 등록 중 오류가 발생했습니다.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -231,10 +252,23 @@ export default function InquiryCenter({ onInquiryComplete }) {
             </div>
             <button 
                 onClick={handleSubmit}
-                className="w-36 py-4 rounded-md bg-blue-500 text-white font-semibold mx-auto hover:bg-blue-600 transition-colors duration-200"
+                disabled={isSubmitting}
+                className={`w-36 py-4 rounded-md text-white font-semibold mx-auto transition-colors duration-200 ${
+                    isSubmitting ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                }`}
             >
-                문의 등록하기
+                {isSubmitting ? "등록 중..." : "문의 등록하기"}
             </button>
+
+            {isSubmitting && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="bg-white rounded-lg p-6 shadow-lg flex flex-col items-center gap-3 min-w-[240px]">
+                        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" aria-label="loading-spinner"></div>
+                        <p className="text-gray-800 font-semibold">문의 등록 중입니다...</p>
+                        <p className="text-sm text-gray-500">잠시만 기다려주세요.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

@@ -458,6 +458,7 @@ export default function RecruitUpload() {
       const startDateTime = new Date(formData.startDate).toISOString().slice(0, 16);
       const deadlineDateTime = new Date(formData.deadline).toISOString().slice(0, 16);
   
+      
       // 우대사항 키워드 처리 - 빈 문자열 제거
       const preferentialTreatmentTags = (formData.preferentialTreatmentTags || [])
         .filter(tag => tag && tag.trim() !== '');

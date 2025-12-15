@@ -25,7 +25,7 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       const result = response.data?.result;
 
       UserStore.getState().setUser({

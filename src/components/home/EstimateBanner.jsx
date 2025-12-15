@@ -46,12 +46,12 @@ export default function FreeEstimate({color}) {
         </div>
       )}
       {color=="blue" && (
-        <div className="relative bg-blue-500 w-full rounded-2xl px-8 py-8 flex justify-between items-center whitespace-nowrap">
+        <div className="relative bg-blue-500 w-full rounded-2xl px-8 py-8 md:flex justify-between items-center whitespace-nowrap">
           <div>
             <h2 className="text-orange-100 text-xl font-bold">웹사이트 제작<span className="text-white"> 견적을 무료로 받아보세요!</span></h2>
             <h3 className="text-white text-xl font-bold mt-2">인증된 전문가들이 견적을 보내요</h3>
           </div>
-          <button className="bg-white text-blue-500 text-xl font-bold px-6 py-6 rounded-xl"
+          <button className="mt-4 md:mt-0 bg-white text-blue-500 text-xl font-bold px-6 py-6 rounded-xl"
           onClick={handleRecruitUploadClick}>무료로 프로젝트 등록</button>
         </div>
       )}
