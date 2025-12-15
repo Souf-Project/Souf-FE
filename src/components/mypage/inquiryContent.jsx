@@ -11,9 +11,12 @@ import FilterDropdown from '../filterDropdown';
 export default function InquiryContent() {
     const { memberId } = UserStore();
     const queryClient = useQueryClient();
+    const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL || "";
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [expandedInquiry, setExpandedInquiry] = useState(null);
+    const [inquiryFiles, setInquiryFiles] = useState({});
+    const [loadingFiles, setLoadingFiles] = useState({});
     const [selectedInquiryId, setSelectedInquiryId] = useState(null);
     const [editFormData, setEditFormData] = useState({
         title: "",
@@ -40,7 +43,7 @@ export default function InquiryContent() {
     // console.log('API Response:', data);
     
     const inquiryList = data?.data?.result?.content || [];
-    console.log('Inquiry List:', inquiryList);
+    // console.log('Inquiry List:', inquiryList);
 
     const typeOptions = [
         { value: "1", label: "피드" },
@@ -63,10 +66,25 @@ export default function InquiryContent() {
         return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
     };
 
+    const fetchInquiryFiles = async (inquiryId) => {
+        setLoadingFiles((prev) => ({ ...prev, [inquiryId]: true }));
+        try {
+            const response = await getInquiryFile(inquiryId);
+            const list = response?.data?.result?.mediaResDtoList || response?.result?.mediaResDtoList || [];
+            setInquiryFiles((prev) => ({ ...prev, [inquiryId]: list }));
+        } catch (err) {
+            console.error('문의 파일 조회 실패:', err);
+        } finally {
+            setLoadingFiles((prev) => ({ ...prev, [inquiryId]: false }));
+        }
+    };
+
     const toggleInquiry = (inquiryId) => {
-        setExpandedInquiry(expandedInquiry === inquiryId ? null : inquiryId);
-        const fileData = getInquiryFile(inquiryId);
-        console.log('File Data:', fileData);
+        const next = expandedInquiry === inquiryId ? null : inquiryId;
+        setExpandedInquiry(next);
+        if (next && !inquiryFiles[inquiryId]) {
+            fetchInquiryFiles(inquiryId);
+        }
     };
 
     const handleDeleteClick = (inquiryId) => {
@@ -75,7 +93,6 @@ export default function InquiryContent() {
     };
 
     const handleDeleteConfirm = async () => {
-        console.log('문의 삭제 시작:', selectedInquiryId);
         try {
             await deleteInquiry(selectedInquiryId);
             queryClient.invalidateQueries(['inquiryList', memberId]);
@@ -255,6 +272,35 @@ export default function InquiryContent() {
                         }`}>
                             <div className='px-4 pb-4'>
                                 <p className='text-gray-600 whitespace-pre-wrap'>{inquiry.content}</p>
+                                {loadingFiles[inquiry.inquiryId] && (
+                                    <p className="mt-3 text-sm text-gray-500">첨부 파일 불러오는 중...</p>
+                                )}
+                                {!loadingFiles[inquiry.inquiryId] &&
+                                    inquiryFiles[inquiry.inquiryId] &&
+                                    inquiryFiles[inquiry.inquiryId].length > 0 && (
+                                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {inquiryFiles[inquiry.inquiryId].map((media, idx) => {
+                                                const src = media.fileUrl?.startsWith('http')
+                                                    ? media.fileUrl
+                                                    : `${S3_BUCKET_URL}${media.fileUrl || ''}`;
+                                                return (
+                                                    <div key={idx} className="border rounded-md overflow-hidden bg-gray-50">
+                                                        <img
+                                                            src={src}
+                                                            alt={media.fileName || `attachment-${idx + 1}`}
+                                                            className="w-full h-48 object-cover"
+                                                            loading="lazy"
+                                                        />
+                                                        {media.fileName && (
+                                                            <p className="px-3 py-2 text-sm text-gray-600 truncate">
+                                                                {media.fileName}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     </div>
