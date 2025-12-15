@@ -41,6 +41,7 @@ import AlertModal from "../components/alertModal";
 import TermsPage from "../pages/policy/terms";
 import PrivacyPage from "../pages/policy/privacy";
 import ComplainPage from "../pages/policy/complain";
+import Contract from "../pages/contract";
 
 
 function AppRouter() {
@@ -138,6 +139,7 @@ function AppRouter() {
           <Route path="/policy/terms" element={<TermsPage/>} />
           <Route path="/policy/privacy" element={<PrivacyPage/>} />
           <Route path="/policy/complaintDispute" element={<ComplainPage/>} />
+          <Route path="/contract" element={<Contract/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}

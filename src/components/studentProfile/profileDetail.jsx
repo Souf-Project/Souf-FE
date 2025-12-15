@@ -144,7 +144,7 @@ export default function ProfileDetail({}) {
 
   // 신고 처리 함수
   const handleDeclareClick = (declareData) => {
-    console.log('프로필 신고 데이터:', declareData);
+    // console.log('프로필 신고 데이터:', declareData);
     // 여기에 신고 API 호출 
   };
 
@@ -206,7 +206,11 @@ export default function ProfileDetail({}) {
                   </button>
                 )}
                  <DeclareButton 
-                contentType="프로필" 
+                postType="PROFILE"
+                postId={id}
+                title={userData?.nickname || userData?.username || "프로필"}
+                reporterId={fromMemberId}
+                reportedMemberId={userData?.id}
                 onDeclare={handleDeclareClick}
                 iconClassName="w-7 h-7 cursor-pointer ml-auto"
               />

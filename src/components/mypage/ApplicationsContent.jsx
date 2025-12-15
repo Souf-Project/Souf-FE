@@ -5,6 +5,7 @@ import { getMyApplications, cancelApplication } from '../../api/application';
 import firstCategoryData from '../../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
+
 import AlertModal from '../alertModal';
 import Loading from '../loading';
 import { handleApiError } from '../../utils/apiErrorHandler';
@@ -126,6 +127,7 @@ export default function ApplicationsContent() {
       handleApiError(error,{setShowLoginModal,setErrorModal,setErrorDescription,setErrorAction},APPLICATION_ERRORS);
     }
   };
+  
 
   // STUDENT가 아닌 경우 빈 div 반환
   if (roleType !== 'STUDENT') {

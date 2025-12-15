@@ -40,7 +40,7 @@ export default function InquiryContent() {
         return <div>No data available</div>;
     }
 
-    // console.log('API Response:', data);
+    console.log('API Response:', data);
     
     const inquiryList = data?.data?.result?.content || [];
     // console.log('Inquiry List:', inquiryList);
@@ -53,6 +53,7 @@ export default function InquiryContent() {
         { value: "5", label: "계정/인증" },
         { value: "6", label: "기타" }
     ];
+
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -77,6 +78,7 @@ export default function InquiryContent() {
         } finally {
             setLoadingFiles((prev) => ({ ...prev, [inquiryId]: false }));
         }
+
     };
 
     const toggleInquiry = (inquiryId) => {
@@ -239,7 +241,16 @@ export default function InquiryContent() {
                                         {inquiry.status === 'REJECTED' && (
                                         <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
                                         )}
+
                                 </div>
+                                {inquiry.status === 'RESOLVED' ? (
+                                    <div className='bg-blue-main text-white px-2 py-1 rounded-md'>답변 완료</div>
+                                ) : inquiry.status === 'REJECTED' ? (
+                                    <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
+                                ) : (
+                                    <div className='bg-gray-400 text-white px-2 py-1 rounded-md'>미답변</div>
+                                )}
+                            </div>
                             <h2 className='text-lg font-medium'>{inquiry.title}</h2>
 
                         </div>

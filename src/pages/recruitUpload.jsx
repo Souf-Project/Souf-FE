@@ -7,6 +7,7 @@ import { filterEmptyCategories } from '../utils/filterEmptyCategories';
 import Loading from '../components/loading';
 import StepIndicator from '../components/StepIndicator';
 import infoIcon from '../assets/images/infoIcon.svg';
+import calendarIcon from '../assets/images/calendarIcon.svg';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -604,7 +605,19 @@ export default function RecruitUpload() {
       navigate('/recruit?category=1');
     } catch (error) {
       console.error('공고 등록/수정 중 오류 발생:', error);
-      alert(isEditMode ? '공고 수정에 실패했습니다. 다시 시도해주세요.' : '공고 등록에 실패했습니다. 다시 시도해주세요.');
+      
+      // 403 에러 처리
+      if (error.response?.status === 403 || error.response?.data?.code === 403) {
+        setValidationModal({
+          type: 'simple',
+          title: '외주 공고문 생성 불가',
+          description: '미인증 유저는 외주를 생성할 수 없습니다. \n 승인이 될 때까지 기다려주세요.',
+          TrueBtnText: '확인',
+          onClickTrue: () => setValidationModal(null),
+        });
+      } else {
+        alert(isEditMode ? '공고 수정에 실패했습니다. 다시 시도해주세요.' : '공고 등록에 실패했습니다. 다시 시도해주세요.');
+      }
     } finally {
       // 로딩 종료
       setIsLoading(false);
@@ -622,6 +635,7 @@ export default function RecruitUpload() {
       };
     });
   };
+
   return (
     <div className="pt-10 px-6 w-full lg:max-w-5xl mx-auto mb-12">
       {isLoading && (
@@ -960,6 +974,7 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
+              <img src={calendarIcon} alt="calendarIcon" className="w-6 h-6" />
               <p>~</p>
               <input
                 type="date"
@@ -969,6 +984,7 @@ export default function RecruitUpload() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
                 required
               />
+              <img src={calendarIcon} alt="calendarIcon" className="w-6 h-6" />
             </div>
           </div>
 

@@ -1,7 +1,6 @@
 import {React, useRef} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ChatIcon from "../assets/images/chatIco.svg";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
@@ -340,7 +339,7 @@ useEffect(() => {
       return (
         <div className="flex items-center gap-2 text-white justify-center">
 
-          <span className="font-bold">일반</span>
+          <span className="font-bold">기업</span>
           <span className="font-normal">{nickname}</span>
         </div>
       );
@@ -546,7 +545,8 @@ const DesktopHeader = () => (
           )}
           {memberId ? (
             // 로그인 상태
-            
+            <div className="flex items-center gap-x-4">
+             
               <div className="relative user-menu-container">
                 <button
                   className="text-white bg-blue-main min-w-36 py-2 w-full px-2 font-bold rounded-lg w-36 shadow-md"
@@ -603,6 +603,7 @@ const DesktopHeader = () => (
                   </div>
                 )}
               </div>
+            </div>
           ) : (
             // 로그아웃 상태
             <>
@@ -623,8 +624,8 @@ const DesktopHeader = () => (
             </>
           )}
         </div>
+        </div>
         
-      </div>
     </header>
   </div>
 );
@@ -635,11 +636,7 @@ const DesktopHeader = () => (
        <img src={SOUFLogo} alt="SouF" className="w-16 cursor-pointer" onClick={() => handleNavigation("/")} />
 
       <div className="flex items-center gap-x-2">
-  {memberId && (
-    <button className="p-2" onClick={() => handleNavigation("/chat")}>
-      <img src={ChatIcon} alt="chat" className="w-5 h-5" />
-    </button>
-  )}
+ 
 
   {/* 햄버거 버튼 */}
   <button

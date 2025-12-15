@@ -28,18 +28,20 @@ export default function StudentProfileList({ firstCategoryId, secondCategoryId }
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["profile", firstCategoryId, secondCategoryId, currentPage],
+    queryKey: ["profile", firstCategoryId ?? undefined, secondCategoryId ?? undefined, currentPage],
     queryFn: async () => {
-      try {
-        const data = await getProfile(firstCategoryId, secondCategoryId, pageable);
-        setTotalPages(data.result.page.totalPages);
-        // console.log("data", data);
-        return data;
-      } catch (error) {
-         handlePublicApiError(error, { setErrorModal, setErrorDescription, setErrorAction },MEMBER_ERRORS);
-      }
+      // null을 undefined로 변환하여 API에 전달 (null이면 params에서 제외됨)
+      const data = await getProfile(firstCategoryId ?? undefined, secondCategoryId ?? undefined, pageable);
+      setTotalPages(data.result?.page?.totalPages || 1);
+      // console.log("data", data);
+      return data;
+    },
+    onError: (error) => {
+      console.error("프로필 조회 에러:", error);
+      handlePublicApiError(error, { setErrorModal, setErrorDescription, setErrorAction }, MEMBER_ERRORS);
     },
     keepPreviousData: true,
+    enabled: true, // 항상 쿼리 실행
   });
 
   const handlePageChange = (newPage) => {
