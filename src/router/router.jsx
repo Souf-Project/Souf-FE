@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -54,6 +54,7 @@ function AppRouter() {
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
+  const autoRedirectTimerRef = useRef(null);
 
   // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
   useEffect(() => {
@@ -68,19 +69,19 @@ function AppRouter() {
           const chatCountResponse = await getUnreadChatCount();
           const chatCount = chatCountResponse?.result || 0;
           setUnreadChatCount(chatCount);
-          console.log('✅ 초기 채팅 개수 로드:', chatCount);
+          // console.log('초기 채팅 개수 로드:', chatCount);
           
           // 읽지 않은 알림 개수 조회
           const notificationCountResponse = await getNotificationCount();
           const notificationCount = notificationCountResponse?.result || 0;
           setUnreadNotificationCount(notificationCount);
-          console.log('✅ 초기 알림 개수 로드:', notificationCount);
+          // console.log('초기 알림 개수 로드:', notificationCount);
           
           // 알림 목록 조회
           const notificationListResponse = await getNotificationList(0, 20);
           const notificationList = notificationListResponse?.result?.content || notificationListResponse?.result || [];
           setNotifications(notificationList);
-          console.log('✅ 초기 알림 목록 로드:', notificationList.length, '개');
+          // console.log('초기 알림 목록 로드:', notificationList.length, '개');
         } catch (error) {
           console.error('초기 데이터 로드 실패:', error);
         }
@@ -101,6 +102,37 @@ function AppRouter() {
       window.removeEventListener('showSessionExpiredModal', handleSessionExpired);
     };
   }, []);
+
+  // 세션 만료 모달이 열릴 때 5초 후 자동 리다이렉트
+  useEffect(() => {
+    if (showSessionExpiredModal) {
+      // 기존 타이머가 있으면 클리어
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
+      }
+      
+      // 5초 후 자동으로 로그인 페이지로 이동
+      autoRedirectTimerRef.current = setTimeout(() => {
+        setShowSessionExpiredModal(false);
+        if (!location.pathname.includes('/login')) {
+          navigate('/login');
+        }
+        autoRedirectTimerRef.current = null;
+      }, 5000);
+    } else {
+      // 모달이 닫히면 타이머 클리어
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
+        autoRedirectTimerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
+      }
+    };
+  }, [showSessionExpiredModal, location.pathname, navigate]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -153,6 +185,11 @@ function AppRouter() {
           description="로그인 시간이 만료되었습니다. 재로그인해주세요"
           TrueBtnText="로그인하러 가기"
           onClickTrue={() => {
+            // 타이머 클리어
+            if (autoRedirectTimerRef.current) {
+              clearTimeout(autoRedirectTimerRef.current);
+              autoRedirectTimerRef.current = null;
+            }
             setShowSessionExpiredModal(false);
             if (!location.pathname.includes('/login')) {
               navigate('/login');
