@@ -198,7 +198,7 @@ export default function CategorySelectBox({
         }`}
         onClick={() => isEditing && setShowModal(true)}
       >
-        <div className={`flex-1 p-5 text-center ${
+        <div className={`flex-1 p-3 py-5 md:p-5 text-center ${
           isEditing ? 'text-black' : 'text-gray-600'
         }`}>
           <div className="whitespace-pre-line">
