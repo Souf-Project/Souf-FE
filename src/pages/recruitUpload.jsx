@@ -1015,7 +1015,7 @@ export default function RecruitUpload() {
                   onChange={handleChange}
                   className="w-4 h-4 text-yellow-point border-gray-300 rounded "
                 />
-                <label className="text-xl text-gray-600">지역 무관</label>
+                <label className="text-md md:text-xl text-gray-600">지역 무관</label>
               </div>
             </div>
             <div className="flex gap-2">
@@ -1060,7 +1060,7 @@ export default function RecruitUpload() {
 
         <div>
             <div className="flex items-center gap-2 mb-4">
-              <label className="text-xl font-semibold text-black">
+              <label className="text-md md:text-xl font-semibold text-black">
                 우대사항 키워드 (2개)
           </label>
               <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
@@ -1168,7 +1168,7 @@ export default function RecruitUpload() {
           
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <label className="text-xl font-semibold text-black">
+              <label className="text-md md:text-xl font-semibold text-black">
                 계약 방식
             </label>
           </div>
