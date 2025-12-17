@@ -51,7 +51,7 @@ export default function ProfileImageUpdate({
           <img
             src={preview}
             alt="프로필"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover aspect-[1/1]"
           />
         ) : (
           <img src={basiclogoimg} alt="basiclogoimg" className="w-full h-full object-cover border-2 border-gray-300 rounded-full" />
@@ -73,11 +73,16 @@ export default function ProfileImageUpdate({
           className="hidden"
           disabled={!isEditing}
         />
-        <h1 className="text-4xl font-bold ">{nickname}</h1>
-        <p className="text-sm text-gray-500 mt-2">
+        <h1 className="text-2xl md:text-4xl font-bold ">{nickname}</h1>
+        <p className="hidden md:block text-xs md:text-sm text-gray-500 mt-2">
           PNG, JPG, JPEG 형식만 업로드 가능합니다.<br/>
           (최대 800x800px)
         </p>
+        <p className="block md:hidden text-xs md:text-sm text-gray-500 mt-2">
+          PNG, JPG, JPEG 형식만<br/> 업로드 가능합니다.<br/>
+          (최대 800x800px)
+        </p>
+
       </div>
     </div>
   );

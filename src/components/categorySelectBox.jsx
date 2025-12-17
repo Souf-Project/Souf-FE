@@ -198,7 +198,7 @@ export default function CategorySelectBox({
         }`}
         onClick={() => isEditing && setShowModal(true)}
       >
-        <div className={`flex-1 p-3 py-5 md:p-5 text-center ${
+        <div className={`flex-1 p-2 py-5 md:p-5 text-center text-sm md:text-base ${
           isEditing ? 'text-black' : 'text-gray-600'
         }`}>
           <div className="whitespace-pre-line">
@@ -211,7 +211,7 @@ export default function CategorySelectBox({
                       key={index}
                       className={`${
                         isLast 
-                          ? 'text-black font-semibold text-base' 
+                          ? 'text-black font-semibold text-sm md:text-base' 
                           : 'text-gray-500 text-sm'
                       }`}
                     >
@@ -286,7 +286,7 @@ export default function CategorySelectBox({
                    <button
                      key={option.id}
                      type="button"
-                     className={`text-left p-3 my-1 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 ${getOptionButtonStyle(
+                     className={`text-left p-3 my-1 rounded-md text-sm md:text-base transition-all duration-300 ease-in-out transform hover:scale-105 ${getOptionButtonStyle(
                        option
                      )}`}
                      onClick={() => handleOptionSelect(option)}
@@ -308,7 +308,7 @@ export default function CategorySelectBox({
                        <button
                          key={subOption.id}
                          type="button"
-                         className={`text-left p-3 my-1 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                         className={`text-left p-3 my-1 rounded-md text-sm md:text-base transition-all duration-300 ease-in-out transform hover:scale-105 ${
                            getSubOptionButtonStyle(subOption)
                          }`}
                          style={{
@@ -340,7 +340,7 @@ export default function CategorySelectBox({
                          <button
                            key={subSubOption.id}
                            type="button"
-                           className={`text-left p-3 my-1 rounded-md transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                           className={`text-left p-3 my-1 rounded-md text-sm md:text-base transition-all duration-300 ease-in-out transform hover:scale-105 ${
                              getSubSubOptionButtonStyle(subSubOption)
                            }`}
                            style={{
