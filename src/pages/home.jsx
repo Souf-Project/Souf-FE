@@ -571,9 +571,9 @@ export default function Home() {
     <h2 className="my-8 text-white text-2xl md:text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
     왜 대학생 인재를 발굴할까요?</h2>
-    <p className="my-2 text-stone-50 text-lg md:text-lg font-bold">기업 외주비용 “너무 비싸요..”</p>
-    <p className="my-2 text-stone-50 text-lg md:text-lg font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
-    <p className="text-stone-50 text-lg md:text-lg font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
+    <p className="my-2 text-stone-50 text-md md:text-lg font-bold">기업 외주비용 “너무 비싸요..”</p>
+    <p className="my-2 text-stone-50 text-md md:text-lg font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
+    <p className="text-stone-50 text-md md:text-lg font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
   </div>
   
 <img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="md:w-[24rem] w-36 md:ml-12 mt-4 md:mt-0"/>
