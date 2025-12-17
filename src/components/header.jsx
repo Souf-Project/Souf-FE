@@ -670,14 +670,15 @@ const DesktopHeader = () => (
 
 
   <div className="px-4 py-4">
-    <h3 className="text-md font-bold text-gray-700 mb-3">카테고리</h3>
     <ul className="space-y-2">
       <li>
         <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/recruitUpload")}>외주 의뢰하기</button>
         <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/recruit")}>외주 찾기</button>
-        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/feed")}>대학생 피드보기</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/feed")}>대학생 리스트</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/studentFeedList")}>카테고리별 피드</button>
         {/* <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/review")}>외주 후기</button> */}
-        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/guide")}>이용가이드</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigationGuideCategory('faq')}>FAQ</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigationGuideCategory('inquiry')}>문의 센터</button>
       </li>
     </ul>
     <h3 className="text-md font-bold text-gray-700 my-3">로그인 메뉴</h3>
