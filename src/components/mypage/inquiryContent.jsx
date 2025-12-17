@@ -232,17 +232,15 @@ export default function InquiryContent() {
                             <div className='flex gap-2'>
                                 <div className='bg-blue-200 text-gray-500 px-2 py-1 rounded-md'>{inquiryTypeLabel.find(type => type.value === inquiry.inquiryType)?.label}</div>
                            
-                                        {inquiry.status === 'PENDING' && (
-                                        <div className='bg-gray-300 text-white px-2 py-1 rounded-md'>답변 대기중</div>
-                                        )}
-                                        {inquiry.status === 'RESOLVED' && (
-                                        <div className='bg-green-300 text-gray-500 px-2 py-1 rounded-md'>답변 완료</div>
-                                        )} 
-                                        {inquiry.status === 'REJECTED' && (
-                                        <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
-                                        )}
-
-                                </div>
+                                {inquiry.status === 'PENDING' && (
+                                    <div className='bg-gray-300 text-white px-2 py-1 rounded-md'>답변 대기중</div>
+                                )}
+                                {inquiry.status === 'RESOLVED' && (
+                                    <div className='bg-green-300 text-gray-500 px-2 py-1 rounded-md'>답변 완료</div>
+                                )} 
+                                {inquiry.status === 'REJECTED' && (
+                                    <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
+                                )}
                                 {inquiry.status === 'RESOLVED' ? (
                                     <div className='bg-blue-main text-white px-2 py-1 rounded-md'>답변 완료</div>
                                 ) : inquiry.status === 'REJECTED' ? (
