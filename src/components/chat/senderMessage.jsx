@@ -1,4 +1,4 @@
-export default function SenderMessage({ content, createdTime, isPending = false, type = "TALK", onImageClick, onFileClick }) {
+export default function SenderMessage({ content, createdTime, isPending = false, type = "TALK", fileName, onImageClick, onFileClick }) {
   const formatTime = (timeString) => {
     if (!timeString) return '';
     const date = new Date(timeString);
@@ -49,12 +49,12 @@ export default function SenderMessage({ content, createdTime, isPending = false,
         ) : type === "FILE" ? (
           <div 
             className="flex items-center gap-2 p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200 transition-colors"
-            onClick={() => onFileClick && onFileClick(S3_BUCKET_URL + content)}
+            onClick={() => onFileClick && onFileClick(S3_BUCKET_URL + content, fileName)}
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span className="text-sm text-gray-700 truncate">{content.split('/').pop()}</span>
+            <span className="text-sm text-gray-700 truncate">{fileName || content.split('/').pop()}</span>
           </div>
         ) : (
         <p className="text-sm">{content}</p>

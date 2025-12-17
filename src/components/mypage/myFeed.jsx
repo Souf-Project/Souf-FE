@@ -24,7 +24,7 @@ export default function MyFeed() {
       try{
         const data = await getMemberFeed(memberId);
         setUserData(data.result.memberResDto);
-        // console.log("미디어", data.result.feedSimpleResDtoPage.content);
+        console.log("미디어", data.result.feedSimpleResDtoPage.content);
         setUserWorks(data.result.feedSimpleResDtoPage.content);
       return data;
       } catch (error) {

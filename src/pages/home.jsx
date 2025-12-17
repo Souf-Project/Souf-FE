@@ -129,13 +129,9 @@ export default function Home() {
     return true;
   };
 
-  const handleMainUploadClick = () => {
-    if (roleType === "MEMBER" || roleType === "ADMIN") {
+  const handleRecruitUploadClick = () => {
+    if (checkRecruitUploadAccess()) {
       navigate("/recruitUpload");
-    } else if (roleType === "STUDENT") {
-      navigate("/postUpload");
-    } else {
-      navigate("/recruit");
     }
   };
 
@@ -431,7 +427,7 @@ export default function Home() {
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
-                            onClick={handleMainUploadClick}>{roleType === "MEMBER" ? "무료 외주 등록하기" : roleType === "STUDENT" ? "피드 업로드하기" : "외주 둘러보기"}</button>
+              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
               {/* <button 
                 className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
                 onClick={handleGuideClick}
