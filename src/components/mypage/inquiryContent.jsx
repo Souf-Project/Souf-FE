@@ -241,13 +241,7 @@ export default function InquiryContent() {
                                 {inquiry.status === 'REJECTED' && (
                                     <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
                                 )}
-                                {inquiry.status === 'RESOLVED' ? (
-                                    <div className='bg-blue-main text-white px-2 py-1 rounded-md'>답변 완료</div>
-                                ) : inquiry.status === 'REJECTED' ? (
-                                    <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
-                                ) : (
-                                    <div className='bg-gray-400 text-white px-2 py-1 rounded-md'>미답변</div>
-                                )}
+                               
                             </div>
                             <h2 className='text-lg font-medium'>{inquiry.title}</h2>
 
