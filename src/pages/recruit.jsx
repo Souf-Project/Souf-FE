@@ -297,7 +297,7 @@ export default function Recruit() {
               onClick={() => setShowMobileCategoryMenu(!showMobileCategoryMenu)}
               className="flex items-center gap-2 p-4 bg-gray-100/80 rounded-lg"
             >
-              <span className="text-gray-600">카테고리 선택하기</span>
+              <span className="text-gray-600 text-sm">카테고리 선택하기</span>
               <svg
                 className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
                   showMobileCategoryMenu ? "rotate-180" : ""
