@@ -133,20 +133,21 @@ export default function Feed() {
                              selectedValue={selectedFirstCategory}
                              onSelect={handleFirstCategoryChange}
                              placeholder="대분류 선택"
+                             width="w-32"
                          />
                          <FilterDropdown
                              options={filteredSecondCategoryOptions}
                              selectedValue={selectedSecondCategory}
                              onSelect={handleSecondCategoryChange}
                              placeholder="중분류 선택"
-                             width="w-52"
+                             width="w-44"
                          />
                          {(selectedFirstCategory || selectedSecondCategory) && (
                            <button
                              onClick={handleResetFilters}
                              className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                            >
-                             필터 초기화
+                             초기화
                            </button>
                          )}
                      </div>
