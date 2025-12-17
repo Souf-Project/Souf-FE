@@ -306,14 +306,6 @@ export default function Home() {
     }
   };
 
-  const handleRecruitUploadClick = () => {
-    if (roleType === "MEMBER" || roleType === "ADMIN") {
-      navigate("/recruitUpload");
-    } else {
-      setShowAlertModal(true);
-    }
-
-  };
 
   const showLoginModalHandler = () => {
     setShowLoginModal(true);
