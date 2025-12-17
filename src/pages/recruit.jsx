@@ -355,7 +355,7 @@ export default function Recruit() {
         </div>
         
         {/* 공고문 목록 */}
-        <div className="w-full lg:ml-4 px-8 lg:px-0">
+        <div className="w-full lg:ml-4 px-2 md:px-8 lg:px-0">
           <div className="mb-4 flex justify-between items-center ">
             <div className="flex items-center gap-4">
             <FilterDropdown
