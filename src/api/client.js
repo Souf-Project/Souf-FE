@@ -262,7 +262,7 @@ client.interceptors.response.use(
       // 1. 헤더에 새 토큰이 포함된 경우
       const headerToken = extractTokenFromHeaders(error.response?.headers);
       if (headerToken) {
-        // console.log("헤더에서 새 토큰 발견 - 요청 재시도");
+        console.log("헤더에서 새 토큰 발견 - 요청 재시도");
         saveTokens(headerToken);
         return retryRequest(originalRequest, headerToken).catch(err => {
           console.error("❌ 재시도 요청 실패:", err);
