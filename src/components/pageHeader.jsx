@@ -15,8 +15,8 @@ const PageHeader = ({
   isTabMode = false
 }) => {
   return (
-    <div className="w-screen border-b border-gray-200 mb-4 py-4 pt-4 lg:px-0 px-8">
-      <div className="flex justify-between items-center w-full max-w-[60rem] mx-auto">
+    <div className="w-screen border-b border-gray-200 mb-4 py-4 pt-4 px-2 md:px-8 lg:px-0">
+      <div className="flex justify-between items-center w-full max-w-[60rem] mx-auto px-4 md:px-0">
         <div className="flex items-center gap-4 text-md font-bold">
           {leftText && (
             <span className="text-gray-600">{leftText}</span>
@@ -63,6 +63,7 @@ const PageHeader = ({
                 onChange={onSearchQueryChange}
                 onSubmit={onSearch}
                 placeholder={searchPlaceholder}
+                width="w-full md:w-[300px]"
               />
             )}
           </div>

@@ -158,9 +158,9 @@ export default function ProfileDetail({}) {
           subTitle="스프"
         />
       )}
-      <div className="flex flex-col pt-16 sm:pt-24 px-4 max-w-4xl w-full ">
+      <div className="flex flex-col pt-8 md:pt-16 sm:pt-24 px-4 max-w-4xl w-full ">
         <button
-          className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
+          className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors text-sm md:text-base"
           onClick={handleGoBack}
         >
           <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-1" />
@@ -169,31 +169,33 @@ export default function ProfileDetail({}) {
         <div className="rounded-2xl border border-gray p-6 md:p-8 mb-8 mt-4 w-full">
           
 
-          <div className="flex gap-12 mb-4 md:mb-6 pl-6">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-12 mb-4 md:mb-6 pl-6">
             {/* 프로필 이미지 */}
-            <img 
-              src={userData?.profileImageUrl || BasicImg4} 
-              className="rounded-full w-[15%] md:w-1/4 object-cover" 
-              alt="프로필 이미지"
-              onError={(e) => {
-                e.target.src = BasicImg4;
-              }}
-            />
+            <div className="flex justify-center md:justify-start md:w-1/4">
+              <img 
+                src={userData?.profileImageUrl || BasicImg4} 
+                className="rounded-full w-24 h-24 md:w-full md:h-auto object-cover aspect-[1/1]" 
+                alt="프로필 이미지"
+                onError={(e) => {
+                  e.target.src = BasicImg4;
+                }}
+              />
+            </div>
             
             <div className="flex flex-col gap-1 md:gap-2 max-sm:text-[14px] md:mt-4 w-full overflow-hidden">
-              <div className="flex justify-between">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-0">
                 {/* 닉네임 */}
                 {userData?.nickname ? (
-                  <div className="font-semibold text-[20px] md:text-[23px]">{userData.nickname}</div>
+                  <div className="font-semibold text-[20px] md:text-[23px] text-center md:text-left">{userData.nickname}</div>
                 ) : (
-                  <div className="h-8 bg-gray-200 rounded animate-pulse w-32"></div>
+                  <div className="h-8 bg-gray-200 rounded animate-pulse w-32 mx-auto md:mx-0"></div>
                 )}
                 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center md:justify-end gap-2">
 {/* 즐겨찾기 버튼 - 로그인한 사용자이고 본인이 아닐 때만 */}
 {UserStore.getState().memberId && UserStore.getState().memberId !== userData?.id && (
                   <button
-                    className={`flex items-center justify-center ml-auto transition-all duration-300 ease-in-out ${
+                    className={`flex items-center justify-center transition-all duration-300 ease-in-out ${
                       isAnimating ? 'scale-125 rotate-12' : 'scale-100 rotate-0'
                     } hover:scale-110 `}
                     onClick={handleFavorite}
@@ -212,7 +214,7 @@ export default function ProfileDetail({}) {
                 reporterId={fromMemberId}
                 reportedMemberId={userData?.id}
                 onDeclare={handleDeclareClick}
-                iconClassName="w-7 h-7 cursor-pointer ml-auto"
+                iconClassName="w-7 h-7 cursor-pointer"
               />
                 </div>
                 

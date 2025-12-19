@@ -53,7 +53,7 @@ export default function CsPage() {
            
         />
         <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-4 pb-40">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 justify-center md:justify-start">
                 <button
                         className={`pr-8 py-2 text-lg font-bold transition-colors duration-200 relative group ${
                             activeTab === 0 ? "text-black" : "text-gray-500"
@@ -87,9 +87,9 @@ export default function CsPage() {
                     <div className="flex flex-col items-start py-20">
                         <div className="">
                            
-                            <p className="text-2xl font-bold text-blue-500 mb-2">문의가 접수되었습니다.
+                            <p className="text-lg md:text-2xl ml-4 md:ml-0 font-bold text-blue-500 mb-2">문의가 접수되었습니다.
                            </p>
-                            <p className="text-2xl font-bold text-blue-500 mb-6"> 마이페이지에서 확인하세요.</p>
+                            <p className="text-lg md:text-2xl ml-4 md:ml-0 font-bold text-blue-500 mb-6"> 마이페이지에서 확인하세요.</p>
                             {/* <button
                                 onClick={() => {
                                     setIsInquiryCompleted(false);

@@ -458,6 +458,7 @@ export default function RecruitUpload() {
       const startDateTime = new Date(formData.startDate).toISOString().slice(0, 16);
       const deadlineDateTime = new Date(formData.deadline).toISOString().slice(0, 16);
   
+      
       // 우대사항 키워드 처리 - 빈 문자열 제거
       const preferentialTreatmentTags = (formData.preferentialTreatmentTags || [])
         .filter(tag => tag && tag.trim() !== '');
@@ -658,7 +659,7 @@ export default function RecruitUpload() {
         </div>
 
         <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
+          <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               기업 또는 개인명 <span className="text-red-500">*</span>
           </label>
           <input
@@ -666,13 +667,13 @@ export default function RecruitUpload() {
               name="companyName"
               value={formData.companyName}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent"
             required
           />
         </div>
 
         <div>
-          <label className="block text-xl font-semibold text-gray-700 mb-2">
+          <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               로고 및 아이콘 등록
             </label>
             <div className="flex items-center gap-4">
@@ -714,7 +715,7 @@ export default function RecruitUpload() {
           </div>
 
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               기업 또는 간략 소개 <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -737,7 +738,7 @@ export default function RecruitUpload() {
           </div>
 
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               공고문 제목 <span className="text-red-500">*</span>
           </label>
           <input
@@ -745,14 +746,14 @@ export default function RecruitUpload() {
               name="title"
               value={formData.title}
             onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent"
               placeholder="공고문 제목을 입력하세요"
             required
           />
         </div>
 
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               공고문 내용 <span className="text-red-500">*</span>
             </label>
             <div className="flex items-center gap-2 mb-2">
@@ -801,7 +802,7 @@ export default function RecruitUpload() {
               value={formData.content}
                 onChange={handleChange}
               ref={contentTextareaRef}
-              className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent resize-none"
+              className="w-full h-48 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent resize-none"
               placeholder="공고문의 상세 내용을 입력하세요 (1500자 이내)"
               rows="8"
               maxLength="1500"
@@ -841,7 +842,7 @@ export default function RecruitUpload() {
           </div>
 
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               동영상 및 참고 파일 첨부 (최대 3개)
             </label>
             <div className="flex items-start gap-4 w-full">
@@ -961,7 +962,7 @@ export default function RecruitUpload() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <label className="block text-xl font-semibold text-gray-700">
+            <label className="block text-md md:text-xl font-semibold text-gray-700">
               채용 기간 <span className="text-red-500">*</span>
             </label>
             <div className="flex gap-2 items-center">
@@ -970,32 +971,32 @@ export default function RecruitUpload() {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent"
                 required
               />
-              <img src={calendarIcon} alt="calendarIcon" className="w-6 h-6" />
+             
               <p>~</p>
               <input
                 type="date"
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent"
                 required
               />
-              <img src={calendarIcon} alt="calendarIcon" className="w-6 h-6" />
+             
             </div>
           </div>
 
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               근무 형태 <span className="text-red-500">*</span>
             </label>
             <select
               name="workType"
               value={formData.workType}
               onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent bg-white"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent bg-white"
             >
               <option value="online">온라인</option>
               <option value="offline">오프라인</option>
@@ -1003,7 +1004,7 @@ export default function RecruitUpload() {
           </div>
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xl font-semibold text-black">
+              <label className="block text-md md:text-xl font-semibold text-black">
                 지역 <span className="text-red-500">*</span>
               </label>
               <div className="flex items-center gap-2">
@@ -1014,7 +1015,7 @@ export default function RecruitUpload() {
                   onChange={handleChange}
                   className="w-4 h-4 text-yellow-point border-gray-300 rounded "
                 />
-                <label className="text-xl text-gray-600">지역 무관</label>
+                <label className="text-md md:text-xl text-gray-600">지역 무관</label>
               </div>
             </div>
             <div className="flex gap-2">
@@ -1059,7 +1060,7 @@ export default function RecruitUpload() {
 
         <div>
             <div className="flex items-center gap-2 mb-4">
-              <label className="text-xl font-semibold text-black">
+              <label className="text-md md:text-xl font-semibold text-black">
                 우대사항 키워드 (2개)
           </label>
               <span className="text-sm text-gray-500">(10글자 이내 단어 2개)</span>
@@ -1074,7 +1075,7 @@ export default function RecruitUpload() {
               newTags[0] = e.target.value;
               setFormData(prev => ({ ...prev, preferentialTreatmentTags: newTags }));
             }}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent"
                 placeholder="우대사항 키워드 1"
                 maxLength="10"
               />
@@ -1087,7 +1088,7 @@ export default function RecruitUpload() {
                   newTags[1] = e.target.value;
                   setFormData(prev => ({ ...prev, preferentialTreatmentTags: newTags }));
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent"
                 placeholder="우대사항 키워드 2"
                 maxLength="10"
               />
@@ -1095,14 +1096,14 @@ export default function RecruitUpload() {
           </div>
           
           <div>
-            <label className="block text-xl font-semibold text-gray-700 mb-2">
+            <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">
               우대사항 설명
             </label>
             <textarea
               name="preferentialTreatment"
               value={formData.preferentialTreatment}
                 onChange={handleChange}
-              className="w-full h-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-point focus:border-transparent resize-none"
+              className="w-full h-32 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-point focus:border-transparent resize-none"
               placeholder="우대사항에 대한 상세 설명을 입력하세요"
               rows="4"
             />
@@ -1113,12 +1114,12 @@ export default function RecruitUpload() {
             {/* <img src={infoIcon} alt="infoIcon" className="w-4 h-4 cursor-pointer" /> */}
           </div>
            <div>
-             <label className="block text-xl font-semibold text-gray-700 mb-2">견적 방식</label>
+             <label className="block text-md md:text-xl font-semibold text-gray-700 mb-2">견적 방식</label>
              <div className="flex gap-4">
                <button 
                  type="button"
                  onClick={() => setEstimateType('fixed')}
-                 className={`rounded-md px-8 py-3 font-semibold text-md transition-all duration-200 ${
+                 className={`whitespace-nowrap rounded-md px-2 md:px-8 py-3 font-semibold text-md transition-all duration-200 ${
                    estimateType === 'fixed' 
                      ? 'bg-[#3E78E3] text-white shadow-md' 
                      : 'bg-neutral-100 hover:shadow-md'
@@ -1129,7 +1130,7 @@ export default function RecruitUpload() {
                <button 
                  type="button"
                  onClick={() => setEstimateType('estimate')}
-                 className={`rounded-md px-8 py-3 font-semibold text-md transition-all duration-200 ${
+                 className={`whitespace-nowrap rounded-md px-2 md:px-8 py-3 font-semibold text-md transition-all duration-200 ${
                    estimateType === 'estimate' 
                      ? 'bg-[#3E78E3] text-white shadow-md' 
                      : 'bg-neutral-100 hover:shadow-md'
@@ -1141,7 +1142,7 @@ export default function RecruitUpload() {
         </div>
 
         <div>
-            <label className="block text-xl font-semibold text-black mb-2">견적 금액</label>
+            <label className="block text-md md:text-xl font-semibold text-black mb-2">견적 금액</label>
             <input
               type="number"
               name="estimatePayment"
@@ -1157,7 +1158,7 @@ export default function RecruitUpload() {
               disabled={estimateType === 'estimate'}
               min="0"
               step="1"
-              className={`w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
+              className={`w-64 md:w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:border-transparent ${
                 estimateType === 'estimate' ? 'bg-gray-100 cursor-not-allowed' : ''
               }`}
               placeholder={estimateType === 'estimate' ? '견적 금액을 제시 받습니다.' : '견적 금액을 입력하세요'}
@@ -1167,7 +1168,7 @@ export default function RecruitUpload() {
           
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <label className="text-xl font-semibold text-black">
+              <label className="text-md md:text-xl font-semibold text-black">
                 계약 방식
             </label>
           </div>
@@ -1189,11 +1190,16 @@ export default function RecruitUpload() {
         </div>
 
         <div>
-            <label className="block text-xl font-semibold text-black mb-2">
+            <label className="block text-md md:text-xl font-semibold text-black mb-2">
               공고에 맞는 카테고리 선택 <span className="text-red-500">*</span>
           </label>
-            <p className="flex items-center gap-2 mb-2 text-base">
-              <img src={infoIcon} alt="infoIcon" className="w-4 h-4" />
+            <p className="flex items-center gap-2 mb-2 text-base "  style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>
+              <img 
+                src={infoIcon} 
+                alt="infoIcon" 
+                className="w-4 h-4"
+               
+              />
               전공자들에게 AI 추천 방식 적용 및 공고 지원률 상승에 도움이 돼요!
             </p>
           <div className="grid grid-cols-3 gap-4 mb-4">
@@ -1222,7 +1228,7 @@ export default function RecruitUpload() {
         <button
             type="submit"
             disabled={isLoading}
-              className={`px-16 py-4 rounded-lg font-bold text-xl transition-all duration-200 hover:shadow-md ${
+              className={`px-8 md:px-16 py-4 rounded-lg font-bold text-xl transition-all duration-200 hover:shadow-md ${
               isLoading 
                 ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
                   : 'bg-[#3E78E3] text-white'
@@ -1234,7 +1240,7 @@ export default function RecruitUpload() {
             type="button"
             onClick={() => navigate('/recruit?category=1')}
             disabled={isLoading}
-              className={`px-8 py-4 bg-zinc-300 text-black/70 rounded-lg font-bold text-xl transition-all duration-200 hover:shadow-md ${
+              className={`px-8 md:px-16 py-4 bg-zinc-300 text-black/70 rounded-lg font-bold text-xl transition-all duration-200 hover:shadow-md ${
               isLoading 
                 ? 'bg-gray-100 cursor-not-allowed text-gray-400' 
                   : ''

@@ -25,7 +25,7 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }) => postLogin(email, password),
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       const result = response.data?.result;
 
       UserStore.getState().setUser({
@@ -144,10 +144,10 @@ export default function Login() {
         </div>
         {/* 모바일 버전 스프 설명 */}
         <div className="lg:hidden flex justify-center items-center mt-24 mb-8 ">
-          <h1 className="text-xl font-bold text-white">SouF</h1>
-          <span className="w-[2px] h-20 bg-white mx-4"></span>
+          <h1 className="text-xl font-bold text-blue-main">SouF</h1>
+          <span className="w-[2px] h-20 bg-blue-main mx-4"></span>
 
-          <p className="text-xl font-bold leading-relaxed text-white">
+          <p className="text-xl font-bold leading-relaxed text-blue-main">
             합리적인 비용으로
             <br />
             필요한 인재를 만나보세요!

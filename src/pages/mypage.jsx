@@ -204,12 +204,7 @@ export default function MyPage() {
         
         {/* PC 컨텐츠 영역 */}
         <div className="flex-1">
-          {/* {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium mb-4">프로필 수정</h3>}
-          {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium mb-4">개인정보 수정</h3>}
-          {activeSubmenu === 'studentApplications' && <h3 className="text-4xl font-medium mb-4">학생 지원 내역</h3>}
-          {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium mb-4">기업 지원 내역</h3>}
-          {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium mb-4">즐겨찾기</h3>}
-          {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium mb-4">내 피드</h3>} */}
+
           <div className="bg-white rounded-2xl shadow-md p-8">
             {renderContent()}
           </div>
@@ -217,16 +212,15 @@ export default function MyPage() {
       </div>
 
       {/* 모바일 컨텐츠 영역 */}
-      <div className="lg:hidden w-full px-4 pt-24">
+      <div className="md:hidden block w-full px-4 pt-24">
         <div className="max-w-4xl mx-auto">
-          {activeSubmenu === 'profileEdit' && <h3 className="text-4xl font-medium mb-4">프로필 수정</h3>}
-          {activeSubmenu === 'personalEdit' && <h3 className="text-4xl font-medium mb-4">개인정보 수정</h3>}
-          {activeSubmenu === 'studentApplications' && <h3 className="text-4xl font-medium mb-4">학생 지원 내역</h3>}
-          {activeSubmenu === 'companyApplications' && <h3 className="text-4xl font-medium mb-4">기업 지원 내역</h3>}
-          {activeSubmenu === 'favorites' && <h3 className="text-4xl font-medium mb-4">즐겨찾기</h3>}
-          {activeSubmenu === 'myFeed' && <h3 className="text-4xl font-medium mb-4">내 피드</h3>}
-          {activeSubmenu === 'inquiry' && <h3 className="text-4xl font-medium mb-4">문의 내역</h3>}
-          <div className="bg-white rounded-2xl shadow-md p-8">
+          {activeSubmenu === 'profileEdit' && <h3 className="text-2xl md:text-4xl font-medium mb-4">프로필 수정</h3>}
+          {activeSubmenu === 'studentApplications' && <h3 className="text-2xl md:text-4xl font-medium mb-4">학생 지원 내역</h3>}
+          {activeSubmenu === 'companyApplications' && <h3 className="text-2xl md:text-4xl font-medium mb-4">기업 지원 내역</h3>}
+          {activeSubmenu === 'favorites' && <h3 className="text-2xl md:text-4xl font-medium mb-4">즐겨찾기</h3>}
+          {activeSubmenu === 'myFeed' && <h3 className="text-2xl md:text-4xl font-medium mb-4">내 피드</h3>}
+          {activeSubmenu === 'inquiry' && <h3 className="text-2xl md:text-4xl font-medium mb-4">문의 내역</h3>}
+          <div className="bg-white rounded-2xl shadow-md p-2">
             {renderContent()}
           </div>
         </div>

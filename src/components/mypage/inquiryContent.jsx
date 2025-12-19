@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { getInquiryList, deleteInquiry, patchInquiry } from '../../api/inquiry';
+import { getInquiryList, deleteInquiry, patchInquiry, getInquiryFile } from '../../api/inquiry';
 import { UserStore } from '../../store/userStore';
 import Loading from '../loading';
 import EditIcon from '../../assets/images/editIco.svg';
@@ -11,9 +11,12 @@ import FilterDropdown from '../filterDropdown';
 export default function InquiryContent() {
     const { memberId } = UserStore();
     const queryClient = useQueryClient();
+    const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL || "";
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [expandedInquiry, setExpandedInquiry] = useState(null);
+    const [inquiryFiles, setInquiryFiles] = useState({});
+    const [loadingFiles, setLoadingFiles] = useState({});
     const [selectedInquiryId, setSelectedInquiryId] = useState(null);
     const [editFormData, setEditFormData] = useState({
         title: "",
@@ -51,26 +54,39 @@ export default function InquiryContent() {
         { value: "6", label: "기타" }
     ];
 
-    // inquiryType을 라벨로 변환
-    const getInquiryTypeLabel = (inquiryType) => {
-        const type = typeOptions.find(option => option.value === String(inquiryType));
-        return type ? type.label : "기타";
-    };
 
-    // 날짜 포맷팅 함수
     const formatDate = (dateString) => {
         if (!dateString) return "";
         const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        return `${year}.${month}.${day} ${hours}:${minutes}`;
+        if (Number.isNaN(date.getTime())) return dateString;
+        const yyyy = date.getFullYear();
+        const mm = String(date.getMonth() + 1).padStart(2, "0");
+        const dd = String(date.getDate()).padStart(2, "0");
+        const hh = String(date.getHours()).padStart(2, "0");
+        const min = String(date.getMinutes()).padStart(2, "0");
+        return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+    };
+
+    const fetchInquiryFiles = async (inquiryId) => {
+        setLoadingFiles((prev) => ({ ...prev, [inquiryId]: true }));
+        try {
+            const response = await getInquiryFile(inquiryId);
+            const list = response?.data?.result?.mediaResDtoList || response?.result?.mediaResDtoList || [];
+            setInquiryFiles((prev) => ({ ...prev, [inquiryId]: list }));
+        } catch (err) {
+            console.error('문의 파일 조회 실패:', err);
+        } finally {
+            setLoadingFiles((prev) => ({ ...prev, [inquiryId]: false }));
+        }
+
     };
 
     const toggleInquiry = (inquiryId) => {
-        setExpandedInquiry(expandedInquiry === inquiryId ? null : inquiryId);
+        const next = expandedInquiry === inquiryId ? null : inquiryId;
+        setExpandedInquiry(next);
+        if (next && !inquiryFiles[inquiryId]) {
+            fetchInquiryFiles(inquiryId);
+        }
     };
 
     const handleDeleteClick = (inquiryId) => {
@@ -79,7 +95,6 @@ export default function InquiryContent() {
     };
 
     const handleDeleteConfirm = async () => {
-        console.log('문의 삭제 시작:', selectedInquiryId);
         try {
             await deleteInquiry(selectedInquiryId);
             queryClient.invalidateQueries(['inquiryList', memberId]);
@@ -141,6 +156,32 @@ export default function InquiryContent() {
             alert("문의 수정 중 오류가 발생했습니다.");
         }
     };
+    const inquiryTypeLabel = [
+        {
+            value:1,
+            label: "피드"
+        },
+        {
+            value:2,
+            label: "외주"
+        },
+        {
+            value: 3,
+            label: "후기"
+        },
+        {
+            value: 4,
+            label: "채팅"
+        },
+        {
+            value: 5,
+            label: "계정/인증"
+        },
+        {
+            value: 6,
+            label: "기타"
+        }
+    ]
 
     const handleDeleteCancel = () => {
         setShowDeleteModal(false);
@@ -178,7 +219,7 @@ export default function InquiryContent() {
 
     return (
         <div>
-            <h1 className='text-2xl font-bold'>내 문의 내역</h1>
+            <h1 className='hidden md:block text-2xl font-bold'>내 문의 내역</h1>
             <div className='flex flex-col gap-4 mt-4'>
                 {inquiryList.map((inquiry) => (
                     <div key={inquiry.inquiryId} className='border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md'>
@@ -189,16 +230,18 @@ export default function InquiryContent() {
                        
                         <div className="flex flex-col gap-2 ">
                             <div className='flex gap-2'>
-                                <div className='bg-blue-200 text-gray-500 px-2 py-1 rounded-md'>
-                                    {getInquiryTypeLabel(inquiry.inquiryType)}
-                                </div>
-                                {inquiry.status === 'RESOLVED' ? (
-                                    <div className='bg-blue-main text-white px-2 py-1 rounded-md'>답변 완료</div>
-                                ) : inquiry.status === 'REJECTED' ? (
-                                    <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
-                                ) : (
-                                    <div className='bg-gray-400 text-white px-2 py-1 rounded-md'>미답변</div>
+                                <div className='bg-blue-200 text-gray-500 px-2 py-1 rounded-md'>{inquiryTypeLabel.find(type => type.value === inquiry.inquiryType)?.label}</div>
+                           
+                                {inquiry.status === 'PENDING' && (
+                                    <div className='bg-gray-300 text-white px-2 py-1 rounded-md'>답변 대기중</div>
                                 )}
+                                {inquiry.status === 'RESOLVED' && (
+                                    <div className='bg-green-300 text-gray-500 px-2 py-1 rounded-md'>답변 완료</div>
+                                )} 
+                                {inquiry.status === 'REJECTED' && (
+                                    <div className='bg-red-400 text-white px-2 py-1 rounded-md'>답변 거절</div>
+                                )}
+                               
                             </div>
                             <h2 className='text-lg font-medium'>{inquiry.title}</h2>
 
@@ -206,12 +249,14 @@ export default function InquiryContent() {
                         <div className='flex flex-col gap-2 justify-between'>
                             <p>{formatDate(inquiry.createdTime)}</p>
                             <div className='flex gap-2 items-center justify-end'>
+                                {inquiry.status === 'PENDING' && (
                                 <img src={EditIcon} alt="EditIcon" className='w-6 h-6 cursor-pointer grayscale opacity-50' 
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     handleEditClick(inquiry);
                                 }}
                                 />
+                                )}
                                 <img src={DeleteIcon} alt="DeleteIcon" className='w-6 h-6 cursor-pointer grayscale' 
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -225,11 +270,40 @@ export default function InquiryContent() {
                         
                         <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
                             expandedInquiry === inquiry.inquiryId 
-                                ? 'max-h-96 opacity-100' 
+                                ? ' opacity-100' 
                                 : 'max-h-0 opacity-0'
                         }`}>
                             <div className='px-4 pb-4'>
                                 <p className='text-gray-600 whitespace-pre-wrap'>{inquiry.content}</p>
+                                {loadingFiles[inquiry.inquiryId] && (
+                                    <p className="mt-3 text-sm text-gray-500">첨부 파일 불러오는 중...</p>
+                                )}
+                                {!loadingFiles[inquiry.inquiryId] &&
+                                    inquiryFiles[inquiry.inquiryId] &&
+                                    inquiryFiles[inquiry.inquiryId].length > 0 && (
+                                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {inquiryFiles[inquiry.inquiryId].map((media, idx) => {
+                                                const src = media.fileUrl?.startsWith('http')
+                                                    ? media.fileUrl
+                                                    : `${S3_BUCKET_URL}${media.fileUrl || ''}`;
+                                                return (
+                                                    <div key={idx} className="border rounded-md overflow-hidden bg-gray-50">
+                                                        <img
+                                                            src={src}
+                                                            alt={media.fileName || `attachment-${idx + 1}`}
+                                                            className="w-full h-48 object-cover"
+                                                            loading="lazy"
+                                                        />
+                                                        {media.fileName && (
+                                                            <p className="px-3 py-2 text-sm text-gray-600 truncate">
+                                                                {media.fileName}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                             </div>
                         </div>
                     </div>

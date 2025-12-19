@@ -4,9 +4,12 @@ import { useState, useEffect } from "react";
 import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import { Link } from "react-router-dom";
 import { UserStore } from "../store/userStore";
+import useUnreadStore from "../store/useUnreadStore";
 import SOUFLogo from "../assets/images/SouFLogo.svg";
 import backArrow from "../assets/images/backArrow.svg";
+import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
+import { getNotificationCount, getNotificationList, patchReadNotifications, patchReadNotificationContent, deleteNotifications, deleteNotification } from "../api/notification";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -19,17 +22,14 @@ export default function Header() {
   const [showDropdown, setShowDropdown] = useState(true);
   const [showAlertModal, setShowAlertModal] = useState(false);
   const [showFeedAlertModal, setShowFeedAlertModal] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null); // 개별 드롭다운 상태
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const { nickname, roleType, memberId } = UserStore();
-  //const username = UserStore((state) => state.username);
-  //const roleType = UserStore((state) => state.roleType);
-  //const memberId = UserStore((state) => state.memberId);
+  const { unreadNotificationCount, notifications, markAsRead, markAllAsRead, setNotifications, setUnreadNotificationCount } = useUnreadStore();
   const [menuAnimating, setMenuAnimating] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
-
-
-
+  const notificationRef = useRef(null);
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
@@ -49,6 +49,22 @@ export default function Header() {
       setUserName("");
     }
   }, [memberId, roleType, nickname]);
+
+  // 읽지 않은 알림 개수 조회
+  useEffect(() => {
+    if (memberId) {
+      const fetchNotificationCount = async () => {
+        try {
+          const response = await getNotificationCount();
+          const count = response?.result || 0;
+          setUnreadNotificationCount(count);
+        } catch (error) {
+          console.error('알림 개수 조회 실패:', error);
+        }
+      };
+      fetchNotificationCount();
+    }
+  }, [memberId, setUnreadNotificationCount]);
 
   useEffect(() => {
     // /recruit 경로 & 카테고리 쿼리 파라미터가 있는 경우만
@@ -73,12 +89,15 @@ export default function Header() {
       if (showUserMenu && !event.target.closest(".user-menu-container")) {
         setShowUserMenu(false);
       }
+      if (showNotificationDropdown && notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotificationDropdown(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showUserMenu]);
+  }, [showUserMenu, showNotificationDropdown]);
 
 useEffect(() => {
   function handleClickOutside(event) {
@@ -185,6 +204,91 @@ useEffect(() => {
     setShowUserMenu(!showUserMenu);
   };
 
+  const toggleNotificationDropdown = async () => {
+    if (!showNotificationDropdown && memberId) {
+      // 드롭다운을 열 때 알림 목록 조회
+      try {
+        const response = await getNotificationList(0, 20);
+        // 응답 구조에 따라 알림 목록 추출
+        const notificationList = response?.result?.content || response?.result || [];
+        setNotifications(notificationList);
+      } catch (error) {
+        console.error('알림 목록 조회 실패:', error);
+      }
+    }
+    setShowNotificationDropdown(!showNotificationDropdown);
+  };
+
+  const handleNotificationClick = async (notification) => {
+    // console.log(notification);
+    try {
+
+      // read 또는 isRead 필드 확인
+      const isUnread = notification.read === false || 
+                       notification.read === undefined;
+      
+      if (isUnread) {
+        await patchReadNotificationContent(notification.id);
+        const updatedNotifications = notifications.filter(n => n.id !== notification.id);
+        setNotifications(updatedNotifications);
+      }
+
+      // 알림 유형에 따라 이동 처리
+      if (notification.refType === 'RECRUIT' && notification.refId && notification.type === 'APPLICANT_CREATED') {
+        navigate(`/mypage?tab=studentApplications`);
+      } else if (notification.refType === 'INQUIRY' && notification.refId) {
+        navigate(`/mypage?tab=inquiry`);
+      } else if (notification.refType === 'APPLICATION' && notification.refId) {
+        if (roleType === 'STUDENT') {
+          navigate(`/mypage?tab=studentApplications`);
+        } else if (roleType === 'MEMBER') {
+          navigate(`/mypage?tab=companyApplications`);
+        } else {
+          navigate(`/mypage?tab=studentApplications`);
+        }
+      } else if (notification.refType === 'RECRUIT' && notification.type === 'RECRUIT_PUBLISHED') {
+        navigate(`/recruit`);
+      }
+
+      markAsRead(notification.id);
+      setShowNotificationDropdown(false);
+    } catch (error) {
+      console.error('알림 처리 에러:', error);
+    }
+  };
+
+  const handleMarkAllAsReadNotifications = async () => {
+    try {
+      await patchReadNotifications();
+      markAllAsRead();
+      setNotifications([]);
+    } catch (error) {
+      console.error('알림 전체 읽음 에러:', error);
+    }
+  };
+
+  const handleDeleteAllNotifications = async () => {
+    try {
+      await deleteNotifications();
+      markAllAsRead();
+      setNotifications([]);
+    } catch (error) {
+      console.error('알림 전체 삭제 에러:', error);
+    }
+  };
+
+  const handleDeleteNotification = async (e, notificationId) => {
+    e.stopPropagation(); // 알림 클릭 이벤트 전파 방지
+    try {
+      markAsRead(notificationId);
+      await deleteNotification(notificationId);
+      const updatedNotifications = notifications.filter(n => n.id !== notificationId);
+      setNotifications(updatedNotifications);
+    } catch (error) {
+      console.error('알림 삭제 에러:', error);
+    }
+  };
+
   const toggleMobileMenu = () => {
     setMenuAnimating(true);
     setShowMobileMenu((prev) => !prev);
@@ -260,8 +364,8 @@ const DesktopHeader = () => (
               onMouseEnter={() => handleDropdownEnter('recruit')}
               onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer">외주 의뢰하기<span className="text-[#FF8454] font-medium text-sm ml-2">★</span></span>
-              {/* 외주 의뢰하기 드롭다운 */}
+              <span className="cursor-pointer ml-4">외주 의뢰<span className="text-[#FF8454] font-medium text-sm ml-6">★</span></span>
+              {/* 외주 의뢰 드롭다운 */}
               {activeDropdown === 'recruit' && (
                  <div 
                    className="absolute top-[3rem] left-[-1.1rem] mt-2 pt-4 bg-white shadow-lg border border-gray-200 py-2 z-[-10] animate-slideDown"
@@ -275,6 +379,7 @@ const DesktopHeader = () => (
                          navigate("/recruitUpload", { state: { estimateType: 'estimate' } });
                        }
                      }} className="w-full flex justify-center items-center px-4 py-2 text-sm text-gray-600 hover:text-orange-point transition-all duration-200 ">무료 외주 견적 받기</button></li>
+                      
                    </ul>
                  </div>
               )}
@@ -351,13 +456,93 @@ const DesktopHeader = () => (
                  </div>
               )} 
                </li>
-
-            
-
+              
           </ul>
         </div>
 
         <div className="flex items-center gap-x-4">
+          {memberId && (
+            <div className="relative" ref={notificationRef}>
+              <button 
+                className="cursor-pointer relative flex items-center justify-center" 
+                onClick={toggleNotificationDropdown}
+              >
+                <img src={notiIcon} alt="noti" className="w-6 h-6" />
+                {unreadNotificationCount > 0 && (
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                )}
+              </button>
+              {/* 알림 드롭다운 */}
+              {showNotificationDropdown && (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-[999999] max-h-96 overflow-y-auto">
+                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 className="font-bold text-lg">알림</h3>
+                    <div className="flex items-center gap-2">
+                      <button className="bg-gray-50 p-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-all duration-200" onClick={() => handleMarkAllAsReadNotifications()}>전체 읽음</button>
+                      <button className="bg-gray-50 p-2 rounded-md text-sm text-gray-600 hover:bg-gray-100 transition-all duration-200" onClick={() => handleDeleteAllNotifications()}>전체 삭제</button>
+                    </div>
+                  </div>
+                 
+                  {notifications && Array.isArray(notifications) && notifications.length > 0 ? (
+                    <div className="divide-y divide-gray-200">
+                      {notifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          className={`group relative w-full p-4 hover:bg-gray-50 transition-colors ${
+                            (notification.read === false || 
+                             (notification.read === undefined)) ? 'bg-blue-50' : ''
+                          }`}
+                        >
+                          <button
+                            onClick={() => handleNotificationClick(notification)}
+                            className="w-full text-left"
+                          >
+                            <div className="flex items-start gap-3">
+                              {(notification.read === false || notification.isRead === false || 
+                                (notification.read === undefined)) && (
+                                <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm text-gray-900 mb-1">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-gray-600 line-clamp-2">
+                                  {notification.body}
+                                </p>
+                              </div>
+                            </div>
+                          </button>
+                          <button
+                            onClick={(e) => handleDeleteNotification(e, notification.id)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-6 h-6 flex items-center justify-center"
+                            title="알림 삭제"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center text-gray-500">
+                      알림이 없습니다.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           {memberId ? (
             // 로그인 상태
             <div className="flex items-center gap-x-4">
@@ -485,14 +670,15 @@ const DesktopHeader = () => (
 
 
   <div className="px-4 py-4">
-    <h3 className="text-md font-bold text-gray-700 mb-3">카테고리</h3>
     <ul className="space-y-2">
       <li>
         <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/recruitUpload")}>외주 의뢰하기</button>
         <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/recruit")}>외주 찾기</button>
-        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/feed")}>대학생 피드보기</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/feed")}>대학생 리스트</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/studentFeedList")}>카테고리별 피드</button>
         {/* <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/review")}>외주 후기</button> */}
-        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigation("/guide")}>이용가이드</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigationGuideCategory('faq')}>FAQ</button>
+        <button className="block w-full px-3 py-2 text-left text-gray-700" onClick={() => handleNavigationGuideCategory('inquiry')}>문의 센터</button>
       </li>
     </ul>
     <h3 className="text-md font-bold text-gray-700 my-3">로그인 메뉴</h3>

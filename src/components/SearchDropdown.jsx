@@ -32,7 +32,7 @@ export default function SearchDropdown({ onSelect }) {
         <div className="relative search-dropdown">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center justify-between w-32 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="flex items-center justify-between w-24 md:w-32 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             >
                 <span className="text-sm font-medium text-gray-700">{selectedOption}</span>
                 <svg
@@ -45,7 +45,7 @@ export default function SearchDropdown({ onSelect }) {
                 </svg>
             </button>
             {isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 flex flex-col w-32">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-50 flex flex-col w-24 md:w-32">
                     {options.map((option) => (
                         <button
                             key={option.value}

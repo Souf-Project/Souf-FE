@@ -27,6 +27,9 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import mobileGif1 from "../assets/images/mobileGif1.gif";
+import mobileGif2 from "../assets/images/mobileGif2.gif";
+
 import cateIcon11 from "../assets/images/categoryIcons/cateIcon11.png";
 import cateIcon12 from "../assets/images/categoryIcons/cateIcon12.png";
 import cateIcon13 from "../assets/images/categoryIcons/cateIcon13.png";
@@ -306,6 +309,7 @@ export default function Home() {
     }
   };
 
+
   const showLoginModalHandler = () => {
     setShowLoginModal(true);
   };
@@ -456,9 +460,9 @@ export default function Home() {
         /> */}
 
      {/* 카테고리 섹션 */}
-     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0 ">
-       <div className="flex flex-col justify-center gap-2 items-center w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
-       <span className="text-black text-xl lg:text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md px-0 md:px-4 lg:px-0 max-w-screen">
+       <div className="flex flex-col justify-center gap-2 items-center w-screen md:px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
+       <span className="text-black text-xl lg:text-2xl font-bold mr-auto ml-4 md:ml-0">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="flex items-center justify-between w-full">
         {/* 좌측 화살표 */}
         <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
@@ -475,25 +479,25 @@ export default function Home() {
              </svg>
            </div>
 
-       <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
-         
-         <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
+      <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
+        
+        <div className="grid grid-rows-2 md:flex md:flex-nowrap gap-1 items-start md:items-center" style={{ width: 'max-content', gridAutoFlow: 'column', gridAutoColumns: 'max-content' }}>
           
            
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
              <div 
                key={category.second_category_id} 
-               className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-32 hover:scale-105 transition-transform duration-200"
+               className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 md:w-28 w-20 md:h-32 h-24 hover:scale-105 transition-transform duration-200"
                onClick={() => handleCategoryClick(category)}
              >
-               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2 hover:shadow-md transition-shadow duration-200">
+               <div className="md:w-16 md:h-16 w-10 h-10 bg-white md:rounded-2xl rounded-lg shadow-sm flex items-center justify-center p-2 hover:shadow-md transition-shadow duration-200">
                  <img 
                    src={getCategoryIcon(category.second_category_id)} 
                    alt={category.name}
                    className="w-full h-full object-contain"
                  />
               </div>
-               <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
+               <div className="text-zinc-600 text-xs md:text-sm lg:text-md font-semibold text-center max-w-16 md:max-w-none" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
               </div>
            ))}
               </div>
@@ -521,46 +525,58 @@ export default function Home() {
 {/* 실시간 대학생 피드 섹션 */}
   <div className="relative w-full lg:w-2/3">
   <div className="flex items-center mb-8 gap-4">
-  <h2 className="text-2xl font-semibold">
+  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
         실시간 대학생 피드
           </h2>
-    <span className="font-NanumGothicCoding text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
+    <span className="font-NanumGothicCoding text-sm sm:text-base lg:text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
   </div>
        
           <FeedGrid />
         </div>
     
 {/* 진행 중인 외주 의뢰 섹션 */}
-      <div className="relative w-full lg:w-1/3 lg:ml-4 mt-10 lg:mt-0">
-      <div className="flex items-center mb-8 gap-4">
-        <h2 className="text-2xl font-semibold">
-        진행 중인 외주 의뢰
-          </h2>
-      <span className="font-NanumGothicCoding text-lg font-bold text-white bg-orange-300 py-0.5 px-3 rounded-lg">BEST</span>
-      </div>
-          <BestRecruit />
-          <div className="flex justify-center items-center gap-4 mt-4">
-            <button className="bg-[#2582E0] text-white text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
-            onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
-            <button className="bg-zinc-300 text-zinc-700 text-sm font-bold px-4 py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap"
-            onClick={() => navigate("/recruit")}>더 많은 외주 찾아보기</button>
-  </div>
-      </div>
-      </div>
+      {/* 진행 중인 외주 의뢰 섹션 */}
+          <div className="relative w-full lg:w-1/3 lg:ml-4">
+            <div className="flex items-center mb-6 sm:mb-8 gap-3 sm:gap-4 flex-wrap">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold">
+                진행 중인 외주 의뢰
+              </h2>
+              <span className="font-NanumGothicCoding text-sm sm:text-base lg:text-lg font-bold text-white bg-orange-300 py-0.5 px-2 sm:px-3 rounded-lg">
+                BEST
+              </span>
+            </div>
+            <BestRecruit />
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-4">
+              <button 
+                className="bg-[#2582E0] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 sm:py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap transition-shadow"
+                onClick={handleRecruitUploadClick}
+              >
+                무료 외주 등록하기
+              </button>
+              <button 
+                className="bg-zinc-300 text-zinc-700 text-xs sm:text-sm font-bold px-3 sm:px-4 py-2 sm:py-3 rounded-xl w-full hover:shadow-md whitespace-nowrap transition-shadow"
+                onClick={() => navigate("/recruit")}
+              >
+                더 많은 외주 찾아보기
+              </button>
+            </div>
+          </div>
+        </div>
+
     
 {/* 스프 소개란 */}
-<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF]">
-<div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
+<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF] mx-auto">
+<div className=" md:max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
   <div className="flex flex-col items-start">
-    <h2 className="my-8 text-white text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
+    <h2 className="my-8 text-white text-2xl md:text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
     왜 대학생 인재를 발굴할까요?</h2>
-    <p className="my-2 text-stone-50 text-2xl font-bold">기업 외주비용 “너무 비싸요..”</p>
-    <p className="my-2 text-stone-50 text-xl font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
-    <p className="text-stone-50 text-xl font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
+    <p className="my-2 text-stone-50 text-md md:text-lg font-bold">기업 외주비용 “너무 비싸요..”</p>
+    <p className="my-2 text-stone-50 text-md md:text-lg font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
+    <p className="text-stone-50 text-md md:text-lg font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
   </div>
   
-<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="w-[24rem] ml-12"/>
+<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="md:w-[24rem] w-36 md:ml-12 mt-4 md:mt-0"/>
 </div>
 
 </div>
@@ -622,155 +638,246 @@ export default function Home() {
       {/* <div className="flex mt-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
         <EstimateBanner color="black" />
       </div> */}
+   {/* 믿을 수 있는 전문가 매칭 섹션 */}
+   <div className="flex flex-col gap-6 sm:gap-8 justify-between mt-12 sm:mt-20 lg:mt-32 max-w-[90%] sm:max-w-[60rem] mx-auto px-4 sm:px-0">
+          <div className="flex flex-col lg:flex-row w-full justify-between items-center lg:items-end gap-6 lg:gap-8">
+            <div className="text-center lg:text-left w-full lg:w-auto">
+              <p className="text-sm sm:text-base lg:text-lg font-bold">믿을 수 있는 전문가 매칭</p>
+              <p className="text-xl sm:text-2xl lg:text-4xl font-bold mt-2 sm:mt-3 lg:mt-4">포트폴리오를 기반한</p>
+              <p className="text-xl sm:text-2xl lg:text-4xl font-bold">검증된 학생들로 이루어진 전문가</p>
+              <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA] mt-2">
+                대학생, 석사, 박사, 동아리, 연구실 등 인증된
+              </p>
+              <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA]">전문가를 만나보세요.</p>
+            </div>
+            <img src={mobileGif1} alt="믿을 수 있는 전문가 매칭" className="block md:hidden w-full h-40 sm:h-48 lg:h-52 object-contain mt-4" />
+            <div className="hidden md:block h-40 sm:h-48 lg:h-52 w-full lg:max-w-[28rem]">
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={10}
+                slidesPerView={1.5}
+                centeredSlides={true}
+                loop={true}
+                loopAdditionalSlides={2}
+                initialSlide={3}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                  reverseDirection: false,
+                }}
+                speed={500}
+                navigation={false}
+                pagination={{
+                  clickable: true,
+                }}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 10,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 0,
+                  },
+                }}
+                className="carousel-swiper"
+              >
+                {extendedCarouselData.map((item, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="carousel-box w-32 sm:w-36 lg:w-40 h-36 sm:h-44 lg:h-48 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-4 sm:p-5 lg:p-6 flex flex-col justify-center items-center text-center transition-all duration-300 hover:shadow-xl mx-auto">
+                      <h3 className="text-xs sm:text-sm lg:text-md font-semibold mb-1 sm:mb-2">{item.title}</h3>
+                      <img 
+                        src={item.icon} 
+                        alt={item.title} 
+                        className="w-10 sm:w-14 lg:w-16 h-10 sm:h-14 lg:h-16 object-contain my-1 sm:my-2" 
+                      />
+                      <p className="text-[0.45rem] sm:text-[0.5rem] lg:text-[0.56rem] text-gray-600">
+                        {item.description}
+                      </p>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </div>
+        </div>
 
-      <div className="flex flex-col gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
-       <div className="flex w-full justify-between items-end">
-        <div>
-          <p className="text-lg font-bold">믿을 수 있는 전문가 매칭</p>
-          <p className="text-4xl font-bold mt-4">포트폴리오를 기반한</p>
-          <p className="text-4xl font-bold">검증된 학생들로 이루어진 전문가</p>
-          <p className="text-lg font-bold text-[#7393BA] mt-2">대학생, 석사, 박사, 동아리, 연구실 등 인증된</p>
-          <p className="text-lg font-bold text-[#7393BA]">전문가를 만나보세요.</p>
+        {/* 안전하고 빠른 금액 중개 섹션 */}
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 justify-between mt-12 sm:mt-20 sm:w-[60%] lg:mt-32 max-w-[90%] sm:max-w-[60rem] mx-auto px-4 sm:px-0">
+          
+          <div className="hidden sm:block w-full lg:w-[30rem] h-48 sm:h-56 lg:h-60 order-2 lg:order-1">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              direction="vertical"
+              spaceBetween={0}
+              slidesPerView={3}
+              centeredSlides={true}
+              loop={true}
+              loopAdditionalSlides={2}
+              initialSlide={3}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+                reverseDirection: false,
+              }}
+              speed={500}
+              navigation={false}
+              pagination={{
+                clickable: true,
+              }}
+              className="vertical-swiper"
+            >
+              {extendedVerticalData.map((item, index) => (
+                <SwiperSlide key={index}>
+                  <div className="vertical-box w-full h-24 lg:h-32 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-2 flex pl-3 sm:pl-4 justify-start items-center text-stone-800 transition-all duration-300 hover:shadow-xl">
+                    <img 
+                      src={spoonMark} 
+                      alt="spoonMark" 
+                      className="w-4 sm:w-5 lg:w-6 h-4 sm:h-5 lg:h-6 object-contain mr-2" 
+                    />
+                    <h3 className="text-xs sm:text-sm font-bold text-stone-800">
+                      {item.title}
+                    </h3>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+          
+          <div className="text-center lg:text-left order-1 lg:order-2"> 
+            <p className="text-sm sm:text-base lg:text-lg font-bold">안전하고 빠른 금액 중개</p>
+            <p className="text-xl sm:text-2xl lg:text-4xl font-bold mt-2 sm:mt-3 lg:mt-4">국내 최초 외주 계약서 적용,</p>
+            <p className="text-xl sm:text-2xl lg:text-4xl font-bold">금액 제시 및 추천 받기!</p>
+            <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA] mt-2">
+              금액을 정해놓지 않으셨다면, 금액도 추천받을 수
+            </p>
+            <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA]">
+              있습니다. 지금 당장 공고를 등록해보세요!
+            </p>
+          </div>
         </div>
-        <div className="h-52 max-w-[30rem]">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={0}
-            slidesPerView={3}
-            centeredSlides={true}
-            loop={true}
-            loopAdditionalSlides={2}
-            loopFillGroupWithBlank={true}
-            initialSlide={3}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-              reverseDirection: false,
-            }}
-            speed={500}
-            navigation={false}
-            pagination={{
-              clickable: true,
-            }}
-            breakpoints={{
-              320: {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                centeredSlides: true,
-                loop: true,
-                loopAdditionalSlides: 1,
-                initialSlide: 3,
-              },
-              768: {
-                slidesPerView: 3,
-                spaceBetween: 0,
-                centeredSlides: true,
-                loop: true,
-                loopAdditionalSlides: 2,
-                initialSlide: 3,
-              },
-            }}
-            className="carousel-swiper"
-          >
-            {extendedCarouselData.map((item, index) => (
-              <SwiperSlide key={index}>
-                <div className="carousel-box w-40 h-48 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-6 flex flex-col justify-center items-center text-center transition-all duration-300 hover:shadow-xl mx-auto">
-                  <h3 className="text-md font-semibold ">{item.title}</h3>
-                  <img src={item.icon} alt={item.title} className="w-16 h-16 object-contain mb-2" />
-                  <p className="text-[0.56rem] text-gray-600">{item.description}</p>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <img src={mobileGif2} alt="안전하고 빠른 금액 중개" className="block sm:hidden w-full h-40 sm:h-48 lg:h-52 object-contain mt-4" />
+
+        {/* 국내 최초 대학생 외주 매칭 플랫폼 섹션 */}
+        <div className="flex flex-col gap-6 sm:gap-8 justify-between max-w-[90%] sm:max-w-[60rem] mx-auto mt-12 sm:mt-16 lg:mt-24 px-4 sm:px-0">
+          <div className="flex flex-col lg:flex-row w-full justify-between items-center gap-6 lg:gap-8">
+            <div className="text-center lg:text-left w-full lg:w-auto">
+              <p className="text-sm sm:text-base lg:text-lg font-bold">국내 최초 대학생 외주 매칭 플랫폼</p>
+              <p className="text-xl sm:text-2xl lg:text-4xl font-bold mt-2 sm:mt-3 lg:mt-4">합리적이고, 퀄리티 높은</p>
+              <p className="text-xl sm:text-2xl lg:text-4xl font-bold">작업이 필요하시다면?</p>
+              <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA] mt-2">더욱 자세한 이용가이드는</p>
+              <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA]">
+                스프 플랫폼 가이드라인을 확인해보세요!
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center justify-center">
+              <img 
+                src={part2} 
+                alt="국내 최초 대학생 외주 매칭 플랫폼" 
+                className="w-40 sm:w-48 lg:w-64 h-40 sm:h-48 lg:h-64 object-contain" 
+              />
+              <button 
+                className="text-[#7393BA] text-xs sm:text-sm mt-4 sm:mt-6 lg:mt-8 hover:underline transition-all"
+                onClick={() => navigate("/guide")}
+              >
+                가이드라인 보러가기!
+              </button>
+            </div>
+          </div>
         </div>
-       </div>
+
+        {/* 무료 외주 등록 배너 */}
+        <div className="flex justify-center my-12 sm:my-20 lg:my-32 w-full px-4 sm:px-8 lg:px-0 max-w-[90%] sm:max-w-[60rem] mx-auto">
+          <EstimateBanner color="blue" />
+        </div>
+
+        {/* Alert Modal */}
+        {showAlertModal && (
+          <AlertModal
+            type="simple"
+            title="로그인 후 이용해주세요."
+            description="외주 등록은 일반 회원만 이용할 수 있습니다."
+            TrueBtnText="로그인하러 가기"
+            FalseBtnText="취소"
+            onClickTrue={() => {
+              setShowAlertModal(false);
+              navigate("/login");
+            }}
+            onClickFalse={() => setShowAlertModal(false)}
+          />
+        )}
       </div>
 
-       <div className="flex gap-8 justify-between mt-32 max-w-[60rem] mx-auto">
-         <div className="w-[30rem] h-60">
-           <Swiper
-             modules={[Navigation, Pagination, Autoplay]}
-             direction="vertical"
-             spaceBetween={0}
-             slidesPerView={3}
-             centeredSlides={true}
-             loop={true}
-             loopAdditionalSlides={2}
-             loopFillGroupWithBlank={true}
-             initialSlide={3}
-             autoplay={{
-               delay: 3000,
-               disableOnInteraction: false,
-               pauseOnMouseEnter: true,
-               reverseDirection: false,
-             }}
-             speed={500}
-             navigation={false}
-             pagination={{
-               clickable: true,
-             }}
-             className="vertical-swiper"
-           >
-             {extendedVerticalData.map((item, index) => (
-               <SwiperSlide key={index}>
-                 <div className="vertical-box w-full h-32 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-2 flex pl-4 justify-start items-center text-stone-800 transition-all duration-300 hover:shadow-xl">
-                <img src={spoonMark} alt="spoonMark" className="w-6 h-6 object-contain mr-2" />
-                   <h3 className="text-xs font-bold text-stone-800 mb-1">{item.title}</h3>
-                 
-                 </div>
-               </SwiperSlide>
-             ))}
-           </Swiper>
-         </div>
-         <div> 
-           <p className="text-lg font-bold">안전하고 빠른 금액 중개</p>
-           <p className="text-4xl font-bold mt-4">국내 최초 외주 계약서 적용,</p>
-           <p className="text-4xl font-bold">금액 제시 및 추천 받기!</p>
-           <p className="text-lg font-bold text-[#7393BA] mt-2">금액을 정해놓지 않으셨다면, 금액도 추천받을 수</p>
-           <p className="text-lg font-bold text-[#7393BA]">있습니다. 지금 당장 공고를 등록해보세요!</p></div>
+      <style>{`
+        @keyframes bounceLeft {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(-5px); }
+        }
+        
+        @keyframes bounceRight {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(5px); }
+        }
+        
+        @keyframes slide-up {
+          from { transform: translateY(0); opacity: 1; }
+          to { transform: translateY(-20px); opacity: 0; }
+        }
+        
+        @keyframes slide-down {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .animate-slide-up {
+          animation: slide-up 0.7s ease-in-out;
+        }
+        
+        .animate-slide-down {
+          animation: slide-down 0.7s ease-in-out;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
 
-       </div>
+        .swiper-pagination-bullet {
+          background: #2582E0;
+        }
 
-       <div className="flex flex-col gap-8 justify-between max-w-[60rem] mx-auto mt-24">
-       <div className="flex w-full justify-between items-center">
-        <div>
-          <p className="text-lg font-bold">국내 최초 대학생 외주 매칭 플랫폼</p>
-          <p className="text-4xl font-bold mt-4">합리적이고, 퀄리티 높은</p>
-          <p className="text-4xl font-bold">작업이 필요하시다면?</p>
-          <p className="text-lg font-bold text-[#7393BA] mt-2">더욱 자세한 이용가이드는</p>
-          <p className="text-lg font-bold text-[#7393BA]">스프 플랫폼 가이드라인을 확인해보세요!</p>
-        </div>
-        <div className="flex flex-col items-center justify-center">
-        <img src={part2} alt="국내 최초 대학생 외주 매칭 플랫폼" className="w-64 h-64 object-contain" />
-        <button className="text-[#7393BA] text-sm mt-8" onClick={() => navigate("/guide")}>가이드라인 보러가기!</button>
-        </div>
-       
-        </div>
-        </div>
+        .swiper-pagination-bullet-active {
+          background: #1E77D1;
+        }
 
-      <div className="flex my-32  w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
-        <EstimateBanner color="blue" />
-      </div>
+        /* 모바일에서 스와이퍼 슬라이드 중앙 정렬 */
+        @media (max-width: 640px) {
+          .carousel-swiper .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
 
-      {/* Alert Modal */}
-      {showAlertModal && (
-        <AlertModal
-          type="simple"
-          title="로그인 후 이용해주세요."
-          description="외주 등록은 일반 회원만 이용할 수 있습니다."
-          TrueBtnText="로그인하러 가기"
-          FalseBtnText="취소"
-          onClickTrue={() => {
-            setShowAlertModal(false);
-            navigate("/login");
-          }}
-          onClickFalse={() => setShowAlertModal(false)}
-        />
-      )}
-
-    
-    </div>
+        /* 터치 디바이스에서 호버 효과 비활성화 */
+        @media (hover: none) {
+          .hover\\:scale-105:hover {
+            transform: none;
+          }
+          .hover\\:shadow-md:hover,
+          .hover\\:shadow-lg:hover,
+          .hover\\:shadow-xl:hover {
+            box-shadow: inherit;
+          }
+        }
+      `}</style>
     </>
   );
 }
