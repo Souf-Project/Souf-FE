@@ -339,8 +339,8 @@ export default function PostUpload() {
 
   return (
 
-    <div className="lg:max-w-[60rem] mx-auto my-10">
-      <div className="lg:w-[60rem] border-2 flex flex-col justify-center items-left p-10 gap-4">
+    <div className="w-full lg:max-w-5xl mx-auto my-10 ">
+      <div className="w-full border-2 mx-4 md:mx-0 flex flex-col justify-center items-left p-10 gap-4">
 
         <div className="text-center font-bold text-3xl">게시물 작성</div>
         <PostInput

@@ -460,9 +460,9 @@ export default function Home() {
         /> */}
 
      {/* 카테고리 섹션 */}
-     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md md:px-4 lg:px-0 ">
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md px-0 md:px-4 lg:px-0 max-w-screen">
        <div className="flex flex-col justify-center gap-2 items-center w-screen md:px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
-       <span className="text-black text-xl lg:text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+       <span className="text-black text-xl lg:text-2xl font-bold mr-auto ml-4 md:ml-0">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="flex items-center justify-between w-full">
         {/* 좌측 화살표 */}
         <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
@@ -565,8 +565,8 @@ export default function Home() {
 
     
 {/* 스프 소개란 */}
-<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF]">
-<div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
+<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF] mx-auto">
+<div className=" md:max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
   <div className="flex flex-col items-start">
     <h2 className="my-8 text-white text-2xl md:text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
@@ -650,8 +650,8 @@ export default function Home() {
               </p>
               <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA]">전문가를 만나보세요.</p>
             </div>
-            <img src={mobileGif1} alt="믿을 수 있는 전문가 매칭" className="block sm:hidden w-full h-40 sm:h-48 lg:h-52 object-contain mt-4" />
-            <div className="hidden sm:block h-40 sm:h-48 lg:h-52 w-full lg:max-w-[30rem]">
+            <img src={mobileGif1} alt="믿을 수 있는 전문가 매칭" className="block md:hidden w-full h-40 sm:h-48 lg:h-52 object-contain mt-4" />
+            <div className="hidden md:block h-40 sm:h-48 lg:h-52 w-full lg:max-w-[28rem]">
               <Swiper
                 modules={[Navigation, Pagination, Autoplay]}
                 spaceBetween={10}

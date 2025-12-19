@@ -48,7 +48,7 @@ export default function FeedGrid() {
         {feedData.map((feed) => (
           <div
             key={feed.feedId}
-            className="w-40 lg:w-52 cursor-pointer"
+            className="w-40 lg:w-52 cursor-pointer mx-auto"
             onClick={() => handleClick(feed.feedId, feed.memberId)}
           >
             <div className="w-28 md:w-40 lg:w-52 bg-white">
