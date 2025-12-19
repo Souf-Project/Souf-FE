@@ -79,7 +79,7 @@ export default function StudentInfoBlock({ studentInfo, type }) {
                 e.target.src = "/src/assets/images/BasicProfileImg1.png";
               }}
             />
-            <span className="text-sm text-blue-main mr-2">스프온도: {user?.temperature || 0}°C</span>
+            <span className="text-sm text-blue-main mr-2">스프온도: {user?.temperature || 36.5}°C</span>
           </div>
 
           {/* 정보 */}

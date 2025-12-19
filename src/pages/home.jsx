@@ -27,6 +27,9 @@ import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import mobileGif1 from "../assets/images/mobileGif1.gif";
+import mobileGif2 from "../assets/images/mobileGif2.gif";
+
 import cateIcon11 from "../assets/images/categoryIcons/cateIcon11.png";
 import cateIcon12 from "../assets/images/categoryIcons/cateIcon12.png";
 import cateIcon13 from "../assets/images/categoryIcons/cateIcon13.png";
@@ -457,9 +460,9 @@ export default function Home() {
         /> */}
 
      {/* 카테고리 섹션 */}
-     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-8 lg:h-68 shadow-md px-4 lg:px-0 ">
-       <div className="flex flex-col justify-center gap-2 items-center w-screen px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
-       <span className="text-black text-xl lg:text-2xl font-bold mr-auto">어떤 아이디어/프로젝트가 필요하세요?</span>
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md px-0 md:px-4 lg:px-0 max-w-screen">
+       <div className="flex flex-col justify-center gap-2 items-center w-screen md:px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
+       <span className="text-black text-xl lg:text-2xl font-bold mr-auto ml-4 md:ml-0">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="flex items-center justify-between w-full">
         {/* 좌측 화살표 */}
         <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
@@ -476,25 +479,25 @@ export default function Home() {
              </svg>
            </div>
 
-       <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
-         
-         <div className="flex gap-1 items-center" style={{ width: 'max-content' }}>
+      <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
+        
+        <div className="grid grid-rows-2 md:flex md:flex-nowrap gap-1 items-start md:items-center" style={{ width: 'max-content', gridAutoFlow: 'column', gridAutoColumns: 'max-content' }}>
           
            
            {Array.isArray(categoryItems) && categoryItems.map((category) => (
              <div 
                key={category.second_category_id} 
-               className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 w-28 h-32 hover:scale-105 transition-transform duration-200"
+               className="flex flex-col justify-start gap-2 items-center cursor-pointer flex-shrink-0 md:w-28 w-20 md:h-32 h-24 hover:scale-105 transition-transform duration-200"
                onClick={() => handleCategoryClick(category)}
              >
-               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center p-2 hover:shadow-md transition-shadow duration-200">
+               <div className="md:w-16 md:h-16 w-10 h-10 bg-white md:rounded-2xl rounded-lg shadow-sm flex items-center justify-center p-2 hover:shadow-md transition-shadow duration-200">
                  <img 
                    src={getCategoryIcon(category.second_category_id)} 
                    alt={category.name}
                    className="w-full h-full object-contain"
                  />
               </div>
-               <div className="text-zinc-600 text-sm lg:text-md font-semibold text-center" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
+               <div className="text-zinc-600 text-xs md:text-sm lg:text-md font-semibold text-center max-w-16 md:max-w-none" style={{ wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.3' }}>{category.name}</div>
               </div>
            ))}
               </div>
@@ -522,10 +525,10 @@ export default function Home() {
 {/* 실시간 대학생 피드 섹션 */}
   <div className="relative w-full lg:w-2/3">
   <div className="flex items-center mb-8 gap-4">
-  <h2 className="text-2xl font-semibold">
+  <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
         실시간 대학생 피드
           </h2>
-    <span className="font-NanumGothicCoding text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
+    <span className="font-NanumGothicCoding text-sm sm:text-base lg:text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
   </div>
        
           <FeedGrid />
@@ -562,18 +565,18 @@ export default function Home() {
 
     
 {/* 스프 소개란 */}
-<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF]">
-<div className="max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
+<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF] mx-auto">
+<div className=" md:max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
   <div className="flex flex-col items-start">
-    <h2 className="my-8 text-white text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
+    <h2 className="my-8 text-white text-2xl md:text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">
       왜 스프일까요?<br/>
     왜 대학생 인재를 발굴할까요?</h2>
-    <p className="my-2 text-stone-50 text-2xl font-bold">기업 외주비용 “너무 비싸요..”</p>
-    <p className="my-2 text-stone-50 text-xl font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
-    <p className="text-stone-50 text-xl font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
+    <p className="my-2 text-stone-50 text-md md:text-lg font-bold">기업 외주비용 “너무 비싸요..”</p>
+    <p className="my-2 text-stone-50 text-md md:text-lg font-bold">“트렌디하고, 캐주얼한 아이디어를 모아보고 싶어요!”</p>
+    <p className="text-stone-50 text-md md:text-lg font-bold">“팝업스토어 조형물.. 교수님 커미션은 그만!!”</p>
   </div>
   
-<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="w-[24rem] ml-12"/>
+<img src={loginImg} alt="왜 대학생 인재를 발굴할까요?" className="md:w-[24rem] w-36 md:ml-12 mt-4 md:mt-0"/>
 </div>
 
 </div>
@@ -647,8 +650,8 @@ export default function Home() {
               </p>
               <p className="text-sm sm:text-base lg:text-lg font-bold text-[#7393BA]">전문가를 만나보세요.</p>
             </div>
-            
-            <div className="h-40 sm:h-48 lg:h-52 w-full lg:max-w-[30rem]">
+            <img src={mobileGif1} alt="믿을 수 있는 전문가 매칭" className="block md:hidden w-full h-40 sm:h-48 lg:h-52 object-contain mt-4" />
+            <div className="hidden md:block h-40 sm:h-48 lg:h-52 w-full lg:max-w-[28rem]">
               <Swiper
                 modules={[Navigation, Pagination, Autoplay]}
                 spaceBetween={10}
@@ -702,7 +705,8 @@ export default function Home() {
 
         {/* 안전하고 빠른 금액 중개 섹션 */}
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 justify-between mt-12 sm:mt-20 sm:w-[60%] lg:mt-32 max-w-[90%] sm:max-w-[60rem] mx-auto px-4 sm:px-0">
-          <div className="w-full lg:w-[30rem] h-48 sm:h-56 lg:h-60 order-2 lg:order-1">
+          
+          <div className="hidden sm:block w-full lg:w-[30rem] h-48 sm:h-56 lg:h-60 order-2 lg:order-1">
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
               direction="vertical"
@@ -727,7 +731,7 @@ export default function Home() {
             >
               {extendedVerticalData.map((item, index) => (
                 <SwiperSlide key={index}>
-                  <div className="vertical-box w-full h-20 sm:h-24 lg:h-32 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-2 flex pl-3 sm:pl-4 justify-start items-center text-stone-800 transition-all duration-300 hover:shadow-xl">
+                  <div className="vertical-box w-full h-24 lg:h-32 bg-white rounded-lg shadow-lg border-2 border-gray-200 p-2 flex pl-3 sm:pl-4 justify-start items-center text-stone-800 transition-all duration-300 hover:shadow-xl">
                     <img 
                       src={spoonMark} 
                       alt="spoonMark" 
@@ -754,6 +758,7 @@ export default function Home() {
             </p>
           </div>
         </div>
+        <img src={mobileGif2} alt="안전하고 빠른 금액 중개" className="block sm:hidden w-full h-40 sm:h-48 lg:h-52 object-contain mt-4" />
 
         {/* 국내 최초 대학생 외주 매칭 플랫폼 섹션 */}
         <div className="flex flex-col gap-6 sm:gap-8 justify-between max-w-[90%] sm:max-w-[60rem] mx-auto mt-12 sm:mt-16 lg:mt-24 px-4 sm:px-0">
@@ -785,7 +790,7 @@ export default function Home() {
         </div>
 
         {/* 무료 외주 등록 배너 */}
-        <div className="flex my-12 sm:my-20 lg:my-32 w-full px-4 sm:px-8 lg:px-0 max-w-[90%] sm:max-w-[60rem] mx-auto">
+        <div className="flex justify-center my-12 sm:my-20 lg:my-32 w-full px-4 sm:px-8 lg:px-0 max-w-[90%] sm:max-w-[60rem] mx-auto">
           <EstimateBanner color="blue" />
         </div>
 

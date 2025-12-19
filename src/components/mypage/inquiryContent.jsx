@@ -219,7 +219,7 @@ export default function InquiryContent() {
 
     return (
         <div>
-            <h1 className='text-2xl font-bold'>내 문의 내역</h1>
+            <h1 className='hidden md:block text-2xl font-bold'>내 문의 내역</h1>
             <div className='flex flex-col gap-4 mt-4'>
                 {inquiryList.map((inquiry) => (
                     <div key={inquiry.inquiryId} className='border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md'>

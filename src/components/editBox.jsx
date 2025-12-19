@@ -5,11 +5,11 @@ import checkBtnIco from '../assets/images/checkBtnIco.svg';
 export default function EditBox({title, value, onChange, isEditing, margin}) {
   return (
     <div className={`flex-1 ${margin}`}>
-      <label className="block text-black font-semibold text-xl mb-2">{title}</label>
+      <label className="block text-black font-semibold text-md md:text-xl mb-2">{title}</label>
       <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
         <input 
           type="text" 
-          className={`flex-1 p-4 pl-7 border-0 outline-none min-w-0 ${
+          className={`flex-1 p-2 md:p-4 md:pl-7 border-0 outline-none min-w-0 ${
             isEditing ? 'bg-white text-black' : 'bg-[#F7F7F7] text-gray-600'
           }`}
           value={value}

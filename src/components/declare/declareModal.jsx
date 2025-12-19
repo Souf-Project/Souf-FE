@@ -156,10 +156,10 @@ export default function DeclareModal({
         className="flex flex-col bg-white rounded-[25px] p-6 max-w-lg w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-3xl font-bold text-black text-center">
+        <div className="text-xl md:text-3xl font-bold text-black text-center">
           신고 사유
         </div>
-        <div className="text-lg font-bold my-4">
+        <div className="text-base md:text-lg font-bold my-4">
           신고 사유를 하나 이상 선택해주세요.
         </div>
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -173,7 +173,7 @@ export default function DeclareModal({
             />
           ))}
         </div>
-        <div className="text-lg font-bold my-4">
+        <div className="text-base md:text-lg font-bold my-4">
           신고 사유를 자세하게 작성해주세요.
         </div>
         <textarea 

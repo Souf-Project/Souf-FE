@@ -346,7 +346,7 @@ const handleDeleteClick = () => {
       />
       
       </div>
-      <div className="flex flex-col max-w-[60rem] w-full mx-auto">
+      <div className="flex flex-col  max-w-[60rem] w-full mx-auto">
         <button
             className="flex items-center text-gray-600 hover:text-black transition-colors"
             onClick={handleGoBack}
@@ -355,7 +355,7 @@ const handleDeleteClick = () => {
             <span>뒤로가기</span>
           </button>
 
-        <div className="w-full flex max-w-[60rem]">
+        <div className="w-full flex flex-col md:flex-row max-w-[60rem]">
           <div className="flex flex-col p-2 w-full w-2/3 mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
@@ -565,12 +565,12 @@ const handleDeleteClick = () => {
             </div>
           </div>
           <CommentList />
-          <div className="mb-12">
+          <div className="">
           {/* <RecommendRecruit /> */}
           </div>
         
         </div>
-        <div className="min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer"
+        <div className="md:min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer mx-4 md:mx-0 mb-4 md:mb-0"
         onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
         <div className="flex justify-between">
         {worksData.profileImageUrl ? (

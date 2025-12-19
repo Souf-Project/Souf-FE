@@ -178,7 +178,7 @@ export default function InquiryCenter({ onInquiryComplete }) {
     };
 
     return (
-        <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-8">
+        <div className="w-full max-w-[60rem] mx-auto flex flex-col gap-8 px-4 md:px-0">
             <SEO title="문의 센터" description={`스프 SouF - 문의 센터`} subTitle='스프' />
             <FilterDropdown
             options={options}

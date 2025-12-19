@@ -32,7 +32,7 @@ export default function StudentProfileList({ firstCategoryId, secondCategoryId }
     queryFn: async () => {
       // null을 undefined로 변환하여 API에 전달 (null이면 params에서 제외됨)
       const data = await getProfile(firstCategoryId ?? undefined, secondCategoryId ?? undefined, pageable);
-      setTotalPages(data.result?.page?.totalPages || 1);
+      setTotalPages(data.result?.totalPages || 1);
       // console.log("data", data);
       return data;
     },

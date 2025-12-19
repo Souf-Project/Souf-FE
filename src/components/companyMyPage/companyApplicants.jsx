@@ -179,7 +179,7 @@ export default function CompanyApplicants({ recruitId }) {
         <div>
           <div className="flex justify-between items-center mb-6">
           {/* 모바일 타이틀 */}
-          <div className="lg:hidden text-2xl font-bold">
+          <div className="lg:hidden text-xl font-bold">
           <h2 className="">지원자 리스트를 확인할</h2>
           <h2 className="">공고문을 선택하세요</h2>
           </div>
@@ -198,11 +198,11 @@ export default function CompanyApplicants({ recruitId }) {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공고문 제목</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">카테고리</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">진행상태</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지원자 수</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">마감 기한</th>
+                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">공고문 제목</th>
+                    <th className="hidden md:table-cell px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">카테고리</th>
+                    <th className="px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">진행상태</th>
+                    <th className="px-3 md:px-0 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">지원자 수</th>
+                    <th className="hidden md:table-cell px-3 md:px-6 py-2 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">마감 기한</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -210,10 +210,10 @@ export default function CompanyApplicants({ recruitId }) {
                     const categoryNames = getCategoryNames(recruit.categoryDtos);
                     return (
                       <tr key={recruit.recruitId} className="hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedRecruitId(recruit.recruitId)}>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">{recruit.title}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden md:table-cell px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">
                             {categoryNames.map((category, index) => (
                               <div key={index}>
@@ -224,20 +224,20 @@ export default function CompanyApplicants({ recruitId }) {
                             ))}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
                             ${recruit.status === '모집 중' ? 'bg-green-100 text-green-800' : 
                               'bg-red-100 text-red-800'}`}>
                             {recruit.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500">{recruit.recruitCount || 0}명</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="hidden md:table-cell px-3 md:px-6 py-2 md:py-4 whitespace-nowrap">
                           <div className="text-sm text-gray-500" dangerouslySetInnerHTML={{ __html: formatDate(recruit.deadline) }}></div>
                         </td>
-                       
+                              
                       </tr>
                     );
                   })}
