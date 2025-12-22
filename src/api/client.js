@@ -32,7 +32,6 @@ const extractTokenFromHeaders = (headers) => {
 // 응답에서 AccessToken 추출
 const extractTokenFromResponse = (response) => {
   return response.data?.result?.accessToken || 
-         response.data?.accessToken ||
          extractTokenFromHeaders(response.headers);
 };
 
@@ -91,7 +90,7 @@ const deleteCookie = (name) => {
 };
 
 // 강제 로그아웃 처리 (refresh 실패 시)
-const handleRefreshFailure = async () => {
+const handleRefreshFailure = async (message = "로그인 시간이 만료되었습니다. 재로그인해주세요") => {
   try {
     // 1. 로그아웃 API 호출 (204 응답 확인)
     const logoutResponse = await axios.post(
@@ -123,7 +122,7 @@ const handleRefreshFailure = async () => {
     // 4. 로그인 만료 모달 표시를 위한 커스텀 이벤트 발생
     const event = new CustomEvent('showSessionExpiredModal', {
       detail: {
-        message: "로그인 시간이 만료되었습니다. 재로그인해주세요"
+        message: message
       }
     });
     window.dispatchEvent(event);
@@ -213,15 +212,10 @@ const retryRequest = (originalRequest, token) => {
 // 요청 인터셉터 추가
 client.interceptors.request.use(
   (config) => {
-    //const { accessToken } = UserStore.getState();
     const accessToken = localStorage.getItem("accessToken");
-    // console.log("요청 인터셉터 - 현재 액세스 토큰:", accessToken);
     
     if (accessToken) {
       config.headers.set("Authorization", `Bearer ${accessToken}`);
-      // console.log("Authorization 헤더 설정됨:", `Bearer ${accessToken.substring(0, 20)}...`);
-    } else {
-      // console.log("❌ 액세스 토큰이 없음");
     }
     
     return config;
@@ -236,97 +230,59 @@ client.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
-    const message = error.response?.data?.message;
+    const errorKey = error.response?.data?.errorKey;
+    const requestUrl = originalRequest?.url || originalRequest?._fullUrl || '';
 
-    // console.log("응답 인터셉터 - 에러 상태:", status);
-    // console.log("응답 인터셉터 - 에러 URL:", originalRequest?.url);
+    // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
+    if (requestUrl.includes('/api/v1/auth/refresh')) {
+      await handleRefreshFailure();
+      return Promise.reject(error);
+    }
 
-    // 401 에러 발생 시 토큰 재발급 시도
-    if (status === 401 && !originalRequest._retry) {
-      const requestUrl = originalRequest.url || originalRequest._fullUrl || '';
-      
-      // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
-      if (requestUrl.includes('/api/v1/auth/refresh')) {
-        await handleRefreshFailure();
-        return Promise.reject(error);
-      }
-
-      // console.log("401 에러 발생 - 토큰 재발급 후 요청 재시도:", {
-      //   method: originalRequest.method,
-      //   url: originalRequest.url,
-      //   hasData: !!originalRequest.data,
-      // });
-      
+    // 401 에러 발생 시 리프레시 토큰 호출 (200이 아닌 경우)
+    if (status !== 200 && status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      // 1. 헤더에 새 토큰이 포함된 경우
-      const headerToken = extractTokenFromHeaders(error.response?.headers);
-      if (headerToken) {
-        // console.log("헤더에서 새 토큰 발견 - 요청 재시도");
-        saveTokens(headerToken);
-        return retryRequest(originalRequest, headerToken).catch(err => {
-          console.error("❌ 재시도 요청 실패:", err);
-          return Promise.reject(err);
+      
+      try {
+        const getRefresh = await axios.get(`${SERVER_URL}/api/v1/auth/refresh`, { 
+          withCredentials: true, 
+          headers: { "Content-Type": "application/json" } 
         });
-      }
-
-      // 2. refresh API 호출
-      if (!isRefreshing) {
-        isRefreshing = true;
-        try {
-          const newAccessToken = await refreshAccessToken();
-          // console.log("토큰 재발급 성공 - 대기 중인 모든 요청 재시도");
-          processQueue(null, newAccessToken);
-          return retryRequest(originalRequest, newAccessToken);
-        } catch (refreshError) {
-          console.error("❌ 토큰 재발급 실패:", refreshError);
-          processQueue(refreshError, null);
-          // refresh 실패 시 로그아웃 처리
-          await handleRefreshFailure();
-          return Promise.reject(refreshError);
-        } finally {
-          isRefreshing = false;
+        
+        const newAccessToken = extractTokenFromResponse(getRefresh);
+        if (newAccessToken) {
+          saveTokens(newAccessToken);
+          // 새 토큰으로 원래 요청 재시도
+          originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
+          return client(originalRequest);
         }
-      } else {
-        // 이미 재발급 중인 경우 대기
-        // console.log("토큰 재발급 진행 중 - 요청 대기 중...");
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ 
-            resolve: (token) => {
-              // console.log("대기 중인 요청 재시도");
-              resolve(retryRequest(originalRequest, token));
-            }, 
-            reject 
-          });
-        });
+      } catch (refreshError) {
+        // refresh 실패 시 로그아웃 처리
+        await handleRefreshFailure();
+        return Promise.reject(refreshError);
       }
     }
 
-    // 403 에러 처리 (기존 로직 유지)
-    if (status === 403 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const headerToken = extractTokenFromHeaders(error.response?.headers);
-      if (headerToken) {
-        // console.log("403 에러 - 헤더에서 새 토큰 발견, 요청 재시도");
-        saveTokens(headerToken);
-        return retryRequest(originalRequest, headerToken).catch(err => {
-          console.error("❌ 재시도 요청 실패:", err);
-          return Promise.reject(err);
-        });
-      }
+ // 리프레시 토큰 요청 후에 발생하는 에러 키 
+ // G403 = 로그인 해주세요
+ // S400-6 = 토큰이 만료되었습니다.
+    if (status === 403 && errorKey === 'G403') {
+      await handleRefreshFailure("로그인이 필요합니다.");
+      return Promise.reject(error);
+    }
+    
+    if (status === 400 && errorKey === 'S400-6') {
+      await handleRefreshFailure("재로그인이 필요합니다.");
+      return Promise.reject(error);
     }
 
-    // AlertModal이 있는 페이지는 에러 페이지로 이동하지 않고 모달이 뜨게
-    // if (status === 403) {
-    //   if (!window.location.pathname.includes("/recruitDetails")) {
-    //     window.location.href = "/forbidden"; 
-    //   }
-    // }
+    
 
     // 네트워크 에러 처리
     if (error.code === "ERR_NETWORK") {
       console.error("서버 연결 실패");
     }
+
     return Promise.reject(error);
   }
 );

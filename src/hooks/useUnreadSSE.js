@@ -14,7 +14,7 @@ const useUnreadSSE = () => {
     
     // 토큰이 없으면 SSE 연결하지 않음
     if (!accessToken) {
-      console.log("⚠️ SSE 연결 실패: accessToken이 없습니다.");
+      // console.log("SSE 연결 실패- accessToken 없음");
       return;
     }
     

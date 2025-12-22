@@ -57,5 +57,5 @@ export const LOGIN_ERRORS = {
   "RP401-1": {
     message: "신고된 회원입니다.",
     action: "refresh",
-  }
+  },
 }

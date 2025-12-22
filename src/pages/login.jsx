@@ -20,6 +20,7 @@ export default function Login() {
   const [passwordError, setPasswordError] = useState("");
   const [showError, setShowError] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
+  const [errorTitle, setErrorTitle] = useState("");
   const [errorDescription, setErrorDescription] = useState("");
   const [errorAction, setErrorAction] = useState("");
 
@@ -27,13 +28,17 @@ export default function Login() {
     mutationFn: ({ email, password }) => postLogin(email, password),
     onSuccess: async (response) => {
       const result = response.data?.result;
+      const phoneNumber = result.phoneNumber;
 
+      // 먼저 로그인 상태 설정 (UserStore에 정보 저장 및 토큰 저장)
       UserStore.getState().setUser({
         memberId: result.memberId,
         nickname: result.nickname,
         roleType: result.roleType,
         approvedStatus: result.approvedStatus,
+        phoneNumber: phoneNumber || null, // 전화번호가 없어도 null로 저장
       });
+      console.log("UserStore:", UserStore.getState());
 
       UserStore.getState().setAccessToken(result.accessToken);
       localStorage.setItem("accessToken", result.accessToken);
@@ -57,6 +62,20 @@ export default function Login() {
         }
       }, 100);
 
+      // 전화번호가 없으면 추가 인증 안내 모달 표시
+      if(!phoneNumber) {
+        setErrorDescription("신뢰도 높은 서비스 이용을 위하여 \n 회원가입 절차가 수정되었습니다. \n 추가 인증 정보 입력 페이지로 이동합니다.");
+        setErrorTitle("추가 인증 정보 필요");
+        setErrorAction("/additionalInfo");
+        // roleType을 localStorage에 임시 저장 (additionalInfo 페이지에서 사용)
+        if (result?.roleType) {
+          localStorage.setItem("pendingRoleType", result.roleType);
+        }
+        setErrorModal(true);
+        return;
+      }
+
+      // 전화번호가 있으면 메인 페이지로 이동
       navigate("/");
     },
 
@@ -251,16 +270,23 @@ export default function Login() {
       {errorModal && (
         <AlertModal
         type="simple"
-        title="잘못된 접근"
+        title={errorTitle || "잘못된 접근"}
         description={errorDescription}
         TrueBtnText="확인"
         onClickTrue={() => {
+          setErrorModal(false);
+          console.log("errorAction:", errorAction);
           if (errorAction === "redirect") {
               navigate("/feed");
           }else if(errorAction === "login"){
             localStorage.clear();
             navigate("/login");
-          }else{
+          } else if(errorAction === "/additionalInfo"){
+            console.log("Navigating to /additionalInfo");
+            // window.location.href를 사용하여 강제로 페이지 이동
+            window.location.href = "/additionalInfo";
+          }
+          else{
             window.location.reload();
           }
         }}
