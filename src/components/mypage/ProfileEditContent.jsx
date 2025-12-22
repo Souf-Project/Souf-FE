@@ -97,12 +97,12 @@ export default function ProfileEditContent() {
         return urlParts[urlParts.length - 1];
       };
 
-      console.log("📤 [프로필 수정] 시작");
-      console.log("📤 [프로필 수정] selectedFile:", selectedFile ? {
-        name: selectedFile.name,
-        size: selectedFile.size,
-        type: selectedFile.type
-      } : null);
+     //  console.log("[프로필 수정] 시작");
+      // console.log("[프로필 수정] selectedFile:", selectedFile ? {
+      //   name: selectedFile.name,
+      //   size: selectedFile.size,
+      //   type: selectedFile.type
+      // } : null);
       
       const updatePayload = {
         username: dataToSave.username,
@@ -169,7 +169,7 @@ export default function ProfileEditContent() {
         });
         
       } else {
-        console.warn("⚠️ [프로필 수정] 파일 업로드 조건 불만족:", {
+        console.warn("[프로필 수정] 파일 업로드 조건 불만족:", {
           hasSelectedFile: !!selectedFile,
           hasPresignedUrl: !!presignedUrl
         });
@@ -348,21 +348,20 @@ export default function ProfileEditContent() {
   return (
     <div>
       <div className="grid grid-cols-1 gap-2 relative">
-            <div className="flex items-center justify-between gap-4 w-full pr-8 m-5">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full md:pr-8 m-5">
             <ProfileImageUpdate
             isEditing={isEditing}
             initialImageUrl={formData.profileImageUrl ? `${formData.profileImageUrl}` : null}
             onFileSelect={handleFileSelect}
+            nickname={formData.nickname}
         />
-         <div className="absolute top-[40px] left-[225px]">
-            <h1 className="text-4xl font-bold ">{formData.nickname}</h1>
-        </div>
+        
             {isEditing ? <></> : <button onClick={() => setIsEditing(true)} className="px-6 py-4 bg-blue-main text-white rounded-xl font-bold transition-colors mb-auto">수정하기</button>}
 
             </div>
 
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">개인 정보</h2>
+          <h2 className="text-lg md:text-2xl font-bold mb-4">개인 정보</h2>
           <div className="grid grid-cols-1 gap-2">
             <EditBox 
               title="이름" 
@@ -382,7 +381,7 @@ export default function ProfileEditContent() {
                     type="button"
                     onClick={handleNicknameVerify}
                     disabled={!isEditing || verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname}
-                    className={`p-4 rounded-md font-bold text-lg transition-colors mt-10 ml-2 ${
+                    className={`p-3 md:p-4 rounded-md font-bold text-sm md:text-lg transition-colors mt-10 ml-2 ${
                       !isEditing
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname
@@ -395,7 +394,6 @@ export default function ProfileEditContent() {
               </div>
               <span className="text-sm text-left ml-4">{verificationMessage}</span>
             </div>
-           
             <EditBox 
               title="이메일" 
               value={formData.email}
@@ -413,7 +411,7 @@ export default function ProfileEditContent() {
        
           {roleType === "MEMBER" && formData.detail && (
              <div className="bg-gray-50 p-6 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">사업자 정보</h2>
+        <h2 className="text-lg md:text-2xl font-bold mb-4">사업자 정보</h2>
             <div>
             <div className="grid grid-cols-2 gap-4">
               <EditBox 
@@ -467,7 +465,7 @@ export default function ProfileEditContent() {
 
         {roleType === "STUDENT" &&
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">프로필 정보</h2>
+          <h2 className="text-lg md:text-2xl font-bold mb-4">프로필 정보</h2>
           <div className="grid grid-cols-1 gap-4">
             <EditBox 
               title="자기소개" 
@@ -485,7 +483,7 @@ export default function ProfileEditContent() {
         </div> }
         {roleType === "STUDENT" && formData.detail && (
           <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-2xl font-bold mb-4">대학생 인증 정보</h2>
+            <h2 className="text-lg md:text-2xl font-bold mb-4">대학생 인증 정보</h2>
             <div className="grid grid-cols-1 gap-4">
               <EditBox 
                 title={formData.detail.educationType === "GRADUATE" ? "대학원명" : "대학교명"} 
@@ -508,7 +506,7 @@ export default function ProfileEditContent() {
           </div>
         )}
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">관심분야</h2>
+          <h2 className="text-lg md:text-2xl font-bold mb-4">관심분야</h2>
           <div className="grid grid-cols-3 gap-4 ">
             {[0, 1, 2].map(index => (
               <CategorySelectBox 
@@ -521,8 +519,8 @@ export default function ProfileEditContent() {
           </div>
         </div>
         <div className="bg-gray-50 p-6 rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">SNS 계정 연동</h2>
-        <div className="flex items-center justify-center gap-4">
+        <h2 className="text-lg md:text-2xl font-bold mb-4">SNS 계정 연동</h2>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4">
             <button 
                 disabled={!isEditing}
                 className={`w-60 rounded-xl p-4 shadow-sm duration-200 flex items-center justify-center gap-4 ${
@@ -550,7 +548,7 @@ export default function ProfileEditContent() {
             </div>
             </div>
         <div className="bg-gray-50 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">마케팅 수신 동의</h2>
+          <h2 className="text-lg md:text-2xl font-bold mb-4">마케팅 수신 동의</h2>
           <button
                 type="button"
                 onClick={() => isEditing && setMarketingAgreement(!marketingAgreement)}
@@ -573,7 +571,7 @@ export default function ProfileEditContent() {
           {isEditing ? (
             <>
                 <button onClick={handleCancel} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-white text-gray-700 rounded-lg font-bold transition-colors border border-gray-300">취소</button>
-                <button onClick={handleSave} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-blue-main text-black rounded-lg font-bold transition-colors">
+                <button onClick={handleSave} disabled={profileUpdateMutation.isPending} className="w-40 py-3 bg-blue-main text-white rounded-lg font-bold transition-colors">
                   {profileUpdateMutation.isPending ? '저장 중...' : '수정완료'}
                 </button>
             </>

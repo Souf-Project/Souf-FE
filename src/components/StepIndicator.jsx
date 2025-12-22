@@ -6,7 +6,7 @@ export default function StepIndicator({ currentStep, totalSteps = 3, onStepClick
   };
 
   return (
-    <div className="w-80 h-80 bg-stone-50 sticky top-32 p-4 pl-8">
+    <div className="hidden md:block w-80 h-80 bg-stone-50 sticky top-32 p-4 pl-8">
       <div className="flex flex-col gap-6">
         {Array.from({ length: totalSteps }, (_, index) => {
           const stepNumber = index + 1;

@@ -87,7 +87,7 @@ export default function Redirect() {
           code: code,
           provider: detectedProvider
         })
-        .then((response) => {
+        .then(async (response) => {
           const result = response?.result;
           // console.log("소셜 로그인 응답 전체:", response);
           // console.log("result 객체:", result);
@@ -127,7 +127,7 @@ export default function Redirect() {
               }, 100);
               
               localStorage.removeItem('socialProvider');
-              
+            
               navigate("/");
             }
              else {

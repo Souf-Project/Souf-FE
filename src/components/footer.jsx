@@ -10,8 +10,8 @@ export default function Footer() {
       <div className="flex flex-col gap-6 md:w-full md:max-w-[60rem] w-screen px-4 mx-auto">
      
         <div>
-        <img src={SouFLogo} alt="SouFLogo" className="w-24 brightness-0" />
-        <h3 className='text-neutral-700 text-xl font-bold mt-2'>No 1. 대학생 프리랜서 플랫폼</h3>
+        <img src={SouFLogo} alt="SouFLogo" className="w-16 md:w-24 brightness-0" />
+        <h3 className='text-neutral-700 text-base md:text-xl font-bold mt-2'>No 1. 대학생 프리랜서 플랫폼</h3>
         </div>
         <div className="hidden md:block">
         <div className='flex gap-2 text-neutral-400 text-md '>
@@ -75,7 +75,7 @@ export default function Footer() {
         
         {/* 모바일 */}
         <div className="block md:hidden">
-        <div className='flex flex-col text-neutral-400 text-md '>
+        <div className='flex flex-col text-neutral-400 text-sm'>
           <p>사업자 대표 : 한규탁</p>
           <p>대표자 연락처 : 010-9335-8400 </p>
           <p>이메일 : souf-official@souf.co.kr</p>
@@ -89,7 +89,7 @@ export default function Footer() {
        </div>
        <div className="block md:hidden">
         <p className="font-bold text-md mb-2">스프 기본 약관</p>
-        <div className="flex flex-col gap-1 font-semibold text-md w-full text-gray-500">
+        <div className="flex flex-col gap-1 font-semibold text-sm w-full text-gray-500">
           <div 
             className='flex items-center gap-2 cursor-pointer hover:text-gray-700 transition-all duration-200 hover:brightness-0'
             onClick={() => navigate('/policy/terms')}

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -26,23 +26,70 @@ import Search from "../pages/search";
 import Withdraw from "../pages/withdraw";
 import ScrollToTop from "../components/scrollToTop";
 import Forbidden from "../pages/forbidden";
+import Guide from "../pages/guide";
 import CsPage from "../pages/csPage";
 import Review from "../pages/review";
 import ReviewDetail from "../pages/reviewDetail";
 import Inspection from "../pages/inspection";
 import { HelmetProvider } from 'react-helmet-async';
 import FloatingChatButton from "../components/floatingChatButton";
+import useUnreadStore from "../store/useUnreadStore";
+import { UserStore } from "../store/userStore";
+import { getUnreadChatCount, getNotificationCount, getNotificationList } from "../api/notification";
+import useUnreadSSE from "../hooks/useUnreadSSE";
 import AlertModal from "../components/alertModal";
 import TermsPage from "../pages/policy/terms";
 import PrivacyPage from "../pages/policy/privacy";
 import ComplainPage from "../pages/policy/complain";
+import Contract from "../pages/contract";
 import AdditionalInfo from "../pages/additionalInfo";
+
 
 function AppRouter() {
   const location = useLocation();
   const navigate = useNavigate();
   const isChatPage = location.pathname === "/chat";
+
+  const { nickname, memberId } = UserStore();
+  const { setUnreadChatCount, setUnreadNotificationCount, setNotifications } = useUnreadStore();
+  useUnreadSSE();
+
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
+  const autoRedirectTimerRef = useRef(null);
+
+  // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
+  useEffect(() => {
+    if (memberId) {
+      // SSE 구독 후 약간의 지연을 두고 API 호출 (SSE 연결이 완료될 시간 확보)
+      const fetchInitialData = async () => {
+        try {
+          // SSE 구독 후 약간 대기
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          // 읽지 않은 채팅 개수 조회
+          const chatCountResponse = await getUnreadChatCount();
+          const chatCount = chatCountResponse?.result || 0;
+          setUnreadChatCount(chatCount);
+          // console.log('초기 채팅 개수 로드:', chatCount);
+          
+          // 읽지 않은 알림 개수 조회
+          const notificationCountResponse = await getNotificationCount();
+          const notificationCount = notificationCountResponse?.result || 0;
+          setUnreadNotificationCount(notificationCount);
+          // console.log('초기 알림 개수 로드:', notificationCount);
+          
+          // 알림 목록 조회
+          const notificationListResponse = await getNotificationList(0, 20);
+          const notificationList = notificationListResponse?.result?.content || notificationListResponse?.result || [];
+          setNotifications(notificationList);
+          // console.log('초기 알림 목록 로드:', notificationList.length, '개');
+        } catch (error) {
+          console.error('초기 데이터 로드 실패:', error);
+        }
+      };
+      fetchInitialData();
+    }
+  }, [memberId, setUnreadChatCount, setUnreadNotificationCount, setNotifications]);
 
   useEffect(() => {
     // 세션 만료 이벤트 리스너
@@ -56,6 +103,37 @@ function AppRouter() {
       window.removeEventListener('showSessionExpiredModal', handleSessionExpired);
     };
   }, []);
+
+  // 세션 만료 모달이 열릴 때 5초 후 자동 리다이렉트
+  useEffect(() => {
+    if (showSessionExpiredModal) {
+      // 기존 타이머가 있으면 클리어
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
+      }
+      
+      // 5초 후 자동으로 로그인 페이지로 이동
+      autoRedirectTimerRef.current = setTimeout(() => {
+        setShowSessionExpiredModal(false);
+        if (!location.pathname.includes('/login')) {
+          navigate('/login');
+        }
+        autoRedirectTimerRef.current = null;
+      }, 5000);
+    } else {
+      // 모달이 닫히면 타이머 클리어
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
+        autoRedirectTimerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (autoRedirectTimerRef.current) {
+        clearTimeout(autoRedirectTimerRef.current);
+      }
+    };
+  }, [showSessionExpiredModal, location.pathname, navigate]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -91,10 +169,11 @@ function AppRouter() {
           <Route path="/search" element={<Search />} />
           <Route path="/withdraw" element={<Withdraw/>} />
           <Route path="/forbidden" element={<Forbidden/>} />
-          <Route path="/guide" element={<CsPage/>} />
+      <Route path="/guide" element={<CsPage/>} />
           <Route path="/policy/terms" element={<TermsPage/>} />
           <Route path="/policy/privacy" element={<PrivacyPage/>} />
           <Route path="/policy/complaintDispute" element={<ComplainPage/>} />
+          <Route path="/contract" element={<Contract/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}
@@ -108,6 +187,11 @@ function AppRouter() {
           description="로그인 시간이 만료되었습니다. 재로그인해주세요"
           TrueBtnText="로그인하러 가기"
           onClickTrue={() => {
+            // 타이머 클리어
+            if (autoRedirectTimerRef.current) {
+              clearTimeout(autoRedirectTimerRef.current);
+              autoRedirectTimerRef.current = null;
+            }
             setShowSessionExpiredModal(false);
             if (!location.pathname.includes('/login')) {
               navigate('/login');

@@ -221,6 +221,14 @@ export default function Recruit() {
     setCurrentPage(0); 
   };
 
+  const handleCategoryReset = () => {
+    setSelectedCategory([null, null, null]);
+    setSelectedCategories([]);
+    setCurrentPage(0);
+    // URL 파라미터도 제거
+    navigate('/recruit', { replace: true });
+  };
+
   const handleSortChange = (value) => {
     setSortBy(value);
     setCurrentPage(0); 
@@ -289,7 +297,7 @@ export default function Recruit() {
               onClick={() => setShowMobileCategoryMenu(!showMobileCategoryMenu)}
               className="flex items-center gap-2 p-4 bg-gray-100/80 rounded-lg"
             >
-              <span className="text-gray-600">카테고리 선택하기</span>
+              <span className="text-gray-600 text-sm">카테고리 선택하기</span>
               <svg
                 className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
                   showMobileCategoryMenu ? "rotate-180" : ""
@@ -316,6 +324,7 @@ export default function Recruit() {
                 thirdCategories={thirdCategories}
                 onSelect={handleCategorySelect}
                 onApply={handleCategoryApply}
+                onReset={handleCategoryReset}
                 selectedCategories={{
                   firstCategoryId: selectedCategory[0],
                   secondCategoryId: selectedCategory[1],
@@ -336,6 +345,7 @@ export default function Recruit() {
             thirdCategories={thirdCategories}
             onSelect={handleCategorySelect}
             onApply={handleCategoryApply}
+            onReset={handleCategoryReset}
             selectedCategories={{
               firstCategoryId: selectedCategory[0],
               secondCategoryId: selectedCategory[1],
@@ -345,7 +355,7 @@ export default function Recruit() {
         </div>
         
         {/* 공고문 목록 */}
-        <div className="w-full lg:ml-4 px-8 lg:px-0">
+        <div className="w-full lg:ml-4 px-2 md:px-8 lg:px-0">
           <div className="mb-4 flex justify-between items-center ">
             <div className="flex items-center gap-4">
             <FilterDropdown

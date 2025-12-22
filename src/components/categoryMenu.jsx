@@ -3,7 +3,7 @@ import firstCategoryData from '../assets/categoryIndex/first_category.json';
 import checkBoxIcon from '../assets/images/checkBoxIcon.svg';
 import notCheckBoxIcon from '../assets/images/notCheckBoxIcon.svg';
 
-const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories, onApply, mode = 'full' }) => {
+const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCategories, onApply, onReset, mode = 'full' }) => {
   // mode: 'full' (기본, 전체 기능) 또는 'simple' (대분류만, 하나만 선택)
   const [selectedFirstCategory, setSelectedFirstCategory] = useState(selectedCategories?.firstCategoryId || null);
   const [selectedSecondCategories, setSelectedSecondCategories] = useState(selectedCategories?.secondCategoryId ? [selectedCategories.secondCategoryId] : []);
@@ -174,6 +174,11 @@ const CategoryMenu = ({ secondCategories, thirdCategories, onSelect, selectedCat
     setSelectedThirdCategories([]);
     setTempSelectedCategories([]);
     setExpandedFirstCategory(null);
+    
+    // 부모 컴포넌트에 초기화 알림
+    if (onReset) {
+      onReset();
+    }
   };
 
   useEffect(() => {

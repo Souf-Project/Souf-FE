@@ -263,58 +263,58 @@ export default function FAQcontent({ onInquiryClick }) {
                 onChange={handleSearchChange}
                 onSubmit={handleSearch}
                 placeholder="어떤게 궁금하신가요?"
-                width="w-1/2"
-                height="py-4"
+                width="w-1/2 mx-auto md:mx-0"
+                height="py-2 md:py-4"
             />
-            <div className="flex items-center gap-2 mt-4">
+            <div className="flex items-center gap-2 mt-4 overflow-x-auto flex-nowrap scrollbar-hide max-w-[26rem] md:max-w-full mx-auto md:mx-0">
                 <button
-                        className={`pr-8 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
+                        className={`px-2 md:px-8 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 0 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(0)}
                     >
-                        <span>계정/인증</span>
+                        <span className="whitespace-nowrap">계정/인증</span>
                       
                     </button>
                     <button
-                        className={`px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
+                        className={`px-2 md:px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 1 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(1)}
                     >
-                        <span>프로필·피드</span>
+                        <span className="whitespace-nowrap">프로필·피드</span>
                     </button>
                     <button
-                        className={`px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
+                        className={`px-2 md:px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 2 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(2)}
                     >
-                        <span>외주 공고·지원/견적</span>
+                        <span className="whitespace-nowrap">외주 공고·지원/견적</span>
                     </button>
                     <button
-                        className={`px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
+                        className={`px-2 md:px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 3 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(3)}
                     >
-                        <span>매칭·채팅</span>
+                        <span className="whitespace-nowrap">매칭·채팅</span>
                     </button>
                     <button
-                        className={`px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
+                        className={`px-2 md:px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 4 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(4)}
                     >
-                        <span>표준 계약서·전자서명</span>
+                        <span className="whitespace-nowrap">표준 계약서·전자서명</span>
                     </button>
                     <button
-                        className={`px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group ${
+                        className={`px-2 md:px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 5 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(5)}
                     >
-                        <span>결제·정산</span>
+                        <span className="whitespace-nowrap">결제·정산</span>
                     </button>
             </div>
             <div className="flex flex-col gap-4 mt-8">
@@ -340,7 +340,7 @@ export default function FAQcontent({ onInquiryClick }) {
                     )
                 ) : (
                   
-                    <>
+                    <div className="flex flex-col mx-4 md:mx-0">
                         {activeTab === 0 && faqData1.map((item, index) => (
                             <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
                         ))}
@@ -359,12 +359,12 @@ export default function FAQcontent({ onInquiryClick }) {
                         {activeTab === 5 && faqData6.map((item, index) => (
                             <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
                         ))}
-                    </>
+                    </div>
                 )}
             </div>
-            <div className="flex items-center  gap-8 mt-8">
-                <p className="text-2xl font-semibold">궁금한 점이 해결되지 않으셨나요?</p>
-                <button className="px-10 py-4 bg-blue-500 text-white text-2xl font-bold rounded-lg"
+            <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-8 mt-8 mx-4 md:mx-0">
+                <p className="text-lg md:text-2xl font-semibold">궁금한 점이 해결되지 않으셨나요?</p>
+                <button className="px-10 py-4 bg-blue-500 text-white text-lg md:text-2xl font-bold rounded-lg"
                 onClick={onInquiryClick}>문의하기</button>
             </div>
         </div>

@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { postApplicationReject } from "../api/application";
 import { useMutation } from "@tanstack/react-query";
 import AlertModal from "./alertModal";
+import sendIco from "../assets/images/sendIco.svg";
+import { postChatrooms } from "../api/chat";
+import { getLastCategoryName } from "../utils/categoryUtils";
+
 export default function StudentInfoBlock({ studentInfo, type }) {
   const navigate = useNavigate();
   const user = studentInfo?.member || studentInfo;
@@ -29,6 +33,22 @@ export default function StudentInfoBlock({ studentInfo, type }) {
     }
   };
 
+
+  const handleChat = async (memberId) => {
+    
+    try {
+      const response = await postChatrooms(memberId);
+
+      // 채팅방 생성 후 해당 채팅방으로 이동
+      if (response.roomId) {
+        navigate(`/chat`);
+      } else {
+      }
+    } catch (error) {
+      console.error("채팅방 생성 실패:", error);
+    }
+  };
+
   /*
   검색 CSS
    {studentInfo.status === "REJECTED" && (
@@ -47,7 +67,7 @@ export default function StudentInfoBlock({ studentInfo, type }) {
     ${studentInfo.status === "REJECTED" ? "bg-[#e5e5e5] text-[#5e5e5e] opacity-55 cursor-default" : ""}
   `}
       >
-        
+         
         <div className="flex items-start space-x-4" onClick={handleClick}>
           {/* 프로필 이미지 */}
           <div className="flex-shrink-0">
@@ -59,15 +79,7 @@ export default function StudentInfoBlock({ studentInfo, type }) {
                 e.target.src = "/src/assets/images/BasicProfileImg1.png";
               }}
             />
-            <div className="flex items-center mt-2">
-              <span className="text-sm text-gray-600 mr-2">스프온도:</span>
-              <div className="flex items-center">
-                <span className="text-lg font-bold text-orange-500 mr-1">
-                  {user?.temperature || 0}
-                </span>
-                <span className="text-sm text-gray-500">°C</span>
-              </div>
-            </div>
+            <span className="text-sm text-blue-main mr-2">스프온도: {user?.temperature || 36.5}°C</span>
           </div>
 
           {/* 정보 */}
@@ -79,7 +91,18 @@ export default function StudentInfoBlock({ studentInfo, type }) {
             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
               {user?.intro || "소개글이 없습니다."}
             </p>
-
+            {user?.categoryDtoList && user.categoryDtoList.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap mb-2">
+                {user.categoryDtoList.map((category, index) => {
+                  const categoryName = getLastCategoryName(category);
+                  return categoryName ? (
+                    <span key={index} className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                      {categoryName}
+                    </span>
+                  ) : null;
+                })}
+              </div>
+            )}
             {type === "applicant" && user?.feed?.length > 0 && (
               <div className="mb-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">작품</h4>
@@ -98,21 +121,43 @@ export default function StudentInfoBlock({ studentInfo, type }) {
               </div>
             )}
 
-            {type === "applicant" && (
-              <div className="text-xs text-gray-500">지원일: {studentInfo?.appliedAt}</div>
-            )}
+           
           </div>
         </div>
+        {(studentInfo.priceOffer || studentInfo.priceReason) && (
+          <div>
+            {studentInfo.priceOffer && (
+              <div className="mb-3 pb-3 border-b border-gray-200">
+                <div className="text-sm text-gray-600 mb-1 font-medium">제안 금액</div>
+                <div className="text-lg font-bold text-blue-main">{studentInfo.priceOffer}</div>
+              </div>
+            )}
+            {studentInfo.priceReason && (
+              <div>
+                <div className="text-sm text-gray-600 mb-2 font-medium">제안 사유</div>
+                <div className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">{studentInfo.priceReason}</div>
+              </div>
+            )}
+          </div>
+        )}
+         {type === "applicant" && (
+              <div className="text-sm text-gray-500 mt-4">지원일: {studentInfo?.appliedAt}</div>
+            )}
+
 
         {/* 거절 버튼 */}
         {studentInfo.status === "PENDING" && (
-          <div className="w-full flex justify-center items-center">
+          <div className="mt-4 w-full flex justify-center items-center gap-2">
           <button
-            className="mt-4 bg-red-500 text-white rounded-[10px] px-4 py-2 cursor-pointer hover:bg-red-600 transition"
+            className="bg-red-500 text-white rounded-[10px] px-4 py-2 cursor-pointer hover:bg-red-600 transition"
             onClick={() => setShowRejectModal(true)}
           >
             거절
           </button>
+          <div className=" flex items-center gap-2 bg-blue-main p-2 rounded-lg text-white">
+            채팅하기
+            <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(user?.id)} />
+          </div>
           </div>
         )}
       </div>

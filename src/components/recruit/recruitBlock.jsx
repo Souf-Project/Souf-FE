@@ -116,14 +116,33 @@ export default function RecruitBlock({
   return (
     <div
       onClick={handleClick}
-      className="flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
+      className="md:flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
     >
-      
-        {firstMediaUrl ? (
-          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-36 h-full max-w-36 rounded-2xl object-cover" />
+      <div className="flex items-center justify-between">
+      {firstMediaUrl ? (
+          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-36 h-auto max-w-36 rounded-2xl object-cover" />
         ) : (
-          <img src={soufMockup} alt="기본 로고 이미지" className="w-36  max-w-36 max-h-44 rounded-2xl object-cover" />
+          <img src={soufMockup} alt="기본 로고 이미지" className="w-24 md:w-36 h-auto max-w-36 rounded-2xl object-cover" />
         )}
+        <div className="block md:hidden flex flex-col items-start gap-4 px-2 ">
+        <div className="flex items-center gap-4 justify-between w-full">
+          <span className="text-xs font-medium text-black ">견적 비용</span>
+          <span className="text-md font-regular text-black ">{price}</span>
+        </div>
+       
+         <div className="flex gap-4 items-center justify-between w-full">
+         <span className="text-xs font-medium text-black whitespace-nowrap">마감일</span>
+          <div className="flex flex-col items-start gap-2">
+          <span className="text-md font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}~</span>
+          <span className="text-md font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
+          </div>
+      </div>
+       
+          
+          
+         </div>
+       
+      </div>
       <div className="flex flex-col px-4 py-3 flex-1 max-w-[26rem]">
         <div className="flex justify-between items-center">
         <div className="flex text-blue-600 text-sm">
@@ -155,11 +174,11 @@ export default function RecruitBlock({
         onClick={console.log("share")} /> */}
         </div>
         
-        <h2 className="text-xl font-semibold text-gray-800 line-clamp-1">{title}</h2>
-        <p className="text-zinc-500 text-base line-clamp-2">
+        <h2 className="text-md md:text-xl font-semibold text-gray-800 line-clamp-1">{title}</h2>
+        <p className="text-zinc-500 text-sm md:text-base line-clamp-2">
         {content || "내용 없음"}
       </p>
-      <div className="flex items-center gap-2 text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+      <div className="flex items-center gap-2 text-sm md:text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
         {profileImageUrl && profileImageUrl.trim() !== '' && (
           <img 
             src={profileImageUrl} 
@@ -172,19 +191,12 @@ export default function RecruitBlock({
         
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch my-2"></div>
-      <div className="flex flex-col items-start gap-4 w-44 px-2 mt-4">
+      <div className="hidden md:block flex flex-col items-start gap-4 w-44 px-2 mt-4">
         <div className="flex items-center gap-4 justify-between w-full">
           <span className="text-xs font-medium text-black ">견적 비용</span>
           <span className="text-md font-regular text-black ">{price}</span>
         </div>
-        {/* <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-black ">우대사항</span>
-          <ul className="text-xs font-regular text-black list-disc pl-4">
-            <li>패션 디자인 전공</li>
-            <li>조형 조소과</li>
-            <li>회화과</li>
-          </ul>
-        </div> */}
+       
          <div className="flex gap-4 justify-between w-full">
          <span className="text-xs font-medium text-black whitespace-nowrap">마감일</span>
           <div className="flex flex-col items-start">

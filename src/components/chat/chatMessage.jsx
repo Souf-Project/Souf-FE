@@ -15,12 +15,18 @@ import plusIco from "../../assets/images/plusIco.svg"
 import AlertModal from "../alertModal";
 import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
-import chatImgIcon from "../../assets/images/chatImgIcon.png"
-import chatVideoIcon from "../../assets/images/chatVideoIcon.png"
+import chatImgIcon from "../../assets/images/chatImgIcon.svg"
+import chatVideoIcon from "../../assets/images/chatVideoIcon.svg"
+import chatContractIcon from "../../assets/images/chatContractIcon.svg"
 import { uploadToS3 } from "../../api/feed";
 import ImageModal from "./ImageModal";
-import SouFLogo from "../../assets/images/SouFLogo.svg";
+import SouFLogo from "../../assets/images/basiclogoimg.png";
 import outIcon from "../../assets/images/outIcon.svg";
+import Contract from "../../pages/contract";
+import {getContract, postOrdererUpload, getContractList} from "../../api/contract";
+import { handleApiError } from "../../utils/apiErrorHandler";
+import { CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS } from "../../constants/contract";
+
 
 
 export default function ChatMessage({ chatNickname, roomId, opponentProfileImageUrl, opponentId, opponentRole }) {
@@ -32,11 +38,22 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   const [showCheckout, setShowCheckout] = useState(false);
   const scrollRef = useRef(null);
   const [showAlertModal, setShowAlertModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("");
+  const [errorAction, setErrorAction] = useState("redirect");
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showDegreeModal, setShowDegreeModal] = useState(false);
+  const [showContractModal, setShowContractModal] = useState(false);
+  const [contractData, setContractData] = useState(null);
+  const [showContractListModal, setShowContractListModal] = useState(false);
+  const [contractList, setContractList] = useState([]);
   const fileInputRef = useRef(null);
   const videoInputRef = useRef(null);
+  const documentFileInputRef = useRef(null);
+  const contractUploadInputRef = useRef(null); // 최종 계약서 업로드용 파일 input
   const [pendingImageUpload, setPendingImageUpload] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [latestContractPdfUrl, setLatestContractPdfUrl] = useState(null); // 가장 최근 계약서 PDF URL 저장
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -48,15 +65,57 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     queryKey: ["chatRoom", roomId],
     queryFn: async () => {
       const data = await getChatRooms(roomId);
-      
-      
-      return data;
+      // API 응답 구조에 따라 메시지 배열 추출
+      const messages = data?.result?.content || data?.result || data || [];
+      return messages;
     },
     keepPreviousData: true,
   });
 
    // 기존 메시지와 실시간 메시지를 합쳐서 표시
-  const allMessages = [...(chatMessages || []), ...realtimeMessages];
+  // chatMessages는 배열이어야 함
+  const chatMessagesArray = Array.isArray(chatMessages) ? chatMessages : [];
+  const allMessages = [...chatMessagesArray, ...realtimeMessages];
+
+  // content에서 pdfUrl을 추출하는 헬퍼 함수
+  const extractPdfUrl = (content) => {
+    if (!content) return null;
+    // content에서 줄바꿈(\n) 이후의 URL을 추출
+    const lines = content.split('\n');
+    // 먼저 "pdfUrl:" 형식으로 시작하는 줄 찾기
+    const pdfUrlLineWithPrefix = lines.find(line => line.startsWith('pdfUrl:'));
+    if (pdfUrlLineWithPrefix) {
+      return pdfUrlLineWithPrefix.replace('pdfUrl:', '').trim();
+    }
+    // 없으면 기존 방식으로 찾기
+    const pdfUrlLine = lines.find(line => line.trim() && (line.includes('http') || line.includes('contract/')));
+    return pdfUrlLine ? pdfUrlLine.trim() : null;
+  };
+
+  const extractContractId = (content) => {
+    if (!content) return null;
+    const lines = content.split('\n');
+    const contractIdLine = lines.find(line => line.startsWith('contractId:'));
+    if (contractIdLine) {
+      return contractIdLine.replace('contractId:', '').trim();
+    }
+    return null;
+  };
+
+  // content에서 pdfUrl과 contractId를 제거하고 순수 텍스트만 반환하는 헬퍼 함수
+  const getCleanContent = (content) => {
+    if (!content) return "";
+    const lines = content.split('\n');
+    // pdfUrl, contractId가 포함된 줄을 제외하고 나머지를 합침
+    const cleanLines = lines.filter(line => {
+      const trimmed = line.trim();
+      return trimmed && 
+             !trimmed.startsWith('pdfUrl:') && 
+             !trimmed.startsWith('contractId:') &&
+             !(trimmed.includes('http') || trimmed.includes('contract/'));
+    });
+    return cleanLines.join('\n').trim();
+  };
 
   // console.log("모든 메시지:", allMessages);
 
@@ -64,8 +123,18 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     if (!roomId || !nickname) return;
   
         connectChatSocket(roomId, (incomingMessage) => {
-    
-      setRealtimeMessages((prev) => [...prev, incomingMessage]);
+     
+      setRealtimeMessages((prev) => {
+        const isDuplicate = prev.some(msg => 
+          (msg.chatId && incomingMessage.chatId && msg.chatId === incomingMessage.chatId) ||
+          (msg.timestamp && incomingMessage.timestamp && msg.timestamp === incomingMessage.timestamp) ||
+          (msg.content === incomingMessage.content && msg.type === incomingMessage.type && msg.sender === incomingMessage.sender && Math.abs(new Date(msg.createdTime) - new Date(incomingMessage.createdTime)) < 1000)
+        );
+        if (isDuplicate) {
+          return prev;
+        }
+        return [...prev, incomingMessage];
+      });
   
       const isFileOrImage = ["IMAGE", "FILE"].includes(incomingMessage.type);
       
@@ -78,7 +147,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     });
 
     return () => {
-      console.log("채팅 소켓 연결 해제");
+      // console.log("채팅 소켓 연결 해제");
       disconnectChatSocket();
     };
   }, [roomId, nickname, pendingImageUpload]);
@@ -94,7 +163,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
 
     const messageObj = {
       roomId,
-      sender: nickname,
+      // sender: nickname,
       type: "TALK",
       content: newMessage,
     };
@@ -104,7 +173,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     const success = sendChatMessage(messageObj);
     if (success) {
     setNewMessage("");
-      console.log("메시지 전송 완료");
+      // console.log("메시지 전송 완료");
     } else {
       console.error("메시지 전송 실패");
       
@@ -116,7 +185,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   };
 
   const handleButton1Click = () => {
-    console.log("버튼 1 클릭");
+    // console.log("버튼 1 클릭");
     setShowCheckout(true);
     setShowButtonList(false);
   };
@@ -155,6 +224,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         sender: nickname,
         type: messageType,
         content: uploadInfo.fileUrl,
+        fileName: file.name, // 원본 파일명 추가
       };
      
       const success = sendChatMessage(fileMessage);
@@ -261,7 +331,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           
           const success = sendChatMessage(videoMessage);
           if (success) {
-            console.log("동영상 메시지 전송 완료");
+            // console.log("동영상 메시지 전송 완료");
           } else {
             console.error("동영상 메시지 전송 실패");
           }
@@ -288,8 +358,17 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     videoInputRef.current?.click();
   };
 
-  const handleFileButtonClick = () => {
+  const handleDocumentFileButtonClick = () => {
     setShowButtonList(false);
+    documentFileInputRef.current?.click();
+  };
+
+  const handleDocumentFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+    event.target.value = '';
   };
 
   // 이미지 업로드 완료 처리
@@ -311,7 +390,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
   };
 
   const handleButton3Click = () => {
-    console.log("버튼 3 클릭");
+    // console.log("버튼 3 클릭");
     setShowAlertModal(true);
     setShowButtonList(false);
   };
@@ -320,14 +399,248 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     setSelectedImage(imageUrl);
   };
 
-  const handleFileClick = (fileUrl) => {
+  const handleFileClick = (fileUrl, fileName) => {
     // 파일 다운로드
     const link = document.createElement('a');
     link.href = fileUrl;
-    link.download = fileUrl.split('/').pop();
+    // 원본 파일명이 있으면 사용하고, 없으면 URL에서 추출
+    link.download = fileName || fileUrl.split('/').pop();
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleContractClick = () => {
+    setShowContractModal(true);
+    setShowButtonList(false);
+  };
+
+  const handleContractViewClick = async () => {
+    const roleType = UserStore.getState().roleType;
+    
+    // 발주자(기업)가 클릭한 경우 알림만 표시하고 모달 열기 방지
+    if (roleType === "MEMBER") {
+      alert("학생 측 정보 기입 버튼입니다!");
+      return;
+    }
+    
+    setShowContractModal(true);
+    try {
+      const response = await getContract(roomId);
+      // console.log(response);
+      if (response && response.code === 200 && response.result) {
+        setContractData(response.result);
+      }
+    } catch (error) {
+      console.error("계약서 조회 실패:", error);
+      handleApiError(error, {
+        setShowLoginModal,
+        setErrorModal: setShowErrorModal,
+        setErrorDescription,
+        setErrorAction,
+      }, CONTRACT_BENEFICIARY_PREVIEW_CONTRACT_ERRORS);
+    }
+  };
+
+  const handleSendContractMessage = (contractUuid = "") => {
+    // 현재 시간에서 6시간 추가
+    const now = new Date();
+    const expiryTime = new Date(now.getTime() + 6 * 60 * 60 * 1000); // 6시간 = 6 * 60 * 60 * 1000ms
+    
+    // 한국 시간으로 포맷팅 (YYYY년 MM월 DD일 HH시 MM분)
+    const year = expiryTime.getFullYear();
+    const month = String(expiryTime.getMonth() + 1).padStart(2, '0');
+    const day = String(expiryTime.getDate()).padStart(2, '0');
+    const hours = String(expiryTime.getHours()).padStart(2, '0');
+    const minutes = String(expiryTime.getMinutes()).padStart(2, '0');
+    const formatExpiryTime = `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
+    
+    // contractUuid가 있으면 메시지에 포함
+    const contractIdPart = contractUuid ? `\ncontractId:${contractUuid}` : "";
+    
+    const contractMessage = {
+      roomId: roomId,
+      // sender: "admin",
+      type: "NOTIFICATION",
+      content: `계약서 생성이 완료되었습니다! \n학생 측 계약서 정보 기입을 ${formatExpiryTime}까지 완료해주세요.${contractIdPart}`,
+      createdTime: new Date().toISOString(),
+      timestamp: Date.now()
+    };
+    // console.log("계약서 메시지 전송 시도:", contractMessage);
+    const messageSent = sendChatMessage(contractMessage);
+    // console.log("메시지 전송 결과:", messageSent);
+    
+  };
+
+  const handleSendContractCompleteMessage = (contractData) => {
+    // contractData에서 contractId와 pdfUrl 추출
+    // 형식: "contractId:123\npdfUrl:contract/original/file.pdf"
+    let contractId = "";
+    let pdfUrl = "";
+    
+    if (contractData) {
+      const lines = contractData.split('\n');
+      lines.forEach(line => {
+        if (line.startsWith('contractId:')) {
+          contractId = line.replace('contractId:', '').trim();
+        } else if (line.startsWith('pdfUrl:')) {
+          pdfUrl = line.replace('pdfUrl:', '').trim();
+        }
+      });
+    }
+    
+    // 가장 최근 계약서 PDF URL 저장
+    if (pdfUrl) {
+      setLatestContractPdfUrl(pdfUrl);
+    }
+    
+    // contractId와 pdfUrl을 포함한 메시지 생성
+    const contractCompleteMessage = {
+      roomId: roomId,
+      // sender: "admin",
+      type: "NOTIFICATION",
+      content: `계약서 작성이 완료되었습니다. 다운로드 후 서명을 진행해주세요. \ncontractId:${contractId}\npdfUrl:${pdfUrl}`,
+      createdTime: new Date().toISOString(),
+      timestamp: Date.now(),
+    };
+    // console.log("계약서 완성 메시지 전송 시도:", contractCompleteMessage);
+    const messageSent = sendChatMessage(contractCompleteMessage);
+    // console.log("계약서 완성 메시지 전송 결과:", messageSent);
+
+  };
+
+  const handleContractUploadButtonClick = () => {
+    setShowButtonList(false);
+    contractUploadInputRef.current?.click();
+  };
+
+  const handleContractUploadFileSelect = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      event.target.value = '';
+      return;
+    }
+
+    // PDF 파일인지 확인
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+      alert("PDF 파일만 업로드 가능합니다.");
+      event.target.value = '';
+      return;
+    }
+
+    // 채팅 메시지에서 contractId와 pdfUrl 추출
+    let contractIdToUse = "";
+    let pdfUrlToUse = latestContractPdfUrl;
+
+    // latestContractPdfUrl이 없으면 채팅 메시지에서 가장 최근의 계약서 완성 메시지 찾기
+    if (!pdfUrlToUse) {
+      // 모든 메시지를 시간순으로 정렬 (최신순)
+      const sortedMessages = [...allMessages].sort((a, b) => {
+        const timeA = new Date(a.createdTime || 0).getTime();
+        const timeB = new Date(b.createdTime || 0).getTime();
+        return timeB - timeA; // 최신순
+      });
+
+      // 가장 최근의 "계약서 작성이 완료되었습니다" 메시지 찾기
+      const contractCompleteMessage = sortedMessages.find(msg => 
+        msg.type === "NOTIFICATION" && 
+        msg.content && 
+        msg.content.includes("계약서 작성이 완료되었습니다")
+      );
+
+      if (contractCompleteMessage) {
+        pdfUrlToUse = extractPdfUrl(contractCompleteMessage.content);
+        contractIdToUse = extractContractId(contractCompleteMessage.content) || "";
+      }
+    } else {
+      // latestContractPdfUrl이 있으면 해당 메시지에서 contractId도 찾기
+      const sortedMessages = [...allMessages].sort((a, b) => {
+        const timeA = new Date(a.createdTime || 0).getTime();
+        const timeB = new Date(b.createdTime || 0).getTime();
+        return timeB - timeA;
+      });
+      const contractCompleteMessage = sortedMessages.find(msg => 
+        msg.type === "NOTIFICATION" && 
+        msg.content && 
+        msg.content.includes("계약서 작성이 완료되었습니다")
+      );
+      if (contractCompleteMessage) {
+        contractIdToUse = extractContractId(contractCompleteMessage.content) || "";
+      }
+    }
+
+    // pdfUrl을 찾지 못한 경우
+    if (!pdfUrlToUse) {
+      alert("업로드할 계약서가 없습니다. 계약서가 완성된 후 다시 시도해주세요.");
+      event.target.value = '';
+      return;
+    }
+
+    try {
+      // console.log(contractIdToUse, pdfUrlToUse);
+      const response = await postOrdererUpload(roomId, {
+        postId: contractIdToUse,
+        fileUrl: [pdfUrlToUse], 
+        fileName: [file.name],
+        fileType: ["PDF"],
+        filePurpose: ["CONTRACT"]
+      });
+      // console.log("계약서 업로드 성공:", response);
+      if (response && response.code === 200 && response.result) {
+        // console.log("계약서 업로드 성공:", response.result);
+        // 계약서 업로드 성공 시 채팅 메시지 전송
+        const contractCompleteMessage = {
+          roomId: roomId,
+          // sender: "admin",
+          type: "NOTIFICATION",
+          content: `최종 계약서가 업로드되었습니다.\n계약서 조회 탭에서 계약서를 확인해주세요.`,
+          createdTime: new Date().toISOString(),
+          timestamp: Date.now(),
+        };
+        const messageSent = sendChatMessage(contractCompleteMessage);
+        // console.log("메시지 전송 결과:", messageSent);
+        alert("계약서가 성공적으로 업로드되었습니다.");
+      }
+    } catch (error) {
+      console.error("계약서 업로드 실패:", error);
+      alert("계약서 업로드에 실패했습니다. 다시 시도해주세요.");
+    }
+
+    event.target.value = '';
+  };
+
+  const handleFinalContractViewClick = async () => {
+    try {
+      const response = await getContractList(roomId);
+      // console.log(response);
+      if (response && response.code === 200 && response.result) {
+        const contracts = Array.isArray(response.result) ? response.result : [response.result];
+        setContractList(contracts);
+        setShowContractListModal(true);
+      }
+    } catch (error) {
+      console.error("계약서 조회 실패:", error);
+      alert("계약서 조회에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
+
+  const handleContractSelect = (contract) => {
+    if (contract.resDto && contract.resDto.fileUrl) {
+      const fileUrl = contract.resDto.fileUrl.startsWith('http') 
+        ? contract.resDto.fileUrl 
+        : S3_BUCKET_URL + contract.resDto.fileUrl;
+      
+      // 다운로드 링크 생성
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = contract.resDto.fileName || contract.projectName || '계약서.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setShowContractListModal(false);
+    }
   };
 
   const handleDeleteChatRoom = async (roomId) => {
@@ -336,17 +649,18 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
       const isConfirmed = window.confirm("정말로 이 채팅방을 나가시겠습니까?");
       if (!isConfirmed) return;
 
-      console.log("채팅방 삭제 시작:", roomId);
+      // console.log("채팅방 삭제 시작:", roomId);
       await deleteChatRoom(roomId);
-      console.log("채팅방 삭제 완료");
+      // console.log("채팅방 삭제 완료");
       
-      // 채팅 목록 페이지로 이동
       navigate("/chat");
     } catch (error) {
       console.error("채팅방 삭제 실패:", error);
       alert("채팅방 나가기에 실패했습니다. 다시 시도해주세요.");
     }
   };
+
+
 
   return (
    <div className="h-full flex flex-col">
@@ -401,6 +715,24 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     style={{ display: 'none' }}
   />
 
+  {/* 숨겨진 문서 파일 입력 (PDF, Excel, Word 등) */}
+  <input
+    type="file"
+    ref={documentFileInputRef}
+    onChange={handleDocumentFileSelect}
+    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.hwp,.zip"
+    style={{ display: 'none' }}
+  />
+
+  {/* 숨겨진 최종 계약서 업로드 파일 입력 (PDF만) */}
+  <input
+    type="file"
+    ref={contractUploadInputRef}
+    onChange={handleContractUploadFileSelect}
+    accept=".pdf,application/pdf"
+    style={{ display: 'none' }}
+  />
+
   {/* Checkout 모달 */}
   {showCheckout && (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -427,6 +759,63 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     />
   )}
 
+  {/* 계약서 모달 */}
+  {showContractModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-[60rem] w-full mx-4 my-8 max-h-[90vh] overflow-y-auto border border-blue-main">
+        <div className="flex justify-between items-center p-4 mb-4 sticky top-0 bg-blue-main pb-4 border-b z-[100]">
+          <h2 className="text-2xl font-semibold text-white">계약서 작성</h2>
+          <button 
+            onClick={() => setShowContractModal(false)}
+            className="text-white text-3xl font-bold leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <Contract roomId={roomId} opponentId={opponentId} opponentRole={opponentRole} contractData={contractData} onContractCreated={handleSendContractMessage} onContractCompleted={handleSendContractCompleteMessage}/>
+      </div>
+    </div>
+  )}
+
+  {/* 계약서 목록 모달 */}
+  {showContractListModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg max-w-xl w-full mx-8 my-8 min-h-80 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center p-4 border-b">
+          <h2 className="text-xl font-semibold">계약서 목록</h2>
+          <button 
+            onClick={() => setShowContractListModal(false)}
+            className="text-gray-500 hover:text-gray-700 text-2xl font-bold leading-none"
+          >
+            ×
+          </button>
+        </div>
+        <div className="p-4">
+          {contractList.length === 0 ? (
+            <p className="text-gray-500 text-center py-4">계약서가 없습니다.</p>
+          ) : (
+            <div className="space-y-2">
+              {contractList.map((contract, index) => (
+                <button
+                  key={contract.contractUuid || index}
+                  onClick={() => handleContractSelect(contract)}
+                  className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-main transition-colors text-left"
+                >
+                  <div className="font-semibold text-lg mb-1">
+                    {contract.projectName || "제목 없음"}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    UUID: {contract.contractUuid}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )}
+
   {/* 채팅 메시지 영역 */}
   <div className="flex-1 p-4 overflow-y-auto">
     {allMessages?.map((chat, idx) => {
@@ -447,7 +836,6 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
 
       return (
         <div key={`${chat.sender}-${idx}-${chat.timestamp || idx}`}>
-          {/* 날짜 표시 */}
           {shouldShowDate && (
             <div className="text-center text-gray-500 text-sm mb-4 mt-4">
               {currentMessageDate}
@@ -455,13 +843,67 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           )}
           
           {/* 메시지 */}
-          {isMyMessage ? (
+         
+          {chat.type === "NOTIFICATION" || (chat.content && (chat.content.includes("계약서 생성이 완료되었습니다") || chat.content.includes("계약서 작성이 완료되었습니다"))) ? (
+        // Admin 메시지 UI
+        <div className="flex items-start gap-2 mb-4">
+          <img 
+            src={SouFLogo} 
+            className="w-10 h-10 rounded-full object-cover"
+            alt="SouF 로고"
+          />
+          <div className="flex gap-2 items-end">
+            <div className="max-w-xs bg-blue-50 border border-blue-200 text-black px-4 py-3 rounded-lg rounded-bl-none shadow">
+              <p className="text-sm mb-3 whitespace-pre-line">{getCleanContent(chat.content)}</p>
+              {(chat.type === "NOTIFICATION" && (chat.content && chat.content.includes("계약서 생성이 완료되었습니다"))) && (
+                <button 
+                  className="flex items-center gap-2 bg-blue-main text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm"
+                  onClick={handleContractViewClick}
+                >
+                  학생 측 계약서 완성하기
+                </button>
+              )}
+              {chat.type === "NOTIFICATION" && (chat.content && chat.content.includes("계약서 작성이 완료되었습니다")) && extractPdfUrl(chat.content) && (
+                <button 
+                  className="flex items-center gap-2 bg-blue-main text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm mt-2"
+                  onClick={() => {
+                    const pdfUrl = extractPdfUrl(chat.content);
+                    // pdfUrl이 이미 전체 URL인지 확인하고, 아니면 S3_BUCKET_URL과 합침
+                    let downloadUrl;
+                    if (pdfUrl.startsWith('http')) {
+                      downloadUrl = pdfUrl;
+                    } else {
+                      // S3_BUCKET_URL 끝의 / 제거, pdfUrl 시작의 / 제거 후 하나의 /로 합침
+                      const baseUrl = S3_BUCKET_URL.endsWith('/') ? S3_BUCKET_URL.slice(0, -1) : S3_BUCKET_URL;
+                      const path = pdfUrl.startsWith('/') ? pdfUrl.slice(1) : pdfUrl;
+                      downloadUrl = `${baseUrl}/${path}`;
+                    }
+                    const link = document.createElement('a');
+                    link.href = downloadUrl;
+                    link.download = '계약서.pdf';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  PDF 다운로드
+                </button>
+              )}
+            </div>
+            <span className="text-xs text-gray-500 block text-right mt-1">
+              {chat.createdTime ? new Date(chat.createdTime).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : ''}
+            </span>
+          </div>
+        </div>
+      ) : isMyMessage ? (
         <SenderMessage 
           content={chat.content} 
           createdTime={chat.createdTime}
               type={chat.type}
+              fileName={chat.fileName}
               onImageClick={handleImageClick}
-              onFileClick={handleFileClick}
+              onFileClick={(fileUrl) => handleFileClick(fileUrl, chat.fileName)}
         />
       ) : (
         <ReceiverMessage 
@@ -469,8 +911,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           createdTime={chat.createdTime}
           opponentProfileImageUrl={opponentProfileImageUrl}
           type={chat.type}
+          fileName={chat.fileName}
           onImageClick={handleImageClick}
-          onFileClick={handleFileClick}
+          onFileClick={(fileUrl) => handleFileClick(fileUrl, chat.fileName)}
           opponentId={opponentId}
           opponentRole={opponentRole}
         />
@@ -521,29 +964,71 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
           토스
         </button> */}
         <button 
-          className="bg-green-500 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200 text-sm lg:text-base"
+          className="bg-gray-100 shadow-md text-black px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleImgButtonClick}
         >
           <img src={chatImgIcon} alt="파일 첨부" className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
         <button 
-          className="bg-blue-500 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm lg:text-base"
+          className="bg-gray-100 shadow-md text-black px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleVideoButtonClick}
         >
           <img src={chatVideoIcon} alt="동영상" className="w-5 h-5 lg:w-6 lg:h-6" />
         </button>
         {/* <button 
-          className="bg-blue-500 text-white px-6 py-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200"
+          className="bg-gray-100 shadow-md text-black px-6 py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200"
           onClick={handleFileButtonClick}
         >
           <img src={chatImgIcon} alt="chatImgIcon" className="w-6 h-6" />
         </button> */}
-        <button 
-          className="bg-blue-300 text-white px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:bg-blue-400 transition-colors duration-200 text-sm lg:text-base"
+        {/* <button 
+          className="bg-blue-200 text-black px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
           onClick={handleButton3Click}
         >
           SouF 온도 남기기 
+        </button> */}
+        {UserStore.getState().roleType === "MEMBER" && (
+          <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleContractClick}
+          >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+            계약서 작성하기
+          </button>
+        )}
+        {UserStore.getState().roleType === "STUDENT" && (
+          <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleContractViewClick}
+          >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+            계약서 작성하기
+          </button>
+        )}
+        {/* 파일 전송 버튼 */}
+        <button 
+          className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleDocumentFileButtonClick}
+        >
+          파일 전송
         </button>
+        {/* 최종 계약서 업로드 버튼 */}
+        {UserStore.getState().roleType === "MEMBER" && (
+        <button 
+          className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleContractUploadButtonClick}
+        >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+          최종 계약서 업로드
+        </button>
+        )}
+        <button className="flex items-center gap-2 bg-gray-100 shadow-md text-gray-700 px-4 lg:px-6 py-3 lg:py-4 rounded-lg font-medium hover:shadow-lg transition-colors duration-200 text-sm lg:text-base"
+          onClick={handleFinalContractViewClick}
+        >
+          <img src={chatContractIcon} alt="chatContractIcon" className="w-5 h-5 lg:w-6 lg:h-6" />
+          계약서 조회
+        </button> 
+        
+      
+        
       </div>
     )}
     {showAlertModal && (
@@ -566,9 +1051,43 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         TrueBtnText="확인"
         onClickFalse={() => setShowDegreeModal(false)}
         onClickTrue={() => {
-          console.log("온도 평가 확인");
+          // console.log("온도 평가 확인");
           setShowDegreeModal(false);
         }}
+      />
+    )}
+
+    {/* 에러 모달 */}
+    {showErrorModal && (
+      <AlertModal
+        type="simple"
+        title="계약서 조회 오류"
+        description={errorDescription}
+        TrueBtnText="확인"
+        onClickTrue={() => {
+          setShowErrorModal(false);
+          if (errorAction === "redirect") {
+            window.location.href = "/chat";
+          } else if (errorAction === "reload") {
+            window.location.reload();
+          }
+        }}
+      />
+    )}
+
+    {/* 로그인 모달 */}
+    {showLoginModal && (
+      <AlertModal
+        type="simple"
+        title="로그인이 필요합니다"
+        description="계약서 조회를 위해 로그인이 필요합니다."
+        TrueBtnText="로그인하러 가기"
+        FalseBtnText="취소"
+        onClickTrue={() => {
+          setShowLoginModal(false);
+          window.location.href = "/login";
+        }}
+        onClickFalse={() => setShowLoginModal(false)}
       />
     )}
   </div>

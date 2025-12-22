@@ -4,18 +4,18 @@ let stompClient = null;
 let isConnecting = false;
 
 export const connectChatSocket = (roomId, onMessage) => {
-  console.log("🔌 WebSocket 연결 시도:", roomId);
+  // console.log("🔌 WebSocket 연결 시도:", roomId);
   
   // 기존 연결이 있으면 정리
   if (stompClient) {
-    console.log("기존 연결 정리 중...");
+    // console.log("기존 연결 정리 중...");
     stompClient.deactivate();
     stompClient = null;
   }
   
   // 이미 연결 중이면 중복 연결 방지
   if (isConnecting) {
-    console.log("이미 연결 중입니다.");
+    // console.log("이미 연결 중입니다.");
     return;
   }
   
@@ -24,6 +24,8 @@ export const connectChatSocket = (roomId, onMessage) => {
   const accessToken = localStorage.getItem("accessToken");
   
   const socket = new WebSocket("wss://api-souf.co.kr/ws");
+  // const socket = new WebSocket(`ws://3.36.253.111:8080/ws`);
+
   
   stompClient = new Client({
     webSocketFactory: () => socket,
@@ -37,14 +39,14 @@ export const connectChatSocket = (roomId, onMessage) => {
       // console.log("STOMP Debug:", str);
     },
     onConnect: () => {
-      console.log("✅ WebSocket 연결 성공");
+      // console.log("✅ WebSocket 연결 성공");
       isConnecting = false;
 
       // 메시지 구독
       stompClient.subscribe(`/topic/chatroom.${roomId}`, (message) => {
         try {
           const payload = JSON.parse(message.body);
-          console.log("📨 메시지 수신:", payload);
+          // console.log("📨 메시지 수신:", payload);
           onMessage(payload);
         } catch (error) {
           console.error("메시지 파싱 에러:", error);
@@ -57,7 +59,7 @@ export const connectChatSocket = (roomId, onMessage) => {
       isConnecting = false;
     },
     onWebSocketClose: () => {
-      console.log("❌ WebSocket 연결 종료됨");
+      // console.log("❌ WebSocket 연결 종료됨");
       isConnecting = false;
     },
     onWebSocketError: (error) => {
@@ -66,20 +68,20 @@ export const connectChatSocket = (roomId, onMessage) => {
     },
   });
 
-  console.log("🔌 WebSocket 활성화 시작...");
+  // console.log("🔌 WebSocket 활성화 시작...");
   stompClient.activate();
 };
 
 export const sendChatMessage = (message) => {
-  console.log("📤 메시지 전송 시도:", message);
+  // console.log("📤 메시지 전송 시도:", message);
   
   if (!stompClient || !stompClient.connected) {
     console.error("❌ WebSocket 연결 상태가 올바르지 않습니다.");
-    console.log("연결 상태:", {
-      stompClient: !!stompClient,
-      connected: stompClient?.connected,
-      isConnecting
-    });
+    // console.log("연결 상태:", {
+    //   stompClient: !!stompClient,
+    //   connected: stompClient?.connected,
+    //   isConnecting
+    // });
     return false;
   }
 
@@ -89,9 +91,10 @@ export const sendChatMessage = (message) => {
       sender: message.sender,
       type: message.type,
       content: message.content,
+      ...(message.pdfUrl && { pdfUrl: message.pdfUrl }), // pdfUrl이 있으면 포함
     };
     
-    console.log("전송할 메시지:", messageToSend);
+    // console.log("전송할 메시지:", messageToSend);
     
     stompClient.publish({
       destination: "/app/chat.sendMessage",
@@ -100,7 +103,7 @@ export const sendChatMessage = (message) => {
         'content-type': 'application/json'
       }
     });
-    console.log("✅ 메시지 전송 성공:", message.content);
+    // console.log("✅ 메시지 전송 성공:", message.content);
     return true;
   } catch (error) {
     console.error("❌ 메시지 전송 실패:", error);

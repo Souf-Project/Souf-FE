@@ -329,10 +329,10 @@ export default function RecruitDetail() {
       />
      
       
-      <div className="flex w-full mx-auto max-w-[60rem] pb-40 gap-12 px-8 lg:px-0">
-        <div className="w-2/3 mx-auto pt-4">
+      <div className="flex flex-col md:flex-row w-full mx-auto max-w-[60rem] pb-10 md:pb-40 gap-12 px-4 md:px-8 lg:px-0">
+        <div className="md:w-2/3 w-full mx-auto pt-4">
         <button 
-          className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors"
+          className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors text-sm md:text-base"
           onClick={handleGoBack}
         >
           <img src={backArrow} alt="뒤로가기" className="w-6 h-6 mr-2" />
@@ -340,7 +340,7 @@ export default function RecruitDetail() {
         </button>
 
           <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">{displayData?.title}</h1>
+          <h1 className="text-xl md:text-2xl font-bold">{displayData?.title}</h1>
           {isAuthor ? (
               <div className="relative">
                 <button
@@ -413,29 +413,19 @@ export default function RecruitDetail() {
           <div className="border-t border-gray-200 my-4 sm:my-6"></div>
           <div className="flex flex-col gap-8 border-b border-gray-200 pb-8">
             <div>
-            <p className="text-xl font-semibold text-black mb-4">
+            <p className="text-md md:text-xl font-semibold text-black mb-4">
                기업 소개
              </p>
-             <p>
+             <p className="text-sm md:text-base">
               {displayData?.introduction}
              </p>
             </div>
-
-            {/* <div>
-            <p className="text-xl font-semibold text-black mb-4">
-               외주 간략 소개
-             </p>
-             <p>
-              {displayData?.introduction}
-             </p>
-            </div> */}
-
             
             <div>
-              <p className="text-xl font-semibold text-black mb-4">
+              <p className="text-md md:text-xl font-semibold text-black mb-4">
                요청사항
              </p>
-             <div className="prose prose-lg max-w-none text-gray-800 mb-4 text-sm whitespace-pre-wrap">
+             <div className="prose prose-lg max-w-none text-gray-800 mb-4 text-sm md:text-base whitespace-pre-wrap">
                <ReactMarkdown 
                  remarkPlugins={[remarkGfm]}
                  rehypePlugins={[rehypeRaw]}
@@ -476,19 +466,19 @@ export default function RecruitDetail() {
             )}
 
             <div>
-              <p className="text-xl font-semibold text-black mb-4">
+              <p className="text-md md:text-xl font-semibold text-black mb-4">
                우대사항
              </p>
-             <p>
+             <p className="text-sm md:text-base">
               {displayData?.preferentialTreatment}
              </p>
             </div>
 
             <div>
-              <p className="text-xl font-semibold text-black mb-4">
+              <p className="text-md md:text-xl font-semibold text-black mb-4">
                근무 형태
              </p>
-             <p>
+             <p className="text-sm md:text-base">
               {displayData?.workType === 'OFFLINE' ? '오프라인' : 
                displayData?.workType === 'ONLINE' ? '온라인' : 
                displayData?.workType}
@@ -509,11 +499,14 @@ export default function RecruitDetail() {
           </div>
           {/* <p className="text-sm text-neutral-500 my-4">서비스 상품 교환 및 환불 규정 등은 결제·정산·환불(에스크로) 정책을 참고해주세요.</p> */}
           {/* <RecommendRecruit /> */}
+          <div className="hidden md:block">
           <EstimateBanner color="blue" />
+          </div>
+         
 
         </div>
         {/* 우측 외주 조건 */}
-        <div className="sticky top-24 w-1/3 bg-[#FCFCFC] mt-10 p-6 h-fit rounded-lg shadow-md text-sm">
+        <div className="sticky top-24 w-full md:w-1/3 bg-[#FCFCFC] mt-4 md:mt-10 p-4 md:p-6 h-fit rounded-lg shadow-md text-sm">
             <div className="space-y-8 mb-4">
               <div className="flex items-center justify-between">
                 <span className="text-neutral-600 mb-1">견적 비용</span>

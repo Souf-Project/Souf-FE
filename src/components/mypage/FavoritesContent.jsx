@@ -114,12 +114,14 @@ export default function FavoritesContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="hidden md:flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">내 즐겨찾기</h2>
         <span className="text-gray-500">총 {favorites.length}명</span>
       </div>
+
+      <span className="block md:hidden text-gray-500">총 {favorites.length}명</span>
       
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {favorites.map((favorite) => (
           <StudentInfoBlock key={favorite.id} studentInfo={favorite} type="favorite" />
         ))}
