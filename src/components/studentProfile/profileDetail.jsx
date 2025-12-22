@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import backArrow from "../../assets/images/backArrow.svg";
 import starOn from "../../assets/images/starOn.svg";
 import starOff from "../../assets/images/starOff.svg";
-import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
+import basiclogoimg from "../../assets/images/basiclogoimg.png";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProfileDetail } from "../../api/profile";
@@ -173,11 +173,11 @@ export default function ProfileDetail({}) {
             {/* 프로필 이미지 */}
             <div className="flex justify-center md:justify-start md:w-1/4">
               <img 
-                src={userData?.profileImageUrl || BasicImg4} 
+                src={userData?.profileImageUrl || basiclogoimg} 
                 className="rounded-full w-24 h-24 md:w-full md:h-auto object-cover aspect-[1/1]" 
                 alt="프로필 이미지"
                 onError={(e) => {
-                  e.target.src = BasicImg4;
+                  e.target.src = basiclogoimg;
                 }}
               />
             </div>
@@ -245,7 +245,8 @@ export default function ProfileDetail({}) {
             <div className="grid grid-cols-3 justify-center w-full gap-1 cursor-pointer">
               {userWorks.map((data) => (
                 <img
-                  src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : BasicImg4}
+                  key={data.feedId}
+                  src={data.mediaResDto?.fileUrl ? S3_BUCKET_URL + data.mediaResDto.fileUrl : basiclogoimg}
                   className="w-full h-44 sm:h-64 object-cover rounded-lg"
                   onClick={() => onWorkClick(data.feedId)}
                   alt="작품 이미지"

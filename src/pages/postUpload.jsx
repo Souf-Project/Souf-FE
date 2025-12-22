@@ -34,7 +34,7 @@ export default function PostUpload() {
   const [warningText, setWarningText] = useState("업로드 실패");
   const [uploadedFeedId, setUploadedFeedId] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
-  const { memberId, approvedStatus } = UserStore();
+  const { memberId, approvedStatus, roleType } = UserStore();
   const S3_BASE_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
   const [videoFiles, setVideoFiles] = useState([]);
@@ -65,6 +65,20 @@ export default function PostUpload() {
   const [errorModal, setErrorModal] = useState(false);
   const [errorDescription, setErrorDescription] = useState("잘못된 접근입니다.");
   const [errorAction, setErrorAction] = useState(null);
+
+  useEffect(() => {
+    if (!memberId) {
+      // 로그인하지 않은 경우
+      setShowLoginModal(true);
+
+      return;
+    }
+    if (roleType !== "STUDENT" && roleType !== "ADMIN") {
+      // 권한이 없는 경우
+      setShowLoginModal(true);
+      return;
+    }
+  }, [memberId, roleType, navigate]);
 
   useEffect(() => {
     setFormData((prev) => ({
@@ -424,14 +438,12 @@ export default function PostUpload() {
        <AlertModal
        type="simple"
        title="로그인이 필요합니다"
-       description="SouF 회원만 피드를 업로드 할 수 있습니다!"
+       description="학생 회원만 피드를 업로드 할 수 있습니다!"
        TrueBtnText="로그인하러 가기"
-       FalseBtnText="취소"
        onClickTrue={() => {
          setShowLoginModal(false);
          navigate("/login");
        }}
-       onClickFalse={() => setShowLoginModal(false)}
         />
       )}
         {errorModal && (

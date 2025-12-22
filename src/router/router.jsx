@@ -55,7 +55,6 @@ function AppRouter() {
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
-  const autoRedirectTimerRef = useRef(null);
 
   // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
   useEffect(() => {
@@ -104,36 +103,6 @@ function AppRouter() {
     };
   }, []);
 
-  // 세션 만료 모달이 열릴 때 5초 후 자동 리다이렉트
-  useEffect(() => {
-    if (showSessionExpiredModal) {
-      // 기존 타이머가 있으면 클리어
-      if (autoRedirectTimerRef.current) {
-        clearTimeout(autoRedirectTimerRef.current);
-      }
-      
-      // 5초 후 자동으로 로그인 페이지로 이동
-      autoRedirectTimerRef.current = setTimeout(() => {
-        setShowSessionExpiredModal(false);
-        if (!location.pathname.includes('/login')) {
-          navigate('/login');
-        }
-        autoRedirectTimerRef.current = null;
-      }, 5000);
-    } else {
-      // 모달이 닫히면 타이머 클리어
-      if (autoRedirectTimerRef.current) {
-        clearTimeout(autoRedirectTimerRef.current);
-        autoRedirectTimerRef.current = null;
-      }
-    }
-
-    return () => {
-      if (autoRedirectTimerRef.current) {
-        clearTimeout(autoRedirectTimerRef.current);
-      }
-    };
-  }, [showSessionExpiredModal, location.pathname, navigate]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -183,15 +152,11 @@ function AppRouter() {
       {showSessionExpiredModal && (
         <AlertModal
           type="simple"
-          title="로그인 만료"
-          description="로그인 시간이 만료되었습니다. 재로그인해주세요"
+          title="로그인 필요"
+          description="로그인이 필요한 서비스입니다"
           TrueBtnText="로그인하러 가기"
           onClickTrue={() => {
-            // 타이머 클리어
-            if (autoRedirectTimerRef.current) {
-              clearTimeout(autoRedirectTimerRef.current);
-              autoRedirectTimerRef.current = null;
-            }
+           
             setShowSessionExpiredModal(false);
             if (!location.pathname.includes('/login')) {
               navigate('/login');

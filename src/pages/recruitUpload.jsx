@@ -16,13 +16,25 @@ import AlertModal from '../components/alertModal';
 export default function RecruitUpload() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { nickname } = UserStore();
+  const { nickname, memberId, roleType } = UserStore();
   
   const isEditMode = location.state?.isEditMode || false;
   const editData = location.state?.recruitDetail || location.state?.recruitData;
   const initialEstimateType = location.state?.estimateType || (isEditMode && editData?.price ? 'fixed' : 'estimate');
-  
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  useEffect(() => {
+    if (!memberId) {
+      setShowLoginModal(true);
+      return;
+    }
+    if (roleType !== "MEMBER" && roleType !== "ADMIN") {
+      // 권한이 없는 경우
+      navigate('/');
+      return;
+    }
+  }, [memberId, roleType, navigate]);
   const [currentStep, setCurrentStep] = useState(1);
   const [estimateType, setEstimateType] = useState(initialEstimateType);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -1254,7 +1266,18 @@ export default function RecruitUpload() {
       
         <StepIndicator currentStep={currentStep} totalSteps={4} onStepClick={handleStepClick} />
       </div>
-      
+      {showLoginModal && (
+        <AlertModal
+          type="simple"
+          title="로그인이 필요합니다"
+          description="외주 등록은 기업 회원만 이용할 수 있습니다."
+          TrueBtnText="로그인하러 가기"
+          onClickTrue={() => {
+            setShowLoginModal(false);
+            navigate("/login");
+          }}
+        />
+      )}
       {/* 검증 모달 */}
       {validationModal && (
         <AlertModal

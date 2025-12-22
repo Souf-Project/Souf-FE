@@ -8,25 +8,31 @@ import { getUnreadChatCount } from "../api/notification";
 
 export default function FloatingChatButton() {
     const navigate = useNavigate();
-    const { nickname } = UserStore();
+    const { nickname, memberId } = UserStore();
     const { unreadChatCount, setUnreadChatCount } = useUnreadStore();
     useUnreadSSE();
 
     useEffect(() => {
+        // 로그인한 사용자에게만 API 호출
+        if (!memberId) {
+            return;
+        }
+
         const fetchInitialData = async () => {
             try {
               const chatCountResponse = await getUnreadChatCount();
               // 응답 구조: { code: 200, message: "...", result: 1 }
               const chatCount = chatCountResponse?.result || 0;
               setUnreadChatCount(chatCount);
-              console.log('✅ FloatingChatButton - 채팅 개수 로드:', chatCount);
+            //   console.log('✅ FloatingChatButton - 채팅 개수 로드:', chatCount);
             } catch (error) {
               console.error('채팅 개수 로드 실패:', error);
             }
           };
       
           fetchInitialData();
-        }, [setUnreadChatCount]);
+        }, [memberId, setUnreadChatCount]);
+    
         
     const handleNavigation = (path) => {
         navigate(path);
