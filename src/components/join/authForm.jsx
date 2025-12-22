@@ -340,22 +340,12 @@ export default function AuthForm({
 
         // 소셜 로그인 회원가입인 경우
         if (socialLoginInfo?.socialLogin) {
-            console.log("🔐 [소셜 회원가입] 시작");
-            console.log("🔐 [소셜 회원가입] 계정 타입:", selectedType);
-            
             // parentFormData에서 약관 동의 값을 그대로 사용
             const isPersonalInfoAgreed = parentFormData?.isPersonalInfoAgreed || false;
             const isServiceUtilizationAgreed = parentFormData?.isServiceUtilizationAgreed || false;
             const isMarketingAgreed = parentFormData?.isMarketingAgreed || false;
             
-            console.log("🔐 [소셜 회원가입] 약관 동의 상태:", {
-                isPersonalInfoAgreed,
-                isServiceUtilizationAgreed,
-                isMarketingAgreed
-            });
-
             let registrationToken = socialLoginInfo.registrationToken;
-            console.log("🔐 [소셜 회원가입] registrationToken (원본):", registrationToken);
             if (!registrationToken || registrationToken === null || registrationToken === undefined) {
                 console.error("registrationToken이 없습니다:", registrationToken);
                 alert("소셜 로그인 토큰을 가져올 수 없습니다. 다시 로그인해주세요.");
@@ -380,13 +370,6 @@ export default function AuthForm({
             let signupReqDto = {};
 
             if (selectedType === "STUDENT") {
-                console.log("🎓 [소셜 회원가입] 학생 계정 처리 시작");
-                console.log("🎓 [소셜 회원가입] 학생 인증 파일:", {
-                    hasFile: !!schoolAuthenticatedImageFileName,
-                    fileName: schoolAuthenticatedImageFileName?.name || "없음",
-                    fileSize: schoolAuthenticatedImageFileName?.size || 0,
-                    fileType: schoolAuthenticatedImageFileName?.type || "없음"
-                });
                 
                 // StudentSignupReqDto 구성
                 signupReqDto = {
@@ -409,24 +392,8 @@ export default function AuthForm({
                     majorReqDtos: finalFormData.majorReqDtos || [],
                 };
                 
-                console.log("🎓 [소셜 회원가입] 학생 signupReqDto:", {
-                    ...signupReqDto,
-                    categoryDtos: cleanedCategories.length,
-                    majorReqDtos: signupReqDto.majorReqDtos?.length || 0
-                });
             } else if (selectedType === "MEMBER") {
-                console.log("💼 [소셜 회원가입] 일반 회원 계정 처리 시작");
-                console.log("💼 [소셜 회원가입] 회원 타입:", selectedMemberType);
-                
                 if (selectedMemberType === "사업자") {
-                    console.log("💼 [소셜 회원가입] 사업자 계정 처리");
-                    console.log("💼 [소셜 회원가입] 사업자등록증 파일:", {
-                        hasFile: !!formData.businessRegistrationFile,
-                        fileName: formData.businessRegistrationFile?.name || "없음",
-                        fileSize: formData.businessRegistrationFile?.size || 0,
-                        fileType: formData.businessRegistrationFile?.type || "없음"
-                    });
-                    
                     // 사업자 필수 필드 검증
                     const newErrors = {
                         businessClassification: !formData.businessClassification || formData.businessClassification.trim() === "",
@@ -434,18 +401,16 @@ export default function AuthForm({
                         businessStatus: !formData.businessStatus || formData.businessStatus.trim() === "",
                     };
                     
-                    console.log("💼 [소셜 회원가입] 사업자 필드 검증:", newErrors);
-                    
                     // 에러가 있으면 상태 업데이트하고 종료
                     if (newErrors.businessClassification || newErrors.businessRegistrationNumber || newErrors.businessStatus) {
-                        console.error("💼 [소셜 회원가입] 사업자 필드 검증 실패");
+                        console.error("소셜 회원가입- 사업자 필드 검증 실패");
                         setBusinessValidationErrors(newErrors);
                         return;
                     }
                     
                     // 사업자 등록증 파일 검증
                     if (!formData.businessRegistrationFile) {
-                        console.error("💼 [소셜 회원가입] 사업자등록증 파일 없음");
+                        console.error("소셜 회원가입- 사업자등록증 파일 없음");
                         setBusinessFileError(true);
                         return;
                     }
@@ -489,14 +454,8 @@ export default function AuthForm({
 
                     };
                     
-                    console.log("💼 [소셜 회원가입] 사업자 signupReqDto:", {
-                        ...signupReqDto,
-                        categoryDtos: cleanedCategories.length,
-                        businessRegistrationFile: signupReqDto.businessRegistrationFile
-                    });
                 } else {
                     // 일반 회원 (isCompany: false)
-                    console.log("💼 [소셜 회원가입] 일반 회원 (사업자 아님)");
                     signupReqDto = {
                         roleType: "MEMBER",
                         email: finalFormData.email || "",
@@ -514,10 +473,6 @@ export default function AuthForm({
 
                     };
                     
-                    console.log("💼 [소셜 회원가입] 일반 회원 signupReqDto:", {
-                        ...signupReqDto,
-                        categoryDtos: cleanedCategories.length
-                    });
                 }
             }
 
@@ -526,25 +481,9 @@ export default function AuthForm({
                 signupReqDto: signupReqDto,
             };
             
-            console.log("📤 [소셜 회원가입] 전송할 데이터:", {
-                registrationToken: registrationToken ? `${registrationToken.substring(0, 20)}...` : "없음",
-                signupReqDto: {
-                    roleType: signupReqDto.roleType,
-                    email: signupReqDto.email,
-                    nickname: signupReqDto.nickname,
-                    categoryDtos: signupReqDto.categoryDtos?.length || 0,
-                    hasSchoolFile: !!signupReqDto.schoolAuthenticatedImageFileName,
-                    hasBusinessFile: !!signupReqDto.businessRegistrationFile,
-                }
-            });
-
             if (socialSignUp) {
-                console.log("🚀 [소셜 회원가입] API 호출 시작");
                 socialSignUp.mutate(socialSignupData, {
                     onSuccess: async (response) => {
-                        console.log("✅ [소셜 회원가입] API 호출 성공");
-                        console.log("✅ [소셜 회원가입] 응답 데이터:", response);
-                        
                         const result = response?.result || response?.data?.result;
                         const memberId = result?.memberId;
                         
@@ -552,13 +491,6 @@ export default function AuthForm({
                         const dtoList = result?.dtoList;
                         const presignedUrlResDto = result?.presignedUrlResDto;
                         
-                        console.log("✅ [소셜 회원가입] 회원가입 결과:", {
-                            memberId,
-                            hasDtoList: !!dtoList,
-                            hasPresignedUrlResDto: !!presignedUrlResDto,
-                            dtoListLength: Array.isArray(dtoList) ? dtoList.length : (dtoList ? 1 : 0),
-                            presignedUrlResDto: presignedUrlResDto
-                        });
                         
                         const filesToUpload = [];
                         

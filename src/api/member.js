@@ -127,6 +127,15 @@ export async function postStudentVerify(originalEmail, acKrEmail) {
   return response;
 }
 
+export async function patchAdditionalStudentInfo(formData) {
+  const response = await client.patch("/api/v1/member/add/info/student", formData);
+  return response;
+}
+
+export async function patchAdditionalMemberInfo(formData) {
+  const response = await client.patch("/api/v1/member/add/info/member", formData);
+  return response;
+}
 
 /* 회원 탈퇴 */
 

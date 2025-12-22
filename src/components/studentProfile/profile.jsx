@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import BasicImg4 from "../../assets/images/BasicProfileImg4.png";
+import basiclogoimg from "../../assets/images/basiclogoimg.png";
 import { UserStore } from "../../store/userStore";
 import SoufLogoBlack from "../../assets/images/SouFLogoBlack.png"
 import AlertModal from "../alertModal";
@@ -20,7 +20,7 @@ export default function Profile({
   
   // 기본 이미지
   const getDefaultImage = () => {
-    return BasicImg4;
+    return basiclogoimg;
   };
 
   const clickHandler = (memberId) => {
@@ -53,7 +53,7 @@ export default function Profile({
           <div className="grid grid-cols-3 justify-center gap-2">
             {popularFeeds.map((feed, index) => (
               <img 
-                key={index} 
+                key={feed.feedId || feed.id || index} 
                 src={`${import.meta.env.VITE_S3_BUCKET_URL}${feed.imageUrl}`}
                 alt={`피드 이미지 ${index + 1}`}
                 className="w-32 h-32 object-cover rounded-lg"
