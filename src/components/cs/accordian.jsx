@@ -14,14 +14,19 @@ export default function Accordian({ question, answer, ulList, olList, quotation 
         onClick={toggleAccordion}
         className="w-full py-4 text-left bg-white transition-colors duration-200 flex items-center justify-between"
       >
-        <p className="text-blue-500 text-md md:text-xl font-semibold">Q. {question}</p>
-        <img
+        <div className="flex gap-2 text-blue-500 text-md md:text-xl font-semibold">
+          <p>Q. </p>
+          <p>{question}</p>
+          <img
           src={arrow}
           alt="화살표"
           className={`w-6 h-6 transition-transform duration-500 ease-in-out ${
             isOpen ? "rotate-90" : "rotate-[270deg]"
           }`}
         />
+        </div>
+       
+       
       </button>
       
       <div

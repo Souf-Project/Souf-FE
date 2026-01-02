@@ -13,6 +13,7 @@ import SEO from "../seo";
 import DeclareButton from "../declare/declareButton";
 import { FAVORITE_ERRORS } from "../../constants/user";
 import { handleApiError } from "../../utils/apiErrorHandler";
+import PageHeader from "../pageHeader";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -158,7 +159,15 @@ export default function ProfileDetail({}) {
           subTitle="스프"
         />
       )}
-      <div className="flex flex-col pt-8 md:pt-16 sm:pt-24 px-4 max-w-4xl w-full ">
+      <PageHeader
+        leftButtons={[
+          { text: `프로필 조회 : ${userData.nickname}`}
+        ]}
+        backButton={true}
+        backButtonText="뒤로가기"
+        backButtonClick={handleGoBack}
+      />
+      <div className="flex flex-col pt-4 md:pt-4 sm:pt-12 px-4 max-w-4xl w-full ">
         <button
           className="flex items-center text-gray-600 mb-4 hover:text-black transition-colors text-sm md:text-base"
           onClick={handleGoBack}
