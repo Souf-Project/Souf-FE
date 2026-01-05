@@ -107,7 +107,7 @@ export default function CompanyApplicants({ recruitId }) {
       
       try {
         const response = await getMyRecruits();
-        console.log('내 공고문 조회 성공:', response.data);
+        // console.log('내 공고문 조회 성공:', response.data);
         setRecruits(response.data.result?.content || []);
         
         // recruitId가 props로 전달된 경우 해당 공고문을 기본 선택

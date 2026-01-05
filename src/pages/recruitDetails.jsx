@@ -465,6 +465,7 @@ export default function RecruitDetail() {
               <></>
             )}
 
+            {displayData?.preferentialTreatment && (
             <div>
               <p className="text-md md:text-xl font-semibold text-black mb-4">
                우대사항
@@ -473,6 +474,7 @@ export default function RecruitDetail() {
               {displayData?.preferentialTreatment}
              </p>
             </div>
+            )}
 
             <div>
               <p className="text-md md:text-xl font-semibold text-black mb-4">

@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import AlertModal from '../components/alertModal';
+import { RECRUIT_ERRORS } from '../constants/recruit';
 
 export default function RecruitUpload() {
   const navigate = useNavigate();
@@ -23,6 +24,9 @@ export default function RecruitUpload() {
   const initialEstimateType = location.state?.estimateType || (isEditMode && editData?.price ? 'fixed' : 'estimate');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorModal, setErrorModal] = useState(false);
+  const [errorDescription, setErrorDescription] = useState("잘못된 접근입니다.");
+  const [errorAction, setErrorAction] = useState(null);
   
   useEffect(() => {
     if (!memberId) {
@@ -35,6 +39,21 @@ export default function RecruitUpload() {
       return;
     }
   }, [memberId, roleType, navigate]);
+
+  const handleApiError = (error) => {
+    const errorKey = error?.response?.data?.errorKey;
+    const errorInfo = RECRUIT_ERRORS[errorKey];
+
+    if (errorInfo) {
+      setErrorDescription(errorInfo.message);
+      setErrorAction(errorInfo.action);
+    } else {
+      setErrorDescription("업로드 중 예상치 못한 오류가 발생했습니다.\n다시 시도해주세요.");
+      setErrorAction(null); 
+    }
+    setErrorModal(true);
+  };
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [estimateType, setEstimateType] = useState(initialEstimateType);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -91,8 +110,12 @@ export default function RecruitUpload() {
     e.target.value = '';
   };
   
-  const parsePrice = (priceString) => {
-    if (!priceString || typeof priceString !== 'string') return '';
+  const parsePrice = (priceValue) => {
+    if (!priceValue) return '';
+    // 숫자인 경우 문자열로 변환
+    const priceString = typeof priceValue === 'number' ? String(priceValue) : priceValue;
+    if (typeof priceString !== 'string') return '';
+    // "만원" 같은 텍스트 제거하고 숫자만 추출
     let numStr = priceString.replace(/[^0-9.]/g, '');
     return numStr;
   };
@@ -126,7 +149,6 @@ export default function RecruitUpload() {
         deadline: deadlineDateTime.date,
         companyName: editData.companyName || nickname || '',
         price: parsePrice(editData.price),
-        estimatePayment: parsePrice(editData.price) || '',
         isregionIrrelevant: !editData.cityName || editData.cityName === '지역 무관',
         preferentialTreatment: editData.preferentialTreatment || '',
         preferentialTreatmentTags: editData.preferentialTreatmentTags || [],
@@ -134,7 +156,7 @@ export default function RecruitUpload() {
         logoFile: null,
         companyDescription: '',
         briefIntroduction: editData.briefIntroduction || editData.introduction || '',
-        estimatePayment: editData.estimatePayment || '',
+        estimatePayment: parsePrice(editData.price) || '',
         contractMethod: editData.contractMethod || '',
         categoryDtos: editData.categoryDtoList?.map(cat => ({
           firstCategory: cat.firstCategory,
@@ -493,7 +515,7 @@ export default function RecruitUpload() {
         originalFileNames: formData.newFiles.map((file) => file.name),
         existingImageUrls: formData.existingImages.map((file) => file.fileUrl),
       };
-      console.log("formDataToSend:", formDataToSend);
+      // console.log("formDataToSend:", formDataToSend);
   
       
       let response;
@@ -551,7 +573,7 @@ export default function RecruitUpload() {
             alert('공고가 성공적으로 수정되었습니다.');
           } catch (error) {
             console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
-            alert('파일 업로드 중 오류가 발생했습니다.');
+            handleApiError(error);
           }
         }
       } else {
@@ -609,7 +631,7 @@ export default function RecruitUpload() {
             alert('공고가 성공적으로 등록되었습니다.');
           } catch (error) {
             console.error('파일 업로드 또는 미디어 등록 중 에러:', error);
-            alert('파일 업로드 중 오류가 발생했습니다.');
+            handleApiError(error);
           }
         }
       }
@@ -628,7 +650,7 @@ export default function RecruitUpload() {
           onClickTrue: () => setValidationModal(null),
         });
       } else {
-        alert(isEditMode ? '공고 수정에 실패했습니다. 다시 시도해주세요.' : '공고 등록에 실패했습니다. 다시 시도해주세요.');
+        handleApiError(error);
       }
     } finally {
       // 로딩 종료
@@ -1275,6 +1297,20 @@ export default function RecruitUpload() {
           onClickTrue={() => {
             setShowLoginModal(false);
             navigate("/login");
+          }}
+        />
+      )}
+      {errorModal && (
+        <AlertModal
+          type="simple"
+          title="업로드 오류"
+          description={errorDescription}
+          TrueBtnText="확인"
+          onClickTrue={() => {
+            setErrorModal(false);
+            if (errorAction === "redirect") {
+              navigate("/recruit?category=1");
+            }
           }}
         />
       )}
