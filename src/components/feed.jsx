@@ -11,7 +11,7 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
-import BasicProfileImg from "../assets/images/BasicProfileImg1.png";
+import basiclogoimg from "../assets/images/basiclogoimg.png";
 import DeclareButton from "./declare/declareButton";
 import { FEED_ERRORS } from "../constants/post";
 
@@ -142,7 +142,7 @@ export default function Feed({ feedData, onFeedClick }) {
         <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
-            src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : BasicProfileImg}
+            src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : basiclogoimg}
             alt={feedData?.topic || "이미지"}
             className="w-[40px] h-[40px] object-cover rounded-[50%]"
           />
