@@ -174,16 +174,9 @@ export const postRecruitMedia = async ({ recruitId, fileUrl, fileName, fileType,
 export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
     try {
         const token = localStorage.getItem('accessToken');
-        console.log("Token exists:", !!token);
-        if (token) {
-            console.log("Token preview:", token.substring(0, 20) + "...");
-        }
-
+      
         const url = '/api/v1/recruit/my';
-        console.log("Calling API:", url);
-        console.log("Base URL:", import.meta.env.VITE_BASE_URL);
-        console.log("Full URL:", import.meta.env.VITE_BASE_URL + url);
-
+       
         const response = await client.get(url, {
             params: {
                 page: pageable.page,
@@ -195,7 +188,6 @@ export async function getMyRecruits(pageable = { page: 0, size: 10 }) {
             }
         });
         
-        console.log("API Response:", response);
         return response;
     } catch (error) {
         console.error('내 공고문 조회 API 오류 발생:', error);

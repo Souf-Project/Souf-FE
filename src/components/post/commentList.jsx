@@ -6,7 +6,6 @@ import { getComment, postComment, deleteComment, postAdditionalComment, getAddit
 import { UserStore } from "../../store/userStore";
 import { useNavigate, useParams } from "react-router-dom";
 import AlertModal from "../../components/alertModal";
-import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
 import { COMMENT_ERRORS } from "../../constants/post";
 
 export default function commentList() {

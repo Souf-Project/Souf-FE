@@ -1,5 +1,5 @@
 import { useState } from "react";
-import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
+import basiclogoimg from "../../assets/images/basiclogoimg.png";
 import trashIco from "../../assets/images/trashIco.svg";
 import { UserStore } from "../../store/userStore";
 import { deleteComment } from "../../api/additionalFeed";
@@ -67,7 +67,7 @@ export default function ReplyComment({ reply }) {
                 {reply.profileUrl ? (
                     <img src={reply.profileUrl} alt="profile" className="w-full h-full rounded-full" />
                 ) : (
-                    <img src={BasicProfileImg4} alt="profile" className="w-full h-full rounded-full" />
+                    <img src={basiclogoimg} alt="profile" className="w-full h-full rounded-full" />
                 )}
             </div>
             <div className="flex-1 min-w-0">

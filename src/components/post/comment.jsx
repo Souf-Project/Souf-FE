@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import BasicProfileImg4 from "../../assets/images/BasicProfileImg4.png";
+import basiclogoimg from "../../assets/images/basiclogoimg.png";
 import editIco from "../../assets/images/editIco.svg";
 import trashIco from "../../assets/images/trashIco.svg";
 import { UserStore } from "../../store/userStore";
@@ -107,7 +107,7 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
                 {comment.profileUrl ? (
                     <img src={comment.profileUrl} alt="profile" className="w-full h-full rounded-full" />
                 ) : (
-                    <img src={BasicProfileImg4} alt="profile" className="w-full h-full rounded-full" />
+                    <img src={basiclogoimg} alt="profile" className="w-full h-full rounded-full" />
                 )}
             </div>
             <div className="flex flex-col gap-1">

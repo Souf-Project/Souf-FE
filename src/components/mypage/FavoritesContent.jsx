@@ -33,7 +33,7 @@ export default function FavoritesContent() {
       setError(null);
       
       const response = await getFavorite(memberId);
-      console.log('즐겨찾기 조회 성공:', response);
+      // console.log('즐겨찾기 조회 성공:', response);
       
       if (response.result && response.result.content) {
         setFavorites(response.result.content);

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import firstCategoryData from '../../assets/categoryIndex/first_category.json';
 import secondCategoryData from '../../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../../assets/categoryIndex/third_category.json';
@@ -175,9 +177,19 @@ export default function RecruitBlock({
         </div>
         
         <h2 className="text-md md:text-xl font-semibold text-gray-800 line-clamp-1">{title}</h2>
-        <p className="text-zinc-500 text-sm md:text-base line-clamp-2">
-        {content || "내용 없음"}
-      </p>
+        <div className="text-zinc-500 text-sm md:text-base line-clamp-2 overflow-hidden">
+          <ReactMarkdown 
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              p: ({node, ...props}) => <p className="m-0 inline" {...props} />,
+              strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
+              em: ({node, ...props}) => <em className="italic" {...props} />,
+              u: ({node, ...props}) => <u className="underline" {...props} />,
+            }}
+          >
+            {content || "내용 없음"}
+          </ReactMarkdown>
+        </div>
       <div className="flex items-center gap-2 text-sm md:text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
         {profileImageUrl && profileImageUrl.trim() !== '' && (
           <img 
