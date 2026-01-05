@@ -233,7 +233,7 @@ export default function ApplicationsContent() {
                       <div className="text-sm text-gray-500">
                         {categoryNames.map((category, index) => (
                           <div key={index}>
-                            {category.first}
+                            - {category.first}
                             {category.second && category.second.trim().length > 0 && (
                               <>
                                 <br/>{'>'} {category.second}

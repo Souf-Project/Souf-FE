@@ -38,13 +38,19 @@ export default function CompanyApplicants({ recruitId }) {
         cat => cat.first_category_id === firstCatId
       )?.name || '';
 
-      const secondName = secondCategoryData.second_category.find(
-        cat => cat.second_category_id === secondCatId
-      )?.name || '';
+      // secondCategory가 null이거나 유효하지 않으면 빈 문자열
+      const secondName = secondCatId 
+        ? (secondCategoryData.second_category.find(
+            cat => cat.second_category_id === secondCatId
+          )?.name || '')
+        : '';
 
-      const thirdName = thirdCategoryData.third_category.find(
-        cat => cat.third_category_id === thirdCatId
-      )?.name || '';
+      // thirdCategory가 null이거나 유효하지 않으면 빈 문자열
+      const thirdName = thirdCatId
+        ? (thirdCategoryData.third_category.find(
+            cat => cat.third_category_id === thirdCatId
+          )?.name || '')
+        : '';
 
       const key = `${firstCatId}-${secondCatId}`;
       
@@ -132,7 +138,7 @@ export default function CompanyApplicants({ recruitId }) {
       
       try {
         const response = await getApplicantsByRecruitId(selectedRecruitId);
-        console.log('지원자 리스트 조회 성공:', response.data);
+        // console.log('지원자 리스트 조회 성공:', response.data);
         setApplicants(response.data.result?.content || []);
       } catch (error) {
         console.error('지원자 리스트 조회 실패:', error);
@@ -217,10 +223,18 @@ export default function CompanyApplicants({ recruitId }) {
                           <div className="text-sm text-gray-500">
                             {categoryNames.map((category, index) => (
                               <div key={index}>
-                                {category.first} 
-                                <br/>{'>'} {category.second} 
-                                <br/>{'>'} {category.thirds.join(', ')}
-                              </div>
+                              - {category.first}
+                              {category.second && category.second.trim().length > 0 && (
+                                <>
+                                  <br/>{'>'} {category.second}
+                                </>
+                              )}
+                              {category.thirds && category.thirds.length > 0 && category.thirds.some(t => t && t.trim().length > 0) && (
+                                <>
+                                  <br/>{'>'} {category.thirds.filter(t => t && t.trim().length > 0).join(', ')}
+                                </>
+                              )}
+                            </div>
                             ))}
                           </div>
                         </td>
