@@ -7,7 +7,7 @@ import Feed from "../components/feed";
 import Loading from "../components/loading";
 import { UserStore } from "../store/userStore";
 import AlertModal from "../components/alertModal";
-import CategoryMenu from "../components/categoryMenu";
+import FeedCategoryMenu from "../components/feedCategoryMenu";
 import { MEMBER_ERRORS } from "../constants/user";
 import SEO from "../components/seo";
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
@@ -100,7 +100,7 @@ const {
           {/* 모바일 카테고리 메뉴 */}
           {showMobileCategoryMenu && (
             <div className="mt-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-              <CategoryMenu
+              <FeedCategoryMenu
                 mode="simple"
                 secondCategories={secondCategoryData.second_category}
                 thirdCategories={thirdCategoryData}
@@ -113,10 +113,10 @@ const {
         </div>
       </div>
 
-    <div className="w-screen max-w-[60rem] mx-auto flex flex-col lg:flex-row mb-40">
+    <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
       {/* 데스크톱 카테고리 메뉴 */}
-      <div className="hidden lg:block mb-4 mr-4">
-        <CategoryMenu 
+      <div className="hidden lg:block">
+        <FeedCategoryMenu 
           mode="simple"
           secondCategories={secondCategoryData.second_category}
           thirdCategories={thirdCategoryData}
@@ -130,7 +130,7 @@ const {
         {isLoading ? (
           <Loading />
         ) : feedData?.result?.content && feedData.result.content.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full max-w-[50rem]">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 w-full">
             {feedData.result.content.map((data, index) => (
               <Feed key={`${data.memberId}-${data.worksId || index}`} feedData={data} onFeedClick={onFeedClick} />
             ))}
