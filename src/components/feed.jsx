@@ -126,16 +126,7 @@ export default function Feed({ feedData, onFeedClick }) {
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-md border border-gray-200 w-full shadow-sm relative"
     >
-      <div className="flex justify-between items-center mx-2 mt-2">
-        <h2 
-          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-blue-main transition-colors mr-2"
-          onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
-        >
-          {feedData?.topic || "제목 없음"}
-        </h2>
-       
-      </div>
-      <div className="flex justify-between items-center mx-2 mb-1">
+       <div className="flex justify-between items-center mx-2 pt-1">
         <div className="w-full flex justify-start items-center gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
@@ -154,6 +145,16 @@ export default function Feed({ feedData, onFeedClick }) {
             worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
         </div>
       </div>
+      <div className="flex justify-between items-center mx-2 mb-1">
+        <h2 
+          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-blue-main transition-colors mr-2"
+          onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
+        >
+          {feedData?.topic || "제목 없음"}
+        </h2>
+       
+      </div>
+     
       <div 
         className="flex justify-center w-full overflow-hidden rounded-md mb-2 relative"
       >

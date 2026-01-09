@@ -302,7 +302,7 @@ export default function PostEdit() {
             className={`px-6 py-3 rounded-lg font-bold transition-colors duration-200 ${
               isPending
                 ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                : 'bg-yellow-main text-black hover:bg-yellow-600'
+                : 'bg-blue-main text-white'
             }`}
           >
             {isPending ? (

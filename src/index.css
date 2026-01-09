@@ -236,7 +236,7 @@ h1 {
 }
 
 input {
-  background: transparent;
+  background: white;
 }
 
 @media (prefers-color-scheme: light) {

@@ -12,7 +12,7 @@ export default function PostInput({
         <span className="text-xs text-gray-500">&nbsp;{maxLength !== "" && `( ${value.length} / ${maxLength} )`}</span>
       </div>
       <textarea
-        className={`border-2 p-2 rounded-[10px] w-full resize-none overflow-auto ${inputHeight}`}
+        className={`border border-grey-border p-2 rounded-md w-full resize-none overflow-auto ${inputHeight}`}
         value={value}
         onChange={onChange}
         maxLength={maxLength}
