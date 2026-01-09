@@ -45,7 +45,7 @@ export default function Feed({ feedData, onFeedClick }) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-point"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-main"></div>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function Feed({ feedData, onFeedClick }) {
     >
       <div className="flex justify-between items-center mx-2 mt-2">
         <h2 
-          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-yellow-point transition-colors mr-2"
+          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-blue-main transition-colors mr-2"
           onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
         >
           {feedData?.topic || "제목 없음"}
