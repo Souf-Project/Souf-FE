@@ -12,7 +12,6 @@ import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import basiclogoimg from "../assets/images/basiclogoimg.png";
-import DeclareButton from "./declare/declareButton";
 import { FEED_ERRORS } from "../constants/post";
 
 
@@ -46,7 +45,7 @@ export default function Feed({ feedData, onFeedClick }) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-point"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-main"></div>
       </div>
     );
   }
@@ -125,28 +124,17 @@ export default function Feed({ feedData, onFeedClick }) {
   return (
     <div
       key={feedData?.memberId}
-      className="flex flex-col justify-center rounded-2xl border border-gray-200 p-6 w-full shadow-sm relative"
+      className="flex flex-col justify-center rounded-md border border-gray-200 w-full shadow-sm relative"
     >
-      <div className="flex justify-between items-center mb-4">
-        <h2 
-          className="text-base lg:text-xl font-semibold leading-snug text-black cursor-pointer hover:text-yellow-point transition-colors mr-2"
-          onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
-        >
-          {feedData?.topic || "제목 없음"}
-        </h2>
-        <p className="text-xs lg:text-sm text-gray-500">
-          {getFormattedDate(feedData.lastModifiedTime)}
-        </p>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="w-full max-w-[500px] flex justify-start items-center mb-2 gap-2 cursor-pointer"
+       <div className="flex justify-between items-center mx-2 pt-1">
+        <div className="w-full flex justify-start items-center gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
           <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : basiclogoimg}
             alt={feedData?.topic || "이미지"}
-            className="w-[40px] h-[40px] object-cover rounded-[50%]"
+            className="w-6 h-6 object-cover rounded-[50%]"
           />
-          <h2 className="text-base lg:text-xl font-semibold leading-snug text-black"
+          <h2 className="text-sm font-medium leading-snug text-black"
           onClick={() => navigate(`/profileDetail/${feedData?.memberId}`)}>
             {feedData?.nickname || "학생" }
           </h2>
@@ -157,8 +145,18 @@ export default function Feed({ feedData, onFeedClick }) {
             worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
         </div>
       </div>
+      <div className="flex justify-between items-center mx-2 mb-1">
+        <h2 
+          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-blue-main transition-colors mr-2"
+          onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
+        >
+          {feedData?.topic || "제목 없음"}
+        </h2>
+       
+      </div>
+     
       <div 
-        className="flex justify-center w-full overflow-hidden rounded-md mb-4 relative"
+        className="flex justify-center w-full overflow-hidden rounded-md mb-2 relative"
       >
         {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
           <>
@@ -181,14 +179,14 @@ export default function Feed({ feedData, onFeedClick }) {
                         <video
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           controls
-                          className="w-full h-auto max-h-[500px] object-cover rounded-lg cursor-pointer"
+                          className="w-full h-auto max-h-[500px] object-cover cursor-pointer"
                           onClick={goToDetail}
                         />
                       ) : (
                         <img
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           alt={data.fileName}
-                          className="w-full h-auto max-h-[500px] object-cover rounded-lg aspect-[3/4] cursor-pointer"
+                          className="w-full h-auto max-h-[500px] object-cover aspect-[3/4] cursor-pointer"
                           onClick={goToDetail}
                         />
                       )}
@@ -202,17 +200,17 @@ export default function Feed({ feedData, onFeedClick }) {
               <div className="hidden lg:block">
                 <button 
                   onClick={(e) => { e.stopPropagation(); swiperRef.current?.slidePrev(); }}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
                 >
-                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
                 <button 
                   onClick={(e) => { e.stopPropagation(); swiperRef.current?.slideNext(); }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
                 >
-                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -225,7 +223,7 @@ export default function Feed({ feedData, onFeedClick }) {
           </div>
         )}
       </div>
-      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-4 cursor-pointer"
+      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-2 mx-2 cursor-pointer"
        onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}>
         {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
         <span
@@ -234,16 +232,10 @@ export default function Feed({ feedData, onFeedClick }) {
         >
           {feedData?.content.length <= maxLength ? "" : isExpanded ? "접기" : "더보기"}
         </span>
-        
+        <p className="text-xs lg:text-sm text-gray-500">
+          {getFormattedDate(feedData.lastModifiedTime)}
+        </p>
       </p>
-      <DeclareButton 
-        postType="FEED"
-        postId={feedData?.feedId}
-        title={feedData?.topic || "제목 없음"}
-        reporterId={memberId}
-        reportedMemberId={feedData?.memberId}
-        onDeclare={handleDeclareClick} 
-      />
       {showDeleteModal && (
         <AlertModal
           type="warning"
