@@ -336,8 +336,7 @@ export default function Recruit() {
         </div>
       </div>
 
-      <div className="max-w-[60rem] w-full mx-auto">
-        <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">
+      <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
         {/* 데스크톱 카테고리 메뉴 */}
         <div className="hidden lg:block">
           <CategoryMenu
@@ -355,7 +354,7 @@ export default function Recruit() {
         </div>
         
         {/* 공고문 목록 */}
-        <div className="w-full lg:ml-4 px-2 md:px-8 lg:px-0">
+        <div className="w-full">
           <div className="mb-4 flex justify-between items-center ">
             <div className="flex items-center gap-4">
             <FilterDropdown
@@ -423,7 +422,6 @@ export default function Recruit() {
               </p>
             </div>
           )}
-        </div>
         </div>
       </div>
 

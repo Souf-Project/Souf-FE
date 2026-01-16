@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postApplicationReject } from "../api/application";
+import { patchApplicationDecision } from "../api/application";
 import { useMutation } from "@tanstack/react-query";
 import AlertModal from "./alertModal";
 import sendIco from "../assets/images/sendIco.svg";
 import { postChatrooms } from "../api/chat";
 import { getLastCategoryName } from "../utils/categoryUtils";
+// 수정
 
 export default function StudentInfoBlock({ studentInfo, type }) {
   const navigate = useNavigate();
@@ -16,10 +17,13 @@ export default function StudentInfoBlock({ studentInfo, type }) {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => postApplicationReject(studentInfo?.applicationId),
+    mutationFn: () => patchApplicationDecision(studentInfo?.applicationId, "REJECT"),
     onSuccess: async () => {
       setShowRejectModal(false);
       setShowSuccessModal(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500); 
     },
   });
 
@@ -49,17 +53,6 @@ export default function StudentInfoBlock({ studentInfo, type }) {
     }
   };
 
-  /*
-  검색 CSS
-   {studentInfo.status === "REJECTED" && (
-    <div className="flex justify-center items-center absolute inset-0 backdrop-blur-[2px] bg-gray-300 bg-opacity-30 rounded-lg pointer-events-none" >
-      <span className="text-3xl text-red-500">거절</span>
-    </div>
-  )}
-
-
-  */
-
   return (
     <div className="relative">
       <div
@@ -72,11 +65,11 @@ export default function StudentInfoBlock({ studentInfo, type }) {
           {/* 프로필 이미지 */}
           <div className="flex-shrink-0">
             <img
-              src={user?.profileImageUrl || "/src/assets/images/BasicProfileImg1.png"}
+              src={user?.profileImageUrl || "/src/assets/images/basiclogoimg.png"}
               alt="프로필 사진"
               className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
               onError={(e) => {
-                e.target.src = "/src/assets/images/BasicProfileImg1.png";
+                e.target.src = "/src/assets/images/basiclogoimg.png";
               }}
             />
             <span className="text-sm text-blue-main mr-2">스프온도: {user?.temperature || 36.5}°C</span>
@@ -158,6 +151,16 @@ export default function StudentInfoBlock({ studentInfo, type }) {
             채팅하기
             <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(user?.id)} />
           </div>
+          </div>
+        )}
+        {studentInfo.status === "ACCEPTED" && (
+          <div className="ml-auto text-sm text-green-500 font-medium">
+           승인됨
+          </div>
+        )}
+        {studentInfo.status === "REJECTED" && (
+          <div className="ml-auto text-sm text-red-500 font-medium">
+           거절됨
           </div>
         )}
       </div>

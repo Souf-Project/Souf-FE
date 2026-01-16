@@ -42,13 +42,15 @@ export async function getApplicantsByRecruitId(recruitId, pageable = { page: 0, 
     return response;
 }
 
-/* 지원 거절하기 */
-export const postApplicationReject = async (applicationId) => {
+/* 지원 승인/거절하기 */
+export const patchApplicationDecision = async (applicationId, decision) => {
   try {
-    const response = await client.post(`/api/v1/applications/${applicationId}/reject`);
+    const response = await client.patch(`/api/v1/applications/${applicationId}/decision`, {
+      decision: decision 
+    });
     return response.data;
   } catch (error) {
-    console.error("지원 거절 에러:", error);
+    console.error("지원 승인/거절 에러:", error);
     throw error;
   }
 };
