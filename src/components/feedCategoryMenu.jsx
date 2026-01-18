@@ -46,7 +46,7 @@ const FeedCategoryMenu = ({ secondCategories, thirdCategories, onSelect, selecte
   const isAllSelected = tempSelectedCategories.length === 0;
   
   return (
-    <div className="flex justify-between items-center w-full mx-auto h-auto bg-white overflow-y-auto mb-4">
+    <div className="flex justify-between items-center w-full mx-auto h-auto bg-white overflow-y-auto">
       <div className="flex flex-wrap gap-4 mx-2 md:mx-0gi md:gap-6 text-sm md:text-base font-semibold transition-all duration-300 ease-in-out">
         <div 
           className={`relative rounded cursor-pointer transition-colors flex items-center pb-2 group  ${

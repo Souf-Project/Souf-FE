@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { deleteFeed, getPopularFeed } from "../api/feed";
+import { deleteFeed, getPopularFeed, getFeedDetail } from "../api/feed";
 import { getFeed } from "../api/feed";
 import { getFormattedDate } from "../utils/getDate";
 import UpdateOption from "./updateOption";
@@ -13,6 +13,9 @@ import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import basiclogoimg from "../assets/images/basiclogoimg.png";
 import { FEED_ERRORS } from "../constants/post";
+import heartOn from "../assets/images/heartOn.svg";
+import heartOff from "../assets/images/heartOff.svg";
+import { patchLike } from "../api/additionalFeed";
 
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -32,6 +35,9 @@ export default function Feed({ feedData, onFeedClick }) {
   const [errorModal, setErrorModal] = useState(false);
   const [errorDescription, setErrorDescription] = useState("잘못된 접근");
   const [errorAction, setErrorAction] = useState("redirect");
+  const [isLiked, setIsLiked] = useState(false);
+  const [isHeartDisabled, setIsHeartDisabled] = useState(false);
+  const [isHeartAnimating, setIsHeartAnimating] = useState(false);
 
   const {memberId} = UserStore();
   const swiperRef = useRef(null);
@@ -59,10 +65,10 @@ export default function Feed({ feedData, onFeedClick }) {
   }
 
   useEffect(() => {
-
      setWorksData(feedData);
      setMediaData(feedData?.mediaResDtos);
-  }, []);
+     setIsLiked(feedData?.liked || false);
+  }, [feedData]);
   
   const clickHandler = (profileId) => {
     if (onFeedClick) {
@@ -121,15 +127,57 @@ export default function Feed({ feedData, onFeedClick }) {
           const handleDeclareClick = (declareData) => {
        console.log('신고 데이터:', declareData);
      }
+
+  const handleHeartClick = async () => {
+    setIsHeartDisabled(true); 
+    setIsHeartAnimating(true);
+    
+    try {
+      const currentMemberId = UserStore.getState().memberId;
+      const requestBody = {
+        memberId: currentMemberId,
+        isLiked: !isLiked // 현재 상태의 반대값을 전송
+      };
+      
+      await patchLike(feedData?.feedId, requestBody);
+
+      const updatedData = await getFeedDetail(feedData?.memberId, feedData?.feedId);
+      setWorksData(updatedData.result);
+      setIsLiked(updatedData.result.liked);
+      setMediaData(updatedData.result.mediaResDtos);
+     
+    } catch (error) {
+      console.error("피드 관련 에러:", error);
+      const errorKey = error?.response?.data?.errorKey;
+      if (error.response?.status === 403) {
+        setShowLoginModal(true);
+      }else{
+        const errorInfo = FEED_ERRORS[errorKey];
+        setErrorModal(true);
+        setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+        setErrorAction(errorInfo?.action || "redirect");
+      }
+    }
+    
+    setTimeout(() => {
+      setIsHeartAnimating(false);
+    }, 200);
+    
+    // 1초 후 버튼 다시 활성화
+    setTimeout(() => {
+      setIsHeartDisabled(false);
+    }, 1000);
+  };
   return (
     <div
       key={feedData?.memberId}
       className="flex flex-col justify-center rounded-md border border-gray-200 w-full shadow-sm relative"
     >
        <div className="flex justify-between items-center mx-2 pt-1">
-        <div className="w-full flex justify-start items-center gap-2 cursor-pointer"
+        <div className="w-full flex justify-between items-center gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
-          <img
+            <div className="flex items-center gap-2"> 
+            <img
             src={feedData?.profileImageUrl ? `${feedData?.profileImageUrl}` : basiclogoimg}
             alt={feedData?.topic || "이미지"}
             className="w-6 h-6 object-cover rounded-[50%]"
@@ -138,7 +186,25 @@ export default function Feed({ feedData, onFeedClick }) {
           onClick={() => navigate(`/profileDetail/${feedData?.memberId}`)}>
             {feedData?.nickname || "학생" }
           </h2>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleHeartClick();
+              }}
+              disabled={isHeartDisabled}
+              className={`transition-all duration-200 ${
+                isHeartAnimating ? 'scale-125' : 'scale-100'
+              } ${isHeartDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
+            >
+              <img 
+                src={isLiked ? heartOn : heartOff} 
+                alt={isLiked ? "heartOn" : "heartOff"} 
+                className="w-4 h-4" 
+              />
+            </button>
         </div>
+
         <div className="flex items-center gap-2">
         
           <UpdateOption id={feedData.memberId} memberId={memberId}

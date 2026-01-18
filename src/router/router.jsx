@@ -113,6 +113,7 @@ function AppRouter() {
           {/* <Route path="/" element={<Inspection />} /> */}
           <Route path="/error" element={<Inspection />} />
          <Route path="/login" element={<Login />} />
+         <Route path="/test" element={<Guide />} />
           <Route path="/oauth/kakao/callback" element={<Redirect />} />
           <Route path="/oauth/google/callback" element={<Redirect />} />
           <Route path="/recruit" element={<Recruit />} />
