@@ -232,17 +232,17 @@ client.interceptors.response.use(
     const status = error.response?.status;
     const errorKey = error.response?.data?.errorKey;
     const requestUrl = originalRequest?.url || originalRequest?._fullUrl || '';
-
-    // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
-    if (requestUrl.includes('/api/v1/auth/refresh')) {
-      await handleRefreshFailure();
-      return Promise.reject(error);
-    }
+      
+      // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
+      if (requestUrl.includes('/api/v1/auth/refresh')) {
+        await handleRefreshFailure();
+        return Promise.reject(error);
+      }
 
     // 401 에러 발생 시 리프레시 토큰 호출 (200이 아닌 경우)
     if (status !== 200 && status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const getRefresh = await axios.get(`${SERVER_URL}/api/v1/auth/refresh`, { 
           withCredentials: true, 
@@ -256,10 +256,10 @@ client.interceptors.response.use(
           originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
           return client(originalRequest);
         }
-      } catch (refreshError) {
-        // refresh 실패 시 로그아웃 처리
-        await handleRefreshFailure();
-        return Promise.reject(refreshError);
+        } catch (refreshError) {
+          // refresh 실패 시 로그아웃 처리
+          await handleRefreshFailure();
+          return Promise.reject(refreshError);
       }
     }
 

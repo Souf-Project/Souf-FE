@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { useCookies } from "react-cookie";
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -43,18 +44,23 @@ import PrivacyPage from "../pages/policy/privacy";
 import ComplainPage from "../pages/policy/complain";
 import Contract from "../pages/contract";
 import AdditionalInfo from "../pages/additionalInfo";
+import PopUpView from "../components/popUpView";
+import PopUpDC from "../utils/popUpDC";
+import popUpImg from "../assets/images/popUpImg.png";
 
 
 function AppRouter() {
   const location = useLocation();
   const navigate = useNavigate();
   const isChatPage = location.pathname === "/chat";
+  const [cookies, setCookie, removeCookie] = useCookies();
 
   const { nickname, memberId } = UserStore();
   const { setUnreadChatCount, setUnreadNotificationCount, setNotifications } = useUnreadStore();
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(false);
 
   // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
   useEffect(() => {
@@ -102,6 +108,30 @@ function AppRouter() {
       window.removeEventListener('showSessionExpiredModal', handleSessionExpired);
     };
   }, []);
+
+  // 팝업 표시 여부 확인 (메인 페이지에서만)
+  useEffect(() => {
+    if (location.pathname === "/") {
+      const currentCookies = cookies[PopUpDC.COOKIE_VALUE];
+      setShowPopUp(!currentCookies);
+    } else {
+      setShowPopUp(false);
+    }
+  }, [cookies, location.pathname]);
+
+  // 팝업 닫기 핸들러
+  const closePopUp = (selCheck) => {
+    if (selCheck) {
+      // 오늘 하루 열지 않기 체크 시 쿠키에 저장 (1일)
+      const expires = new Date();
+      expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000); // 1일
+      setCookie(PopUpDC.COOKIE_VALUE, 'true', { 
+        path: '/', 
+        expires 
+      });
+    }
+    setShowPopUp(false);
+  };
 
 
   return (
@@ -164,6 +194,15 @@ function AppRouter() {
               navigate('/login');
             }
           }}
+        />
+      )}
+
+      {/* 팝업  */}
+      {showPopUp && location.pathname === "/" && (
+        <PopUpView 
+          closePopUp={closePopUp}
+          title="SOUF 피드 경진대회 개최"
+          imageUrl={popUpImg}
         />
       )}
     </div>

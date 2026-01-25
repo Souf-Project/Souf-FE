@@ -410,7 +410,8 @@ export default function Home() {
     <>
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
     <div className="relative overflow-x-hidden">
-        <div className="relative bg-[#FBFBFB] py-20 w-screen mx-auto">
+      <div className="w-full max-w-[60rem] h-[680px] bg-red-500 mx-auto"></div>
+        <div className="relative bg-[#FBFBFB] w-screen mx-auto">
         <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[60rem] mx-auto">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
           <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
