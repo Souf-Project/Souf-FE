@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/pageHeader";
-import { getFeed } from "../api/feed";
+import { getFeed, getFeedTop5List } from "../api/feed";
 import { useQuery } from "@tanstack/react-query";
 import Feed from "../components/feed";
 import Loading from "../components/loading";
@@ -76,6 +76,21 @@ const {
       },
     keepPreviousData: true, 
   });
+
+  const {
+    data: feedTop5Data,
+    isLoading: feedTop5Loading,
+    error: feedTop5Error,
+  } = useQuery({
+    queryKey: ["feedTop5"],
+    queryFn: async () => {
+      const data = await getFeedTop5List();
+      return data;
+    },
+    keepPreviousData: true,
+  });
+
+  console.log("feedTop5Data", feedTop5Data);
 
   return (
     <>
