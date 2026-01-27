@@ -14,6 +14,8 @@ import SEO from "../components/seo";
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
 
+const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
+
 export default function StudentFeedList({ }) {
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -90,7 +92,13 @@ const {
     keepPreviousData: true,
   });
 
-  console.log("feedTop5Data", feedTop5Data);
+  // console.log("feedTop5Data", feedTop5Data);
+
+  // 순위 데이터 가져오기
+  const top5Data = feedTop5Data?.result || [];
+  
+  // 현재 선택된 탭의 순위 데이터
+  const currentRankData = top5Data.find(item => item.rank === activeTab + 1);
 
   return (
     <>
@@ -100,82 +108,226 @@ const {
     <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
       <div className="w-full h-28 bg-gray-100 cursor-pointer" onClick={() => {navigate("/contest");
       }} />
-      <div className="w-full flex items-center justify-between my-4 gap-4">
-        <div className="w-1/2 h-72">
-        
-          <div className={`relative p-4 w-full h-full rounded-lg shadow-md transition-all duration-300 ease-in-out ${
-            activeTab === 0 ? "bg-blue-100" :
-            activeTab === 1 ? "bg-blue-200" :
-            activeTab === 2 ? "bg-blue-300" :
-            activeTab === 3 ? "bg-blue-400" :
-            activeTab === 4 ? "bg-blue-500" :
-            "bg-gray-100"
-          }`}/>
-          {/* <div className="absolute top-0 left-0 w-32 h-48 bg-gray-100" /> */}
+      {feedTop5Loading ? (
+        <div className="w-full flex items-center justify-center my-4">
+          <Loading />
         </div>
-        <div className="w-1/2 flex flex-col gap-4">
-          <div 
-            className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
-              activeTab === 0 
-                ? "bg-blue-100 shadow-lg" 
-                : ""
-            }`}
-            onClick={() => handleTabChange(0)}
-          >
-            <div className={`text-2xl font-bold transition-colors duration-300 ${
-              activeTab === 0 ? "text-blue-600" : "text-black"
-            }`}>1.</div>
+      ) : top5Data.length > 0 ? (
+        <div className="w-full flex items-center justify-between my-4 gap-4">
+          {/* 왼쪽: 피드 이미지 영역 */}
+          <div className="w-1/2 h-[24rem]">
+            <div className={`relative w-full h-full transition-all duration-300 ease-in-out overflow-hidden flex items-center justify-center`}>
+              {currentRankData && currentRankData.competitionPopularFeedResDto && currentRankData.competitionPopularFeedResDto.length > 0 ? (
+                (() => {
+                  const feeds = currentRankData.competitionPopularFeedResDto;
+                  const feedCount = feeds.length;
+
+                  // 1개일 때
+                  if (feedCount === 1) {
+                    return (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div 
+                          className="w-full max-w-[54%] aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg shadow-md cursor-pointer"
+                          onClick={() => navigate(`/profileDetail/${currentRankData.memberId}/post/${feeds[0].feedId}`)}
+                        >
+                          {feeds[0].mediaResDto?.fileUrl ? (
+                            <img 
+                              src={`${BUCKET_URL}${feeds[0].mediaResDto.fileUrl}`}
+                              alt={feeds[0].feedTitle || "피드 이미지"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "/src/assets/images/basiclogoimg.png";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              이미지 없음
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // 2개일 때
+                  if (feedCount === 2) {
+                    return (
+                      <div className="w-full h-full flex gap-2 items-center justify-center">
+                        {feeds.map((feed, index) => (
+                          <div 
+                            key={feed.feedId || index} 
+                            className="flex-1 max-w-[48%] aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg shadow-md cursor-pointer "
+                            onClick={() => navigate(`/profileDetail/${currentRankData.memberId}/post/${feed.feedId}`)}
+                          >
+                            {feed.mediaResDto?.fileUrl ? (
+                              <img 
+                                src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
+                                alt={feed.feedTitle || "피드 이미지"}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.src = "/src/assets/images/basiclogoimg.png";
+                                }}
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                                이미지 없음
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  // 3개일 때
+                  if (feedCount === 3) {
+                    return (
+                      <div className="relative w-full h-full flex items-center justify-center">
+                        {/* 두 번째 이미지 (왼쪽) */}
+                        <div 
+                          className="absolute left-0 w-[40%] aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg shadow-md opacity-50 z-10 mt-20 cursor-pointer hover:opacity-70 transition-opacity"
+                          onClick={() => navigate(`/profileDetail/${currentRankData.memberId}/post/${feeds[1].feedId}`)}
+                        >
+                          {feeds[1].mediaResDto?.fileUrl ? (
+                            <img 
+                              src={`${BUCKET_URL}${feeds[1].mediaResDto.fileUrl}`}
+                              alt={feeds[1].feedTitle || "피드 이미지"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "/src/assets/images/basiclogoimg.png";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              이미지 없음
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 첫 번째 이미지 (가운데, z-index 높게) */}
+                        <div 
+                          className="relative w-[54%] aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg shadow-md z-20 mb-10 cursor-pointer "
+                          onClick={() => navigate(`/profileDetail/${currentRankData.memberId}/post/${feeds[0].feedId}`)}
+                        >
+                          {feeds[0].mediaResDto?.fileUrl ? (
+                            <img 
+                              src={`${BUCKET_URL}${feeds[0].mediaResDto.fileUrl}`}
+                              alt={feeds[0].feedTitle || "피드 이미지"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "/src/assets/images/basiclogoimg.png";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              이미지 없음
+                            </div>
+                          )}
+                        </div>
+
+                        {/* 세 번째 이미지 (오른쪽) */}
+                        <div 
+                          className="absolute right-0 w-[40%] aspect-[3/4] overflow-hidden bg-gray-100 rounded-lg shadow-md opacity-50 z-10 mt-20 cursor-pointer hover:opacity-70 transition-opacity"
+                          onClick={() => navigate(`/profileDetail/${currentRankData.memberId}/post/${feeds[2].feedId}`)}
+                        >
+                          {feeds[2].mediaResDto?.fileUrl ? (
+                            <img 
+                              src={`${BUCKET_URL}${feeds[2].mediaResDto.fileUrl}`}
+                              alt={feeds[2].feedTitle || "피드 이미지"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "/src/assets/images/basiclogoimg.png";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              이미지 없음
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // 기본 케이스 (4개 이상)
+                  return (
+                    <div className="w-full h-full flex gap-2 items-center justify-center">
+                      {feeds.slice(0, 3).map((feed, index) => (
+                        <div 
+                          key={feed.feedId || index} 
+                          className="flex-1 h-full overflow-hidden bg-gray-100 rounded-lg shadow-md cursor-pointer "
+                          onClick={() => navigate(`/profileDetail/${currentRankData.memberId}/post/${feed.feedId}`)}
+                        >
+                          {feed.mediaResDto?.fileUrl ? (
+                            <img 
+                              src={`${BUCKET_URL}${feed.mediaResDto.fileUrl}`}
+                              alt={feed.feedTitle || "피드 이미지"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "/src/assets/images/basiclogoimg.png";
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                              이미지 없음
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  피드가 없습니다
+                </div>
+              )}
+            </div>
           </div>
-          <div 
-            className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
-              activeTab === 1 
-                ? "bg-blue-100 shadow-lg" 
-                : ""
-            }`}
-            onClick={() => handleTabChange(1)}
-          >
-            <div className={`text-2xl font-bold transition-colors duration-300 ${
-              activeTab === 1 ? "text-blue-600" : "text-black"
-            }`}>2.</div>
-          </div>
-          <div 
-            className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
-              activeTab === 2 
-                ? "bg-blue-100 shadow-lg" 
-                : ""
-            }`}
-            onClick={() => handleTabChange(2)}
-          >
-            <div className={`text-2xl font-bold transition-colors duration-300 ${
-              activeTab === 2 ? "text-blue-600" : "text-black"
-            }`}>3.</div>
-          </div>
-          <div 
-            className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
-              activeTab === 3 
-                ? "bg-blue-100 shadow-lg" 
-                : ""
-            }`}
-            onClick={() => handleTabChange(3)}
-          >
-            <div className={`text-2xl font-bold transition-colors duration-300 ${
-              activeTab === 3 ? "text-blue-600" : "text-black"
-            }`}>4.</div>
-          </div>
-          <div 
-            className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
-              activeTab === 4 
-                ? "bg-blue-100 shadow-lg" 
-                : ""
-            }`}
-            onClick={() => handleTabChange(4)}
-          >
-            <div className={`text-2xl font-bold transition-colors duration-300 ${
-              activeTab === 4 ? "text-blue-600" : "text-black"
-            }`}>5.</div>
+
+          {/* 오른쪽: 순위 탭 영역 */}
+          <div className="w-1/2 flex flex-col gap-4">
+            {top5Data.slice(0, 5).map((item, index) => {
+              const isActive = activeTab === index;
+              return (
+                <div 
+                  key={item.memberId || index}
+                  className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
+                    isActive 
+                      ? "bg-blue-100 shadow-lg" 
+                      : "bg-white border border-gray-200"
+                  }`}
+                  onClick={() => handleTabChange(index)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`text-2xl font-bold transition-colors duration-300 ${
+                        isActive ? "text-blue-600" : "text-gray-600"
+                      }`}>
+                        {item.rank}.
+                      </div>
+                      <div className="flex flex-col">
+                        <div className={`text-base font-semibold transition-colors duration-300 ${
+                          isActive ? "text-blue-600" : "text-gray-900"
+                        }`}>
+                          {item.nickname || "익명"}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          좋아요 {item.totalLikes || 0}개
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="w-full flex items-center justify-center my-4 text-gray-500">
+          순위 데이터가 없습니다
+        </div>
+      )}
       <div className="w-full flex items-center justify-center border-t border-gray-300 py-2">
       <FeedCategoryMenu 
           mode="simple"

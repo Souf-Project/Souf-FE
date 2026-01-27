@@ -119,7 +119,7 @@ export default function Contest() {
                         <div>
                             <h3 className="text-xl font-bold text-gray-900 mb-4">심사 기준</h3>
                             <div className="space-y-3 text-gray-700">
-                                <p>사용자가 업로드한 <span className="text-blue-main font-bold">모든 피드의 총합</span>으로 대학생 피드 경진대회 수상자를 선정합니다.</p>
+                                <p>사용자가 업로드한 <span className="text-blue-main font-bold">모든 피드의 좋아요 수 집계</span>로 대학생 피드 경진대회 수상자를 선정합니다.</p>
                                 <p>SOUF 피드 가이드라인에 맞게 업로드한 피드만 계산됩니다.</p>
                                 <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                                     <p className="font-semibold text-gray-900 mb-2">점수 구성:</p>
@@ -197,39 +197,40 @@ export default function Contest() {
                     </div>
                 </div>
 
-                {/* 저작권 섹션 */}
+
+                {/* 주의사항*/}
                 <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8">
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 pb-4 border-b-2 border-gray-200">
-                        저작권
+                        경진대회 관련 조항 및 주의사항
                     </h2>
-                    <div className="space-y-4 text-lg text-gray-700">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 pb-4">
+                        저작권
+                    </h3>
+                    <div className="space-y-4 text-lg text-gray-700 mb-8 pb-4 border-b-2 border-gray-200">
                         <p>응모작의 저작권은 응모자에게 귀속됩니다.</p>
                         <p>SouF는 대회 결과 발표 및 서비스 홍보 목적에 한해 응모작을 활용할 수 있으며, 이 경우 저작권자를 명확히 표시합니다.</p>
                         <p>응모작의 관리·삭제·노출 기준은 SouF 이용약관을 따릅니다.</p>
                     </div>
-                </div>
-
-                {/* 패널티 및 실격 섹션 */}
-                <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 pb-4 border-b-2 border-gray-200">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 pb-4">
                         패널티 및 실격
-                    </h2>
-                    <div className="text-lg text-gray-700">
+                    </h3>
+                    <div className="text-lg text-gray-700 mb-8 pb-4 border-b-2 border-gray-200">
                         <p>
                             저작권 침해, 도배, 부적절한 콘텐츠, 개인정보 노출 등 운영 정책 위반 시 게시물 삭제, 실격 또는 수상 취소 및 상금 환수가 이루어질 수 있습니다.
                         </p>
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-900 pb-4">
+                        분쟁 및 면책
+                    </h3>
+                    <div className="space-y-4 text-lg text-gray-700">
+                        <p>분쟁 발생 시 상호 협의를 원칙으로 하며, 해결이 어려운 경우 관련 법령에 따릅니다.</p>
+                        <p>천재지변 등 불가항력적 사유에 대해서는 책임을 지지 않으며, 주최 측의 고의·중과실이 있는 경우에는 관련 법령에 따라 책임을 부담합니다.</p>
                     </div>
                 </div>
 
                 {/* 분쟁 및 면책 섹션 */}
                 <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 pb-4 border-b-2 border-gray-200">
-                        분쟁 및 면책
-                    </h2>
-                    <div className="space-y-4 text-lg text-gray-700">
-                        <p>분쟁 발생 시 상호 협의를 원칙으로 하며, 해결이 어려운 경우 관련 법령에 따릅니다.</p>
-                        <p>천재지변 등 불가항력적 사유에 대해서는 책임을 지지 않으며, 주최 측의 고의·중과실이 있는 경우에는 관련 법령에 따라 책임을 부담합니다.</p>
-                    </div>
+                   
                 </div>
 
                 <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8 overflow-hidden">
