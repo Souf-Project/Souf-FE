@@ -83,7 +83,8 @@ const {
     <PageHeader leftText="카테고리별 피드" />
 
     <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
-      <div className="w-full h-28 bg-gray-100"/>
+      <div className="w-full h-28 bg-gray-100 cursor-pointer" onClick={() => {navigate("/contest");
+      }} />
       <div className="w-full flex items-center justify-between my-4 gap-4">
         <div className="w-1/2 h-72">
         

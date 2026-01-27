@@ -47,6 +47,7 @@ import AdditionalInfo from "../pages/additionalInfo";
 import PopUpView from "../components/popUpView";
 import PopUpDC from "../utils/popUpDC";
 import popUpImg from "../assets/images/popUpImg.png";
+import Contest from "../pages/contest";
 
 
 function AppRouter() {
@@ -141,6 +142,7 @@ function AppRouter() {
         <Routes>
           <Route path="/" element={<Home />} />
           {/* <Route path="/" element={<Inspection />} /> */}
+          <Route path="/contest" element={<Contest />} />
           <Route path="/error" element={<Inspection />} />
          <Route path="/login" element={<Login />} />
          <Route path="/test" element={<Guide />} />

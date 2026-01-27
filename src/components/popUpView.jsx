@@ -64,7 +64,7 @@ export default function PopUpView({
         </div>
 
         {/* 하단 버튼 영역 */}
-        <div className="p-4 border-t border-gray-200 flex flex-col gap-3">
+        <div className="p-4 border-t border-gray-200 flex justify-between">
           {/* 오늘 하루 열지 않기 체크박스 */}
           <label className="flex items-center cursor-pointer">
             <input
@@ -80,7 +80,7 @@ export default function PopUpView({
  {/* 닫기 버튼 */}
  <button
             onClick={onClosePopUp}
-            className="py-2 px-4 font-medium"
+            className="p-2 font-regular text-sm"
           >
             닫기
           </button>
