@@ -438,7 +438,7 @@ export default function PostUpload() {
        <AlertModal
        type="simple"
        title="로그인이 필요합니다"
-       description="학생 회원만 피드를 업로드 할 수 있습니다!"
+       description="학생/동아리 회원만 피드를 업로드 할 수 있습니다!"
        TrueBtnText="로그인하러 가기"
        onClickTrue={() => {
          setShowLoginModal(false);

@@ -138,7 +138,7 @@ useEffect(() => {
       setShowFeedAlertModal(true);
       return false;
     }
-    if (roleType !== "STUDENT" && roleType !== "ADMIN") {
+    if (roleType =="MEMBER") {
       setShowFeedAlertModal(true);
       return false;
     }
@@ -761,7 +761,7 @@ const DesktopHeader = () => (
         <AlertModal
           type="simple"
           title="권한이 없습니다"
-          description="피드 등록은 학생 계정만 이용할 수 있습니다."
+          description="피드 등록은 학생/동아리 회원만 이용할 수 있습니다."
           TrueBtnText="로그인하러 가기"
           FalseBtnText="취소"
           onClickTrue={() => {
