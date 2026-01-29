@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { trackEvent } from "../analytics";
 // import Button from "../components/button";
 // import Hashtag from "../components/post/hashtag";
 import ImageUpload from "../components/post/imageUpload";
@@ -28,6 +29,8 @@ const validVideoTypes = [
 ];
 
 export default function PostUpload() {
+  
+  
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isModal, setIsModal] = useState(false);
   const [isWarningModal, setIsWarningModal] = useState(false);
@@ -291,6 +294,20 @@ export default function PostUpload() {
         } else {
           // console.log("업로드할 파일이 없음");
         }
+
+        let mediaType = "NONE";
+        if (imageFiles.length > 0 && videoFiles.length > 0) {
+          mediaType = "MIXED";
+        } else if (imageFiles.length > 0) {
+          mediaType = "IMAGE";
+        } else if (videoFiles.length > 0) {
+          mediaType = "VIDEO";
+        }
+
+        trackEvent("feed_upload_success", {
+          feed_id: feedId,
+          media_type: mediaType,
+        });
 
         // feedId를 저장하고 모달 표시
         setUploadedFeedId(feedId);

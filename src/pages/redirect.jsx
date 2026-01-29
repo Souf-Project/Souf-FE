@@ -5,6 +5,7 @@ import { UserStore } from "../store/userStore";
 import { LOGIN_ERRORS } from "../constants/user";
 import AlertModal from "../components/alertModal";
 import { setCookie, getCookie } from "../api/client";
+import { trackEvent } from "../analytics";
 
 export default function Redirect() {
   const navigate = useNavigate();
@@ -127,6 +128,12 @@ export default function Redirect() {
               }, 100);
               
               localStorage.removeItem('socialProvider');
+              
+              trackEvent("login_success", {
+                login_type: "social",
+                social_provider: detectedProvider || "UNKNOWN",
+                user_type: result.token.roleType || "UNKNOWN",
+              });
             
               navigate("/");
             }

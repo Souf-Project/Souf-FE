@@ -11,6 +11,7 @@ import { LOGIN_ERRORS } from "../constants/user";
 import SEO from "../components/seo";
 import AlertModal from "../components/alertModal";
 import { setCookie, getCookie } from "../api/client";
+import { trackEvent } from "../analytics";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -61,6 +62,11 @@ export default function Login() {
           } 
         }
       }, 100);
+
+      trackEvent("login_success", {
+        login_type: "normal",
+        user_type: result.roleType || "UNKNOWN",
+      });
 
       // 전화번호가 없으면 추가 인증 안내 모달 표시
       if(!phoneNumber) {

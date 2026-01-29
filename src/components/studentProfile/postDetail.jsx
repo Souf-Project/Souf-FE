@@ -23,6 +23,7 @@ import { Pagination, Navigation } from "swiper/modules";
 import CommentList from "../post/commentList";
 import Loading from "../loading";
 import SEO from "../seo";
+import { trackEvent } from "../../analytics";
 import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
@@ -39,6 +40,14 @@ const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 export default function PostDetail() {
   const navigate = useNavigate();
   const { id, worksId } = useParams();
+  
+  useEffect(() => {
+    if (worksId) {
+      trackEvent("feed_detail_view", {
+        worksId: worksId
+      });
+    }
+  }, [worksId]);
   const [worksData, setWorksData] = useState([]);
   const [mediaData, setMediaData] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
@@ -176,7 +185,9 @@ const handleDeleteClick = () => {
   };
 
   const handleHeartClick = async () => {
-    
+    trackEvent("feed_heart_click", {
+      worksId: worksId
+    });
     setIsHeartDisabled(true); 
     setIsHeartAnimating(true);
     

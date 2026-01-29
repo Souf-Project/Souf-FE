@@ -15,6 +15,7 @@ import PageHeader from "../components/pageHeader";
 // import RecommendRecruit from "../components/recruit/recommendRecruit";
 import AlertModal from "../components/alertModal";
 import { UserStore } from "../store/userStore";
+import { trackEvent } from "../analytics";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -158,6 +159,14 @@ export default function Recruit() {
 
         const totalElements = response.data.result?.page?.totalElements || 0;
         setTotalPages(Math.ceil(totalElements / pageSize));
+        
+        if (currentPage === 0) {
+          trackEvent("recruit_list_view", {
+            category: selectedCategory[0] || null,
+            total_count: totalElements,
+            sort_by: sortBy,
+          });
+        }
       } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");

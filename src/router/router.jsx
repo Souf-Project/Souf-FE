@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { useCookies } from "react-cookie";
+import usePageTracking from "../hooks/usePageTracking";
+
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -62,7 +64,8 @@ function AppRouter() {
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
-
+  usePageTracking();
+  
   // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
   useEffect(() => {
     if (memberId) {

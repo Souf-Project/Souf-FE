@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import PageHeader from "../components/pageHeader";
 import { getFeed, getFeedTop5List } from "../api/feed";
 import { useQuery } from "@tanstack/react-query";
+import { trackEvent } from "../analytics";
+
 import Feed from "../components/feed";
 import Loading from "../components/loading";
 import { UserStore } from "../store/userStore";
@@ -19,6 +21,7 @@ import heartOn from "../assets/images/heartOn.svg";
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
 export default function StudentFeedList({ }) {
+  trackEvent("feed_list_view");
   const navigate = useNavigate();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedFirstCategory, setSelectedFirstCategory] = useState(1);

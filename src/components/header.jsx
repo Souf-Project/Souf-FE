@@ -10,6 +10,7 @@ import backArrow from "../assets/images/backArrow.svg";
 import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
 import { getNotificationCount, getNotificationList, patchReadNotifications, patchReadNotificationContent, deleteNotifications, deleteNotification } from "../api/notification";
+import { trackEvent } from "../analytics";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -30,6 +31,9 @@ export default function Header() {
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
   const notificationRef = useRef(null);
+
+  // trackEvent("login_click");
+
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
