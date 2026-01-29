@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SEO from '../components/seo';
 import PageHeader from '../components/pageHeader';
 import arrow from '../assets/images/backArrow.svg';
+import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
 
 export default function Contest() {
     const [isOpen, setIsOpen] = useState(false);
@@ -32,10 +33,11 @@ export default function Contest() {
         `}</style>
         <SEO title="피드 경진대회 정보" description="스프 SouF 대학생 피드 경진대회" subTitle="스프" />
         <PageHeader leftText="경진대회" />
-            <div className="w-full max-w-[60rem] mx-auto px-4 md:px-6 py-12">
+            <div className="w-full max-w-[60rem] mx-auto px-4 md:px-6 py-8">
+                <img src={SOUF_contest_banner} alt="SOUF_contest_banner" className="w-full h-full object-cover mb-8" />
                 {/* 헤더 섹션 */}
                 <div className="mb-12">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4">
                         SOUF 대학생 피드 경진대회
                     </h1>
                     <p className="text-gray-500 text-sm md:text-base">2025년 2월 2일 ~ 2월 28일</p>
@@ -228,10 +230,6 @@ export default function Contest() {
                     </div>
                 </div>
 
-                {/* 분쟁 및 면책 섹션 */}
-                <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8">
-                   
-                </div>
 
                 <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8 overflow-hidden">
                     <button

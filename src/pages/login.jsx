@@ -38,7 +38,7 @@ export default function Login() {
         approvedStatus: result.approvedStatus,
         phoneNumber: phoneNumber || null, // 전화번호가 없어도 null로 저장
       });
-      console.log("UserStore:", UserStore.getState());
+      // console.log("UserStore:", UserStore.getState());
 
       UserStore.getState().setAccessToken(result.accessToken);
       localStorage.setItem("accessToken", result.accessToken);
@@ -275,14 +275,14 @@ export default function Login() {
         TrueBtnText="확인"
         onClickTrue={() => {
           setErrorModal(false);
-          console.log("errorAction:", errorAction);
+          // console.log("errorAction:", errorAction);
           if (errorAction === "redirect") {
               navigate("/feed");
           }else if(errorAction === "login"){
             localStorage.clear();
             navigate("/login");
           } else if(errorAction === "/additionalInfo"){
-            console.log("Navigating to /additionalInfo");
+            // console.log("Navigating to /additionalInfo");
             // window.location.href를 사용하여 강제로 페이지 이동
             window.location.href = "/additionalInfo";
           }

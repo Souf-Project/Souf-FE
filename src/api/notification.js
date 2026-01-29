@@ -4,7 +4,6 @@ import client from './client';
 export const getUnreadChatCount = async () => {
   try {
     const response = await client.get('/api/v1/chatrooms/unread-count');
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('읽지 않은 채팅 개수 조회 에러:', error);

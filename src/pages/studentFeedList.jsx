@@ -13,6 +13,8 @@ import FilterDropdown from "../components/filterDropdown";
 import SEO from "../components/seo";
 import secondCategoryData from '../assets/categoryIndex/second_category.json';
 import thirdCategoryData from '../assets/categoryIndex/third_category.json';
+import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
+import heartOn from "../assets/images/heartOn.svg";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -23,10 +25,26 @@ export default function StudentFeedList({ }) {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [showMobileCategoryMenu, setShowMobileCategoryMenu] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [clickedTabs, setClickedTabs] = useState(new Set());
   const { memberId: currentMemberId } = UserStore();
 
   const handleTabChange = (tabIndex) => {
-    setActiveTab(tabIndex);
+    if (activeTab === tabIndex) {
+      // 같은 탭을 다시 클릭하면 토글
+      const newClickedTabs = new Set(clickedTabs);
+      if (newClickedTabs.has(tabIndex)) {
+        newClickedTabs.delete(tabIndex);
+      } else {
+        newClickedTabs.add(tabIndex);
+      }
+      setClickedTabs(newClickedTabs);
+    } else {
+      // 다른 탭을 클릭하면 활성화하고 이전 탭의 클릭 상태는 유지
+      setActiveTab(tabIndex);
+      const newClickedTabs = new Set(clickedTabs);
+      newClickedTabs.add(tabIndex);
+      setClickedTabs(newClickedTabs);
+    }
   };
 
   const filterOptions = [
@@ -98,15 +116,59 @@ const {
   const top5Data = feedTop5Data?.result || [];
   
   // 현재 선택된 탭의 순위 데이터
-  const currentRankData = top5Data.find(item => item.rank === activeTab + 1);
+  const currentRankData = top5Data[activeTab];
 
   return (
     <>
+    <style>{`
+      .flip-button {
+        position: relative;
+        overflow: hidden;
+        perspective: 1000px;
+      }
+      .flip-button-hover-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        background: rgb(94, 172, 255);
+        color: #fff;
+        transition: 0.5s;
+        transform-origin: bottom;
+        transform: translateY(-100%) rotateX(90deg);
+        z-index: 2;
+        opacity: 0;
+      }
+      .flip-button.active .flip-button-hover-content {
+        transform: translateY(0) rotateX(0deg);
+        opacity: 1;
+      }
+      .flip-button:hover:not(.active) .flip-button-hover-content {
+        transform: translateY(0) rotateX(0deg);
+        opacity: 1;
+      }
+      .flip-button-content {
+        position: relative;
+        z-index: 3;
+        transition: opacity 0.3s;
+      }
+      .flip-button.active .flip-button-content {
+        opacity: 0;
+      }
+      .flip-button:hover:not(.active) .flip-button-content {
+        opacity: 0;
+      }
+    `}</style>
     <SEO title="카테고리별 피드" description="스프 SouF 카테고리별 피드" subTitle="스프"/>
     <PageHeader leftText="카테고리별 피드" />
 
     <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
-      <div className="w-full h-28 bg-gray-100 cursor-pointer" onClick={() => {navigate("/contest");
+    <img src={SOUF_contest_banner} alt="SOUF_contest_banner" className="w-full h-full object-cover cursor-pointer" onClick={() => {navigate("/contest");
       }} />
       {feedTop5Loading ? (
         <div className="w-full flex items-center justify-center my-4">
@@ -289,17 +351,36 @@ const {
           <div className="w-1/2 flex flex-col gap-4">
             {top5Data.slice(0, 5).map((item, index) => {
               const isActive = activeTab === index;
+              const isClicked = clickedTabs.has(index);
               return (
                 <div 
                   key={item.memberId || index}
-                  className={`p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
+                  className={`flip-button p-4 rounded-[5px] cursor-pointer transition-all duration-300 ease-in-out ${
                     isActive 
                       ? "bg-blue-100 shadow-lg" 
                       : "bg-white border border-gray-200"
-                  }`}
+                  } ${isClicked ? "active" : ""}`}
                   onClick={() => handleTabChange(index)}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flip-button-hover-content">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl font-bold text-white">
+                        {item.rank}.
+                      </div>
+                      <div className="text-xl font-semibold text-white">
+                        {item.nickname || "익명"}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <img src={heartOn} alt="좋아요" className="w-5 h-5" />
+                      <span className="text-white font-semibold">
+                        {item.totalLikes || 0}개
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* 기본 표시 내용 */}
+                  <div className="flip-button-content flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className={`text-2xl font-bold transition-colors duration-300 ${
                         isActive ? "text-blue-600" : "text-gray-600"
@@ -307,13 +388,10 @@ const {
                         {item.rank}.
                       </div>
                       <div className="flex flex-col">
-                        <div className={`text-base font-semibold transition-colors duration-300 ${
+                        <div className={`text-xl font-semibold transition-colors duration-300 ${
                           isActive ? "text-blue-600" : "text-gray-900"
                         }`}>
                           {item.nickname || "익명"}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          좋아요 {item.totalLikes || 0}개
                         </div>
                       </div>
                     </div>
@@ -324,8 +402,13 @@ const {
           </div>
         </div>
       ) : (
-        <div className="w-full flex items-center justify-center my-4 text-gray-500">
-          순위 데이터가 없습니다
+        <div className="w-full flex flex-col gap-4 items-center justify-center my-8 text-gray-500">
+          <p className="text-lg text-blue-main font-bold">
+            아직 순위가 없습니다.
+          </p>
+          <p className="text-sm text-gray-500">
+            먼저 자신있는 피드를 업로드해볼까요?
+          </p>
         </div>
       )}
       <div className="w-full flex items-center justify-center border-t border-gray-300 py-2">

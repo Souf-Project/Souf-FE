@@ -40,10 +40,8 @@ export default function InquiryContent() {
         return <div>No data available</div>;
     }
 
-    console.log('API Response:', data);
     
     const inquiryList = data?.data?.result?.content || [];
-    // console.log('Inquiry List:', inquiryList);
 
     const typeOptions = [
         { value: "1", label: "피드" },

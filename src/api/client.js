@@ -221,7 +221,7 @@ client.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error("❌ 요청 인터셉터 에러:", error);
+    console.error("요청 인터셉터 에러:", error);
     return Promise.reject(error);
   }
 );
