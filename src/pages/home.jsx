@@ -413,10 +413,10 @@ export default function Home() {
 
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 플랫폼' />
     <div className="relative overflow-x-hidden w-screen">
-      <div className="w-full max-w-[60rem] h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
+      <div className="w-full  h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
 
       }}>
-        <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-cover" />
+        <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-contain" />
       </div>
      
         {/* {/* <div className="relative bg-[#FBFBFB] w-screen mx-auto"> */}
