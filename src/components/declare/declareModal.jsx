@@ -56,13 +56,27 @@ export default function DeclareModal({
 
     // 필수 필드 검증
     if (!postType || postId === null || postId === undefined || !title || reporterId === null || reportedMemberId === null || reportedMemberId === undefined) {
-      console.error("신고 필수 필드 누락:", {
-        postType,
-        postId,
-        title,
-        reporterId,
-        reportedMemberId
-      });
+    
+      if (reporterId === null || reporterId === undefined) {
+        alert("로그인 후 신고해주세요.");
+        return;
+      }
+      if (!postType) {
+        alert("신고할 게시물 유형이 없습니다.");
+        return;
+      }
+      if (postId === null || postId === undefined) {
+        alert("신고할 게시물이 없습니다.");
+        return;
+      }
+      if (!title) {
+        alert("신고할 게시물 제목이 없습니다.");
+        return;
+      }
+      if (reportedMemberId === null || reportedMemberId === undefined) {
+        alert("신고할 사용자 정보가 없습니다.");
+        return;
+      }
       
       return;
     }

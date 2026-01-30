@@ -187,7 +187,7 @@ export default function RecruitBlock({
               u: ({node, ...props}) => <u className="underline" {...props} />,
             }}
           >
-            {content || "내용 없음"}
+        {content || "내용 없음"}
           </ReactMarkdown>
         </div>
       <div className="flex items-center gap-2 text-sm md:text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">

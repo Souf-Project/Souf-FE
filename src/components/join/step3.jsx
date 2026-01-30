@@ -10,6 +10,7 @@ import AccountForm from "./accountForm";
 import UserForm from "./userForm";
 import AuthForm from "./authForm";
 import Button from "../button";
+import { trackEvent } from "../../analytics";
 
 export default function Step3({ socialLoginInfo, selectedType }) {
   const [subStep, setSubStep] = useState(1);
@@ -220,6 +221,11 @@ export default function Step3({ socialLoginInfo, selectedType }) {
       setVerificationApproveText("인증번호가 올바르지 않습니다.");
     },
     onSignUpSuccess: (data) => {
+      trackEvent("signup_success", {
+        signup_type: "normal",
+        user_type: selectedType || "UNKNOWN",
+      });
+
       setModalTitle("회원가입이 완료되었습니다.");
       if (selectedType === "STUDENT") {
         setDescription(`인증 완료까지 최대 5일이 소요됩니다.\n인증 전까지 피드 생성과 외주 지원을 진행할 수 없습니다.`);
@@ -241,6 +247,11 @@ export default function Step3({ socialLoginInfo, selectedType }) {
       setEmailModal(true);
     },
     onSocialSignUpSuccess: (data) => {
+      trackEvent("signup_success", {
+        signup_type: "social",
+        user_type: selectedType || "UNKNOWN",
+      });
+
       setModalTitle("소셜 회원가입이 완료되었습니다.");
       setDescription("로그인 페이지로 이동합니다.");
       setSuccessModal(true);

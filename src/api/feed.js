@@ -124,4 +124,12 @@ export async function deleteFeed(feedId) {
   }
 }
 
-
+export async function getFeedTop5List() {
+  try {
+    const response = await client.get("/api/v1/feed/competition/ranking/top5");
+    return response.data;
+  } catch (error) {
+    console.error("경진대회 상위 피드 조회 에러", error);
+    throw error;
+  }
+}

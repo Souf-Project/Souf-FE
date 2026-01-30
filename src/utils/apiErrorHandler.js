@@ -16,7 +16,7 @@ export const handleApiError = (error, setters, errorDictionary) => {
   }
 
   const errorInfo = errorDictionary[errorKey];
-  setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+  setErrorDescription(errorInfo?.message || "서버 오류가 발생했습니다. 잠시 후 다시 이용해주세요.");
   setErrorAction(errorInfo?.action || "redirect");
   setErrorModal(true);
 };
