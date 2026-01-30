@@ -409,7 +409,7 @@ export default function Home() {
 
   return (
     <>
-    <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 & 공모전' />
+    <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 플랫폼' />
     <div className="relative overflow-x-hidden">
       <div className="w-full max-w-[60rem] h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
       }}>
