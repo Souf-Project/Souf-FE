@@ -4,7 +4,8 @@ export default function PopUpView({
   title = "팝업 제목",
   content = null,
   imageUrl = null,
-  closePopUp
+  closePopUp,
+  onClickImage = null
 }) {
   const [selCheck, setSelCheck] = useState(false);
 
@@ -53,7 +54,8 @@ export default function PopUpView({
              <img 
              src={imageUrl} 
              alt={title}
-             className="w-full h-auto object-cover"
+             className={`w-full h-auto object-cover ${onClickImage ? 'cursor-pointer' : ''}`}
+             onClick={onClickImage}
            />
           )}
           {content && (

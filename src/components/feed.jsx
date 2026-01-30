@@ -252,7 +252,7 @@ export default function Feed({ feedData, onFeedClick }) {
                         <img
                           src={`${BUCKET_URL}${data.fileUrl}`}
                           alt={data.fileName}
-                          className="w-full h-auto max-h-[500px] object-cover aspect-[3/4] cursor-pointer"
+                          className="w-full h-auto max-h-[500px] object-cover aspect-[1/1] cursor-pointer"
                           onClick={goToDetail}
                         />
                       )}

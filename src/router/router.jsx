@@ -48,7 +48,7 @@ import Contract from "../pages/contract";
 import AdditionalInfo from "../pages/additionalInfo";
 import PopUpView from "../components/popUpView";
 import PopUpDC from "../utils/popUpDC";
-import popUpImg from "../assets/images/SOUF_contest_A4.png";
+import popUpImg from "../assets/images/SOUF_poster_A4.jpeg";
 import Contest from "../pages/contest";
 
 
@@ -209,6 +209,7 @@ function AppRouter() {
           closePopUp={closePopUp}
           title="SOUF 피드 경진대회 개최"
           imageUrl={popUpImg}
+          onClickImage={() => navigate("/studentFeedList")}
         />
       )}
     </div>
