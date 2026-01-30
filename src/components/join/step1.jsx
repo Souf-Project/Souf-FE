@@ -37,6 +37,9 @@ export default function Step1({ setStep }) {
                 <br/> 
                 <span>환영합니다</span>
             </h1>
+            <p className="text-sm text-gray-600 text-center">
+                  스프는 크롬 브라우저 사용을 권장합니다
+                </p>
             <div className="flex flex-col items-center justify-center gap-4 w-80 md:w-[24rem]">
                   <button
                     type="button"

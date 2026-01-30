@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SEO from '../components/seo';
 import PageHeader from '../components/pageHeader';
 import arrow from '../assets/images/backArrow.svg';
-import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
+import SOUF_contest_main from "../assets/images/SOUF_contest_main.jpeg";
 
 export default function Contest() {
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleAccordion = () => {
@@ -32,10 +34,11 @@ export default function Contest() {
             }
         `}</style>
         <SEO title="피드 경진대회 정보" description="스프 SouF 대학생 피드 경진대회" subTitle="스프" />
-        <PageHeader leftText="경진대회" />
-            <div className="w-full max-w-[60rem] mx-auto px-4 md:px-6 py-8">
-                <img src={SOUF_contest_banner} alt="SOUF_contest_banner" className="w-full h-full object-cover mb-8" />
-                {/* 헤더 섹션 */}
+        <PageHeader leftText="스프 대학생 피드 경진대회 상세 안내" />
+            <div className="w-full max-w-[60rem] h-full mx-auto">
+        <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-cover cursor-pointer"  onClick={() => {navigate("/studentFeedList");
+      }}/>
+                      {/* 헤더 섹션 */}
                 <div className="mb-12">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4">
                         SOUF 대학생 피드 경진대회
@@ -78,12 +81,9 @@ export default function Contest() {
                                 </div>
                                 <div className="flex flex-col md:flex-row md:items-start gap-3">
                                     <span className="text-blue-main font-bold text-lg min-w-[100px]">STEP 2.</span>
-                                    <span className="text-gray-700">나의 실력을 뽐낼 수 있는 이미지와 함께 피드를 업로드한다.</span>
+                                    <span className="text-gray-700">나의 실력을 뽐낼 수 있는 이미지 또는 동영상과 함께 피드를 업로드한다.</span>
                                 </div>
-                                <div className="flex flex-col md:flex-row md:items-start gap-3">
-                                    <span className="text-blue-main font-bold text-lg min-w-[100px]">STEP 3.</span>
-                                    <span className="text-gray-700">다른 참여자의 피드에 좋아요를 3개 이상 누르면 참여 완료!</span>
-                                </div>
+                                
                             </div>
                             <p className="text-gray-700 mt-4 pt-4 border-t border-gray-200">
                                 <span className="font-semibold">대회 기간 중 피드 게시물 1개 이상 업로드 시 자동으로 참가가 확정됩니다.</span> (별도 신청 없음)
@@ -127,7 +127,7 @@ export default function Contest() {
                                     <p className="font-semibold text-gray-900 mb-2">점수 구성:</p>
                                     <ul className="space-y-2 list-disc list-inside">
                                         <li>피드 좋아요 수 합산 (85%)</li>
-                                        <li>심사위원 점수 (15%, SouF 운영진)</li>
+                                        <li>심사위원 점수 (15%, 내부 심사)</li>
                                     </ul>
                                     <p className="mt-3 text-gray-700">최종 점수 합산 기준으로 수상자를 선정합니다.</p>
                                 </div>
@@ -172,26 +172,21 @@ export default function Contest() {
                             <p className="font-semibold">상금 지급을 위해 수상자에 한해 계좌정보 제출이 필요합니다.</p>
                         </div>
                     </div>
-                </div>
-
-                {/* 추가 혜택 섹션 */}
-                <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8">
-                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 pb-4 border-b-2 border-gray-200">
-                        참여 혜택
-                    </h2>
-                    <div className="space-y-4 mb-6">
+                    <div className="space-y-4 my-6 ">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">추가 혜택</h3>
+                        <p className="text-lg text-gray-700">아래의 조건을 만족한 분들을 대상으로, 추첨을 통해 이벤트 경품을 드립니다.</p>
                             <div className="flex items-start gap-3">
                                 <span className="text-gray-900 font-bold text-lg min-w-[80px]">조건 1</span>
                                 <span className="text-gray-700 text-base md:text-lg">피드 1개 이상 업로드</span>
                             </div>
                             <div className="flex items-start gap-3">
                                 <span className="text-gray-900 font-bold text-lg min-w-[80px]">조건 2</span>
-                                <span className="text-gray-700 text-base md:text-lg">다른 참여자의 피드에 좋아요를 3개 이상 누르기</span>
+                                <span className="text-gray-700 text-base md:text-lg">다른 참여자의 피드에 <span className="text-blue-main">좋아요를 3개 이상 </span>누르기</span>
                             </div>
                         </div>
                         <div className="pt-4 border-t border-gray-300">
                             <div className="flex items-center gap-3">
-                                <span className="text-gray-900 font-bold text-lg min-w-[80px]">보상</span>
+                                <span className="text-gray-900 font-bold text-lg min-w-[80px]">경품</span>
                                 <span className="font-bold text-lg md:text-2xl">
                                     추첨을 통해 <span className="text-blue-main font-bold">스타벅스 아메리카노 기프티콘 5명</span> 증정
                                 </span>
@@ -199,6 +194,7 @@ export default function Contest() {
                     </div>
                 </div>
 
+             
 
                 {/* 주의사항*/}
                 <div className="bg-white border border-gray-300 rounded-lg p-4 md:p-6 mb-8">

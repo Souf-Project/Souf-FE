@@ -57,7 +57,8 @@ import part1_2 from "../assets/images/mainGuide/part1_2.png";
 import part1_3 from "../assets/images/mainGuide/part1_3.png";
 import part2 from "../assets/images/mainGuide/part2.png";
 import spoonMark from "../assets/images/spoonMark.svg";
-import SOUF_contest_main from "../assets/images/SOUF_contest_main.png";
+import SOUF_contest_main from "../assets/images/SOUF_contest_main.jpeg";
+import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -409,16 +410,19 @@ export default function Home() {
 
   return (
     <>
+
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 플랫폼' />
-    <div className="relative overflow-x-hidden">
+    <div className="relative overflow-x-hidden w-screen">
       <div className="w-full max-w-[60rem] h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
+
       }}>
         <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-cover" />
       </div>
-        <div className="relative bg-[#FBFBFB] w-screen mx-auto">
-        <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[60rem] mx-auto">
+     
+        {/* {/* <div className="relative bg-[#FBFBFB] w-screen mx-auto"> */}
+        {/* <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[60rem] mx-auto"> */}
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
+          {/* <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
           <AnimatedTitle />
             <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left whitespace-nowrap">
               여기! 인재 매칭해드려요.
@@ -427,14 +431,14 @@ export default function Home() {
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
-              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button>
+              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button> */}
               {/* <button 
                 className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
                 onClick={handleGuideClick}
               >
                 이용 가이드
               </button> */}
-            </div>
+            {/* </div> */}
             {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
               <div className="relative w-full max-w-2xl lg:max-w-3xl">
                 <input
@@ -453,11 +457,10 @@ export default function Home() {
               </div>
             </form> */}
             
-          </div>
-          {/* 오른쪽: 팝업 가이드 박스 */}
+          {/* </div>
           <InfoBox />
           </div>
-        </div>
+        </div> */}
         {/* <StatisticsSection 
           viewCount={viewCount}
           userCount={userCount}
@@ -465,9 +468,9 @@ export default function Home() {
         /> */}
 
      {/* 카테고리 섹션 */}
-     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md px-0 md:px-4 lg:px-0 max-w-screen">
+     <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md px-0 md:px-4 lg:px-0 max-w-screen md:mt-12">
        <div className="flex flex-col justify-center gap-2 items-center w-screen md:px-8 lg:px-0 lg:max-w-[60rem] mx-auto">
-       <span className="text-black text-xl lg:text-2xl font-bold mr-auto ml-4 md:ml-0">어떤 아이디어/프로젝트가 필요하세요?</span>
+       <span className="text-black text-xl lg:text-2xl font-bold mr-auto ml-8 md:ml-4">어떤 아이디어/프로젝트가 필요하세요?</span>
        <div className="flex items-center justify-between w-full">
         {/* 좌측 화살표 */}
         <div className="flex items-center justify-center w-8 h-8 pointer-events-none">
@@ -483,6 +486,7 @@ export default function Home() {
                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
              </svg>
            </div>
+
 
       <div className="w-full overflow-x-auto py-4 scrollbar-hide mt-4">
         
@@ -526,7 +530,11 @@ export default function Home() {
            </div>
             </div>
      
-<div className="flex flex-col lg:flex-row mt-32 max-w-[60rem] mx-auto  w-screen px-8 lg:px-0 ">
+
+    <img src={SOUF_contest_banner} alt="SOUF_contest_banner" className="w-full h-full max-w-[60rem] mx-auto my-12 object-cover cursor-pointer" onClick={() => {navigate("/contest");
+      }} />
+
+<div className="flex flex-col lg:flex-row mt-4 max-w-[60rem] mx-auto  w-screen px-8 lg:px-0 ">
 {/* 실시간 대학생 피드 섹션 */}
   <div className="relative w-full lg:w-2/3">
   <div className="flex items-center mb-8 gap-4">
@@ -538,8 +546,7 @@ export default function Home() {
        
           <FeedGrid />
         </div>
-    
-{/* 진행 중인 외주 의뢰 섹션 */}
+
       {/* 진행 중인 외주 의뢰 섹션 */}
           <div className="relative w-full lg:w-1/3 lg:ml-4">
             <div className="flex items-center mb-6 sm:mb-8 gap-3 sm:gap-4 flex-wrap">
@@ -568,9 +575,8 @@ export default function Home() {
           </div>
         </div>
 
-    
 {/* 스프 소개란 */}
-<div className="relative px-8 lg:px-24 mt-32 bg-[#2582E0BF] mx-auto">
+<div className="relative px-8 lg:px-24 mt-20 bg-[#2582E0BF] mx-auto">
 <div className=" md:max-w-[60rem] mx-auto flex flex-col lg:flex-row justify-center items-center py-16">
   <div className="flex flex-col items-start">
     <h2 className="my-8 text-white text-2xl md:text-4xl font-extrabold [text-shadow:_0px_4px_4px_rgb(0_0_0_/_0.25)]">

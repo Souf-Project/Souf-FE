@@ -182,9 +182,12 @@ export default function Login() {
         </div>
         <div className="w-full lg:w-1/2 lg:bg-white flex flex-col justify-center items-center px-4 h-full">
           <div className="max-w-[20rem] lg:ml-20 lg:mr-auto mx-auto w-full">
-            <h2 className="text-xl lg:text-3xl font-bold mb-10 mx-auto w-fit">
+            <h2 className="text-xl lg:text-3xl font-bold mx-auto w-fit">
               로그인
             </h2>
+            <p className="text-xs text-gray-600 text-center mb-4 mt-2">
+            스프는 크롬 브라우저 사용을 권장합니다
+                </p>
             <form
               onSubmit={handleSubmit}
               className="w-full max-w-sm bg-white p-6 lg:p-8 border rounded-xl shadow-md"
@@ -265,6 +268,7 @@ export default function Login() {
                     구글 계정으로 로그인
                   </button>
                 </div>
+               
               </div>
             </form>
           </div>

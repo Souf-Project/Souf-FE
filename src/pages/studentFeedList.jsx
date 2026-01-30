@@ -113,7 +113,7 @@ const {
     keepPreviousData: true,
   });
 
-  // console.log("feedTop5Data", feedTop5Data);
+  console.log("feedTop5Data", feedTop5Data);
 
   // 순위 데이터 가져오기
   const top5Data = feedTop5Data?.result || [];
@@ -368,7 +368,7 @@ const {
                   <div className="flip-button-hover-content">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl font-bold text-white">
-                        {item.rank}.
+                        {item.rank}st
                       </div>
                       <div className="text-xl font-semibold text-white">
                         {item.nickname || "익명"}
@@ -388,7 +388,7 @@ const {
                       <div className={`text-2xl font-bold transition-colors duration-300 ${
                         isActive ? "text-blue-600" : "text-gray-600"
                       }`}>
-                        {item.rank}.
+                        {item.rank}st
                       </div>
                       <div className="flex flex-col">
                         <div className={`text-xl font-semibold transition-colors duration-300 ${
