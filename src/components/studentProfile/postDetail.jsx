@@ -20,10 +20,10 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
-import BasicProfileImg1 from "../../assets/images/BasicProfileImg1.png";
 import CommentList from "../post/commentList";
 import Loading from "../loading";
 import SEO from "../seo";
+import { trackEvent } from "../../analytics";
 import useSNSShare from "../../hooks/useSNSshare";
 import DeclareButton from "../declare/declareButton";
 import PageHeader from "../pageHeader";
@@ -40,6 +40,14 @@ const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 export default function PostDetail() {
   const navigate = useNavigate();
   const { id, worksId } = useParams();
+  
+  useEffect(() => {
+    if (worksId) {
+      trackEvent("feed_detail_view", {
+        worksId: worksId
+      });
+    }
+  }, [worksId]);
   const [worksData, setWorksData] = useState([]);
   const [mediaData, setMediaData] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
@@ -177,7 +185,9 @@ const handleDeleteClick = () => {
   };
 
   const handleHeartClick = async () => {
-    
+    trackEvent("feed_heart_click", {
+      worksId: worksId
+    });
     setIsHeartDisabled(true); 
     setIsHeartAnimating(true);
     
@@ -355,8 +365,8 @@ const handleDeleteClick = () => {
             <span>뒤로가기</span>
           </button>
 
-        <div className="w-full flex flex-col md:flex-row max-w-[60rem]">
-          <div className="flex flex-col p-2 w-full w-2/3 mr-4">
+        <div className="w-full flex flex-col md:flex-row">
+          <div className="flex flex-col p-2 w-full md:w-2/3 md:mr-4">
           {/* 모바일: 제목과 날짜  */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
             <h2 className="text-base lg:text-xl font-semibold leading-snug text-black">
@@ -570,7 +580,7 @@ const handleDeleteClick = () => {
           </div>
         
         </div>
-        <div className="md:min-w-[20rem] bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer mx-4 md:mx-0 mb-4 md:mb-0"
+        <div className="w-full md:w-1/3 bg-[#FFFDFD] border border-[#ECECEC] h-full p-4 flex flex-col justify-center rounded-md gap-4 cursor-pointer mx-4 md:mx-0 mb-4 md:mb-0"
         onClick={() => navigate(`/profileDetail/${worksData.memberId}`)}>
         <div className="flex justify-between">
         {worksData.profileImageUrl ? (

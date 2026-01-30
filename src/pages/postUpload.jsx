@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { trackEvent } from "../analytics";
 // import Button from "../components/button";
 // import Hashtag from "../components/post/hashtag";
 import ImageUpload from "../components/post/imageUpload";
@@ -28,6 +29,8 @@ const validVideoTypes = [
 ];
 
 export default function PostUpload() {
+  
+  
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isModal, setIsModal] = useState(false);
   const [isWarningModal, setIsWarningModal] = useState(false);
@@ -292,6 +295,20 @@ export default function PostUpload() {
           // console.log("업로드할 파일이 없음");
         }
 
+        let mediaType = "NONE";
+        if (imageFiles.length > 0 && videoFiles.length > 0) {
+          mediaType = "MIXED";
+        } else if (imageFiles.length > 0) {
+          mediaType = "IMAGE";
+        } else if (videoFiles.length > 0) {
+          mediaType = "VIDEO";
+        }
+
+        trackEvent("feed_upload_success", {
+          feed_id: feedId,
+          media_type: mediaType,
+        });
+
         // feedId를 저장하고 모달 표시
         setUploadedFeedId(feedId);
         setIsModal(true);
@@ -354,8 +371,8 @@ export default function PostUpload() {
 
   return (
 
-    <div className="w-full lg:max-w-5xl mx-auto my-10 ">
-      <div className="w-full border-2 mx-4 md:mx-0 flex flex-col justify-center items-left p-10 gap-4">
+    <div className="w-full lg:max-w-[60rem] mx-auto my-10 ">
+      <div className="w-full mx-4 md:mx-0 flex flex-col justify-center items-left md:p-10 gap-4">
 
         <div className="text-center font-bold text-3xl">게시물 작성</div>
         <PostInput
@@ -438,7 +455,7 @@ export default function PostUpload() {
        <AlertModal
        type="simple"
        title="로그인이 필요합니다"
-       description="학생 회원만 피드를 업로드 할 수 있습니다!"
+       description="학생/동아리 회원만 피드를 업로드 할 수 있습니다!"
        TrueBtnText="로그인하러 가기"
        onClickTrue={() => {
          setShowLoginModal(false);

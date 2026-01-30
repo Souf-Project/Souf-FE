@@ -89,7 +89,6 @@ export default function CompanyApplicants({ recruitId }) {
       const stateData = response.data?.result ? response.data : { recruitDetail: response.data };
       
       navigate(`/recruitDetails/${recruitId}`, { state: stateData });
-      // console.log('공고문 상세 조회 성공:', stateData);
     } catch (error) {
       console.error('공고문 상세 조회 실패:', error);
       // 에러가 발생해도 기본 데이터로 이동
@@ -138,7 +137,7 @@ export default function CompanyApplicants({ recruitId }) {
       
       try {
         const response = await getApplicantsByRecruitId(selectedRecruitId);
-        // console.log('지원자 리스트 조회 성공:', response.data);
+        console.log('지원자 리스트 조회 성공:', response.data);
         setApplicants(response.data.result?.content || []);
       } catch (error) {
         console.error('지원자 리스트 조회 실패:', error);

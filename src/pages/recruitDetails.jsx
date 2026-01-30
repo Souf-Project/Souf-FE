@@ -16,6 +16,7 @@ import { getAllCategoryNames, getCategoryNames } from '../utils/categoryUtils.js
 import RecommendRecruit from "../components/recruit/recommendRecruit";
 import { handleApiError } from '../utils/apiErrorHandler.js';
 import { APPLICATION_ERRORS } from '../constants/application.js';
+import { trackEvent } from '../analytics';
 
 import EstimateBanner from "../components/home/EstimateBanner";
 
@@ -57,12 +58,16 @@ export default function RecruitDetail() {
   }, [recruitData]);
 
 
-  //여기서  추가함 나중에 바꿔야해 
   useEffect(() => {
   const fetchRecruitDetail = async () => {
     try {
       const response = await getRecruitDetail(id);
       setRecruitDetail(response.data.result);
+      
+      trackEvent("recruit_detail_view", {
+        recruit_id: id,
+        category: response.data.result?.categoryDtoList?.[0]?.firstCategory || null,
+      });
     } catch (error) {
       console.error('Error fetching recruit detail:', error);
       if (error.response?.status === 403) {
@@ -207,7 +212,23 @@ export default function RecruitDetail() {
        priceOffer: priceOffer,
        priceReason: priceReason,
       });
-      // console.log("지원 성공:", response.data);
+
+      // 카테고리 정보 추출
+      const categoryList = recruitDetail?.categoryDtoList || [];
+      const firstCategory = categoryList[0]?.firstCategory || null;
+      const secondCategory = categoryList[0]?.secondCategory || null;
+      const thirdCategory = categoryList[0]?.thirdCategory || null;
+      
+      trackEvent("recruit_application_success", {
+        recruit_id: id,
+        application_type: "apply",
+        first_category: firstCategory,
+        second_category: secondCategory,
+        third_category: thirdCategory,
+        recruit_price: recruitDetail?.price || null,
+        price_offer: priceOffer || null,
+      });
+      
       setModal(null);
       setModal({
         type: 'success',
@@ -246,7 +267,23 @@ export default function RecruitDetail() {
         priceOffer: priceOfferWithUnit,
         priceReason: priceReason,
       });
-      // console.log("견적 제출 성공:", response.data);
+
+      // 카테고리 정보 추출
+      const categoryList = recruitDetail?.categoryDtoList || [];
+      const firstCategory = categoryList[0]?.firstCategory || null;
+      const secondCategory = categoryList[0]?.secondCategory || null;
+      const thirdCategory = categoryList[0]?.thirdCategory || null;
+
+      trackEvent("recruit_application_success", {
+        recruit_id: id,
+        application_type: "estimate",
+        first_category: firstCategory,
+        second_category: secondCategory,
+        third_category: thirdCategory,
+        recruit_price: recruitDetail?.price || null,
+        price_offer: priceOfferWithUnit,
+      });
+      
       setIsEstimateModalOpen(false);
       setModal({
         type: 'success',

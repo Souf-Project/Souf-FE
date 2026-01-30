@@ -15,6 +15,7 @@ import PageHeader from "../components/pageHeader";
 // import RecommendRecruit from "../components/recruit/recommendRecruit";
 import AlertModal from "../components/alertModal";
 import { UserStore } from "../store/userStore";
+import { trackEvent } from "../analytics";
 
 export default function Recruit() {
   const navigate = useNavigate();
@@ -158,6 +159,14 @@ export default function Recruit() {
 
         const totalElements = response.data.result?.page?.totalElements || 0;
         setTotalPages(Math.ceil(totalElements / pageSize));
+        
+        if (currentPage === 0) {
+          trackEvent("recruit_list_view", {
+            category: selectedCategory[0] || null,
+            total_count: totalElements,
+            sort_by: sortBy,
+          });
+        }
       } else {
         setFilteredRecruits([]);
         setError("데이터를 불러오는데 실패했습니다.");
@@ -336,8 +345,7 @@ export default function Recruit() {
         </div>
       </div>
 
-      <div className="max-w-[60rem] w-full mx-auto">
-        <div className="flex flex-col lg:flex-row max-w-[60rem] w-full">
+      <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">
         {/* 데스크톱 카테고리 메뉴 */}
         <div className="hidden lg:block">
           <CategoryMenu
@@ -355,7 +363,7 @@ export default function Recruit() {
         </div>
         
         {/* 공고문 목록 */}
-        <div className="w-full lg:ml-4 px-2 md:px-8 lg:px-0">
+        <div className="w-full">
           <div className="mb-4 flex justify-between items-center ">
             <div className="flex items-center gap-4">
             <FilterDropdown
@@ -423,7 +431,6 @@ export default function Recruit() {
               </p>
             </div>
           )}
-        </div>
         </div>
       </div>
 

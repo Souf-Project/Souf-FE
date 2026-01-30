@@ -36,8 +36,7 @@ export default function commentList() {
                     try {
                         const replyResponse = await getAdditionalComment(worksId, comment.commentId, { page: 0, size: 10 });
                         
-                        // 첫번째 대댓글은 댓글 내용이라 지움
-                        if (replyResponse?.result?.content && replyResponse.result.content.length > 1) {
+                        if (replyResponse?.result?.content && replyResponse.result.content.length > 0) {
                             commentsWithReplies[comment.commentId] = true;
                         }
                     } catch (error) {
@@ -72,10 +71,7 @@ export default function commentList() {
             // console.log(`대댓글 조회 - 댓글ID: ${commentId}, 페이지: ${page}`, response);
             
             if (response?.result?.content && response.result.content.length > 0) {
-                // 첫 번째 대댓글은 댓글이라 지움
-                const actualReplies = response.result.content.slice(1);
-                
-                console.log(`실제 대댓글 개수: ${actualReplies.length}`, actualReplies);
+                const actualReplies = response.result.content;
                 
                 if (actualReplies.length > 0) {
                     if (isLoadMore) {
@@ -98,34 +94,29 @@ export default function commentList() {
                         hasMore = !response.result.last;
                     } else if (response.result.totalElements !== undefined && response.result.totalElements > 0) {
                         // totalElements를 사용하여 계산
-                        // 첫 번째 항목(댓글 내용)을 제외한 실제 대댓글 수 계산
-                        const actualTotalReplies = response.result.totalElements - 1; // 첫 번째 항목 제외
+                        const totalReplies = response.result.totalElements;
                         
                         if (page === 0) {
-                            // 첫 페이지: (첫번째 대댓글을 제외한)4개 로드 + 현재 로드된 개수
-                            const currentTotal = 4 + actualReplies.length;
-                            hasMore = currentTotal < actualTotalReplies;
+                            // 첫 페이지: 현재 로드된 개수
+                            const currentTotal = actualReplies.length;
+                            hasMore = currentTotal < totalReplies;
                         } else {
                             // 두 번째 페이지부터: 대댓글 5개씩 + 현재 로드된 개수
-                            const currentTotal = 4 + ((page - 1) * 5) + actualReplies.length;
-                            hasMore = currentTotal < actualTotalReplies;
+                            const currentTotal = (page * 5) + actualReplies.length;
+                            hasMore = currentTotal < totalReplies;
                         }
                     } else if (response.result.numberOfElements !== undefined) {
                         // numberOfElements를 사용하여 계산
                         if (page === 0) {
-                            // 첫 페이지: 4개가 모두 로드되었다면 다음 페이지가 있을 가능성이 높음
-                            hasMore = response.result.numberOfElements > 4;
+                            // 첫 페이지: 5개가 모두 로드되었다면 다음 페이지가 있을 가능성이 높음
+                            hasMore = response.result.numberOfElements === 5;
                         } else {
                             // 두 번째 페이지부터: 5개가 모두 로드되었다면 다음 페이지가 있을 가능성이 높음
                             hasMore = response.result.numberOfElements === 5;
                         }
                     } else {
                         // fallback: 현재 로드된 개수로 판단
-                        if (page === 0) {
-                            hasMore = actualReplies.length === 4;
-                        } else {
-                            hasMore = actualReplies.length === 5;
-                        }
+                        hasMore = actualReplies.length === 5;
                     }
                     
                     setHasMoreReplies(prev => ({
@@ -155,9 +146,7 @@ export default function commentList() {
             if (replyMode) {
                 // 답글 작성
                 const requestBody = {
-                    writerId: memberId,
                     content: commentContent,
-                    authorId: Number(id),
                     parentId: replyToComment.commentId
                 };
 
@@ -186,9 +175,7 @@ export default function commentList() {
             } else {
                
                 const requestBody = {
-                    writerId: memberId,
-                    content: commentContent,
-                    authorId: Number(id)
+                    content: commentContent
                 };
 
                 const response = await postComment(worksId, requestBody);
@@ -268,8 +255,7 @@ export default function commentList() {
     const checkHasReplies = async (commentId) => {
         try {
             const response = await getAdditionalComment(worksId, commentId, { page: 0, size: 1 });
-            // 첫 번째 항목은 댓글 내용이므로 제거하고 실제 대댓글이 있는지 확인
-            return response?.result?.content && response.result.content.length > 1;
+            return response?.result?.content && response.result.content.length > 0;
         } catch (error) {
             console.error("대댓글 확인 에러:", error);
             const errorKey = error?.response?.data?.errorKey;

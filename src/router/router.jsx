@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { useCookies } from "react-cookie";
+import usePageTracking from "../hooks/usePageTracking";
+
 import Header from "../components/header";
 import Home from "../pages/home";
 import Login from "../pages/login";
@@ -43,19 +46,26 @@ import PrivacyPage from "../pages/policy/privacy";
 import ComplainPage from "../pages/policy/complain";
 import Contract from "../pages/contract";
 import AdditionalInfo from "../pages/additionalInfo";
+import PopUpView from "../components/popUpView";
+import PopUpDC from "../utils/popUpDC";
+import popUpImg from "../assets/images/SOUF_contest_A4.png";
+import Contest from "../pages/contest";
 
 
 function AppRouter() {
   const location = useLocation();
   const navigate = useNavigate();
   const isChatPage = location.pathname === "/chat";
+  const [cookies, setCookie, removeCookie] = useCookies();
 
   const { nickname, memberId } = UserStore();
   const { setUnreadChatCount, setUnreadNotificationCount, setNotifications } = useUnreadStore();
   useUnreadSSE();
 
   const [showSessionExpiredModal, setShowSessionExpiredModal] = useState(false);
-
+  const [showPopUp, setShowPopUp] = useState(false);
+  usePageTracking();
+  
   // 초기 데이터 로드 (로그인한 경우만, SSE 구독 후)
   useEffect(() => {
     if (memberId) {
@@ -103,16 +113,43 @@ function AppRouter() {
     };
   }, []);
 
+  // 팝업 표시 여부 확인 (메인 페이지에서만)
+  useEffect(() => {
+    if (location.pathname === "/") {
+      const currentCookies = cookies[PopUpDC.COOKIE_VALUE];
+      setShowPopUp(!currentCookies);
+    } else {
+      setShowPopUp(false);
+    }
+  }, [cookies, location.pathname]);
+
+  // 팝업 닫기 핸들러
+  const closePopUp = (selCheck) => {
+    if (selCheck) {
+      // 오늘 하루 열지 않기 체크 시 쿠키에 저장 (1일)
+      const expires = new Date();
+      expires.setTime(expires.getTime() + 24 * 60 * 60 * 1000); // 1일
+      setCookie(PopUpDC.COOKIE_VALUE, 'true', { 
+        path: '/', 
+        expires 
+      });
+    }
+    setShowPopUp(false);
+  };
+
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* <Header /> */}
       <main className="flex-grow w-full mt-16">
         <Routes>
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/" element={<Inspection />} />
-          {/* <Route path="/error" element={<Inspection />} />
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Inspection />} /> */}
+          <Route path="/contest" element={<Contest />} />
+          <Route path="/error" element={<Inspection />} />
+
          <Route path="/login" element={<Login />} />
+         <Route path="/test" element={<Guide />} />
           <Route path="/oauth/kakao/callback" element={<Redirect />} />
           <Route path="/oauth/google/callback" element={<Redirect />} />
           <Route path="/recruit" element={<Recruit />} />
@@ -163,6 +200,15 @@ function AppRouter() {
               navigate('/login');
             }
           }}
+        />
+      )}
+
+      {/* 팝업  */}
+      {showPopUp && location.pathname === "/" && (
+        <PopUpView 
+          closePopUp={closePopUp}
+          title="SOUF 피드 경진대회 개최"
+          imageUrl={popUpImg}
         />
       )}
     </div>

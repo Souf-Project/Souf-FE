@@ -70,7 +70,7 @@ export const FEED_ERRORS = {
   },
   "F400-1": {
     message: "이미 좋아요를 눌렀습니다.",
-    action: null,
+    action: "refresh",
   },
   "F404-2": {
     message: "좋아요가 반영되지 않았습니다.",

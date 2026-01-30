@@ -10,6 +10,7 @@ import backArrow from "../assets/images/backArrow.svg";
 import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
 import { getNotificationCount, getNotificationList, patchReadNotifications, patchReadNotificationContent, deleteNotifications, deleteNotification } from "../api/notification";
+import { trackEvent } from "../analytics";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -30,6 +31,9 @@ export default function Header() {
   const mobileMenuRef = useRef(null);
   const headerRef = useRef(null);
   const notificationRef = useRef(null);
+
+  // trackEvent("login_click");
+
   function useQuery() {
     return new URLSearchParams(useLocation().search);
   }
@@ -138,7 +142,7 @@ useEffect(() => {
       setShowFeedAlertModal(true);
       return false;
     }
-    if (roleType !== "STUDENT" && roleType !== "ADMIN") {
+    if (roleType =="MEMBER") {
       setShowFeedAlertModal(true);
       return false;
     }
@@ -761,7 +765,7 @@ const DesktopHeader = () => (
         <AlertModal
           type="simple"
           title="권한이 없습니다"
-          description="피드 등록은 학생 계정만 이용할 수 있습니다."
+          description="피드 등록은 학생/동아리 회원만 이용할 수 있습니다."
           TrueBtnText="로그인하러 가기"
           FalseBtnText="취소"
           onClickTrue={() => {
