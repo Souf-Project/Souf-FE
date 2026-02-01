@@ -239,9 +239,11 @@ client.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 401 에러 발생 시 리프레시 토큰 호출
+    // 토큰 만료 에러 처리 (401 또는 400 + S400-6)
     // 토큰이 있는 경우에만 refresh 시도 (로그인 없이 조회 가능한 API는 토큰이 없을 수 있음)
-    if (status === 401 && !originalRequest._retry) {
+    const isTokenExpired = (status === 401) || (status === 400 && errorKey === 'S400-6');
+    
+    if (isTokenExpired && !originalRequest._retry) {
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken") || getCookie("refreshToken");
       
@@ -287,14 +289,8 @@ client.interceptors.response.use(
 
  // 리프레시 토큰 요청 후에 발생하는 에러 키 
  // G403 = 로그인 해주세요
- // S400-6 = 토큰이 만료되었습니다.
     if (status === 403 && errorKey === 'G403') {
       await handleRefreshFailure("로그인이 필요합니다.");
-      return Promise.reject(error);
-    }
-    
-    if (status === 400 && errorKey === 'S400-6') {
-      await handleRefreshFailure("재로그인이 필요합니다.");
       return Promise.reject(error);
     }
 
