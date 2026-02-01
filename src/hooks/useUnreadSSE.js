@@ -11,7 +11,44 @@ const useUnreadSSE = () => {
   const eventSourceRef = useRef(null);
   const isReconnectingRef = useRef(false);
 
-  const createEventSource = (token) => {
+  const createEventSource = async (token) => {
+    // 리프레시 토큰 재발급 중이면 대기
+    const waitForRefreshIfNeeded = async () => {
+      let attempts = 0;
+      const maxAttempts = 200; // 200 * 10ms = 2초
+      
+      while ((getIsRefreshing() || getRefreshPromise()) && attempts < maxAttempts) {
+        console.log('[SSE] 리프레시 토큰 재발급 중 - SSE 연결 대기...', {
+          isRefreshing: getIsRefreshing(),
+          hasRefreshPromise: !!getRefreshPromise(),
+          attempts
+        });
+        await new Promise(resolve => setTimeout(resolve, 10));
+        attempts++;
+      }
+      
+      // refreshPromise가 있으면 완료까지 대기
+      const refreshPromise = getRefreshPromise();
+      if (refreshPromise) {
+        try {
+          console.log('[SSE] refreshPromise 대기 중...');
+          const newAccessToken = await refreshPromise;
+          console.log('[SSE] 새 토큰 받음, SSE 연결 생성:', {
+            tokenLength: newAccessToken?.length
+          });
+          return newAccessToken;
+        } catch (error) {
+          console.error('[SSE] 리프레시 실패:', error);
+          throw error;
+        }
+      }
+      
+      return token;
+    };
+    
+    // 리프레시 중이면 대기하고 새 토큰 사용
+    const finalToken = await waitForRefreshIfNeeded();
+    
     // 기존 연결이 있으면 닫기
     if (eventSourceRef.current) {
       eventSourceRef.current.close();
@@ -19,7 +56,7 @@ const useUnreadSSE = () => {
 
     // EventSource는 헤더를 설정할 수 없으므로 쿼리 파라미터로 토큰 전달
     const eventSource = new EventSource(
-      `${BASE_URL}/api/v1/notifications/subscribe?token=${encodeURIComponent(token)}`,
+      `${BASE_URL}/api/v1/notifications/subscribe?token=${encodeURIComponent(finalToken)}`,
       {
         withCredentials: true,
       }
@@ -86,8 +123,8 @@ const useUnreadSSE = () => {
           const newAccessToken = await refreshAccessToken();
           console.log('토큰 재발급 성공. SSE 재연결 시도...');
           
-          // 새 토큰으로 재연결
-          eventSourceRef.current = createEventSource(newAccessToken);
+          // 새 토큰으로 재연결 (리프레시 중이면 자동으로 대기)
+          eventSourceRef.current = await createEventSource(newAccessToken);
           isReconnectingRef.current = false;
         } catch (refreshError) {
           console.error('토큰 재발급 실패:', refreshError);
@@ -115,8 +152,16 @@ const useUnreadSSE = () => {
       return;
     }
     
-    // SSE 연결 생성
-    createEventSource(accessToken);
+    // SSE 연결 생성 (리프레시 중이면 자동으로 대기)
+    createEventSource(accessToken)
+      .then((eventSource) => {
+        if (eventSource) {
+          eventSourceRef.current = eventSource;
+        }
+      })
+      .catch((error) => {
+        console.error('[SSE] 연결 생성 실패:', error);
+      });
 
     return () => {
       // 컴포넌트 언마운트 시 연결 종료
