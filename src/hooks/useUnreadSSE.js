@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import useUnreadStore from '../store/useUnreadStore';
-import { refreshAccessToken } from '../api/client';
+import { refreshAccessToken, getIsRefreshing, getRefreshPromise } from '../api/client';
 
 const useUnreadSSE = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
