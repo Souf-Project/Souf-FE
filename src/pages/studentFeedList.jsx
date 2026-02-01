@@ -20,6 +20,12 @@ import heartOn from "../assets/images/heartOn.svg";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
+const getOrdinalSuffix = (rank) => {
+  if (rank === 1) return 'st';
+  if (rank === 2) return 'nd';
+  return 'th';
+};
+
 export default function StudentFeedList({ }) {
   trackEvent("feed_list_view");
   const navigate = useNavigate();
@@ -368,7 +374,7 @@ const {
                   <div className="flip-button-hover-content">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl font-bold text-white">
-                        {item.rank}st
+                        {item.rank}{getOrdinalSuffix(item.rank)}
                       </div>
                       <div className="text-xl font-semibold text-white">
                         {item.nickname || "익명"}
@@ -388,7 +394,7 @@ const {
                       <div className={`text-2xl font-bold transition-colors duration-300 ${
                         isActive ? "text-blue-600" : "text-gray-600"
                       }`}>
-                        {item.rank}st
+                        {item.rank}{getOrdinalSuffix(item.rank)}
                       </div>
                       <div className="flex flex-col">
                         <div className={`text-xl font-semibold transition-colors duration-300 ${
@@ -429,9 +435,9 @@ const {
               selectedValue={sortBy}
               onSelect={handleSortChange}
               placeholder="정렬 기준"
-            />
+        />
       </div>
-       
+
 
       <div className="flex flex-col items-center justify-center px-2 md:px-0 md:mx-auto w-full">
         {isLoading ? (

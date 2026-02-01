@@ -416,7 +416,7 @@ const DesktopHeader = () => (
               onMouseEnter={() => handleDropdownEnter('feed')}
               onMouseLeave={handleDropdownLeave}
             >
-              <span className="cursor-pointer" onClick={() => navigate("/feed")}>대학생 피드보기</span>
+              <span className="cursor-pointer" onClick={() => navigate("/studentFeedList")}>대학생 피드보기</span>
               {/* 대학생 피드보기 드롭다운 */}
               {activeDropdown === 'feed' && (
                  <div 
