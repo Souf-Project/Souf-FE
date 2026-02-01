@@ -307,9 +307,9 @@ client.interceptors.request.use(
           hasRefreshPromise: !!refreshPromise
         });
         
-        // refreshPromise가 생성될 때까지 대기 (최대 2초)
+        // refreshPromise가 생성될 때까지 대기 (최대 3초)
         let attempts = 0;
-        const maxAttempts = 200; // 200 * 10ms = 2초
+        const maxAttempts = 300; // 300 * 10ms = 3초
         
         while (!refreshPromise && isRefreshing && attempts < maxAttempts) {
           await new Promise(resolve => setTimeout(resolve, 10));
@@ -353,9 +353,9 @@ client.interceptors.request.use(
             url: requestUrl,
             method: requestMethod
           });
-          // 최대 5초까지 추가 대기
+          // 최대 10초까지 추가 대기
           let additionalAttempts = 0;
-          const maxAdditionalAttempts = 500; // 500 * 10ms = 5초
+          const maxAdditionalAttempts = 1000; // 1000 * 10ms = 10초
           while (!refreshPromise && isRefreshing && additionalAttempts < maxAdditionalAttempts) {
             await new Promise(resolve => setTimeout(resolve, 10));
             additionalAttempts++;
@@ -364,7 +364,10 @@ client.interceptors.request.use(
           if (refreshPromise) {
             try {
               const newAccessToken = await refreshPromise;
-              config.headers.set("Authorization", `Bearer ${newAccessToken}`);
+              config.headers = {
+                ...(config.headers || {}),
+                Authorization: `Bearer ${newAccessToken}`,
+              };
               console.log("[리프레시 토큰] 대기 중인 요청 재시도 (추가 대기 후):", {
                 url: requestUrl,
                 method: requestMethod
@@ -389,7 +392,10 @@ client.interceptors.request.use(
         });
         const accessToken = localStorage.getItem("accessToken");
         if (accessToken) {
-          config.headers.set("Authorization", `Bearer ${accessToken}`);
+          config.headers = {
+            ...(config.headers || {}),
+            Authorization: `Bearer ${accessToken}`,
+          };
         }
         return config;
       };
@@ -402,7 +408,10 @@ client.interceptors.request.use(
     const accessToken = localStorage.getItem("accessToken");
     
     if (accessToken) {
-      config.headers.set("Authorization", `Bearer ${accessToken}`);
+      config.headers = {
+        ...(config.headers || {}),
+        Authorization: `Bearer ${accessToken}`,
+      };
       console.log("[리프레시 토큰] 일반 요청 - localStorage에서 토큰 사용:", {
         url: requestUrl,
         method: requestMethod,
@@ -516,7 +525,10 @@ client.interceptors.response.use(
         // isRefreshing은 refreshAccessToken 내부에서 관리하므로 여기서는 초기화하지 않음
         
         // 새 토큰으로 원래 요청 재시도
-        originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
+        originalRequest.headers = {
+          ...(originalRequest.headers || {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        };
         console.log("[리프레시 토큰] 원래 요청 재시도:", {
           url: requestUrl,
           method: requestMethod
