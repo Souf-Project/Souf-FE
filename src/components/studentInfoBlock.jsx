@@ -39,6 +39,7 @@ export default function StudentInfoBlock({ studentInfo, type }) {
 
 
   const handleChat = async (memberId) => {
+    console.log("채팅 멤버: ", memberId);
     
     try {
       const response = await postChatrooms(memberId);
@@ -147,9 +148,9 @@ export default function StudentInfoBlock({ studentInfo, type }) {
           >
             거절
           </button>
-          <div className=" flex items-center gap-2 bg-blue-main p-2 rounded-lg text-white">
+          <div className=" flex items-center gap-2 bg-blue-main p-2 rounded-lg text-white"  onClick={() => handleChat(user?.id)} >
             채팅하기
-            <img className=" w-4 z-[5]" src={sendIco} onClick={() => handleChat(user?.id)} />
+            <img className=" w-4 z-[5]" src={sendIco}/>
           </div>
           </div>
         )}
