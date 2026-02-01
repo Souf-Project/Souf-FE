@@ -136,49 +136,90 @@ const handleRefreshFailure = async (message = "로그인 시간이 만료되었�
 };
 
 // 토큰 재발급 API 호출
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
+  console.log("[리프레시 토큰] 토큰 재발급 시도 시작");
+  
   // localStorage와 쿠키 둘 다에서 refreshToken 확인
   const refreshTokenFromStorage = localStorage.getItem("refreshToken");
   const refreshTokenFromCookie = getCookie("refreshToken") 
   
   const refreshToken = refreshTokenFromStorage || refreshTokenFromCookie;
   
+  console.log("[리프레시 토큰] refreshToken 존재 여부:", {
+    fromStorage: !!refreshTokenFromStorage,
+    fromCookie: !!refreshTokenFromCookie,
+    hasToken: !!refreshToken
+  });
+  
   // 쿠키로 refreshToken이 전송되므로 withCredentials: true만 사용
   // body에 refreshToken을 보내지 않아도 쿠키로 자동 전송됨
-  const response = await axios.post(
-    `${SERVER_URL}/api/v1/auth/refresh`,
-    {},
-    { withCredentials: true, headers: { "Content-Type": "application/json" } }
-  );
+  console.log("[리프레시 토큰] API 호출:", `${SERVER_URL}/api/v1/auth/refresh`);
   
-  // console.log(" refresh API 응답:", response.status, response.data);
-  
-  const newAccessToken = extractTokenFromResponse(response);
-  if (!newAccessToken) {
-    throw new Error("토큰 재발급 응답에 새 토큰이 없습니다");
-  }
-  
-  // 새 refreshToken은 쿠키로 받아옴
-  setTimeout(() => {
-    const newRefreshTokenFromCookie = getCookie("refreshToken")
-    if (newRefreshTokenFromCookie) {
-      localStorage.setItem("refreshToken", newRefreshTokenFromCookie);
-     
-    } else {
-      // 응답 데이터에 refreshToken이 있는 경우 (fallback)
-      const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
-      if (newRefreshToken) {
-        localStorage.setItem("refreshToken", newRefreshToken);
-       
-      } else {
-      }
+  try {
+    const response = await axios.post(
+      `${SERVER_URL}/api/v1/auth/refresh`,
+      {},
+      { withCredentials: true, headers: { "Content-Type": "application/json" } }
+    );
+    
+    // console.log("[리프레시 토큰] API 응답 성공:", {
+    //   status: response.status,
+    //   statusText: response.statusText,
+    //   headers: response.headers,
+    //   data: response.data
+    // });
+    
+    const newAccessToken = extractTokenFromResponse(response);
+    if (!newAccessToken) {
+      // console.error("[리프레시 토큰] 응답에 새 토큰이 없습니다:", response);
+      throw new Error("토큰 재발급 응답에 새 토큰이 없습니다");
     }
-  }, 100);
+    
+    // console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
+    //   tokenLength: newAccessToken.length,
+    //   tokenPreview: newAccessToken.substring(0, 50) + "..."
+    // });
   
-  // 새 accessToken 저장
-  saveTokens(newAccessToken);
-  
-  return newAccessToken;
+    // 새 refreshToken은 쿠키로 받아옴
+    setTimeout(() => {
+      const newRefreshTokenFromCookie = getCookie("refreshToken")
+      if (newRefreshTokenFromCookie) {
+        localStorage.setItem("refreshToken", newRefreshTokenFromCookie);
+        // console.log("[리프레시 토큰] 새 refreshToken 쿠키에서 저장 완료");
+      } else {
+        // 응답 데이터에 refreshToken이 있는 경우 (fallback)
+        const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
+        if (newRefreshToken) {
+          localStorage.setItem("refreshToken", newRefreshToken);
+          // console.log("[리프레시 토큰] 새 refreshToken 응답 데이터에서 저장 완료");
+        } else {
+          // console.warn("[리프레시 토큰] 새 refreshToken을 찾을 수 없습니다");
+        }
+      }
+    }, 100);
+    
+    // 새 accessToken 저장
+    saveTokens(newAccessToken);
+    // console.log("[리프레시 토큰] 토큰 재발급 완료");
+    
+    return newAccessToken;
+  } catch (error) {
+    console.error("[리프레시 토큰] API 호출 실패:", {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      headers: error.response?.headers
+    });
+    
+    // 403 에러인 경우 (refresh token이 만료되었거나 유효하지 않음)
+    if (error.response?.status === 403) {
+      console.log("[리프레시 토큰] 403 에러 발생 - 재로그인 필요");
+      await handleRefreshFailure("재로그인이 필요합니다");
+    }
+    
+    throw error;
+  }
 };
 
 // 요청에 토큰 적용 및 재시도

@@ -96,13 +96,8 @@ export default function ProfileEditContent() {
         const urlParts = url.split('/');
         return urlParts[urlParts.length - 1];
       };
-
-     //  console.log("[프로필 수정] 시작");
-      // console.log("[프로필 수정] selectedFile:", selectedFile ? {
-      //   name: selectedFile.name,
-      //   size: selectedFile.size,
-      //   type: selectedFile.type
-      // } : null);
+      console.log(dataToSave)
+      console.log(formData.profileImageUrl);
       
       const updatePayload = {
         username: dataToSave.username,
@@ -110,13 +105,12 @@ export default function ProfileEditContent() {
         intro: dataToSave.intro,
         personalUrl: dataToSave.personalUrl,
         newCategories: dataToSave.newCategories,
-        profileOriginalFileName: selectedFile ? selectedFile.name : null,
-        marketingAgreement: marketingAgreement, // 마케팅 동의 여부 추가
+        profileOriginalFileName: selectedFile 
+          ? selectedFile.name 
+          : (formData.profileImageUrl ? getFileNameFromUrl(formData.profileImageUrl) : null),
+        marketingAgreement: marketingAgreement, 
       };
-      // 이미지를 수정하지 않을 때만 profileImageUrl 추가
-      if (!selectedFile && formData.profileImageUrl) {
-        updatePayload.profileImageUrl = formData.profileImageUrl;
-      }
+      console.log("updatePayload:", updatePayload);
 
       let updateResponse;
       try {
@@ -155,10 +149,15 @@ export default function ProfileEditContent() {
         fileUrl = dtoList.fileUrl;
       }
       
+      // 파일명에서 확장자 추출하여 파일 타입 결정
+      const getFileTypeFromFileName = (fileName) => {
+        if (!fileName) return 'png';
+        const extension = fileName.split('.').pop()?.toLowerCase();
+        return extension || 'png';
+      };
       
       if (selectedFile && presignedUrl) {
-
-        // 2. S3에 파일 업로드
+        // 새 파일이 있는 경우: S3에 파일 업로드 후 confirmImageUpload 호출
         await uploadToS3(presignedUrl, selectedFile);
 
         await confirmImageUpload({
@@ -167,11 +166,16 @@ export default function ProfileEditContent() {
           fileName: [selectedFile.name],
           fileType: [selectedFile.type.split('/')[1].toLowerCase()],
         });
+      } else if (!selectedFile && formData.profileImageUrl && memberId) {
+        // 이미지 수정이 없을 때도 confirmImageUpload 호출
+        const originalFileName = getFileNameFromUrl(formData.profileImageUrl);
+        const originalFileType = getFileTypeFromFileName(originalFileName);
         
-      } else {
-        console.warn("[프로필 수정] 파일 업로드 조건 불만족:", {
-          hasSelectedFile: !!selectedFile,
-          hasPresignedUrl: !!presignedUrl
+        await confirmImageUpload({
+          postId: memberId,
+          fileUrl: formData.profileImageUrl,
+          fileName: [originalFileName],
+          fileType: [originalFileType],
         });
       }
       
@@ -386,7 +390,7 @@ export default function ProfileEditContent() {
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : verifyingNickname || !formData.nickname || formData.nickname === formData.originalNickname
                           ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                          : 'bg-yellow-point text-white'
+                          : 'bg-blue-main text-white'
                     }`}
                   >
                     {verifyingNickname ? '확인 중...' : '중복확인'}
