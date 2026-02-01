@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useUnreadStore from '../store/useUnreadStore';
+import { refreshAccessToken } from '../api/client';
 
 const useUnreadSSE = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -7,28 +8,22 @@ const useUnreadSSE = () => {
   const setUnreadNotificationCount = useUnreadStore((state) => state.setUnreadNotificationCount);
   const addNotification = useUnreadStore((state) => state.addNotification);
   const setNotifications = useUnreadStore((state) => state.setNotifications);
+  const eventSourceRef = useRef(null);
+  const isReconnectingRef = useRef(false);
 
-  useEffect(() => {
-    // accessToken 가져오기
-    const accessToken = localStorage.getItem("accessToken");
-    
-    // 토큰이 없으면 SSE 연결하지 않음
-    if (!accessToken) {
-      // console.log("SSE 연결 실패- accessToken 없음");
-      return;
+  const createEventSource = (token) => {
+    // 기존 연결이 있으면 닫기
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
     }
-    
+
     // EventSource는 헤더를 설정할 수 없으므로 쿼리 파라미터로 토큰 전달
     const eventSource = new EventSource(
-      `${BASE_URL}/api/v1/notifications/subscribe?token=${encodeURIComponent(accessToken)}`,
+      `${BASE_URL}/api/v1/notifications/subscribe?token=${encodeURIComponent(token)}`,
       {
         withCredentials: true,
       }
     );
-
-    eventSource.addEventListener = (event) => {
-      
-    }
 
     eventSource.onmessage = (event) => {
       try {
@@ -76,18 +71,60 @@ const useUnreadSSE = () => {
       }
     };
 
-  
-
-    eventSource.onerror = (err) => {
+    eventSource.onerror = async (err) => {
       console.error('SSE connection error:', err);
-      // 401 에러인 경우 토큰 문제일 수 있음
-      if (eventSource.readyState === EventSource.CLOSED) {
-        console.error('SSE 연결이 종료되었습니다. 토큰을 확인해주세요.');
+      
+      // 연결이 종료되었고, 재연결 중이 아닐 때만 처리
+      if (eventSource.readyState === EventSource.CLOSED && !isReconnectingRef.current) {
+        console.log('SSE 연결이 종료되었습니다. 토큰 재발급 시도...');
+        
+        // 재연결 플래그 설정 (중복 재연결 방지)
+        isReconnectingRef.current = true;
+        
+        try {
+          // 리프레시 토큰 발급
+          const newAccessToken = await refreshAccessToken();
+          console.log('토큰 재발급 성공. SSE 재연결 시도...');
+          
+          // 새 토큰으로 재연결
+          eventSourceRef.current = createEventSource(newAccessToken);
+          isReconnectingRef.current = false;
+        } catch (refreshError) {
+          console.error('토큰 재발급 실패:', refreshError);
+          isReconnectingRef.current = false;
+          // 토큰 재발급 실패 시 연결 종료
+          if (eventSourceRef.current) {
+            eventSourceRef.current.close();
+            eventSourceRef.current = null;
+          }
+        }
       }
     };
 
+    eventSourceRef.current = eventSource;
+    return eventSource;
+  };
+
+  useEffect(() => {
+    // accessToken 가져오기
+    const accessToken = localStorage.getItem("accessToken");
+    
+    // 토큰이 없으면 SSE 연결하지 않음
+    if (!accessToken) {
+      // console.log("SSE 연결 실패- accessToken 없음");
+      return;
+    }
+    
+    // SSE 연결 생성
+    createEventSource(accessToken);
+
     return () => {
-      eventSource.close();
+      // 컴포넌트 언마운트 시 연결 종료
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+      isReconnectingRef.current = false;
       // console.log('SSE 연결 종료');
     };
   }, [BASE_URL, setUnreadChatCount, setUnreadNotificationCount, addNotification, setNotifications]);

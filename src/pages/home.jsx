@@ -58,6 +58,7 @@ import part1_3 from "../assets/images/mainGuide/part1_3.png";
 import part2 from "../assets/images/mainGuide/part2.png";
 import spoonMark from "../assets/images/spoonMark.svg";
 import SOUF_contest_main from "../assets/images/SOUF_contest_main.jpeg";
+import SOUF_contest_poster from "../assets/images/SOUF_poster_A4.jpeg";
 import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
 
 export default function Home() {
@@ -413,12 +414,15 @@ export default function Home() {
 
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 플랫폼' />
     <div className="relative overflow-x-hidden w-screen">
-      <div className="w-full  h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
+      <div className="hidden md:block w-full h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
 
       }}>
         <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-contain" />
       </div>
      
+     <div className="block md:hidden mx-auto cursor-pointer" onClick={() => {navigate("/contest")}}>
+      <img src={SOUF_contest_poster} alt="SOUF_contest_poster" className="w-full h-full object-contain" />
+     </div>
         {/* {/* <div className="relative bg-[#FBFBFB] w-screen mx-auto"> */}
         {/* <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[60rem] mx-auto"> */}
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
