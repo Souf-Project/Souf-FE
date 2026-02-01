@@ -264,7 +264,59 @@ export const refreshAccessToken = async () => {
 
 // 요청 인터셉터 추가
 client.interceptors.request.use(
-  (config) => {
+  async (config) => {
+    const requestUrl = config.url || '';
+    const requestMethod = config.method?.toUpperCase() || 'UNKNOWN';
+    
+    // refresh API 자체는 대기하지 않음
+    if (requestUrl.includes('/api/v1/auth/refresh')) {
+      const refreshToken = localStorage.getItem("refreshToken") || getCookie("refreshToken");
+      // refresh API는 쿠키로 토큰이 전송되므로 헤더 설정 불필요
+      return config;
+    }
+    
+    // 리프레시 토큰 재발급 중이면 모든 요청을 대기
+    if (isRefreshing) {
+      console.log("[리프레시 토큰] 리프레시 진행 중 - 요청 대기:", {
+        url: requestUrl,
+        method: requestMethod,
+        currentQueueLength: failedQueue.length
+      });
+      
+      // 리프레시 토큰 재발급이 완료될 때까지 대기
+      return new Promise((resolve, reject) => {
+        // refreshPromise가 있으면 기다림
+        if (refreshPromise) {
+          refreshPromise
+            .then((newAccessToken) => {
+              // 새 토큰으로 요청 헤더 설정
+              config.headers.set("Authorization", `Bearer ${newAccessToken}`);
+              console.log("[리프레시 토큰] 대기 중인 요청 재시도:", {
+                url: requestUrl,
+                method: requestMethod
+              });
+              resolve(config);
+            })
+            .catch((error) => {
+              console.error("[리프레시 토큰] 리프레시 실패로 인한 요청 취소:", {
+                url: requestUrl,
+                method: requestMethod,
+                error
+              });
+              reject(error);
+            });
+        } else {
+          // refreshPromise가 없으면 (이상한 경우) 기존 로직으로 진행
+          const accessToken = localStorage.getItem("accessToken");
+          if (accessToken) {
+            config.headers.set("Authorization", `Bearer ${accessToken}`);
+          }
+          resolve(config);
+        }
+      });
+    }
+    
+    // 리프레시 진행 중이 아니면 기존 로직대로 진행
     const accessToken = localStorage.getItem("accessToken");
     
     if (accessToken) {
