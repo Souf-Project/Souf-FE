@@ -205,23 +205,29 @@ export const refreshAccessToken = async () => {
         tokenPreview: newAccessToken.substring(0, 50) + "..."
       });
     
-      // 새 refreshToken은 쿠키로 받아옴
-      setTimeout(() => {
-        const newRefreshTokenFromCookie = getCookie("refreshToken")
-        if (newRefreshTokenFromCookie) {
-          localStorage.setItem("refreshToken", newRefreshTokenFromCookie);
-          console.log("[리프레시 토큰] 새 refreshToken 쿠키에서 저장 완료");
-        } else {
-          // 응답 데이터에 refreshToken이 있는 경우 (fallback)
-          const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
-          if (newRefreshToken) {
-            localStorage.setItem("refreshToken", newRefreshToken);
-            console.log("[리프레시 토큰] 새 refreshToken 응답 데이터에서 저장 완료");
+      // 새 refreshToken 저장 (쿠키 우선, 응답 데이터 fallback)
+      // 응답 데이터에서 먼저 확인 (즉시 사용 가능)
+      const newRefreshTokenFromData = response.data?.result?.refreshToken || response.data?.refreshToken;
+      
+      if (newRefreshTokenFromData) {
+        localStorage.setItem("refreshToken", newRefreshTokenFromData);
+        console.log("[리프레시 토큰] 새 refreshToken 응답 데이터에서 저장 완료");
+      } else {
+        // 쿠키에서 확인 (서버가 쿠키로 설정한 경우, 약간의 지연 필요)
+        setTimeout(() => {
+          const newRefreshTokenFromCookie = getCookie("refreshToken");
+          if (newRefreshTokenFromCookie) {
+            localStorage.setItem("refreshToken", newRefreshTokenFromCookie);
+            console.log("[리프레시 토큰] 새 refreshToken 쿠키에서 저장 완료");
           } else {
-            console.warn("[리프레시 토큰] 새 refreshToken을 찾을 수 없습니다");
+            console.warn("[리프레시 토큰] 새 refreshToken을 찾을 수 없습니다 (쿠키와 응답 데이터 모두 없음)", {
+              hasResponseData: !!response.data,
+              responseDataKeys: response.data ? Object.keys(response.data) : [],
+              cookies: document.cookie
+            });
           }
-        }
-      }, 100);
+        }, 100);
+      }
       
       // 새 accessToken 저장
       saveTokens(newAccessToken);
