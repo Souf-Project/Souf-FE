@@ -289,7 +289,7 @@ export default function Feed({ feedData, onFeedClick }) {
           </div>
         )}
       </div>
-      <p className="whitespace-pre-wrap text-gray-800 leading-relaxed mb-2 mx-2 cursor-pointer"
+      <p className="whitespace-pre-wrap break-words text-gray-800 leading-relaxed mb-2 mx-2 cursor-pointer overflow-hidden"
        onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}>
         {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
         <span
