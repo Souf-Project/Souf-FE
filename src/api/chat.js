@@ -16,7 +16,7 @@ export const getChat = async () => {
 export async function patchChatRooms(roomId) {
   const response = await client.patch(`/api/v1/chatrooms/${roomId}/read`, 
   );
-  // console.log(response);
+  console.log(response);
   return response;
 }
 

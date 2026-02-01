@@ -117,7 +117,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     return cleanLines.join('\n').trim();
   };
 
-  // console.log("모든 메시지:", allMessages);
+  console.log("모든 메시지:", allMessages);
 
   useEffect(() => {
     if (!roomId || !nickname) return;
@@ -147,7 +147,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     });
 
     return () => {
-      // console.log("채팅 소켓 연결 해제");
+      console.log("채팅 소켓 연결 해제");
       disconnectChatSocket();
     };
   }, [roomId, nickname, pendingImageUpload]);
@@ -169,8 +169,9 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
     };
 
    
-    
+    // console.log("메시지 전송 시도:", messageObj);
     const success = sendChatMessage(messageObj);
+    // console.log("메시지 전송 결과:", success);
     if (success) {
     setNewMessage("");
       // console.log("메시지 전송 완료");

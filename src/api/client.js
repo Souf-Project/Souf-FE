@@ -16,10 +16,18 @@ let isRefreshing = false;
 let failedQueue = [];
 
 const processQueue = (error, token = null) => {
+  const queueLength = failedQueue.length;
+  console.log(`[리프레시 토큰] 대기 중인 요청 처리 시작: ${queueLength}개 요청`, {
+    hasError: !!error,
+    hasToken: !!token
+  });
+  
   failedQueue.forEach(prom => {
     error ? prom.reject(error) : prom.resolve(token);
   });
+  
   failedQueue = [];
+  console.log(`[리프레시 토큰] 대기 중인 요청 처리 완료`);
 };
 
 // 헤더에서 AccessToken 추출
@@ -162,45 +170,45 @@ export const refreshAccessToken = async () => {
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
     
-    // console.log("[리프레시 토큰] API 응답 성공:", {
-    //   status: response.status,
-    //   statusText: response.statusText,
-    //   headers: response.headers,
-    //   data: response.data
-    // });
+    console.log("[리프레시 토큰] API 응답 성공:", {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      data: response.data
+    });
     
     const newAccessToken = extractTokenFromResponse(response);
     if (!newAccessToken) {
-      // console.error("[리프레시 토큰] 응답에 새 토큰이 없습니다:", response);
+      console.error("[리프레시 토큰] 응답에 새 토큰이 없습니다:", response);
       throw new Error("토큰 재발급 응답에 새 토큰이 없습니다");
     }
     
-    // console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
-    //   tokenLength: newAccessToken.length,
-    //   tokenPreview: newAccessToken.substring(0, 50) + "..."
-    // });
+    console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
+      tokenLength: newAccessToken.length,
+      tokenPreview: newAccessToken.substring(0, 50) + "..."
+    });
   
     // 새 refreshToken은 쿠키로 받아옴
     setTimeout(() => {
       const newRefreshTokenFromCookie = getCookie("refreshToken")
       if (newRefreshTokenFromCookie) {
         localStorage.setItem("refreshToken", newRefreshTokenFromCookie);
-        // console.log("[리프레시 토큰] 새 refreshToken 쿠키에서 저장 완료");
+        console.log("[리프레시 토큰] 새 refreshToken 쿠키에서 저장 완료");
       } else {
         // 응답 데이터에 refreshToken이 있는 경우 (fallback)
         const newRefreshToken = response.data?.result?.refreshToken || response.data?.refreshToken;
         if (newRefreshToken) {
           localStorage.setItem("refreshToken", newRefreshToken);
-          // console.log("[리프레시 토큰] 새 refreshToken 응답 데이터에서 저장 완료");
+          console.log("[리프레시 토큰] 새 refreshToken 응답 데이터에서 저장 완료");
         } else {
-          // console.warn("[리프레시 토큰] 새 refreshToken을 찾을 수 없습니다");
+          console.warn("[리프레시 토큰] 새 refreshToken을 찾을 수 없습니다");
         }
       }
     }, 100);
     
     // 새 accessToken 저장
     saveTokens(newAccessToken);
-    // console.log("[리프레시 토큰] 토큰 재발급 완료");
+    console.log("[리프레시 토큰] 토큰 재발급 완료");
     
     return newAccessToken;
   } catch (error) {
@@ -222,33 +230,6 @@ export const refreshAccessToken = async () => {
   }
 };
 
-// 요청에 토큰 적용 및 재시도
-const retryRequest = (originalRequest, token) => {
-  // 원본 요청의 모든 정보를 보존하면서 새 토큰으로 재시도
-  // axios config 객체를 직접 수정하여 모든 속성 보존
-  const retryConfig = {
-    ...originalRequest,
-    // Authorization 헤더만 업데이트
-    headers: {
-      ...originalRequest.headers,
-      Authorization: `Bearer ${token}`,
-    },
-    // _retry 플래그를 제거하여 정상 요청으로 처리 (무한 루프 방지)
-    _retry: undefined,
-  };
-  
-  // 원본 요청의 모든 데이터 보존 (JSON, FormData, Blob 등)
-  // data는 이미 originalRequest에 포함되어 있으므로 별도 처리 불필요
-  
-  // console.log("실패한 요청 재시도:", {
-  //   method: retryConfig.method,
-  //   url: retryConfig.url,
-  //   hasData: !!retryConfig.data,
-  //   dataType: retryConfig.data ? (retryConfig.data instanceof FormData ? 'FormData' : typeof retryConfig.data) : 'none',
-  // });
-  
-  return client(retryConfig);
-};
 
 // 요청 인터셉터 추가
 client.interceptors.request.use(
@@ -273,9 +254,15 @@ client.interceptors.response.use(
     const status = error.response?.status;
     const errorKey = error.response?.data?.errorKey;
     const requestUrl = originalRequest?.url || originalRequest?._fullUrl || '';
+    const requestMethod = originalRequest?.method?.toUpperCase() || 'UNKNOWN';
       
     // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
     if (requestUrl.includes('/api/v1/auth/refresh')) {
+      console.error("[API 에러] 리프레시 토큰 API 호출 실패:", {
+        status,
+        errorKey,
+        response: error.response?.data
+      });
       await handleRefreshFailure();
       return Promise.reject(error);
     }
@@ -285,39 +272,86 @@ client.interceptors.response.use(
     const isTokenExpired = (status === 401) || (status === 400 && errorKey === 'S400-6');
     
     if (isTokenExpired && !originalRequest._retry) {
+      console.log("[API 에러] 토큰 만료 감지:", {
+        method: requestMethod,
+        url: requestUrl,
+        status,
+        errorKey,
+        response: error.response?.data
+      });
+      
       const accessToken = localStorage.getItem("accessToken");
       const refreshToken = localStorage.getItem("refreshToken") || getCookie("refreshToken");
       
       if (!accessToken && !refreshToken) {
+        console.log("[리프레시 토큰] 토큰이 없어 리프레시 시도하지 않음");
         return Promise.reject(error);
       }
 
       if (isRefreshing) {
+        console.log("[리프레시 토큰] 이미 리프레시 진행 중 - 요청을 대기열에 추가:", {
+          url: requestUrl,
+          method: requestMethod,
+          currentQueueLength: failedQueue.length
+        });
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
+          console.log("[리프레시 토큰] 대기열에 추가 완료. 현재 대기 중인 요청 수:", failedQueue.length);
         })
           .then(token => {
+            console.log("[리프레시 토큰] 대기 중인 요청 재시도:", {
+              url: requestUrl,
+              method: requestMethod
+            });
             originalRequest.headers.set("Authorization", `Bearer ${token}`);
             return client(originalRequest);
           })
           .catch(err => {
+            console.error("[리프레시 토큰] 대기 중인 요청 재시도 실패:", {
+              url: requestUrl,
+              method: requestMethod,
+              error: err
+            });
             return Promise.reject(err);
           });
       }
 
+      console.log("[리프레시 토큰] 리프레시 토큰 재발급 시작:", {
+        url: requestUrl,
+        method: requestMethod,
+        isRefreshing: false
+      });
+      
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
         const newAccessToken = await refreshAccessToken();
         
+        console.log("[리프레시 토큰] 재발급 성공 - 대기 중인 요청 처리 및 원래 요청 재시도:", {
+          url: requestUrl,
+          method: requestMethod,
+          queueLength: failedQueue.length
+        });
+        
         processQueue(null, newAccessToken);
         isRefreshing = false;
         
         // 새 토큰으로 원래 요청 재시도
         originalRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
+        console.log("[리프레시 토큰] 원래 요청 재시도:", {
+          url: requestUrl,
+          method: requestMethod
+        });
         return client(originalRequest);
       } catch (refreshError) {
+        console.error("[리프레시 토큰] 재발급 실패:", {
+          url: requestUrl,
+          method: requestMethod,
+          error: refreshError,
+          queueLength: failedQueue.length
+        });
+        
         // refresh 실패 시 대기 중인 요청들 모두 실패 처리
         processQueue(refreshError, null);
         isRefreshing = false;
@@ -331,15 +365,34 @@ client.interceptors.response.use(
  // 리프레시 토큰 요청 후에 발생하는 에러 키 
  // G403 = 로그인 해주세요
     if (status === 403 && errorKey === 'G403') {
+      console.log("[API 에러] G403 에러 발생 - 로그인 필요:", {
+        url: requestUrl,
+        method: requestMethod,
+        response: error.response?.data
+      });
       await handleRefreshFailure("로그인이 필요합니다.");
       return Promise.reject(error);
     }
 
-    
+    // 일반 API 에러 로그 (토큰 만료가 아닌 경우)
+    if (!isTokenExpired || originalRequest._retry) {
+      console.error("[API 에러] 일반 API 에러:", {
+        method: requestMethod,
+        url: requestUrl,
+        status,
+        errorKey,
+        response: error.response?.data,
+        message: error.message
+      });
+    }
 
     // 네트워크 에러 처리
     if (error.code === "ERR_NETWORK") {
-      console.error("서버 연결 실패");
+      console.error("[API 에러] 서버 연결 실패:", {
+        url: requestUrl,
+        method: requestMethod,
+        code: error.code
+      });
     }
 
     return Promise.reject(error);

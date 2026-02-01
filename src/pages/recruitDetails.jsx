@@ -53,7 +53,7 @@ export default function RecruitDetail() {
       // console.log('Using API recruit detail:', recruitData.result);
     } else if (recruitData?.recruitDetail) {
       setRecruitDetail(recruitData.recruitDetail);
-      // console.log('Using API recruit detail:', recruitData.recruitDetail);
+      console.log('Using API recruit detail:', recruitData.recruitDetail);
     }
   }, [recruitData]);
 

@@ -420,7 +420,7 @@ export default function Home() {
         <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-contain" />
       </div>
      
-     <div>
+     <div className="block md:hidden mx-auto cursor-pointer" onClick={() => {navigate("/contest")}}>
       <img src={SOUF_contest_poster} alt="SOUF_contest_poster" className="w-full h-full object-contain" />
      </div>
         {/* {/* <div className="relative bg-[#FBFBFB] w-screen mx-auto"> */}
