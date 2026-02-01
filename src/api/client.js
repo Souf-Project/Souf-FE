@@ -330,7 +330,10 @@ client.interceptors.request.use(
               tokenLength: newAccessToken?.length
             });
             // 새 토큰으로 요청 헤더 설정
-            config.headers.set("Authorization", `Bearer ${newAccessToken}`);
+            config.headers = {
+              ...(config.headers || {}),
+              Authorization: `Bearer ${newAccessToken}`,
+            };
             console.log("[리프레시 토큰] 대기 중인 요청 재시도:", {
               url: requestUrl,
               method: requestMethod
@@ -475,7 +478,10 @@ client.interceptors.response.use(
               url: requestUrl,
               method: requestMethod
             });
-            originalRequest.headers.set("Authorization", `Bearer ${token}`);
+            originalRequest.headers = {
+              ...(originalRequest.headers || {}),
+              Authorization: `Bearer ${token}`,
+            };
             return client(originalRequest);
           })
           .catch(err => {
