@@ -19,7 +19,7 @@ export default function PopUpView({
     setSelCheck(!selCheck);
   };
 
-  return (
+    return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
         {/* 닫기 버튼 */}
