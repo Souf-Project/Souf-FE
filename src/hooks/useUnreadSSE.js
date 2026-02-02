@@ -168,11 +168,11 @@ const useUnreadSSE = () => {
       const newAccessToken = event.detail?.newAccessToken || localStorage.getItem("accessToken");
       
       if (!newAccessToken) {
-        console.warn('[SSE] 리프레시 이벤트 수신했지만 새 토큰이 없음');
+        // console.warn('[SSE] 리프레시 이벤트 수신했지만 새 토큰이 없음');
         return;
       }
       
-      console.log('[SSE] 리프레시 토큰 성공 이벤트 수신 - SSE 재연결 시작');
+      // console.log('[SSE] 리프레시 토큰 성공 이벤트 수신 - SSE 재연결 시작');
       
       // 재연결 중이 아니면 재연결 시도
       if (!isReconnectingRef.current) {
@@ -187,10 +187,10 @@ const useUnreadSSE = () => {
           
           // 새 토큰으로 재연결
           eventSourceRef.current = await createEventSource(newAccessToken);
-          console.log('[SSE] 새 토큰으로 재연결 완료');
+          // console.log('[SSE] 새 토큰으로 재연결 완료');
           isReconnectingRef.current = false;
         } catch (error) {
-          console.error('[SSE] 리프레시 후 재연결 실패:', error);
+          // console.error('[SSE] 리프레시 후 재연결 실패:', error);
           isReconnectingRef.current = false;
         }
       }

@@ -176,16 +176,16 @@ export const refreshAccessToken = async () => {
         throw new Error("토큰 재발급 응답에 새 토큰이 없습니다");
       }
       
-      console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
-        tokenLength: newAccessToken.length,
-        tokenPreview: newAccessToken.substring(0, 50) + "...",
-        fullToken: newAccessToken
-      });
+      // console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
+      //   tokenLength: newAccessToken.length,
+      //   tokenPreview: newAccessToken.substring(0, 50) + "...",
+      //   fullToken: newAccessToken
+      // });
     
       // refreshToken은 HttpOnly 쿠키로 서버가 관리하므로 클라이언트에서 저장할 필요 없음
       // 새 accessToken만 저장
       saveTokens(newAccessToken);
-      console.log("[리프레시 토큰] 토큰 재발급 완료 및 localStorage 저장 완료");
+      // console.log("[리프레시 토큰] 토큰 재발급 완료 및 localStorage 저장 완료");
       
       // SSE 재연결을 위한 커스텀 이벤트 발생
       const refreshEvent = new CustomEvent('tokenRefreshed', {
@@ -194,7 +194,7 @@ export const refreshAccessToken = async () => {
         }
       });
       window.dispatchEvent(refreshEvent);
-      console.log("[리프레시 토큰] SSE 재연결 이벤트 발생");
+      // console.log("[리프레시 토큰] SSE 재연결 이벤트 발생");
       
       return newAccessToken;
     } catch (error) {
@@ -231,56 +231,56 @@ client.interceptors.request.use(
     const requestUrl = config.url || '';
     const requestMethod = config.method?.toUpperCase() || 'UNKNOWN';
     
-    console.log("[요청 인터셉터] 요청 시작:", {
-      url: requestUrl,
-      method: requestMethod,
-      hasRefreshPromise: !!refreshPromise,
-      hasSkipTokenInterceptor: !!config._skipTokenInterceptor,
-      currentAuthHeader: config.headers?.Authorization?.substring(0, 50) + "..."
-    });
+    // console.log("[요청 인터셉터] 요청 시작:", {
+    //   url: requestUrl,
+    //   method: requestMethod,
+    //   hasRefreshPromise: !!refreshPromise,
+    //   hasSkipTokenInterceptor: !!config._skipTokenInterceptor,
+    //   currentAuthHeader: config.headers?.Authorization?.substring(0, 50) + "..."
+    // });
     
     // refresh API 자체는 대기하지 않음
     // HttpOnly 쿠키로 refreshToken이 자동 전송되므로 헤더 설정 불필요
     if (requestUrl.includes('/api/v1/auth/refresh')) {
-      console.log("[요청 인터셉터] refresh API - 헤더 설정 건너뜀");
+      // console.log("[요청 인터셉터] refresh API - 헤더 설정 건너뜀");
       return config;
     }
     
     // 재요청인 경우 (_skipTokenInterceptor 플래그가 있으면) 헤더가 이미 설정되어 있으므로 건너뜀
     if (config._skipTokenInterceptor) {
-      console.log("[요청 인터셉터] 재요청 - 헤더 설정 건너뜀:", {
-        url: requestUrl,
-        method: requestMethod,
-        hasAuthHeader: !!config.headers?.Authorization,
-        fullAuthHeader: config.headers?.Authorization
-      });
+      // console.log("[요청 인터셉터] 재요청 - 헤더 설정 건너뜀:", {
+      //   url: requestUrl,
+      //   method: requestMethod,
+      //   hasAuthHeader: !!config.headers?.Authorization,
+      //   fullAuthHeader: config.headers?.Authorization
+      // });
       return config;
     }
     
     // 리프레시 토큰 재발급 중이면 refreshPromise를 기다림
     // refresh API 자체는 제외 (이미 위에서 처리됨)
     if (refreshPromise) {
-      console.log("[요청 인터셉터] refreshPromise 대기 시작:", {
-        url: requestUrl,
-        method: requestMethod
-      });
+      // console.log("[요청 인터셉터] refreshPromise 대기 시작:", {
+      //   url: requestUrl,
+      //   method: requestMethod
+      // });
       try {
         // refreshPromise가 완료될 때까지 대기하고 새 토큰으로 헤더 설정
         const newAccessToken = await refreshPromise;
-        console.log("[요청 인터셉터] refreshPromise 대기 완료 - 새 토큰으로 헤더 설정:", {
-          url: requestUrl,
-          method: requestMethod,
-          tokenLength: newAccessToken?.length,
-          tokenPreview: newAccessToken?.substring(0, 50) + "...",
-          fullToken: newAccessToken
-        });
+        // console.log("[요청 인터셉터] refreshPromise 대기 완료 - 새 토큰으로 헤더 설정:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   tokenLength: newAccessToken?.length,
+        //   tokenPreview: newAccessToken?.substring(0, 50) + "...",
+        //   fullToken: newAccessToken
+        // });
         config.headers = {
           ...(config.headers || {}),
           Authorization: `Bearer ${newAccessToken}`,
         };
         return config;
       } catch (error) {
-        console.error("[요청 인터셉터] refreshPromise 대기 중 에러:", error);
+        // console.error("[요청 인터셉터] refreshPromise 대기 중 에러:", error);
         // 리프레시 실패 시 요청도 실패
         throw error;
       }
@@ -295,24 +295,24 @@ client.interceptors.request.use(
         ...(config.headers || {}),
         Authorization: `Bearer ${accessToken}`,
       };
-      console.log("[요청 인터셉터] localStorage에서 토큰 사용:", {
-        url: requestUrl,
-        method: requestMethod,
-        tokenLength: accessToken.length,
-        tokenPreview: accessToken.substring(0, 50) + "...",
-        fullToken: accessToken
-      });
+      // console.log("[요청 인터셉터] localStorage에서 토큰 사용:", {
+      //   url: requestUrl,
+      //   method: requestMethod,
+      //   tokenLength: accessToken.length,
+      //   tokenPreview: accessToken.substring(0, 50) + "...",
+      //   fullToken: accessToken
+      // });
     } else {
-      console.warn("[요청 인터셉터] accessToken이 없음:", {
-        url: requestUrl,
-        method: requestMethod
-      });
+      // console.warn("[요청 인터셉터] accessToken이 없음:", {
+      //   url: requestUrl,
+      //   method: requestMethod
+      // });
     }
     
     return config;
   },
   (error) => {
-    console.error("[요청 인터셉터] 에러:", error);
+    // console.error("[요청 인터셉터] 에러:", error);
     return Promise.reject(error);
   }
 );
@@ -321,17 +321,17 @@ client.interceptors.response.use(
   async (error) => {
     // 에러 객체 구조 확인
     if (!error) {
-      console.error("[응답 인터셉터] 에러 객체가 없습니다");
+      // console.error("[응답 인터셉터] 에러 객체가 없습니다");
       return Promise.reject(error);
     }
     
     const originalRequest = error.config;
     if (!originalRequest) {
-      console.error("[응답 인터셉터] error.config가 없습니다:", {
-        error: error,
-        hasResponse: !!error.response,
-        message: error.message
-      });
+      // console.error("[응답 인터셉터] error.config가 없습니다:", {
+      //   error: error,
+      //   hasResponse: !!error.response,
+      //   message: error.message
+      // });
       return Promise.reject(error);
     }
     
@@ -341,26 +341,26 @@ client.interceptors.response.use(
     const requestMethod = originalRequest?.method?.toUpperCase() || 'UNKNOWN';
     
     // 모든 에러에 대한 기본 로그 (디버깅용)
-    console.log("[응답 인터셉터] 에러 발생:", {
-      method: requestMethod,
-      url: requestUrl,
-      status,
-      errorKey,
-      hasRetry: !!originalRequest._retry,
-      hasSkipTokenInterceptor: !!originalRequest._skipTokenInterceptor,
-      currentAuthHeader: originalRequest.headers?.Authorization?.substring(0, 50) + "...",
-      fullAuthHeader: originalRequest.headers?.Authorization,
-      response: error.response?.data,
-      errorMessage: error.message
-    });
+    // console.log("[응답 인터셉터] 에러 발생:", {
+    //   method: requestMethod,
+    //   url: requestUrl,
+    //   status,
+    //   errorKey,
+    //   hasRetry: !!originalRequest._retry,
+    //   hasSkipTokenInterceptor: !!originalRequest._skipTokenInterceptor,
+    //   currentAuthHeader: originalRequest.headers?.Authorization?.substring(0, 50) + "...",
+    //   fullAuthHeader: originalRequest.headers?.Authorization,
+    //   response: error.response?.data,
+    //   errorMessage: error.message
+    // });
       
     // refresh API 호출 자체가 실패한 경우 (RT가 유효하지 않음)
     if (requestUrl.includes('/api/v1/auth/refresh')) {
-      console.error("[API 에러] 리프레시 토큰 API 호출 실패:", {
-        status,
-        errorKey,
-        response: error.response?.data
-      });
+      // console.error("[API 에러] 리프레시 토큰 API 호출 실패:", {
+      //   status,
+      //   errorKey,
+      //   response: error.response?.data
+      // });
       await handleRefreshFailure();
       return Promise.reject(error);
     }
@@ -369,57 +369,57 @@ client.interceptors.response.use(
     // 토큰이 있는 경우에만 refresh 시도 (로그인 없이 조회 가능한 API는 토큰이 없을 수 있음)
     const isTokenExpired = (status === 401) || (status === 400 && errorKey === 'S400-6');
     
-    console.log("[응답 인터셉터] 토큰 만료 체크:", {
-      isTokenExpired,
-      status,
-      errorKey,
-      hasRetry: !!originalRequest._retry,
-      url: requestUrl
-    });
+    // console.log("[응답 인터셉터] 토큰 만료 체크:", {
+    //   isTokenExpired,
+    //   status,
+    //   errorKey,
+    //   hasRetry: !!originalRequest._retry,
+    //   url: requestUrl
+    // });
     
     if (isTokenExpired && !originalRequest._retry) {
-      console.log("[API 에러] 토큰 만료 감지 - 리프레시 시작:", {
-        method: requestMethod,
-        url: requestUrl,
-        status,
-        errorKey,
-        response: error.response?.data
-      });
+      // console.log("[API 에러] 토큰 만료 감지 - 리프레시 시작:", {
+      //   method: requestMethod,
+      //   url: requestUrl,
+      //   status,
+      //   errorKey,
+      //   response: error.response?.data
+      // });
       
       const accessToken = localStorage.getItem("accessToken");
       
-      console.log("[응답 인터셉터] accessToken 확인:", {
-        hasAccessToken: !!accessToken,
-        tokenLength: accessToken?.length,
-        tokenPreview: accessToken?.substring(0, 50) + "..."
-      });
+      // console.log("[응답 인터셉터] accessToken 확인:", {
+      //   hasAccessToken: !!accessToken,
+      //   tokenLength: accessToken?.length,
+      //   tokenPreview: accessToken?.substring(0, 50) + "..."
+      // });
       
       // refreshToken은 HttpOnly 쿠키로 관리되므로 JS에서 확인 불가
       // accessToken이 없으면 리프레시 시도하지 않음 (로그인하지 않은 사용자)
       if (!accessToken) {
-        console.log("[리프레시 토큰] accessToken이 없어 리프레시 시도하지 않음");
+        // console.log("[리프레시 토큰] accessToken이 없어 리프레시 시도하지 않음");
         return Promise.reject(error);
       }
 
       // refreshPromise가 이미 존재하면 대기열에 추가
       if (refreshPromise) {
-        console.log("[리프레시 토큰] 이미 리프레시 진행 중 - 요청을 대기열에 추가:", {
-          url: requestUrl,
-          method: requestMethod,
-          currentQueueLength: failedQueue.length
-        });
+        // console.log("[리프레시 토큰] 이미 리프레시 진행 중 - 요청을 대기열에 추가:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   currentQueueLength: failedQueue.length
+        // });
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject, originalRequest });
-          console.log("[리프레시 토큰] 대기열에 추가 완료. 현재 대기 중인 요청 수:", failedQueue.length);
+          // console.log("[리프레시 토큰] 대기열에 추가 완료. 현재 대기 중인 요청 수:", failedQueue.length);
         })
           .then(token => {
-            console.log("[응답 인터셉터] 대기 중인 요청 재시도 (refreshPromise 대기 후):", {
-              url: requestUrl,
-              method: requestMethod,
-              tokenLength: token.length,
-              tokenPreview: token.substring(0, 50) + "...",
-              fullToken: token
-            });
+            // console.log("[응답 인터셉터] 대기 중인 요청 재시도 (refreshPromise 대기 후):", {
+            //   url: requestUrl,
+            //   method: requestMethod,
+            //   tokenLength: token.length,
+            //   tokenPreview: token.substring(0, 50) + "...",
+            //   fullToken: token
+            // });
             originalRequest._retry = true;
             originalRequest._skipTokenInterceptor = true; // 요청 인터셉터에서 토큰 설정 건너뛰기
             originalRequest.headers = {
@@ -438,12 +438,12 @@ client.interceptors.response.use(
           });
       }
 
-      console.log("[리프레시 토큰] 리프레시 토큰 재발급 시작:", {
-        url: requestUrl,
-        method: requestMethod,
-        isRefreshing: isRefreshing,
-        hasRefreshPromise: !!refreshPromise
-      });
+      // console.log("[리프레시 토큰] 리프레시 토큰 재발급 시작:", {
+      //   url: requestUrl,
+      //   method: requestMethod,
+      //   isRefreshing: isRefreshing,
+      //   hasRefreshPromise: !!refreshPromise
+      // });
       
       originalRequest._retry = true;
       // 원래 요청을 추적하기 위해 원래 요청 정보 저장
@@ -456,19 +456,19 @@ client.interceptors.response.use(
       // isRefreshing은 refreshAccessToken 내부에서 관리하므로 여기서는 설정하지 않음
 
       try {
-        console.log("[응답 인터셉터] refreshAccessToken 호출 시작");
+        // console.log("[응답 인터셉터] refreshAccessToken 호출 시작");
         const newAccessToken = await refreshAccessToken();
-        console.log("[응답 인터셉터] refreshAccessToken 완료 - 받은 토큰:", {
-          tokenLength: newAccessToken.length,
-          tokenPreview: newAccessToken.substring(0, 50) + "...",
-          fullToken: newAccessToken
-        });
+        // console.log("[응답 인터셉터] refreshAccessToken 완료 - 받은 토큰:", {
+        //   tokenLength: newAccessToken.length,
+        //   tokenPreview: newAccessToken.substring(0, 50) + "...",
+        //   fullToken: newAccessToken
+        // });
         
-        console.log("[리프레시 토큰] 재발급 성공 - 대기 중인 요청 처리 및 원래 요청 재시도:", {
-          url: requestUrl,
-          method: requestMethod,
-          queueLength: failedQueue.length
-        });
+        // console.log("[리프레시 토큰] 재발급 성공 - 대기 중인 요청 처리 및 원래 요청 재시도:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   queueLength: failedQueue.length
+        // });
         
         // 대기 중인 요청들 처리 (원래 요청과 동일한 요청 제외)
         const remainingQueue = [];
@@ -485,13 +485,13 @@ client.interceptors.response.use(
             // });
           } else {
             // 다른 요청들은 처리
-            console.log("[응답 인터셉터] 대기 중인 요청에 새 토큰 전달:", {
-              url: itemUrl,
-              method: itemMethod,
-              tokenLength: newAccessToken.length,
-              tokenPreview: newAccessToken.substring(0, 50) + "...",
-              fullToken: newAccessToken
-            });
+            // console.log("[응답 인터셉터] 대기 중인 요청에 새 토큰 전달:", {
+            //   url: itemUrl,
+            //   method: itemMethod,
+            //   tokenLength: newAccessToken.length,
+            //   tokenPreview: newAccessToken.substring(0, 50) + "...",
+            //   fullToken: newAccessToken
+            // });
             item.resolve(newAccessToken);
           }
         });
@@ -503,43 +503,43 @@ client.interceptors.response.use(
         // _retry 플래그를 설정하여 요청 인터셉터에서 헤더를 덮어쓰지 않도록 함
         originalRequest._retry = true;
         originalRequest._skipTokenInterceptor = true; // 요청 인터셉터에서 토큰 설정 건너뛰기
-        console.log("[응답 인터셉터] 원래 요청 재시도 - 새 토큰으로 헤더 설정:", {
-          url: requestUrl,
-          method: requestMethod,
-          tokenLength: newAccessToken.length,
-          tokenPreview: newAccessToken.substring(0, 50) + "...",
-          fullToken: newAccessToken
-        });
+        // console.log("[응답 인터셉터] 원래 요청 재시도 - 새 토큰으로 헤더 설정:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   tokenLength: newAccessToken.length,
+        //   tokenPreview: newAccessToken.substring(0, 50) + "...",
+        //   fullToken: newAccessToken
+        // });
         originalRequest.headers = {
           ...(originalRequest.headers || {}),
           Authorization: `Bearer ${newAccessToken}`,
         };
         
-        console.log("[응답 인터셉터] 재시도 직전 - 설정된 헤더 확인:", {
-          url: requestUrl,
-          method: requestMethod,
-          authHeader: originalRequest.headers.Authorization?.substring(0, 50) + "...",
-          fullAuthHeader: originalRequest.headers.Authorization,
-          hasSkipTokenInterceptor: !!originalRequest._skipTokenInterceptor,
-          hasRetry: !!originalRequest._retry
-        });
+        // console.log("[응답 인터셉터] 재시도 직전 - 설정된 헤더 확인:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   authHeader: originalRequest.headers.Authorization?.substring(0, 50) + "...",
+        //   fullAuthHeader: originalRequest.headers.Authorization,
+        //   hasSkipTokenInterceptor: !!originalRequest._skipTokenInterceptor,
+        //   hasRetry: !!originalRequest._retry
+        // });
         
         const retryResponse = await client(originalRequest);
-        console.log("[응답 인터셉터] 재시도 성공:", {
-          url: requestUrl,
-          method: requestMethod,
-          status: retryResponse.status
-        });
+        // console.log("[응답 인터셉터] 재시도 성공:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   status: retryResponse.status
+        // });
         return retryResponse;
       } catch (refreshError) {
-        console.error("[리프레시 토큰] 재발급 실패:", {
-          url: requestUrl,
-          method: requestMethod,
-          error: refreshError,
-          errorMessage: refreshError.message,
-          errorResponse: refreshError.response?.data,
-          queueLength: failedQueue.length
-        });
+        // console.error("[리프레시 토큰] 재발급 실패:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   error: refreshError,
+        //   errorMessage: refreshError.message,
+        //   errorResponse: refreshError.response?.data,
+        //   queueLength: failedQueue.length
+        // });
         
         // refresh 실패 시 대기 중인 요청들 모두 실패 처리
         processQueue(refreshError, null);
@@ -565,90 +565,37 @@ client.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 500 에러인 경우에도 토큰 만료 가능성 체크
-    // 서버가 토큰 만료를 500으로 반환할 수 있음
+    // 500 에러 처리
+    // 근거: 500 에러는 항상 "Internal Server Error"라는 일반적인 메시지만 반환되므로
+    // 에러 메시지로 토큰 만료 여부를 판단할 수 없음
+    // 서버가 토큰 만료를 올바르게 처리한다면 401 또는 400 + S400-6으로 반환해야 함
+    // 500 에러는 실제 서버 내부 에러로 간주하고, 토큰 만료로 처리하지 않음
     if (status === 500 && !originalRequest._retry && !isTokenExpired) {
-      const accessToken = localStorage.getItem("accessToken");
-      const errorMessage = error.response?.data?.error || error.response?.data?.message || '';
-      const isPossibleTokenExpiry = errorMessage.includes('token') || 
-                                     errorMessage.includes('Token') || 
-                                     errorMessage.includes('expired') ||
-                                     errorMessage.includes('Expired') ||
-                                     errorMessage.includes('unauthorized') ||
-                                     errorMessage.includes('Unauthorized');
-      
-      console.warn("[응답 인터셉터] 500 에러 - 토큰 만료 가능성 체크:", {
-        method: requestMethod,
-        url: requestUrl,
-        status,
-        errorKey,
-        errorMessage,
-        isPossibleTokenExpiry,
-        hasAccessToken: !!accessToken,
-        currentAuthHeader: originalRequest.headers?.Authorization?.substring(0, 50) + "..."
-      });
-      
-      // 토큰 만료 가능성이 있고 accessToken이 있으면 리프레시 시도
-      if (isPossibleTokenExpiry && accessToken) {
-        console.log("[응답 인터셉터] 500 에러지만 토큰 만료 가능성 - 리프레시 시도");
-        // 리프레시 로직으로 이동 (아래 코드 재사용)
-        originalRequest._retry = true;
-        const originalRequestInfo = {
-          url: requestUrl,
-          method: requestMethod,
-          originalRequest
-        };
-        
-        try {
-          const newAccessToken = await refreshAccessToken();
-          console.log("[응답 인터셉터] 500 에러 후 리프레시 성공 - 재시도:", {
-            url: requestUrl,
-            method: requestMethod,
-            tokenLength: newAccessToken.length
-          });
-          
-          // 대기 중인 요청들 처리
-          failedQueue.forEach(item => {
-            const itemUrl = item.originalRequest?.url || item.originalRequest?._fullUrl || '';
-            const itemMethod = item.originalRequest?.method?.toUpperCase() || '';
-            const isOriginalRequest = itemUrl === originalRequestInfo.url && itemMethod === originalRequestInfo.method;
-            
-            if (!isOriginalRequest) {
-              item.resolve(newAccessToken);
-            }
-          });
-          failedQueue = [];
-          
-          // 새 토큰으로 재시도
-          originalRequest._retry = true;
-          originalRequest._skipTokenInterceptor = true;
-          originalRequest.headers = {
-            ...(originalRequest.headers || {}),
-            Authorization: `Bearer ${newAccessToken}`,
-          };
-          return client(originalRequest);
-        } catch (refreshError) {
-          console.error("[응답 인터셉터] 500 에러 후 리프레시 실패:", refreshError);
-          processQueue(refreshError, null);
-          await handleRefreshFailure();
-          return Promise.reject(refreshError);
-        }
-      }
+      // console.error("[응답 인터셉터] 500 에러 - 서버 내부 에러로 처리:", {
+      //   method: requestMethod,
+      //   url: requestUrl,
+      //   status,
+      //   errorKey,
+      //   errorMessage: error.response?.data?.error || error.response?.data?.message || '',
+      //   response: error.response?.data,
+      //   currentAuthHeader: originalRequest.headers?.Authorization?.substring(0, 50) + "...",
+      //   note: "500 에러는 항상 'Internal Server Error'만 반환되므로 토큰 만료 여부 판단 불가. 서버 내부 에러로 처리."
+      // });
     }
     
     // 일반 API 에러 로그 (토큰 만료가 아닌 경우)
     if (!isTokenExpired || originalRequest._retry) {
-      console.error("[API 에러] 일반 API 에러 (토큰 만료 아님):", {
-        method: requestMethod,
-        url: requestUrl,
-        status,
-        errorKey,
-        isTokenExpired,
-        hasRetry: !!originalRequest._retry,
-        response: error.response?.data,
-        message: error.message,
-        currentAuthHeader: originalRequest.headers?.Authorization?.substring(0, 50) + "..."
-      });
+      // console.error("[API 에러] 일반 API 에러 (토큰 만료 아님):", {
+      //   method: requestMethod,
+      //   url: requestUrl,
+      //   status,
+      //   errorKey,
+      //   isTokenExpired,
+      //   hasRetry: !!originalRequest._retry,
+      //   response: error.response?.data,
+      //   message: error.message,
+      //   currentAuthHeader: originalRequest.headers?.Authorization?.substring(0, 50) + "..."
+      // });
     }
 
     // 네트워크 에러 처리
