@@ -685,6 +685,7 @@ const handleDeleteClick = () => {
           if (errorAction === "redirect") {
               navigate("/feed");
           }else if(errorAction === "login"){
+            UserStore.getState().logout();
             localStorage.clear();
             navigate("/login");
           }else{

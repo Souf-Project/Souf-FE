@@ -227,6 +227,16 @@ client.interceptors.request.use(
       return config;
     }
     
+    // 재요청인 경우 (_skipTokenInterceptor 플래그가 있으면) 헤더가 이미 설정되어 있으므로 건너뜀
+    if (config._skipTokenInterceptor) {
+      // console.log("[리프레시 토큰] 재요청 - 헤더 설정 건너뜀:", {
+      //   url: requestUrl,
+      //   method: requestMethod,
+      //   hasAuthHeader: !!config.headers?.Authorization
+      // });
+      return config;
+    }
+    
     // 리프레시 토큰 재발급 중이면 refreshPromise를 기다림
     // refresh API 자체는 제외 (이미 위에서 처리됨)
     if (refreshPromise) {
@@ -237,6 +247,11 @@ client.interceptors.request.use(
           ...(config.headers || {}),
           Authorization: `Bearer ${newAccessToken}`,
         };
+        // console.log("[리프레시 토큰] refreshPromise 대기 완료 - 새 토큰으로 헤더 설정:", {
+        //   url: requestUrl,
+        //   method: requestMethod,
+        //   tokenLength: newAccessToken?.length
+        // });
         return config;
       } catch (error) {
         // 리프레시 실패 시 요청도 실패
@@ -330,11 +345,12 @@ client.interceptors.response.use(
             //   url: requestUrl,
             //   method: requestMethod
             // });
+            originalRequest._retry = true;
+            originalRequest._skipTokenInterceptor = true; // 요청 인터셉터에서 토큰 설정 건너뛰기
             originalRequest.headers = {
               ...(originalRequest.headers || {}),
               Authorization: `Bearer ${token}`,
             };
-            originalRequest._retry = true;
             return client(originalRequest);
           })
           .catch(err => {
@@ -395,13 +411,17 @@ client.interceptors.response.use(
         failedQueue = [];
         
         // 새 토큰으로 원래 요청 재시도
+        // _retry 플래그를 설정하여 요청 인터셉터에서 헤더를 덮어쓰지 않도록 함
+        originalRequest._retry = true;
+        originalRequest._skipTokenInterceptor = true; // 요청 인터셉터에서 토큰 설정 건너뛰기
         originalRequest.headers = {
           ...(originalRequest.headers || {}),
           Authorization: `Bearer ${newAccessToken}`,
         };
         // console.log("[리프레시 토큰] 원래 요청 재시도:", {
         //   url: requestUrl,
-        //   method: requestMethod
+        //   method: requestMethod,
+        //   tokenLength: newAccessToken.length
         // });
         return client(originalRequest);
       } catch (refreshError) {

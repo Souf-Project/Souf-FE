@@ -295,6 +295,7 @@ export default function ProfileDetail({}) {
             if (errorAction === "redirect") {
                 navigate("/");
             }else if(errorAction === "login"){
+              UserStore.getState().logout();
               localStorage.clear();
               navigate("/login");
             }else{

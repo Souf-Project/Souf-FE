@@ -15,6 +15,7 @@ import {
 import AlertModal from "../components/alertModal";
 import { filterEmptyCategories } from "../utils/filterEmptyCategories";
 import { FEED_ERRORS } from "../constants/post";
+import { UserStore } from "../store/userStore";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -348,13 +349,14 @@ export default function PostEdit() {
       {errorModal && (
         <AlertModal
         type="simple"
-        title="오류 발생"
+        title="재로그인이 필요합니다"
         description={errorDescription}
         TrueBtnText="확인"
         onClickTrue={() => {
           if (errorAction === "redirect") {
               navigate("/feed");
           }else if(errorAction === "login"){
+            UserStore.getState().logout();
             localStorage.clear();
             navigate("/login");
           }else{
