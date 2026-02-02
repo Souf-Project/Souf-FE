@@ -176,15 +176,16 @@ export const refreshAccessToken = async () => {
         throw new Error("토큰 재발급 응답에 새 토큰이 없습니다");
       }
       
-      // console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
-      //   tokenLength: newAccessToken.length,
-      //   tokenPreview: newAccessToken.substring(0, 50) + "..."
-      // });
+      console.log("[리프레시 토큰] 새 accessToken 추출 성공:", {
+        tokenLength: newAccessToken.length,
+        tokenPreview: newAccessToken.substring(0, 50) + "...",
+        fullToken: newAccessToken
+      });
     
       // refreshToken은 HttpOnly 쿠키로 서버가 관리하므로 클라이언트에서 저장할 필요 없음
       // 새 accessToken만 저장
       saveTokens(newAccessToken);
-      // console.log("[리프레시 토큰] 토큰 재발급 완료");
+      console.log("[리프레시 토큰] 토큰 재발급 완료 및 localStorage 저장 완료");
       
       return newAccessToken;
     } catch (error) {
@@ -243,15 +244,17 @@ client.interceptors.request.use(
       try {
         // refreshPromise가 완료될 때까지 대기하고 새 토큰으로 헤더 설정
         const newAccessToken = await refreshPromise;
+        console.log("[요청 인터셉터] refreshPromise 대기 완료 - 새 토큰으로 헤더 설정:", {
+          url: requestUrl,
+          method: requestMethod,
+          tokenLength: newAccessToken?.length,
+          tokenPreview: newAccessToken?.substring(0, 50) + "...",
+          fullToken: newAccessToken
+        });
         config.headers = {
           ...(config.headers || {}),
           Authorization: `Bearer ${newAccessToken}`,
         };
-        // console.log("[리프레시 토큰] refreshPromise 대기 완료 - 새 토큰으로 헤더 설정:", {
-        //   url: requestUrl,
-        //   method: requestMethod,
-        //   tokenLength: newAccessToken?.length
-        // });
         return config;
       } catch (error) {
         // 리프레시 실패 시 요청도 실패
@@ -341,10 +344,13 @@ client.interceptors.response.use(
           // console.log("[리프레시 토큰] 대기열에 추가 완료. 현재 대기 중인 요청 수:", failedQueue.length);
         })
           .then(token => {
-            // console.log("[리프레시 토큰] 대기 중인 요청 재시도:", {
-            //   url: requestUrl,
-            //   method: requestMethod
-            // });
+            console.log("[응답 인터셉터] 대기 중인 요청 재시도 (refreshPromise 대기 후):", {
+              url: requestUrl,
+              method: requestMethod,
+              tokenLength: token.length,
+              tokenPreview: token.substring(0, 50) + "...",
+              fullToken: token
+            });
             originalRequest._retry = true;
             originalRequest._skipTokenInterceptor = true; // 요청 인터셉터에서 토큰 설정 건너뛰기
             originalRequest.headers = {
@@ -403,6 +409,13 @@ client.interceptors.response.use(
             // });
           } else {
             // 다른 요청들은 처리
+            console.log("[응답 인터셉터] 대기 중인 요청에 새 토큰 전달:", {
+              url: itemUrl,
+              method: itemMethod,
+              tokenLength: newAccessToken.length,
+              tokenPreview: newAccessToken.substring(0, 50) + "...",
+              fullToken: newAccessToken
+            });
             item.resolve(newAccessToken);
           }
         });
@@ -414,15 +427,17 @@ client.interceptors.response.use(
         // _retry 플래그를 설정하여 요청 인터셉터에서 헤더를 덮어쓰지 않도록 함
         originalRequest._retry = true;
         originalRequest._skipTokenInterceptor = true; // 요청 인터셉터에서 토큰 설정 건너뛰기
+        console.log("[응답 인터셉터] 원래 요청 재시도 - 새 토큰으로 헤더 설정:", {
+          url: requestUrl,
+          method: requestMethod,
+          tokenLength: newAccessToken.length,
+          tokenPreview: newAccessToken.substring(0, 50) + "...",
+          fullToken: newAccessToken
+        });
         originalRequest.headers = {
           ...(originalRequest.headers || {}),
           Authorization: `Bearer ${newAccessToken}`,
         };
-        // console.log("[리프레시 토큰] 원래 요청 재시도:", {
-        //   url: requestUrl,
-        //   method: requestMethod,
-        //   tokenLength: newAccessToken.length
-        // });
         return client(originalRequest);
       } catch (refreshError) {
         // console.error("[리프레시 토큰] 재발급 실패:", {
