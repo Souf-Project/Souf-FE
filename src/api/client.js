@@ -322,7 +322,7 @@ client.interceptors.response.use(
         //   currentQueueLength: failedQueue.length
         // });
         return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
+          failedQueue.push({ resolve, reject, originalRequest });
           // console.log("[리프레시 토큰] 대기열에 추가 완료. 현재 대기 중인 요청 수:", failedQueue.length);
         })
           .then(token => {
@@ -334,6 +334,7 @@ client.interceptors.response.use(
               ...(originalRequest.headers || {}),
               Authorization: `Bearer ${token}`,
             };
+            originalRequest._retry = true;
             return client(originalRequest);
           })
           .catch(err => {
@@ -353,6 +354,13 @@ client.interceptors.response.use(
       // });
       
       originalRequest._retry = true;
+      // 원래 요청을 추적하기 위해 원래 요청 정보 저장
+      const originalRequestInfo = {
+        url: requestUrl,
+        method: requestMethod,
+        originalRequest
+      };
+      
       // isRefreshing은 refreshAccessToken 내부에서 관리하므로 여기서는 설정하지 않음
 
       try {
@@ -364,8 +372,27 @@ client.interceptors.response.use(
         //   queueLength: failedQueue.length
         // });
         
-        processQueue(null, newAccessToken);
-        // isRefreshing은 refreshAccessToken 내부에서 관리하므로 여기서는 초기화하지 않음
+        // 대기 중인 요청들 처리 (원래 요청과 동일한 요청 제외)
+        const remainingQueue = [];
+        failedQueue.forEach(item => {
+          const itemUrl = item.originalRequest?.url || item.originalRequest?._fullUrl || '';
+          const itemMethod = item.originalRequest?.method?.toUpperCase() || '';
+          const isOriginalRequest = itemUrl === originalRequestInfo.url && itemMethod === originalRequestInfo.method;
+          
+          if (isOriginalRequest) {
+            // 원래 요청과 동일한 요청은 대기열에서 제거 (원래 요청이 별도로 재시도되므로)
+            // console.log("[리프레시 토큰] 원래 요청과 동일한 요청을 대기열에서 제거:", {
+            //   url: itemUrl,
+            //   method: itemMethod
+            // });
+          } else {
+            // 다른 요청들은 처리
+            item.resolve(newAccessToken);
+          }
+        });
+        
+        // 대기열 초기화
+        failedQueue = [];
         
         // 새 토큰으로 원래 요청 재시도
         originalRequest.headers = {
@@ -403,7 +430,9 @@ client.interceptors.response.use(
       //   method: requestMethod,
       //   response: error.response?.data
       // });
-      await handleRefreshFailure("다시 로그인해주세요.");
+
+      await handleRefreshFailure("다시 로그인해주세요");
+
       return Promise.reject(error);
     }
 
