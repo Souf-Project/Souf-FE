@@ -227,121 +227,21 @@ client.interceptors.request.use(
       return config;
     }
     
-    // 리프레시 토큰 재발급 중이면 모든 요청을 대기
-    // isRefreshing이 true이거나 refreshPromise가 있으면 대기
+    // 리프레시 토큰 재발급 중이면 refreshPromise를 기다림
     // refresh API 자체는 제외 (이미 위에서 처리됨)
-    if (isRefreshing || refreshPromise) {
-      // console.log("[리프레시 토큰] 리프레시 진행 중 - 요청 대기:", {
-      //   url: requestUrl,
-      //   method: requestMethod,
-      //   isRefreshing,
-      //   hasRefreshPromise: !!refreshPromise,
-      //   currentQueueLength: failedQueue.length
-      // });
-      
-      // 리프레시 토큰 재발급이 완료될 때까지 대기
-      const waitForRefresh = async () => {
-        // console.log("[리프레시 토큰] 요청 대기 시작:", {
-        //   url: requestUrl,
-        //   method: requestMethod,
-        //   isRefreshing,
-        //   hasRefreshPromise: !!refreshPromise
-        // });
-        
-        // refreshPromise가 생성될 때까지 대기 (최대 3초)
-        let attempts = 0;
-        const maxAttempts = 300; // 300 * 10ms = 3초
-        
-        while (!refreshPromise && isRefreshing && attempts < maxAttempts) {
-          await new Promise(resolve => setTimeout(resolve, 10));
-          attempts++;
-        }
-        
-        // refreshPromise가 있으면 기다림
-        if (refreshPromise) {
-          try {
-            // console.log("[리프레시 토큰] refreshPromise 대기 중...", {
-            //   url: requestUrl,
-            //   method: requestMethod
-            // });
-            const newAccessToken = await refreshPromise;
-            // console.log("[리프레시 토큰] 새 토큰 받음, 요청 헤더 설정:", {
-            //   url: requestUrl,
-            //   method: requestMethod,
-            //   tokenLength: newAccessToken?.length
-            // });
-            // 새 토큰으로 요청 헤더 설정
-            config.headers = {
-              ...(config.headers || {}),
-              Authorization: `Bearer ${newAccessToken}`,
-            };
-            // console.log("[리프레시 토큰] 대기 중인 요청 재시도:", {
-            //   url: requestUrl,
-            //   method: requestMethod
-            // });
-            return config;
-          } catch (error) {
-            // console.error("[리프레시 토큰] 리프레시 실패로 인한 요청 취소:", {
-            //   url: requestUrl,
-            //   method: requestMethod,
-            //   error
-            // });
-            throw error;
-          }
-        } else if (isRefreshing) {
-          // refreshPromise가 없지만 isRefreshing이 true면 계속 대기
-          // console.log("[리프레시 토큰] refreshPromise 대기 중 (isRefreshing=true)...", {
-          //   url: requestUrl,
-          //   method: requestMethod
-          // });
-          // 최대 10초까지 추가 대기
-          let additionalAttempts = 0;
-          const maxAdditionalAttempts = 1000; // 1000 * 10ms = 10초
-          while (!refreshPromise && isRefreshing && additionalAttempts < maxAdditionalAttempts) {
-            await new Promise(resolve => setTimeout(resolve, 10));
-            additionalAttempts++;
-          }
-          
-          if (refreshPromise) {
-            try {
-              const newAccessToken = await refreshPromise;
-              config.headers = {
-                ...(config.headers || {}),
-                Authorization: `Bearer ${newAccessToken}`,
-              };
-              // console.log("[리프레시 토큰] 대기 중인 요청 재시도 (추가 대기 후):", {
-              //   url: requestUrl,
-              //   method: requestMethod
-              // });
-              return config;
-            } catch (error) {
-              // console.error("[리프레시 토큰] 리프레시 실패로 인한 요청 취소 (추가 대기 후):", {
-              //   url: requestUrl,
-              //   method: requestMethod,
-              //   error
-              // });
-              throw error;
-            }
-          }
-        }
-        
-        // refreshPromise가 없고 isRefreshing이 false면 기존 로직으로 진행
-        // console.warn("[리프레시 토큰] refreshPromise가 없어 기존 토큰 사용:", {
-        //   url: requestUrl,
-        //   method: requestMethod,
-        //   isRefreshing
-        // });
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken) {
-          config.headers = {
-            ...(config.headers || {}),
-            Authorization: `Bearer ${accessToken}`,
-          };
-        }
+    if (refreshPromise) {
+      try {
+        // refreshPromise가 완료될 때까지 대기하고 새 토큰으로 헤더 설정
+        const newAccessToken = await refreshPromise;
+        config.headers = {
+          ...(config.headers || {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        };
         return config;
-      };
-      
-      return waitForRefresh();
+      } catch (error) {
+        // 리프레시 실패 시 요청도 실패
+        throw error;
+      }
     }
     
     // 리프레시 진행 중이 아니면 기존 로직대로 진행
@@ -414,7 +314,8 @@ client.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      if (isRefreshing) {
+      // refreshPromise가 이미 존재하면 대기열에 추가
+      if (refreshPromise) {
         // console.log("[리프레시 토큰] 이미 리프레시 진행 중 - 요청을 대기열에 추가:", {
         //   url: requestUrl,
         //   method: requestMethod,
