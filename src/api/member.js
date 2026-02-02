@@ -145,4 +145,15 @@ export async function deleteMemberWithdraw(password) {
   });
   return response;
 }
+
+/* 로그아웃 */
+export async function postLogout() {
+  const SERVER_URL = import.meta.env.VITE_BASE_URL;
+  const response = await axios.post(
+    `${SERVER_URL}/api/v1/auth/logout`,
+    {},
+    { withCredentials: true, headers: { "Content-Type": "application/json" } }
+  );
+  return response;
+}
  

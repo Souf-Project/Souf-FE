@@ -25,8 +25,9 @@ export default function InquiryContent() {
     });
     const { data, isLoading, error } = useQuery({
         queryKey: ['inquiryList', memberId],
-        queryFn: () => getInquiryList({ memberId }),
+        queryFn: () => getInquiryList({ page: 0, size: 10 }),
     });
+    console.log("data", data);
 
     if (isLoading) {
         return <Loading />;
@@ -305,7 +306,11 @@ export default function InquiryContent() {
                             </div>
                         </div>
                     </div>
-                ))}
+                ))} {inquiryList.length === 0 && (
+                    <div className="text-center text-gray-500 text-lg my-16">
+                        문의 내역이 없습니다.
+                    </div>
+                )}
             </div>
             {showDeleteModal && (
                 <AlertModal

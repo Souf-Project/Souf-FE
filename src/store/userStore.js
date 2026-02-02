@@ -61,6 +61,7 @@ export const UserStore = create(
       // 로그아웃 시 모든 데이터 정리
       logout: () => {
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("user-storage"); // Zustand persist 미들웨어 저장소 삭제
         set({ 
           memberId: null, 
           nickname: null, 

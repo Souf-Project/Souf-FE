@@ -353,7 +353,7 @@ export default function Feed({ feedData, onFeedClick }) {
           }else if(errorAction === "login"){
             UserStore.getState().logout();
             localStorage.clear();
-            navigate("/login");
+            window.location.href = "/login";
           }else{
             window.location.reload();
           }
