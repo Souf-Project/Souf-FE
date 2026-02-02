@@ -190,7 +190,7 @@ export default function commentList() {
             }
         } catch (error) {
             const errorKey = error?.response?.data?.errorKey;
-            if (error.response.status === 403) {
+            if (error.response.status === 403 || error.response.status === 401) {
                 setShowLoginModal(true);
             }else{
                 const errorInfo = COMMENT_ERRORS[errorKey];

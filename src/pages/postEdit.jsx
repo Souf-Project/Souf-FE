@@ -328,7 +328,7 @@ export default function PostEdit() {
           type="simple"
           title="게시글 작성이 완료되었습니다."
           TrueBtnText="확인"
-          onClickTrue={() => navigate("/recruit?category=1")}
+          onClickTrue={() => navigate("/studentFeedList")}
         />
       )}
       {showLoginModal && (

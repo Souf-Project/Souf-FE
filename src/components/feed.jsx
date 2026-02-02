@@ -36,12 +36,13 @@ export default function Feed({ feedData, onFeedClick }) {
   const [errorDescription, setErrorDescription] = useState("잘못된 접근");
   const [errorAction, setErrorAction] = useState("redirect");
   const [isLiked, setIsLiked] = useState(false);
+  const [likedCount, setLikedCount] = useState(0);
   const [isHeartDisabled, setIsHeartDisabled] = useState(false);
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
 
   const {memberId} = UserStore();
   const swiperRef = useRef(null);
-  const maxLength = 100;
+  const maxLength = 30;
   const goToDetail = () => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`);
   const [pageable, setPageable] = useState({
     page: 1,
@@ -68,6 +69,7 @@ export default function Feed({ feedData, onFeedClick }) {
      setWorksData(feedData);
      setMediaData(feedData?.mediaResDtos);
      setIsLiked(feedData?.liked || false);
+     setLikedCount(feedData?.likedCount || 0);
   }, [feedData]);
   
   const clickHandler = (profileId) => {
@@ -144,12 +146,13 @@ export default function Feed({ feedData, onFeedClick }) {
       const updatedData = await getFeedDetail(feedData?.memberId, feedData?.feedId);
       setWorksData(updatedData.result);
       setIsLiked(updatedData.result.liked);
+      setLikedCount(updatedData.result.likedCount || 0);
       setMediaData(updatedData.result.mediaResDtos);
      
     } catch (error) {
       console.error("피드 관련 에러:", error);
       const errorKey = error?.response?.data?.errorKey;
-      if (error.response?.status === 403) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
         setShowLoginModal(true);
       }else{
         const errorInfo = FEED_ERRORS[errorKey];
@@ -171,8 +174,9 @@ export default function Feed({ feedData, onFeedClick }) {
   return (
     <div
       key={feedData?.memberId}
-      className="flex flex-col justify-center rounded-md border border-gray-200 w-full shadow-sm relative"
+      className="flex flex-col justify-start rounded-md border border-gray-200 w-full shadow-sm relative"
     >
+      
        <div className="flex justify-between items-center mx-2 pt-1">
         <div className="w-full flex justify-between items-center gap-2 cursor-pointer"
           onClick={() => clickHandler(feedData?.memberId)}>
@@ -187,22 +191,25 @@ export default function Feed({ feedData, onFeedClick }) {
             {feedData?.nickname || "학생" }
           </h2>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleHeartClick();
-              }}
-              disabled={isHeartDisabled}
-              className={`transition-all duration-200 ${
-                isHeartAnimating ? 'scale-125' : 'scale-100'
-              } ${isHeartDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
-            >
-              <img 
-                src={isLiked ? heartOn : heartOff} 
-                alt={isLiked ? "heartOn" : "heartOff"} 
-                className="w-4 h-4" 
-              />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleHeartClick();
+                }}
+                disabled={isHeartDisabled}
+                className={`transition-all duration-200 ${
+                  isHeartAnimating ? 'scale-125' : 'scale-100'
+                } ${isHeartDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-110'}`}
+              >
+                <img 
+                  src={isLiked ? heartOn : heartOff} 
+                  alt={isLiked ? "heartOn" : "heartOff"} 
+                  className="w-4 h-4" 
+                />
+              </button>
+              <span className="text-xs text-gray-600">{likedCount}</span>
+            </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -211,17 +218,14 @@ export default function Feed({ feedData, onFeedClick }) {
             worksData={worksData} mediaData={mediaData} onDelete={handleDeleteClick}/>
         </div>
       </div>
-      <div className="flex justify-between items-center mx-2 mb-1">
+      <div className="flex flex-col justify-start mx-2 mb-1">
         <h2 
-          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-blue-main transition-colors mr-2"
+          className="text-base lg:text-lg font-semibold leading-snug text-black cursor-pointer hover:text-blue-main transition-colors mr-2 overflow-hidden text-ellipsis whitespace-nowrap"
           onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}
         >
           {feedData?.topic || "제목 없음"}
         </h2>
-       
-      </div>
-     
-      <div 
+        <div 
         className="flex justify-center w-full overflow-hidden rounded-md mb-2 relative"
       >
         {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
@@ -289,7 +293,10 @@ export default function Feed({ feedData, onFeedClick }) {
           </div>
         )}
       </div>
-      <p className="whitespace-pre-wrap break-words text-gray-800 leading-relaxed mb-2 mx-2 cursor-pointer overflow-hidden"
+      </div>
+     
+      
+      <p className="whitespace-pre-wrap break-words text-gray-800 leading-relaxed mx-2 cursor-pointer overflow-hidden"
        onClick={() => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`)}>
         {handlerFeedContent(maxLength,feedData?.content) || "내용 없음"}
         <span
@@ -298,10 +305,11 @@ export default function Feed({ feedData, onFeedClick }) {
         >
           {feedData?.content.length <= maxLength ? "" : isExpanded ? "접기" : "더보기"}
         </span>
-        <p className="text-xs lg:text-sm text-gray-500">
+      
+      </p>
+      <p className="text-xs lg:text-sm text-gray-500 mt-auto p-2">
           {getFormattedDate(feedData.lastModifiedTime)}
         </p>
-      </p>
       {showDeleteModal && (
         <AlertModal
           type="warning"
@@ -321,20 +329,18 @@ export default function Feed({ feedData, onFeedClick }) {
           onClickTrue={handleCompleteConfirm}
         />
       )}
-      {/* {showLoginModal && (
+      {showLoginModal && (
         <AlertModal
           type="simple"
-          title="로그인이 필요합니다"
-          description="SouF 회원만 상세 글을 조회할 수 있습니다!"
-          TrueBtnText="로그인하러 가기"
-          FalseBtnText="취소"
+          title="로그인 후 이용해주세요"
+          description="SouF 회원만 피드를 좋아요할 수 있습니다"
+          TrueBtnText="확인"
           onClickTrue={() => {
             setShowLoginModal(false);
             navigate("/login");
           }}
-          onClickFalse={() => setShowLoginModal(false)}
         />
-      )} */}
+      )}
       {errorModal && (
         <AlertModal
         type="simple"
@@ -343,7 +349,7 @@ export default function Feed({ feedData, onFeedClick }) {
         TrueBtnText="확인"
         onClickTrue={() => {
           if (errorAction === "redirect") {
-              navigate("/feed");
+              navigate("/studentFeedList");
           }else if(errorAction === "login"){
             localStorage.clear();
             navigate("/login");

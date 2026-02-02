@@ -118,42 +118,33 @@ export default function RecruitBlock({
   return (
     <div
       onClick={handleClick}
-      className="md:flex w-full bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200"
+      className=""
     >
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between w-full h-fit bg-white rounded-2xl shadow-md mb-4 cursor-pointer border border-gray hover:shadow-md transition-shadow duration-200">
+
+      
+      <div className="flex items-center ">
       {firstMediaUrl ? (
-          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="w-36 h-auto max-w-36 rounded-2xl object-cover" />
+          <img src={`${S3_BUCKET_URL}${firstMediaUrl}`} alt="공고문 이미지" className="aspect-[1/1] w-36 h-full rounded-2xl object-cover" />
         ) : (
-          <img src={soufMockup} alt="기본 로고 이미지" className="w-24 md:w-36 h-auto max-w-36 rounded-2xl object-cover" />
+          <img src={soufMockup} alt="기본 로고 이미지" className="aspect-[1/1] w-36 h-full rounded-2xl object-cover" />
         )}
-        <div className="block md:hidden flex flex-col items-start gap-4 px-2 ">
-        <div className="flex items-center gap-4 justify-between w-full">
-          <span className="text-xs font-medium text-black ">견적 비용</span>
-          <span className="text-md font-regular text-black ">{price}</span>
-        </div>
-       
-         <div className="flex gap-4 items-center justify-between w-full">
-         <span className="text-xs font-medium text-black whitespace-nowrap">마감일</span>
-          <div className="flex flex-col items-start gap-2">
-          <span className="text-md font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}~</span>
-          <span className="text-md font-regular text-black ">{deadLine ? deadLine.split(' ')[0] : ''}</span>
-          </div>
-      </div>
-       
-          
-          
+        <div className="block md:hidden flex flex-col items-center gap-4 px-2 ">
+        <span className="text-md font-regular text-white bg-blue-main rounded-full px-2 py-1">{price}</span>
+        <div className="flex flex-col items-center gap-1">
+        <span className="text-sm font-regular text-black ">{startDate ? startDate.split(' ')[0] : ''}</span>
+        <span className="text-sm font-regular text-black ">~{deadLine ? deadLine.split(' ')[0] : ''}</span>
          </div>
-       
+         </div>
       </div>
-      <div className="flex flex-col px-4 py-3 flex-1 max-w-[26rem]">
-        <div className="flex justify-between items-center">
-        <div className="flex text-blue-600 text-sm">
+      <div className="flex flex-col px-4 flex-1 w-32 md:w-full md:max-w-[40rem] justify-between my-2">
+        <div className="flex gap-2 items-center">
           {(() => {
           
             if (categoryDtoList && categoryDtoList.length > 0) {
               const categories = getCategoryNames(categoryDtoList);
               return categories.map((category, index) => (
-                <div key={index} className="mb-1">
+                <div key={index} className="flex text-blue-600 text-sm">
                   <span>{category.first}</span>
                   <span className="mx-2">&gt;</span>
                   <span>{category.second}</span>
@@ -164,14 +155,13 @@ export default function RecruitBlock({
             } else if (secondCategory && Array.isArray(secondCategory)) {
               const categoryNames = getSecondCategoryNames(secondCategory);
               return categoryNames.map((categoryName, index) => (
-                <div key={index} className="mb-1">
+                <div key={index} className="flex text-blue-600 text-sm">
                   <span>{categoryName}</span>
                 </div>
               ));
             }
             return null;
           })()}
-        </div>
         {/* <img src={shareIco} alt="shareIco" className="w-4 h-4 cursor-pointer" 
         onClick={console.log("share")} /> */}
         </div>
@@ -190,7 +180,7 @@ export default function RecruitBlock({
         {content || "내용 없음"}
           </ReactMarkdown>
         </div>
-      <div className="flex items-center gap-2 text-sm md:text-base font-bold w-full border-t border-gray-300 pt-2 mt-auto">
+      <div className="flex items-center gap-2 text-sm md:text-base font-bold w-full border-t border-gray-300">
         {profileImageUrl && profileImageUrl.trim() !== '' && (
           <img 
             src={profileImageUrl} 
@@ -200,7 +190,6 @@ export default function RecruitBlock({
         )}
         {nickname}
       </div>
-        
       </div>
       <div className="w-[1px] bg-gray-200 self-stretch my-2"></div>
       <div className="hidden md:block flex flex-col items-start gap-4 w-44 px-2 mt-4">
@@ -218,6 +207,8 @@ export default function RecruitBlock({
           
           
          </div>
+      </div>
+      
        
       </div>
       

@@ -18,11 +18,11 @@ const useUnreadSSE = () => {
       const maxAttempts = 200; // 200 * 10ms = 2초
       
       while ((getIsRefreshing() || getRefreshPromise()) && attempts < maxAttempts) {
-        console.log('[SSE] 리프레시 토큰 재발급 중 - SSE 연결 대기...', {
-          isRefreshing: getIsRefreshing(),
-          hasRefreshPromise: !!getRefreshPromise(),
-          attempts
-        });
+        // console.log('[SSE] 리프레시 토큰 재발급 중 - SSE 연결 대기...', {
+        //   isRefreshing: getIsRefreshing(),
+        //   hasRefreshPromise: !!getRefreshPromise(),
+        //   attempts
+        // });
         await new Promise(resolve => setTimeout(resolve, 10));
         attempts++;
       }
@@ -31,14 +31,14 @@ const useUnreadSSE = () => {
       const refreshPromise = getRefreshPromise();
       if (refreshPromise) {
         try {
-          console.log('[SSE] refreshPromise 대기 중...');
+          // console.log('[SSE] refreshPromise 대기 중...');
           const newAccessToken = await refreshPromise;
-          console.log('[SSE] 새 토큰 받음, SSE 연결 생성:', {
-            tokenLength: newAccessToken?.length
-          });
+          // console.log('[SSE] 새 토큰 받음, SSE 연결 생성:', {
+          //   tokenLength: newAccessToken?.length
+          // });
           return newAccessToken;
         } catch (error) {
-          console.error('[SSE] 리프레시 실패:', error);
+          // console.error('[SSE] 리프레시 실패:', error);
           throw error;
         }
       }
@@ -104,16 +104,16 @@ const useUnreadSSE = () => {
           // console.log('새 알림 추가:', normalizedNotification);
         }
       } catch (err) {
-        console.error('SSE parse error:', err);
+        // console.error('SSE parse error:', err);
       }
     };
 
     eventSource.onerror = async (err) => {
-      console.error('SSE connection error:', err);
+      // console.error('SSE connection error:', err);
       
       // 연결이 종료되었고, 재연결 중이 아닐 때만 처리
       if (eventSource.readyState === EventSource.CLOSED && !isReconnectingRef.current) {
-        console.log('SSE 연결이 종료되었습니다. 토큰 재발급 시도...');
+        // console.log('SSE 연결이 종료되었습니다. 토큰 재발급 시도...');
         
         // 재연결 플래그 설정 (중복 재연결 방지)
         isReconnectingRef.current = true;
@@ -121,13 +121,13 @@ const useUnreadSSE = () => {
         try {
           // 리프레시 토큰 발급
           const newAccessToken = await refreshAccessToken();
-          console.log('토큰 재발급 성공. SSE 재연결 시도...');
+          // console.log('토큰 재발급 성공. SSE 재연결 시도...');
           
           // 새 토큰으로 재연결 (리프레시 중이면 자동으로 대기)
           eventSourceRef.current = await createEventSource(newAccessToken);
           isReconnectingRef.current = false;
         } catch (refreshError) {
-          console.error('토큰 재발급 실패:', refreshError);
+          // console.error('토큰 재발급 실패:', refreshError);
           isReconnectingRef.current = false;
           // 토큰 재발급 실패 시 연결 종료
           if (eventSourceRef.current) {
@@ -160,7 +160,7 @@ const useUnreadSSE = () => {
         }
       })
       .catch((error) => {
-        console.error('[SSE] 연결 생성 실패:', error);
+        // console.error('[SSE] 연결 생성 실패:', error);
       });
 
     return () => {
