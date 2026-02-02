@@ -107,9 +107,27 @@ export default function Recruit() {
         // console.log("공고문 데이터:", recruits);
        
         setFilteredRecruits(recruits);
-        const totalElements =
-          response.data.result?.page?.totalElements || recruits.length;
-        const totalPagesData = response.data.result?.page?.totalPages;
+        
+        // 응답에서 페이지 정보 추출 (Spring Page 구조)
+        const result = response.data.result;
+        
+        // totalPages 추출 (응답에 직접 있거나 계산)
+        let totalPagesData = result?.totalPages;
+        if (!totalPagesData && result?.totalElements !== undefined) {
+          totalPagesData = Math.ceil(result.totalElements / pageSize);
+        } else if (!totalPagesData && result?.last !== undefined) {
+          // last가 true이고 number가 있으면 number + 1이 totalPages
+          totalPagesData = result.last ? (result.number + 1) : (result.number + 2);
+        } else if (!totalPagesData) {
+          totalPagesData = 1;
+        }
+        
+        // currentPage는 0-based이므로 result.number 사용
+        const responsePageNumber = result?.number ?? 0;
+        if (responsePageNumber !== currentPage) {
+          setCurrentPage(responsePageNumber);
+        }
+        
         setTotalPages(totalPagesData);
       } else {
         // console.log('검색 실패: 응답 데이터 없음');
@@ -157,8 +175,27 @@ export default function Recruit() {
         const recruits = response.data.result?.content || [];
         setFilteredRecruits(recruits);
 
-        const totalElements = response.data.result?.page?.totalElements || 0;
-        setTotalPages(Math.ceil(totalElements / pageSize));
+        // 응답에서 페이지 정보 추출 (Spring Page 구조)
+        const result = response.data.result;
+        
+        // totalPages 추출 (응답에 직접 있거나 계산)
+        let totalPagesData = result?.totalPages;
+        if (!totalPagesData && result?.totalElements !== undefined) {
+          totalPagesData = Math.ceil(result.totalElements / pageSize);
+        } else if (!totalPagesData && result?.last !== undefined) {
+          // last가 true이고 number가 있으면 number + 1이 totalPages
+          totalPagesData = result.last ? (result.number + 1) : (result.number + 2);
+        } else if (!totalPagesData) {
+          totalPagesData = 1;
+        }
+        
+        // currentPage는 0-based이므로 result.number 사용
+        const responsePageNumber = result?.number ?? 0;
+        if (responsePageNumber !== currentPage) {
+          setCurrentPage(responsePageNumber);
+        }
+        
+        setTotalPages(totalPagesData);
         
         if (currentPage === 0) {
           trackEvent("recruit_list_view", {
@@ -212,7 +249,7 @@ export default function Recruit() {
 
   const handleSearchTypeChange = (type) => {
     setSearchType(type);
-    setCurrentPage(0); 
+    setCurrentPage(0);
   };
 
   const handlePageChange = (newPage) => {
@@ -371,6 +408,7 @@ export default function Recruit() {
               selectedValue={sortBy}
               onSelect={handleSortChange}
               placeholder="정렬 기준"
+              width="w-32"
             />
             {/* <button className="text-sm bg-gray-200 text-gray-500 font-bold px-6 py-2 rounded-full hover:shadow-md">종료된 외주</button> */}
             </div>
@@ -382,7 +420,7 @@ export default function Recruit() {
           {filteredRecruits.length > 0 ? (
             <>
               {filteredRecruits.map((recruit, index) => {
-                 const isOddPage = (currentPage + 1) % 2 === 1;
+                 const isOddPage = currentPage % 2 === 0;
                 //  const showRecommendRecruit = isOddPage && index === 2;
                  const showEstimateBanner = isOddPage && index === 5;
 

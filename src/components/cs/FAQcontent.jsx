@@ -206,56 +206,56 @@ export default function FAQcontent({ onInquiryClick }) {
         },
        
     ]
-    const faqData6 = [
-        {
-            question: "결제는 어떤 수단을 지원하나요?",
-            answer: "외부 결제 시스템을 통해 다양한 수단을 지원합니다.",
-            ulList: [
-                "신용/체크카드, 계좌이체, 가상계좌(무통장) 등을 이용할 수 있습니다.",
-            ]
-        },
-        {
-            question: "선금/잔금은 언제 지급되나요? 정산 일정은?",
-            answer: "계약 확정 후 전액 결제 → 선금 즉시 지급 → 검수 승인 후 잔금 지급입니다.",
-            olList: [
-                "전자서명 완료 후, 의뢰자가 총액 결제(플랫폼 예치)",
-                "플랫폼이 계약서 기준에 따라 선금을 즉시 프리랜서에게 지급",
-                "작업 완료 → 의뢰자 검수 승인 시 잔금 자동 지급(수수료 제외)"
-            ]
-        },
-        {
-            question: "프로젝트 미완료/중단 시 잔금 환불은 어떻게 되나요?",
-            answer: "계약 기준에 따라 예치된 잔금을 의뢰자에게 환불합니다.",
-            ulList: [
-                "프리랜서가 미완료·중단한 경우, 잔금은 환불되며 선금 환불 여부는 계약서 조건(진행분 정산 등)에 따릅니다.",
-            ]
-        },
-        {
-            question: "플랫폼 수수료는 얼마이며 언제 차감되나요?",
-            answer: "잔금 정산 시 자동 차감됩니다.",
-            ulList: [
-                "수수료율은 요금 정책/요율표를 따르며, 계약 생성 단계에서 사전 고지됩니다.",
-            ]
-        },
-        {
-            question: "영수증/세금계산서 발급은 어떻게 하나요?",
-            answer: "결제 내역에서 카드전표/현금영수증 출력이 가능하며, 플랫폼 수수료에 대한 세금계산서 발급을 지원합니다.",
-            ulList: [
-                "의뢰자 결제 건의 카드전표·현금영수증은 결제 내역에서 내려받을 수 있습니다.",
-                "플랫폼 수수료에 대해서는 세금계산서 발급을 지원합니다.",
-                "프리랜서 대금에 대한 세무 증빙은 계약서/정산 내역을 활용하시고, 사업자 형태에 따라 별도 서류가 필요할 수 있습니다."
-            ]
-        },
-        {
-            question: "개인 프리랜서 원천징수(3.3%)는 어떻게 처리하나요?",
-            answer: "원칙적으로 의뢰자(지급자)의 책임이며, 플랫폼 정산 화면에서 적용 여부를 설정할 수 있도록 지원합니다(정책에 따름).",
-            ulList: [
-                "개인(사업자 미등록) 프리랜서에게 지급 시, 법령에 따라 3.3% 원천징수 대상일 수 있습니다.",
-                "원천세 신고·납부 의무는 지급자(의뢰자)에게 있으며, 플랫폼의 원천징수 대행 기능 제공 여부는 운영 정책에 따릅니다.",
-                "정확한 세무 처리는 세무 전문가와 상담하시기 바랍니다."
-            ]
-        },
-    ]
+    // const faqData6 = [
+    //     {
+    //         question: "결제는 어떤 수단을 지원하나요?",
+    //         answer: "외부 결제 시스템을 통해 다양한 수단을 지원합니다.",
+    //         ulList: [
+    //             "신용/체크카드, 계좌이체, 가상계좌(무통장) 등을 이용할 수 있습니다.",
+    //         ]
+    //     },
+    //     {
+    //         question: "선금/잔금은 언제 지급되나요? 정산 일정은?",
+    //         answer: "계약 확정 후 전액 결제 → 선금 즉시 지급 → 검수 승인 후 잔금 지급입니다.",
+    //         olList: [
+    //             "전자서명 완료 후, 의뢰자가 총액 결제(플랫폼 예치)",
+    //             "플랫폼이 계약서 기준에 따라 선금을 즉시 프리랜서에게 지급",
+    //             "작업 완료 → 의뢰자 검수 승인 시 잔금 자동 지급(수수료 제외)"
+    //         ]
+    //     },
+    //     {
+    //         question: "프로젝트 미완료/중단 시 잔금 환불은 어떻게 되나요?",
+    //         answer: "계약 기준에 따라 예치된 잔금을 의뢰자에게 환불합니다.",
+    //         ulList: [
+    //             "프리랜서가 미완료·중단한 경우, 잔금은 환불되며 선금 환불 여부는 계약서 조건(진행분 정산 등)에 따릅니다.",
+    //         ]
+    //     },
+    //     {
+    //         question: "플랫폼 수수료는 얼마이며 언제 차감되나요?",
+    //         answer: "잔금 정산 시 자동 차감됩니다.",
+    //         ulList: [
+    //             "수수료율은 요금 정책/요율표를 따르며, 계약 생성 단계에서 사전 고지됩니다.",
+    //         ]
+    //     },
+    //     {
+    //         question: "영수증/세금계산서 발급은 어떻게 하나요?",
+    //         answer: "결제 내역에서 카드전표/현금영수증 출력이 가능하며, 플랫폼 수수료에 대한 세금계산서 발급을 지원합니다.",
+    //         ulList: [
+    //             "의뢰자 결제 건의 카드전표·현금영수증은 결제 내역에서 내려받을 수 있습니다.",
+    //             "플랫폼 수수료에 대해서는 세금계산서 발급을 지원합니다.",
+    //             "프리랜서 대금에 대한 세무 증빙은 계약서/정산 내역을 활용하시고, 사업자 형태에 따라 별도 서류가 필요할 수 있습니다."
+    //         ]
+    //     },
+    //     {
+    //         question: "개인 프리랜서 원천징수(3.3%)는 어떻게 처리하나요?",
+    //         answer: "원칙적으로 의뢰자(지급자)의 책임이며, 플랫폼 정산 화면에서 적용 여부를 설정할 수 있도록 지원합니다(정책에 따름).",
+    //         ulList: [
+    //             "개인(사업자 미등록) 프리랜서에게 지급 시, 법령에 따라 3.3% 원천징수 대상일 수 있습니다.",
+    //             "원천세 신고·납부 의무는 지급자(의뢰자)에게 있으며, 플랫폼의 원천징수 대행 기능 제공 여부는 운영 정책에 따릅니다.",
+    //             "정확한 세무 처리는 세무 전문가와 상담하시기 바랍니다."
+    //         ]
+    //     },
+    // ]
     return (
         <div>
              <SearchBar
@@ -308,14 +308,14 @@ export default function FAQcontent({ onInquiryClick }) {
                     >
                         <span className="whitespace-nowrap">표준 계약서·전자서명</span>
                     </button>
-                    <button
+                    {/* <button
                         className={`px-2 md:px-6 py-2 text-sm font-semibold transition-colors duration-200 relative group flex-shrink-0 ${
                             activeTab === 5 ? "text-black" : "text-gray-500"
                         }`}
                         onClick={() => handleTabChange(5)}
                     >
                         <span className="whitespace-nowrap">결제·정산</span>
-                    </button>
+                    </button> */}
             </div>
             <div className="flex flex-col gap-4 mt-8">
                 {isSearching ? (
@@ -356,9 +356,9 @@ export default function FAQcontent({ onInquiryClick }) {
                         {activeTab === 4 && faqData5.map((item, index) => (
                             <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
                         ))}
-                        {activeTab === 5 && faqData6.map((item, index) => (
+                        {/* {activeTab === 5 && faqData6.map((item, index) => (
                             <Accordian key={index} question={item.question} answer={item.answer} ulList={item.ulList} olList={item.olList} quotation={item.quotation} />
-                        ))}
+                        ))} */}
                     </div>
                 )}
             </div>

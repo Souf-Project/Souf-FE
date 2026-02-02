@@ -4,6 +4,7 @@ import PageHeader from "../components/pageHeader";
 import { getFeed, getFeedTop5List } from "../api/feed";
 import { useQuery } from "@tanstack/react-query";
 import { trackEvent } from "../analytics";
+import Pagination from "../components/pagination";
 
 import Feed from "../components/feed";
 import Loading from "../components/loading";
@@ -36,6 +37,13 @@ export default function StudentFeedList({ }) {
   const [activeTab, setActiveTab] = useState(0);
   const [clickedTabs, setClickedTabs] = useState(new Set());
   const { memberId: currentMemberId } = UserStore();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 20;
+  const pageable = {
+    page: currentPage,
+    size: pageSize,
+  };
 
   const handleTabChange = (tabIndex) => {
     if (activeTab === tabIndex) {
@@ -105,6 +113,7 @@ const {
       },
     keepPreviousData: true, 
   });
+  // console.log("feedData", feedData);
 
   const {
     data: feedTop5Data,
@@ -119,13 +128,17 @@ const {
     keepPreviousData: true,
   });
 
-  console.log("feedTop5Data", feedTop5Data);
+  // console.log("feedTop5Data", feedTop5Data);
 
   // 순위 데이터 가져오기
   const top5Data = feedTop5Data?.result || [];
   
   // 현재 선택된 탭의 순위 데이터
   const currentRankData = top5Data[activeTab];
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <>
@@ -456,6 +469,11 @@ const {
           </div>
         )}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
     </div>
     </>
   );
