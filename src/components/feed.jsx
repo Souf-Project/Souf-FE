@@ -351,8 +351,9 @@ export default function Feed({ feedData, onFeedClick }) {
           if (errorAction === "redirect") {
               navigate("/studentFeedList");
           }else if(errorAction === "login"){
+            UserStore.getState().logout();
             localStorage.clear();
-            navigate("/login");
+            window.location.href = "/login";
           }else{
             window.location.reload();
           }

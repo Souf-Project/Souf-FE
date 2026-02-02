@@ -6,6 +6,7 @@ import { getMemberFeed } from "../../api/feed";
 import { UserStore } from "../../store/userStore";
 import { FEED_ERRORS } from "../../constants/post";
 import AlertModal from "../alertModal";
+import { logoutAndRedirectToLogin } from "../../utils/logoutAndRedirectToLogin";
 
 export default function MyFeed() {
   const navigate = useNavigate();
@@ -99,7 +100,7 @@ export default function MyFeed() {
         FalseBtnText="취소"
         onClickTrue={() => {
           setShowLoginModal(false);
-          navigate("/login");
+          logoutAndRedirectToLogin();
         }}
         onClickFalse={() => setShowLoginModal(false)}
         />

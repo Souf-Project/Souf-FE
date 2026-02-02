@@ -289,6 +289,7 @@ export default function Login() {
           if (errorAction === "redirect") {
               navigate("/feed");
           }else if(errorAction === "login"){
+            UserStore.getState().logout();
             localStorage.clear();
             navigate("/login");
           } else if(errorAction === "/additionalInfo"){

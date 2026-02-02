@@ -11,6 +11,7 @@ import notiIcon from "../assets/images/notiIcon.svg";
 import AlertModal from "./alertModal";
 import { getNotificationCount, getNotificationList, patchReadNotifications, patchReadNotificationContent, deleteNotifications, deleteNotification } from "../api/notification";
 import { trackEvent } from "../analytics";
+import { postLogout } from "../api/member";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -185,23 +186,23 @@ useEffect(() => {
     document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   };
 
-  const toggleLogin = () => {
-    UserStore.getState().clearUser();
-    localStorage.removeItem("isLogin");
-    localStorage.removeItem("userType");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user-storage");
-
-  deleteCookie("refreshToken");
-
-
-    setIsLogin(false);
-    setShowUserMenu(false);
-    setShowMobileMenu(false);
-    
-    navigate("/");
+  const toggleLogin = async () => {
+    try {
+      await postLogout();
+    } catch (logoutError) {
+      console.error("로그아웃 API 호출 실패:", logoutError);
+      } finally {
+        UserStore.getState().clearUser();
+      localStorage.removeItem("isLogin");
+      localStorage.removeItem("roleType");
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user-storage");
+      setIsLogin(false);
+      setShowUserMenu(false);
+      setShowMobileMenu(false);      
+      navigate("/");
+    }
   };
 
   const toggleUserMenu = () => {

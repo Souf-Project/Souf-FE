@@ -15,6 +15,7 @@ import plusIco from "../../assets/images/plusIco.svg"
 import AlertModal from "../alertModal";
 import DegreeModal from "../degreeModal";
 import Checkout from "../pay/checkout";
+import { logoutAndRedirectToLogin } from "../../utils/logoutAndRedirectToLogin";
 import chatImgIcon from "../../assets/images/chatImgIcon.svg"
 import chatVideoIcon from "../../assets/images/chatVideoIcon.svg"
 import chatContractIcon from "../../assets/images/chatContractIcon.svg"
@@ -1086,7 +1087,7 @@ export default function ChatMessage({ chatNickname, roomId, opponentProfileImage
         FalseBtnText="취소"
         onClickTrue={() => {
           setShowLoginModal(false);
-          window.location.href = "/login";
+          logoutAndRedirectToLogin();
         }}
         onClickFalse={() => setShowLoginModal(false)}
       />

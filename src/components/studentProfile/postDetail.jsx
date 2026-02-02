@@ -15,6 +15,7 @@ import { getFormattedDate } from "../../utils/getDate";
 import {UserStore} from "../../store/userStore";
 import { useRef, useEffect } from "react"; 
 import AlertModal from "../../components/alertModal";
+import { logoutAndRedirectToLogin } from "../../utils/logoutAndRedirectToLogin";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -670,7 +671,7 @@ const handleDeleteClick = () => {
        FalseBtnText="취소"
        onClickTrue={() => {
          setShowLoginModal(false);
-         navigate("/login");
+         logoutAndRedirectToLogin();
        }}
        onClickFalse={() => setShowLoginModal(false)}
         />
@@ -685,6 +686,7 @@ const handleDeleteClick = () => {
           if (errorAction === "redirect") {
               navigate("/feed");
           }else if(errorAction === "login"){
+            UserStore.getState().logout();
             localStorage.clear();
             navigate("/login");
           }else{

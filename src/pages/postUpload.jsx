@@ -18,6 +18,7 @@ import {
 import { filterEmptyCategories } from "../utils/filterEmptyCategories";
 import LoadingModal from "../components/loadingModal";
 import { FEED_UPLOAD_ERRORS } from "../constants/post";
+import { logoutAndRedirectToLogin } from "../utils/logoutAndRedirectToLogin";
 
 const validImageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const validVideoTypes = [
@@ -459,7 +460,7 @@ export default function PostUpload() {
        TrueBtnText="로그인하러 가기"
        onClickTrue={() => {
          setShowLoginModal(false);
-         navigate("/login");
+         logoutAndRedirectToLogin();
        }}
         />
       )}

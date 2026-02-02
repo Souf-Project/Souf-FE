@@ -10,6 +10,7 @@ import AlertModal from '../alertModal';
 import Loading from '../loading';
 import { handleApiError } from '../../utils/apiErrorHandler';
 import { APPLICATION_ERRORS } from '../../constants/application';
+import { logoutAndRedirectToLogin } from '../../utils/logoutAndRedirectToLogin';
 
 export default function ApplicationsContent() {
   const navigate = useNavigate();
@@ -169,7 +170,7 @@ export default function ApplicationsContent() {
        FalseBtnText="취소"
        onClickTrue={() => {
          setShowLoginModal(false);
-         navigate("/login");
+         logoutAndRedirectToLogin();
        }}
        onClickFalse={() => setShowLoginModal(false)}
         />
@@ -323,7 +324,7 @@ export default function ApplicationsContent() {
        FalseBtnText="취소"
        onClickTrue={() => {
          setShowLoginModal(false);
-         navigate("/login");
+         logoutAndRedirectToLogin();
        }}
        onClickFalse={() => setShowLoginModal(false)}
         />

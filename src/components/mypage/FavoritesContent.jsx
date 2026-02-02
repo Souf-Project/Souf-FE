@@ -87,6 +87,7 @@ export default function FavoritesContent() {
             if (errorAction === "redirect") {
                 navigate("/");
             }else if(errorAction === "login"){
+              UserStore.getState().logout();
               localStorage.clear();
               navigate("/login");
             }else{

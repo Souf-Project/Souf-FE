@@ -6,6 +6,7 @@ import FAQcontent from "../components/cs/FAQcontent";
 import InquiryCenter from "../components/cs/inquiryCenter";
 import AlertModal from "../components/alertModal";
 import { UserStore } from "../store/userStore";
+import { logoutAndRedirectToLogin } from "../utils/logoutAndRedirectToLogin";
 
 export default function CsPage() {
     const navigate = useNavigate();
@@ -117,7 +118,7 @@ export default function CsPage() {
                     FalseBtnText="취소"
                     onClickTrue={() => {
                         setShowLoginModal(false);
-                        navigate("/login");
+                        logoutAndRedirectToLogin();
                     }}
                     onClickFalse={() => setShowLoginModal(false)}
                 />

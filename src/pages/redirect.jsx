@@ -210,6 +210,7 @@ export default function Redirect() {
             if (errorAction === "redirect") {
               navigate("/login");
             } else if (errorAction === "login") {
+              UserStore.getState().logout();
               localStorage.clear();
               navigate("/login");
             } else {
