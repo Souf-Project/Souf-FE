@@ -163,8 +163,46 @@ const useUnreadSSE = () => {
         // console.error('[SSE] 연결 생성 실패:', error);
       });
 
+    // 리프레시 토큰 성공 시 SSE 재연결
+    const handleTokenRefreshed = async (event) => {
+      const newAccessToken = event.detail?.newAccessToken || localStorage.getItem("accessToken");
+      
+      if (!newAccessToken) {
+        console.warn('[SSE] 리프레시 이벤트 수신했지만 새 토큰이 없음');
+        return;
+      }
+      
+      console.log('[SSE] 리프레시 토큰 성공 이벤트 수신 - SSE 재연결 시작');
+      
+      // 재연결 중이 아니면 재연결 시도
+      if (!isReconnectingRef.current) {
+        isReconnectingRef.current = true;
+        
+        try {
+          // 기존 연결 종료
+          if (eventSourceRef.current) {
+            eventSourceRef.current.close();
+            eventSourceRef.current = null;
+          }
+          
+          // 새 토큰으로 재연결
+          eventSourceRef.current = await createEventSource(newAccessToken);
+          console.log('[SSE] 새 토큰으로 재연결 완료');
+          isReconnectingRef.current = false;
+        } catch (error) {
+          console.error('[SSE] 리프레시 후 재연결 실패:', error);
+          isReconnectingRef.current = false;
+        }
+      }
+    };
+    
+    // 토큰 리프레시 이벤트 리스너 등록
+    window.addEventListener('tokenRefreshed', handleTokenRefreshed);
+
     return () => {
-      // 컴포넌트 언마운트 시 연결 종료
+      // 컴포넌트 언마운트 시 연결 종료 및 이벤트 리스너 제거
+      window.removeEventListener('tokenRefreshed', handleTokenRefreshed);
+      
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
