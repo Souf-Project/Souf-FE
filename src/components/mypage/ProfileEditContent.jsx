@@ -14,6 +14,7 @@ import googleLogo from "../../assets/images/googleLogo.png"
 import { handleApiError } from '../../utils/apiErrorHandler';
 import { MEMBER_ERRORS } from '../../constants/user';
 import AlertModal from '../alertModal';
+import { logoutAndRedirectToLogin } from '../../utils/logoutAndRedirectToLogin';
 
 export default function ProfileEditContent() {
   const [isEditing, setIsEditing] = useState(false);
@@ -116,8 +117,7 @@ export default function ProfileEditContent() {
       try {
         updateResponse = await updateProfileInfo(updatePayload);
       } catch (error) {
-        console.error("❌ [프로필 수정] API 호출 실패:", error);
-        console.error("❌ [프로필 수정] 에러 상세:", {
+        console.error("[프로필 수정] 에러 상세:", {
           message: error.message,
           response: error.response?.data,
           status: error.response?.status,
@@ -324,7 +324,7 @@ export default function ProfileEditContent() {
           FalseBtnText="취소"
           onClickTrue={() => {
             setShowLoginModal(false);
-            navigate("/login");
+            logoutAndRedirectToLogin();
           }}
           onClickFalse={() => setShowLoginModal(false)}
           />

@@ -14,6 +14,7 @@ import DeclareButton from "../declare/declareButton";
 import { FAVORITE_ERRORS } from "../../constants/user";
 import { handleApiError } from "../../utils/apiErrorHandler";
 import PageHeader from "../pageHeader";
+import { logoutAndRedirectToLogin } from "../../utils/logoutAndRedirectToLogin";
 
 export default function ProfileDetail({}) {
   const { id } = useParams();
@@ -277,7 +278,7 @@ export default function ProfileDetail({}) {
         FalseBtnText="취소"
         onClickTrue={() => {
           setShowLoginModal(false);
-          navigate("/login");
+          logoutAndRedirectToLogin();
         }}
         onClickFalse={() => {
           setShowLoginModal(false);

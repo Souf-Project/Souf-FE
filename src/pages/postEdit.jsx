@@ -16,6 +16,7 @@ import AlertModal from "../components/alertModal";
 import { filterEmptyCategories } from "../utils/filterEmptyCategories";
 import { FEED_ERRORS } from "../constants/post";
 import { UserStore } from "../store/userStore";
+import { logoutAndRedirectToLogin } from "../utils/logoutAndRedirectToLogin";
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 
@@ -341,7 +342,7 @@ export default function PostEdit() {
        FalseBtnText="취소"
        onClickTrue={() => {
          setShowLoginModal(false);
-         navigate("/login");
+         logoutAndRedirectToLogin();
        }}
        onClickFalse={() => setShowLoginModal(false)}
         />

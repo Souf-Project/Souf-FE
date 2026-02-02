@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { UserStore } from "../../store/userStore";
 import AlertModal from "../alertModal";
 import firstCategoryData from "../../assets/categoryIndex/first_category.json";
+import { logoutAndRedirectToLogin } from "../../utils/logoutAndRedirectToLogin";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -155,7 +156,7 @@ export default function FeedSwiper() {
           FalseBtnText="취소"
           onClickTrue={() => {
             setShowLoginModal(false);
-            navigate("/login");
+            logoutAndRedirectToLogin();
           }}
           onClickFalse={() => setShowLoginModal(false)}
         />

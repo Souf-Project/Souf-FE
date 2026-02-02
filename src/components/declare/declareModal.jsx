@@ -5,6 +5,7 @@ import { handleApiError } from "../../utils/apiErrorHandler";
 import AlertModal from "../alertModal";
 import { REPORT_ERRORS } from "../../constants/report";
 import { useNavigate } from "react-router-dom";
+import { logoutAndRedirectToLogin } from "../../utils/logoutAndRedirectToLogin";
 
 export default function DeclareModal({
   isOpen,
@@ -225,7 +226,7 @@ export default function DeclareModal({
        FalseBtnText="취소"
        onClickTrue={() => {
          setShowLoginModal(false);
-         navigate("/login");
+         logoutAndRedirectToLogin();
        }}
        onClickFalse={() => setShowLoginModal(false)}
         />
