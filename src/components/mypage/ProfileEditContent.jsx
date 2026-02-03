@@ -44,7 +44,8 @@ export default function ProfileEditContent() {
     setLoading(true);
     try {
       const response = await getProfile();
-      if (response.status === 200 && response.data?.result) {
+      // 응답 인터셉터에서 재시도 성공 시 정상 응답이 반환되므로 여기서 처리
+      if (response && response.status === 200 && response.data?.result) {
         const profileData = response.data.result;
         // console.log(profileData);
         
@@ -76,10 +77,13 @@ export default function ProfileEditContent() {
         setMarketingAgreement(profileData.marketingAgreement || false);
 
       } else {
-        console.error('프로필 데이터 조회 실패:', response.data?.message);
+        console.error('프로필 데이터 조회 실패:', response?.data?.message);
         setFormData(null);
       }
     } catch (error) {
+      // 응답 인터셉터에서 토큰 만료 시 재시도하므로, 
+      // 재시도 실패한 경우에만 여기서 에러 처리
+      // 재시도 성공 시 정상 응답이 반환되어 catch 블록에 도달하지 않음
       console.error('프로필 데이터 조회 중 에러 발생:', error);
       setFormData(null);
       handleApiError(error, { setShowLoginModal, setErrorModal, setErrorDescription, setErrorAction },MEMBER_ERRORS);
