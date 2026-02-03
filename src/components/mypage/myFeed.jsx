@@ -22,29 +22,26 @@ export default function MyFeed() {
   const { isLoading, error } = useQuery({
     queryKey: ["myFeed", memberId],
     queryFn: async () => {
-      try{
-        const data = await getMemberFeed(memberId);
-        setUserData(data.result.memberResDto);
-        console.log("미디어", data.result.feedSimpleResDtoPage.content);
-        setUserWorks(data.result.feedSimpleResDtoPage.content);
+      const data = await getMemberFeed(memberId);
+      setUserData(data.result.memberResDto);
+      console.log("미디어", data.result.feedSimpleResDtoPage.content);
+      setUserWorks(data.result.feedSimpleResDtoPage.content);
       return data;
-      } catch (error) {
-        console.error("피드 데이터를 가져오는 중 에러가 발생했습니다:", error);
-        // throw err;
-        //err?.response?.data?.errorKey
-        const errorKey = error?.response?.data?.errorKey;
-        debugger;
-        if (error.response.status === 403) {
-                setShowLoginModal(true);
-        }else{
-          const errorInfo = FEED_ERRORS[errorKey];
-          setErrorModal(true);
-          setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
-          setErrorAction(errorInfo?.action || "redirect");
-        }
-      }
     },
     keepPreviousData: true,
+    // retry 로직은 전역 QueryClient 설정에서 처리됨
+    onError: (error) => {
+      console.error("피드 데이터를 가져오는 중 에러가 발생했습니다:", error);
+      const errorKey = error?.response?.data?.errorKey;
+      if (error.response?.status === 403) {
+        setShowLoginModal(true);
+      } else {
+        const errorInfo = FEED_ERRORS[errorKey];
+        setErrorModal(true);
+        setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+        setErrorAction(errorInfo?.action || "redirect");
+      }
+    },
   });
 
   const handleGoBack = () => {

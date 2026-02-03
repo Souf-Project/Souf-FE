@@ -26,6 +26,7 @@ export default function InquiryContent() {
     const { data, isLoading, error } = useQuery({
         queryKey: ['inquiryList', memberId],
         queryFn: () => getInquiryList({ page: 0, size: 10 }),
+        // retry 로직은 전역 QueryClient 설정에서 처리됨
     });
     console.log("data", data);
 
