@@ -113,7 +113,7 @@ export default function Comment({ comment, onReplyClick, onToggleReplies, showRe
             <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
                 <p className="text-sm font-medium">{comment.nickname}</p>
-                <p className="text-sm text-gray-400">{formatDate(comment.lastModifiedTime)}</p>
+                <p className="text-sm text-gray-400">{formatDate(comment.createdTime)}</p>
                 <DeclareButton 
                 postType="COMMENT"
                 postId={comment.commentId}

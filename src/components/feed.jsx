@@ -308,7 +308,7 @@ export default function Feed({ feedData, onFeedClick }) {
       
       </p>
       <p className="text-xs lg:text-sm text-gray-500 mt-auto p-2">
-          {getFormattedDate(feedData.lastModifiedTime)}
+          {getFormattedDate(feedData.createdTime)}
         </p>
       {showDeleteModal && (
         <AlertModal

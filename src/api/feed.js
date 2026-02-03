@@ -61,12 +61,14 @@ export const postMedia = async ({ postId, fileUrl, fileName, fileType, filePurpo
   }
 };
 
-export const getFeed = async (firstCategory, pageable) => {
+export const getFeed = async (firstCategory, pageable, sortKey, sortDir) => {
   try {
     const params = {
       page: pageable.page,
       size: pageable.size,
       ...(firstCategory ? { firstCategory } : {}),
+      ...(sortKey ? { sortKey } : {}),
+      ...(sortDir ? { sortDir } : {}),
       // ...(secondCategory ? { secondCategory } : {}),
       // ...(thirdCategory ? { thirdCategory } : {}),
       // ...(keyword ? { keyword } : {}),
