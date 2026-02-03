@@ -56,9 +56,9 @@ export default function StudentFeedList({ }) {
       }
       setClickedTabs(newClickedTabs);
     } else {
-      // 다른 탭을 클릭하면 활성화하고 이전 탭의 클릭 상태는 유지
+      // 다른 탭을 클릭하면 활성화하고 이전 탭의 클릭 상태는 초기화 (새 탭만 활성화)
       setActiveTab(tabIndex);
-      const newClickedTabs = new Set(clickedTabs);
+      const newClickedTabs = new Set();
       newClickedTabs.add(tabIndex);
       setClickedTabs(newClickedTabs);
     }
@@ -73,6 +73,22 @@ export default function StudentFeedList({ }) {
   const [sortBy, setSortBy] = useState('RECENT_DESC');
   const handleSortChange = (value) => {
     setSortBy(value);
+  };
+
+  // sortBy 값을 sortKey와 sortDir로 변환
+  const getSortParams = (sortValue) => {
+    switch (sortValue) {
+      case 'RECENT_DESC':
+        return { sortKey: 'RECENT', sortDir: 'DESC' };
+      case 'RECENT_ASC':
+        return { sortKey: 'RECENT', sortDir: 'ASC' };
+      case 'VIEWS_DESC':
+        return { sortKey: 'VIEWS', sortDir: 'DESC' };
+      case 'VIEWS_ASC':
+        return { sortKey: 'VIEWS', sortDir: 'ASC' };
+      default:
+        return { sortKey: 'RECENT', sortDir: 'DESC' };
+    }
   };
 
   const onFeedClick = (worksId, memberId) => {
@@ -93,27 +109,35 @@ export default function StudentFeedList({ }) {
 
   // 카테고리 초기화 핸들러
   const handleCategoryReset = () => {
-    setSelectedFirstCategory(1);
+    setSelectedFirstCategory(null);
     setSelectedCategories([]);
   };
+
+  // '전체' 카테고리인지 확인 (selectedCategories가 비어있거나 selectedFirstCategory가 null인 경우)
+  const isAllCategory = selectedCategories.length === 0 || selectedFirstCategory === null;
+
+  // sortBy 값을 sortKey와 sortDir로 변환
+  const sortParams = getSortParams(sortBy);
 
 const {
     data: feedData,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", selectedFirstCategory],
+    queryKey: ["feed", selectedFirstCategory, sortBy],
           queryFn: async () => {
             const pageable = {
               page: 0,
-              size: 12,
+              size: 20,
             };
-        const data = await getFeed(selectedFirstCategory, pageable);
+        // '전체' 카테고리면 firstCategory를 파라미터로 추가하지 않음
+        const firstCategoryParam = isAllCategory ? null : selectedFirstCategory;
+        const data = await getFeed(firstCategoryParam, pageable, sortParams.sortKey, sortParams.sortDir);
         return data;
       },
     keepPreviousData: true, 
   });
-  // console.log("feedData", feedData);
+  console.log("feedData", feedData);
 
   const {
     data: feedTop5Data,
