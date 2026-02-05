@@ -237,11 +237,10 @@ export default function Step3({ socialLoginInfo, selectedType }) {
       setSuccessModal(true);
     },
     onSignUpError: (error) => {
-      //"올바른 형식의 이메일 주소여야 합니다"
       const errorCode = error.response.data.errorKey;
       const errorMsg = errorCode
         ? SIGNUP_ERRORS[errorCode]
-        : "올바른 형식의 이메일 주소여야 합니다";
+        : "오류가 발생했습니다. 다시 시도해주세요.";
       setModalTitle("회원가입 실패");
       setDescription(errorMsg);
       setEmailModal(true);
