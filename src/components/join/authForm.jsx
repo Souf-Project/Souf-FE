@@ -539,13 +539,34 @@ export default function AuthForm({
                                     filesToUpload.map(async ({ file, dto }) => {
                                         // 1. presignedUrl로 S3에 파일 업로드
                                         if (dto?.presignedUrl) {
+                                          
+                                            
                                             await uploadToS3(dto.presignedUrl, file);
+                                            // console.log("✅ [소셜 회원가입] S3 업로드 성공:", file.name);
                                         
                                             // 2. S3 업로드 성공 후 서버에 파일 정보 전송
+                                            // 파일명에서 확장자를 추출하여 파일 타입 결정 (JPG/JPEG 일관성 보장)
+                                            const getFileTypeFromFileName = (fileName) => {
+                                                if (!fileName) return 'PDF';
+                                                const extension = fileName.split('.').pop()?.toUpperCase();
+                                                // jpeg 확장자를 jpg로 통일 (서버에서 JPG를 기대할 수 있음)
+                                                if (extension === 'JPEG') return 'JPG';
+                                                return extension || 'PDF';
+                                            };
+                                            
                                             const fileUrl = [dto.fileUrl];
                                             const fileName = [file.name];
-                                            const fileType = [file.type.split('/')[1]?.toUpperCase() || 'PDF'];
+                                            const fileType = [getFileTypeFromFileName(file.name)];
                                             const purpose = [];
+                                            
+                                            // console.log("📤 [소셜 회원가입] 서버에 파일 정보 전송:", {
+                                            //     memberId,
+                                            //     fileUrl,
+                                            //     fileName,
+                                            //     fileType,
+                                            //     purpose
+                                            // });
+                                            
                                             await postSignupFileUpload(
                                                 memberId,
                                                 fileUrl,
@@ -553,11 +574,20 @@ export default function AuthForm({
                                                 fileType,
                                                 purpose
                                             );
+                                            
+                                            // console.log("✅ [소셜 회원가입] 서버에 파일 정보 전송 성공:", file.name);
+                                        } else {
+                                            console.error("❌ [소셜 회원가입] presignedUrl이 없습니다:", dto);
                                         }
                                     })
                                 );
                             } catch (error) {
                                 console.error("❌ [소셜 회원가입] 파일 업로드 중 오류 발생:", error);
+                                console.error("❌ [소셜 회원가입] 에러 상세:", {
+                                    message: error.message,
+                                    response: error.response?.data,
+                                    status: error.response?.status
+                                });
                                 alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
                             }
                         }
@@ -646,13 +676,34 @@ export default function AuthForm({
                                 filesToUpload.map(async ({ file, dto }) => {
                                     // 1. presignedUrl로 S3에 파일 업로드
                                     if (dto?.presignedUrl) {
+                                      
+                                        
                                         await uploadToS3(dto.presignedUrl, file);
+                                        // console.log("✅ [일반 회원가입] S3 업로드 성공:", file.name);
                                     
                                         // 2. S3 업로드 성공 후 서버에 파일 정보 전송
+                                        // 파일명에서 확장자를 추출하여 파일 타입 결정 (JPG/JPEG 일관성 보장)
+                                        const getFileTypeFromFileName = (fileName) => {
+                                            if (!fileName) return 'PDF';
+                                            const extension = fileName.split('.').pop()?.toUpperCase();
+                                            // jpeg 확장자를 jpg로 통일 (서버에서 JPG를 기대할 수 있음)
+                                            if (extension === 'JPEG') return 'JPG';
+                                            return extension || 'PDF';
+                                        };
+                                        
                                         const fileUrl = [dto.fileUrl];
                                         const fileName = [file.name];
-                                        const fileType = [file.type.split('/')[1]?.toUpperCase() || 'PDF'];
+                                        const fileType = [getFileTypeFromFileName(file.name)];
                                         const purpose = [];
+                                        
+                                        // console.log("📤 [일반 회원가입] 서버에 파일 정보 전송:", {
+                                        //     memberId,
+                                        //     fileUrl,
+                                        //     fileName,
+                                        //     fileType,
+                                        //     purpose
+                                        // });
+                                        
                                         await postSignupFileUpload(
                                             memberId,
                                             fileUrl,
@@ -660,11 +711,20 @@ export default function AuthForm({
                                             fileType,
                                             purpose
                                         );
+
+                                        // console.log("✅ [일반 회원가입] 서버에 파일 정보 전송 성공:", file.name);
+                                    } else {
+                                        console.error("❌ [일반 회원가입] presignedUrl이 없습니다:", dto);
                                     }
                                 })
                             );
                         } catch (error) {
                             console.error("❌ [일반 회원가입] 파일 업로드 중 오류 발생:", error);
+                            console.error("❌ [일반 회원가입] 에러 상세:", {
+                                message: error.message,
+                                response: error.response?.data,
+                                status: error.response?.status
+                            });
                             alert("파일 업로드에 실패했습니다. 다시 시도해주세요.");
                         }
                     }
