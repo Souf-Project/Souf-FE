@@ -86,7 +86,15 @@ export default function Login() {
     },
 
     onError: (error) => {
-      const errorKey = error.response.data.errorKey;
+     
+      const errorKey = error.response?.data?.errorKey;
+      
+      // M401-1 에러일 때는 모달 대신 비밀번호 필드에 에러 메시지 표시
+      if (errorKey === "M401-1") {
+        setPasswordError("아이디 또는 비밀번호가 일치하지 않습니다.");
+        return; // 모달을 띄우지 않고 종료
+      }
+      
       const errorInfo = LOGIN_ERRORS[errorKey];
       setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
       setErrorAction(errorInfo?.action || "refresh");
