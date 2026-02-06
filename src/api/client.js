@@ -141,15 +141,6 @@ const handleRefreshFailure = async (message = "로그인 시간이 만료되었�
     // refreshToken은 HttpOnly 쿠키로 서버가 관리하므로 클라이언트에서 삭제 불가
     // 서버의 로그아웃 API 호출로 쿠키가 삭제됨
     
-    // 3. 오래된 세션이면 모달 없이 자동 로그아웃 처리
-    if (shouldAutoLogout) {
-      // 모달 없이 바로 로그인 페이지로 이동
-      if (!window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
-      }
-      return; // 모달 표시하지 않고 종료
-    }
-    
     // 4. 최근 활동이 있었으면 로그인 만료 모달 표시
     const event = new CustomEvent('showSessionExpiredModal', {
       detail: {

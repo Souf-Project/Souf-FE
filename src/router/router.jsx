@@ -119,10 +119,6 @@ function AppRouter() {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("lastActivityTime");
         
-        // 로그인 페이지로 이동 (모달 없이)
-        if (!location.pathname.includes('/login')) {
-          window.location.href = '/login';
-        }
       }
     };
     
