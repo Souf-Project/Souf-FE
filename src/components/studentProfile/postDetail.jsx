@@ -83,7 +83,7 @@ export default function PostDetail() {
     queryFn: async () => {
       try {
         const data = await getFeedDetail(id,worksId);
-
+// console.log("data", data);
         data.result.mediaResDtos?.forEach((media, index) => {
         });
       
@@ -434,19 +434,31 @@ const handleDeleteClick = () => {
                 className="rounded-lg relative"
               >
                 {mediaData?.map((data, i) => {
-                  const isVideo = data.fileType?.toLowerCase() === "mp4" || data.fileUrl?.toLowerCase().endsWith(".mp4");
+                  // 비디오 파일 확장자 체크 (mp4, mov, avi, webm 등)
+                  const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv', '.flv'];
+                  const fileExtension = data.fileUrl?.toLowerCase().match(/\.\w+$/)?.[0];
+                  const isVideo = 
+                    data.fileType?.toLowerCase()?.includes('video') || 
+                    data.fileType?.toLowerCase() === 'mp4' ||
+                    data.fileType?.toLowerCase() === 'mov' ||
+                    videoExtensions.some(ext => data.fileUrl?.toLowerCase().endsWith(ext));
+                  
+                  // fileUrl이 이미 전체 URL인지 확인 (http:// 또는 https://로 시작하는지)
+                  const isFullUrl = data.fileUrl?.startsWith('http://') || data.fileUrl?.startsWith('https://');
+                  const mediaUrl = isFullUrl ? data.fileUrl : `${BUCKET_URL}${data.fileUrl}`;
+                  
                   return (
                     <SwiperSlide key={i} className="flex justify-center items-center">
                       <div className="flex justify-center items-center h-auto w-full">
                         {isVideo ? (
                           <video
-                            src={`${BUCKET_URL}${data.fileUrl}`}
+                            src={mediaUrl}
                             controls
                             className="w-full h-full object-cover rounded-lg"
                           />
                         ) : (
                           <img
-                            src={`${BUCKET_URL}${data.fileUrl}`}
+                            src={mediaUrl}
                             alt={data.fileName}
                             className="w-full h-full object-cover rounded-lg"
                           />

@@ -31,6 +31,7 @@ export default function UserForm({
   const [errorModalTitle, setErrorModalTitle] = useState("");
   const [errorModalDescription, setErrorModalDescription] = useState("");
   const [validationErrors, setValidationErrors] = useState({});
+  const [nicknameLengthError, setNicknameLengthError] = useState(null);
   
   // 전공 필드들을 배열로 관리 (최대 2개)
   const [majorFields, setMajorFields] = useState([
@@ -65,10 +66,23 @@ export default function UserForm({
         if (!errorMessage) {
           errorMessage = "닉네임을 입력해주세요.";
         }
-      } else if (!checkResult) {
-        newErrors.nickname = true;
-        if (!errorMessage) {
-          errorMessage = "닉네임 중복 확인을 완료해주세요.";
+      } else {
+        const nicknameLength = formData.nickname.trim().length;
+        if (nicknameLength < 2) {
+          newErrors.nickname = true;
+          if (!errorMessage) {
+            errorMessage = "닉네임은 2자 이상 입력해주세요.";
+          }
+        } else if (nicknameLength > 20) {
+          newErrors.nickname = true;
+          if (!errorMessage) {
+            errorMessage = "닉네임은 20자 이하로 입력해주세요.";
+          }
+        } else if (!checkResult) {
+          newErrors.nickname = true;
+          if (!errorMessage) {
+            errorMessage = "닉네임 중복 확인을 완료해주세요.";
+          }
         }
       }
     }
@@ -140,11 +154,24 @@ export default function UserForm({
         if (!errorMessage) {
           errorMessage = "동아리명을 입력해주세요.";
         }
-      } else if (checkResult !== true) {
-        // 동아리명 중복 확인 검증
-        newErrors.nickname = true;
-        if (!errorMessage) {
-          errorMessage = "동아리명 중복 확인을 완료해주세요.";
+      } else {
+        const nicknameLength = formData.nickname.trim().length;
+        if (nicknameLength < 2) {
+          newErrors.nickname = true;
+          if (!errorMessage) {
+            errorMessage = "동아리명은 2자 이상 입력해주세요.";
+          }
+        } else if (nicknameLength > 20) {
+          newErrors.nickname = true;
+          if (!errorMessage) {
+            errorMessage = "동아리명은 20자 이하로 입력해주세요.";
+          }
+        } else if (checkResult !== true) {
+          // 동아리명 중복 확인 검증
+          newErrors.nickname = true;
+          if (!errorMessage) {
+            errorMessage = "동아리명 중복 확인을 완료해주세요.";
+          }
         }
       }
 
@@ -506,8 +533,20 @@ export default function UserForm({
             name="nickname"
             value={formData.nickname}
             onChange={(e) => {
-              setNickname(e.target.value);
+              const value = e.target.value;
+              setNickname(value);
               handleInputChange("nickname", e);
+              
+              // 닉네임 길이 실시간 검증
+              const trimmedLength = value.trim().length;
+              if (trimmedLength > 0 && trimmedLength < 2) {
+                setNicknameLengthError("닉네임은 2자 이상 입력해주세요.");
+              } else if (trimmedLength > 20) {
+                setNicknameLengthError("닉네임은 20자 이하로 입력해주세요.");
+              } else {
+                setNicknameLengthError(null);
+              }
+              
               if (validationErrors.nickname) {
                 setValidationErrors((prev) => ({ ...prev, nickname: false }));
               }
@@ -515,10 +554,28 @@ export default function UserForm({
             title="닉네임"
             btnText="중복확인"
             essentialText="닉네임을 입력해주세요."
-            disapproveText={checkResult === false ? "이미 가입된 닉네임입니다." : "닉네임 중복 확인을 완료해주세요."}
-            onClick={() => checkNickname.mutate(nickname)}
-            isValidateTrigger={validationErrors.nickname || errors.nickname}
-            isConfirmed={checkResult}
+            disapproveText={
+              nicknameLengthError 
+                ? nicknameLengthError 
+                : checkResult === false 
+                  ? "이미 가입된 닉네임입니다." 
+                  : "닉네임 중복 확인을 완료해주세요."
+            }
+            onClick={() => {
+              const trimmedNickname = nickname.trim();
+              if (trimmedNickname.length < 2) {
+                setNicknameLengthError("닉네임은 2자 이상 입력해주세요.");
+                return;
+              }
+              if (trimmedNickname.length > 20) {
+                setNicknameLengthError("닉네임은 20자 이하로 입력해주세요.");
+                return;
+              }
+              setNicknameLengthError(null);
+              checkNickname.mutate(trimmedNickname);
+            }}
+            isValidateTrigger={validationErrors.nickname || errors.nickname || !!nicknameLengthError}
+            isConfirmed={checkResult && !nicknameLengthError}
             approveText="사용 가능한 닉네임입니다."
           />
         </>
@@ -687,20 +744,50 @@ export default function UserForm({
           name="nickname"
           value={formData.nickname}
           onChange={(e) => {
+            const value = e.target.value;
             handleInputChange("nickname", e);
+            
+            // 동아리명 길이 실시간 검증
+            const trimmedLength = value.trim().length;
+            if (trimmedLength > 0 && trimmedLength < 2) {
+              setNicknameLengthError("동아리명은 2자 이상 입력해주세요.");
+            } else if (trimmedLength > 20) {
+              setNicknameLengthError("동아리명은 20자 이하로 입력해주세요.");
+            } else {
+              setNicknameLengthError(null);
+            }
+            
             if (validationErrors.nickname) {
               setValidationErrors((prev) => ({ ...prev, nickname: false }));
             }
           }}
           onClick={() => {
-            if (formData.nickname && formData.nickname.trim()) {
-              checkNickname.mutate(formData.nickname.trim());
+            const trimmedNickname = formData.nickname?.trim() || "";
+            if (trimmedNickname.length < 2) {
+              setNicknameLengthError("동아리명은 2자 이상 입력해주세요.");
+              return;
+            }
+            if (trimmedNickname.length > 20) {
+              setNicknameLengthError("동아리명은 20자 이하로 입력해주세요.");
+              return;
+            }
+            setNicknameLengthError(null);
+            if (trimmedNickname) {
+              checkNickname.mutate(trimmedNickname);
             }
           }}
-          disapproveText={checkResult === false ? "이미 가입된 동아리명입니다." : (checkResult === undefined ? "동아리명 중복 확인을 완료해주세요." : "동아리명을 입력해주세요.")}
+          disapproveText={
+            nicknameLengthError 
+              ? nicknameLengthError 
+              : checkResult === false 
+                ? "이미 가입된 동아리명입니다." 
+                : (checkResult === undefined 
+                    ? "동아리명 중복 확인을 완료해주세요." 
+                    : "동아리명을 입력해주세요.")
+          }
           essentialText="동아리명을 입력해주세요."
-          isValidateTrigger={validationErrors.nickname || errors.nickname}
-          isConfirmed={checkResult === true}
+          isValidateTrigger={validationErrors.nickname || errors.nickname || !!nicknameLengthError}
+          isConfirmed={checkResult === true && !nicknameLengthError}
           approveText="사용 가능한 동아리명입니다."
           btnText="중복확인"
           isLoading={checkNickname.isPending}
