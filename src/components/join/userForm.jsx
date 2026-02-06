@@ -42,6 +42,7 @@ export default function UserForm({
   const [isSchoolDropdownOpen, setIsSchoolDropdownOpen] = useState(false);
   const [schoolSearchQuery, setSchoolSearchQuery] = useState("");
   const schoolDropdownRef = useRef(null);
+  const [isOtherSchoolSelected, setIsOtherSchoolSelected] = useState(false);
 
   // 통합 검증 함수
   const validateForm = () => {
@@ -416,8 +417,20 @@ export default function UserForm({
     const selectedSchool = schoolOptions.find(option => option.value === value);
     const schoolName = selectedSchool ? selectedSchool.label : value;
     
-    setFormData((prev) => ({ ...prev, schoolName: schoolName }));
-    handleInputChange("school", { target: { value: schoolName } });
+    // "기타" 선택 여부 확인 (code가 "170"이면 "기타")
+    const isOther = value === "170" || schoolName === "기타";
+    setIsOtherSchoolSelected(isOther);
+    
+    // "기타"가 아닌 경우에만 schoolName 설정
+    if (!isOther) {
+      setFormData((prev) => ({ ...prev, schoolName: schoolName }));
+      handleInputChange("school", { target: { value: schoolName } });
+    } else {
+      // "기타" 선택 시 schoolName 초기화
+      setFormData((prev) => ({ ...prev, schoolName: "" }));
+      handleInputChange("school", { target: { value: "" } });
+    }
+    
     if (validationErrors.schoolName) {
       setValidationErrors((prev) => ({ ...prev, schoolName: false }));
     }
@@ -677,6 +690,28 @@ export default function UserForm({
               </p>
             )}
           </div>
+          {/* "기타" 선택 시 학교 이름 직접 입력 필드 */}
+          {isOtherSchoolSelected && (
+            <div className="w-full mt-2">
+              <Input
+                title="학교명"
+                name="otherSchoolName"
+                value={formData.schoolName || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFormData((prev) => ({ ...prev, schoolName: value }));
+                  handleInputChange("school", { target: { value: value } });
+                  if (validationErrors.schoolName) {
+                    setValidationErrors((prev) => ({ ...prev, schoolName: false }));
+                  }
+                }}
+                placeholder="학교명을 입력해주세요."
+                disapproveText="학교명을 입력해주세요."
+                essentialText="학교명을 입력해주세요."
+                isValidateTrigger={validationErrors.schoolName || errors.schoolName}
+              />
+            </div>
+          )}
           <div className="text-black text-lg md:text-2xl font-regular mt-4">
             전공
           </div>
