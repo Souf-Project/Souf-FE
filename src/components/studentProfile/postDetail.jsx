@@ -77,9 +77,10 @@ export default function PostDetail() {
     const {
     data: feedData,
     isLoading,
+    isError,
     error,
   } = useQuery({
-    queryKey: ["feedDetail"],
+    queryKey: ["feedDetail", id, worksId],
     queryFn: async () => {
       try {
         const data = await getFeedDetail(id,worksId);
@@ -338,9 +339,8 @@ const handleDeleteClick = () => {
     }
   }, [worksData.memberId, fromMemberId]);
 
-  if (isLoading) {
-    return <Loading text="게시글을 불러오는 중..." />;
-  }
+  if (isLoading) return <Loading />;
+  if (!worksData) return null;
 
   return (
     <>

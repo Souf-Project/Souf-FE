@@ -247,7 +247,7 @@ export default function Feed({ feedData, onFeedClick }) {
                     <div className="flex justify-center items-center">
                       {isVideo ? (
                         <video
-                          src={`${BUCKET_URL}${data.fileUrl}`}
+                          src={`${data.fileUrl}`}
                           controls
                           className="w-full h-auto max-h-[500px] object-cover cursor-pointer"
                           onClick={goToDetail}
