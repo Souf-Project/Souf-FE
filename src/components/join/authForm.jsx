@@ -503,31 +503,43 @@ export default function AuthForm({
                             dtoArray = [presignedUrlResDto];
                         }
                         
+                        // presignedUrl과 파일을 1:1로 매칭
+                        // 서버가 파일 순서대로 presignedUrl을 반환한다고 가정
+                        let dtoIndex = 0;
+                        
                         // 학생 인증 파일 업로드
                         if (selectedType === "STUDENT" && schoolAuthenticatedImageFileName) {
-                            const studentDto = dtoArray.find(dto => 
-                                (dto.contentType?.includes('image') || dto.contentType?.includes('pdf'))
-                            ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                            // 학생 인증 파일에 해당하는 presignedUrl 찾기
+                            // contentType이 image 또는 pdf인 dto를 찾거나, 순서대로 사용
+                            const studentDto = dtoArray.find((dto, index) => 
+                                index >= dtoIndex && (dto.contentType?.includes('image') || dto.contentType?.includes('pdf'))
+                            ) || (dtoArray.length > dtoIndex ? dtoArray[dtoIndex] : null);
                             
                             if (studentDto && studentDto.presignedUrl) {
                                 filesToUpload.push({
                                     file: schoolAuthenticatedImageFileName,
                                     dto: studentDto
                                 });
+                                // 사용한 dto 인덱스 증가 (같은 dto를 중복 사용하지 않도록)
+                                dtoIndex++;
                             }
                         }
                         
                         // 사업자등록증 파일 업로드
                         if (selectedType === "MEMBER" && selectedMemberType === "사업자" && formData.businessRegistrationFile) {
-                            const businessDto = dtoArray.find(dto => 
-                                dto.contentType?.includes('pdf')
-                            ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                            // 사업자등록증 파일에 해당하는 presignedUrl 찾기
+                            // contentType이 pdf인 dto를 찾거나, 순서대로 사용
+                            const businessDto = dtoArray.find((dto, index) => 
+                                index >= dtoIndex && dto.contentType?.includes('pdf')
+                            ) || (dtoArray.length > dtoIndex ? dtoArray[dtoIndex] : null);
                             
                             if (businessDto && businessDto.presignedUrl) {
                                 filesToUpload.push({
                                     file: formData.businessRegistrationFile,
                                     dto: businessDto
                                 });
+                                // 사용한 dto 인덱스 증가 (같은 dto를 중복 사용하지 않도록)
+                                dtoIndex++;
                             }
                         }
                         
@@ -640,31 +652,43 @@ export default function AuthForm({
                         dtoArray = [presignedUrlResDto];
                     }
                     
+                    // presignedUrl과 파일을 1:1로 매칭
+                    // 서버가 파일 순서대로 presignedUrl을 반환한다고 가정
+                    let dtoIndex = 0;
+                    
                     // 학생 인증 파일 업로드
                     if (selectedType === "STUDENT" && schoolAuthenticatedImageFileName) {
-                        const studentDto = dtoArray.find(dto => 
-                            (dto.contentType?.includes('image') || dto.contentType?.includes('pdf'))
-                        ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                        // 학생 인증 파일에 해당하는 presignedUrl 찾기
+                        // contentType이 image 또는 pdf인 dto를 찾거나, 순서대로 사용
+                        const studentDto = dtoArray.find((dto, index) => 
+                            index >= dtoIndex && (dto.contentType?.includes('image') || dto.contentType?.includes('pdf'))
+                        ) || (dtoArray.length > dtoIndex ? dtoArray[dtoIndex] : null);
                         
                         if (studentDto && studentDto.presignedUrl) {
                             filesToUpload.push({
                                 file: schoolAuthenticatedImageFileName,
                                 dto: studentDto
                             });
+                            // 사용한 dto 인덱스 증가 (같은 dto를 중복 사용하지 않도록)
+                            dtoIndex++;
                         }
                     }
                     
                     // 사업자등록증 파일 업로드
                     if (selectedType === "MEMBER" && selectedMemberType === "사업자" && formData.businessRegistrationFile) {
-                        const businessDto = dtoArray.find(dto => 
-                            dto.contentType?.toLowerCase().includes('pdf') || dto.contentType?.toLowerCase() === 'application/pdf'
-                        ) || (dtoArray.length > 0 ? dtoArray[0] : null);
+                        // 사업자등록증 파일에 해당하는 presignedUrl 찾기
+                        // contentType이 pdf인 dto를 찾거나, 순서대로 사용
+                        const businessDto = dtoArray.find((dto, index) => 
+                            index >= dtoIndex && (dto.contentType?.toLowerCase().includes('pdf') || dto.contentType?.toLowerCase() === 'application/pdf')
+                        ) || (dtoArray.length > dtoIndex ? dtoArray[dtoIndex] : null);
                         
                         if (businessDto && businessDto.presignedUrl) {
                             filesToUpload.push({
                                 file: formData.businessRegistrationFile,
                                 dto: businessDto
                             });
+                            // 사용한 dto 인덱스 증가 (같은 dto를 중복 사용하지 않도록)
+                            dtoIndex++;
                         }
                     }
                     
