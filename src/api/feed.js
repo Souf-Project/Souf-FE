@@ -40,12 +40,12 @@ export const uploadToS3 = async (url, file) => {
 
 export const postMedia = async ({ postId, fileUrl, fileName, fileType, filePurpose }) => {
   try {
-    console.log("postMedia 전송 데이터:", {
-      postId,
-      fileUrl,
-      fileName,
-      fileType,
-    });
+    // console.log("postMedia 전송 데이터:", {
+    //   postId,
+    //   fileUrl,
+    //   fileName,
+    //   fileType,
+    // });
     
     const response = await client.post("/api/v1/feed/upload", {
       postId: postId,
