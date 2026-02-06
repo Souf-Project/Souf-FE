@@ -100,6 +100,31 @@ function AppRouter() {
     }
   }, [memberId, setUnreadChatCount, setUnreadNotificationCount, setNotifications]);
 
+  // 페이지 로드 시 오래된 세션 확인 및 자동 로그아웃
+  useEffect(() => {
+    const checkOldSession = () => {
+      // 로그인한 상태에서만 확인
+      if (!memberId) return;
+      
+      const lastActivityTime = localStorage.getItem("lastActivityTime");
+      if (!lastActivityTime) return;
+      
+      const SIX_HOURS = 6 * 60 * 60 * 1000; // 6시간 (밀리초)
+      const timeSinceLastActivity = Date.now() - parseInt(lastActivityTime, 10);
+      
+      // 24시간 이상 지났으면 자동 로그아웃
+      if (timeSinceLastActivity >= SIX_HOURS) {
+        // 세션 정보 삭제
+        UserStore.getState().logout();
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("lastActivityTime");
+        
+      }
+    };
+    
+    checkOldSession();
+  }, [memberId, location.pathname]);
+
   useEffect(() => {
     // 세션 만료 이벤트 리스너
     const handleSessionExpired = (event) => {

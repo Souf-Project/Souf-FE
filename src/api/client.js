@@ -89,8 +89,33 @@ const deleteCookie = (name) => {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
 };
 
+// 마지막 활동 시간 저장
+const updateLastActivityTime = () => {
+  localStorage.setItem("lastActivityTime", Date.now().toString());
+};
+
+// 마지막 활동 시간 가져오기
+const getLastActivityTime = () => {
+  const timeStr = localStorage.getItem("lastActivityTime");
+  return timeStr ? parseInt(timeStr, 10) : null;
+};
+
+// 오래된 세션인지 확인 (24시간 이상 지났는지)
+const isSessionTooOld = () => {
+  const lastActivityTime = getLastActivityTime();
+  if (!lastActivityTime) return false;
+  
+  const SIX_FOUR_HOURS = 6 * 60 * 60 * 1000; // 6시간 (밀리초)
+  const timeSinceLastActivity = Date.now() - lastActivityTime;
+  
+  return timeSinceLastActivity >= SIX_FOUR_HOURS;
+};
+
 // 강제 로그아웃 처리 (refresh 실패 시)
 const handleRefreshFailure = async (message = "로그인 시간이 만료되었습니다. 재로그인해주세요") => {
+  // 오래된 세션인지 확인 (24시간 이상 지났는지)
+  const shouldAutoLogout = isSessionTooOld();
+  
   try {
     // 1. 로그아웃 API 호출 (204 응답 확인)
     const logoutResponse = await axios.post(
@@ -112,10 +137,11 @@ const handleRefreshFailure = async (message = "로그인 시간이 만료되었�
     // 2. 클라이언트에서 토큰 정리
     UserStore.getState().logout();
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("lastActivityTime"); // 마지막 활동 시간도 삭제
     // refreshToken은 HttpOnly 쿠키로 서버가 관리하므로 클라이언트에서 삭제 불가
     // 서버의 로그아웃 API 호출로 쿠키가 삭제됨
     
-    // 4. 로그인 만료 모달 표시를 위한 커스텀 이벤트 발생
+    // 4. 최근 활동이 있었으면 로그인 만료 모달 표시
     const event = new CustomEvent('showSessionExpiredModal', {
       detail: {
         message: message
@@ -317,7 +343,15 @@ client.interceptors.request.use(
   }
 );
 client.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // API 호출 성공 시 마지막 활동 시간 업데이트
+    // refresh API는 제외 (토큰 갱신만 하는 API이므로 활동으로 간주하지 않음)
+    const requestUrl = response.config?.url || '';
+    if (!requestUrl.includes('/api/v1/auth/refresh')) {
+      updateLastActivityTime();
+    }
+    return response;
+  },
   async (error) => {
     // 에러 객체 구조 확인
     if (!error) {
