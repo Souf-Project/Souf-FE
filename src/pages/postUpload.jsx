@@ -120,26 +120,22 @@ export default function PostUpload() {
       //1. 백엔드에서 presigned-url 받아오기 위해 텍스트관련된 내용 먼저 보내기
       const cleanedCategories = filterEmptyCategories(formData.categoryDtos);
       if (cleanedCategories.length === 0) {
-        //alert("최소 1개 이상의 카테고리를 선택해주세요.");
         throw new Error("최소 1개 이상의 카테고리를 선택해주세요.");
         return;
       }
       
 
       if (!formData.topic.trim()) {
-        //alert("제목을 입력해주세요.");
         setWarningText("제목을 입력해주세요.");
         throw new Error("제목을 입력해주세요.");
         //return;
       }
       if (!formData.content.trim()) {
-        //alert("내용을 입력해주세요.");
         setWarningText("내용을 입력해주세요.");
         throw new Error("내용을 입력해주세요.");
         //return;
       }
       if (cleanedCategories.length === 0) {
-        //alert("최소 1개 이상의 카테고리를 선택해주세요.");
         setWarningText("최소 1개 이상의 카테고리를 선택해주세요.");
         throw new Error("최소 1개 이상의 카테고리를 선택해주세요.");
         //return;
@@ -148,23 +144,15 @@ export default function PostUpload() {
       const hasNewMedia = imageFiles.length > 0;
       const hasExistingMedia = videoFiles.length > 0;
       if (!hasExistingMedia && !hasNewMedia) {
-        //alert("이미지 또는 영상을 1개 이상 첨부해주세요.");
-        //return;
         setWarningText("이미지 또는 영상을 1개 이상 첨부해주세요.");
         throw new Error("이미지 또는 영상을 1개 이상 첨부해주세요.");
       }
-
-
-      // 여기서 유효성 검사
-      // 각 들어온 이미지는 JPG, JPEG, PNG, WEBP 얘네에 속하게 type 
-      // 각 들어온 영상은 mp4,quicktime, x-msvideo , webm, x-flv 얘네에 속하게
 
       const invalidImage = imageFiles.find((file) => !validImageTypes.includes(file.type));
       const invalidVideo = videoFiles.find((file) => !validVideoTypes.includes(file.type));
 
       if (invalidImage) {
-        //const type = invalidImage.type.split("/");
-        // console.log(invalidImage);
+
         setWarningText(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
         throw new Error(`해당 이미지는 지원하지 않는 형식입니다. \n ${invalidImage.name}`);
       }
