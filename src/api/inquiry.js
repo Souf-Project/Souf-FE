@@ -52,3 +52,8 @@ export async function getInquiryFile(inquiryId) {
     const response = await client.get(`/api/v1/inquiry/${inquiryId}`);
     return response;
 }
+
+export async function getInquiryAnswer(inquiryId) {
+    const response = await client.get(`/api/v1/inquiry/${inquiryId}`);
+    return response;
+}
