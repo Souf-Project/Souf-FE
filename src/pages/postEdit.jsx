@@ -115,9 +115,11 @@ export default function PostEdit() {
       return updateFeed(worksData.feedId, updateData);
     },
     onSuccess: async (response) => {
-      const { feedId, dtoList, videoResDto } = response.result;
+     
+      const { feedId, dtoList, videoDto, videoResDto } = response.result;
+      const videoInfo = videoDto || videoResDto; // 어느 쪽이든 있으면 사용
       try {
-        // 1. 이미지가 있다면 업로드
+        // 1. 새 이미지가 있다면 presigned URL 로 업로드
         if (newImages.length > 0 && dtoList?.length > 0) {
           await Promise.all(
             dtoList.map(({ presignedUrl }, i) =>
@@ -126,13 +128,14 @@ export default function PostEdit() {
           );
         }
 
-        // 2. 비디오가 있다면 멀티파트 업로드
+        // 2. 새 비디오가 있다면 멀티파트 업로드 (PostUpload 와 동일한 방식)
+        const chunkSize = 10 * 1024 * 1024;
         let multiUploadArray = [];
-        if (newVideo && newVideo instanceof File && videoResDto?.uploadId) {
-          const chunkSize = 10 * 1024 * 1024;
-          const chunkCount = Math.ceil(newVideo.size / chunkSize);
-          let getSignedUrlRes = "";
+        let videoUploadResponse = null;
 
+        if (newVideo && newVideo instanceof File && videoInfo?.uploadId) {
+          const chunkCount = Math.ceil(newVideo.size / chunkSize);
+         
           for (let uploadCount = 1; uploadCount <= chunkCount; uploadCount++) {
             const start = (uploadCount - 1) * chunkSize;
             const end = uploadCount * chunkSize;
@@ -141,13 +144,13 @@ export default function PostEdit() {
                 ? newVideo.slice(start, end)
                 : newVideo.slice(start);
 
-            getSignedUrlRes = await postVideoSignedUrl({
-              uploadId: videoResDto.uploadId,
+            const signedUrlRes = await postVideoSignedUrl({
+              uploadId: videoInfo.uploadId,
               partNumber: uploadCount,
-              fileName: videoResDto.fileName,
+              fileName: videoInfo.fileName,
             });
 
-            const presignedUrl = getSignedUrlRes.result.presignedUrl;
+            const presignedUrl = signedUrlRes?.result?.presignedUrl;
             const uploadResp = await uploadToS3Video(presignedUrl, fileBlob);
 
             const ETag = uploadResp.headers
@@ -161,32 +164,44 @@ export default function PostEdit() {
             });
           }
 
-          await postVideoUpload({
-            uploadId: videoResDto.uploadId,
-            fileName: videoResDto.fileName,
+          // 비디오 업로드 완료 호출 (type: "feed" 로 PostUpload 와 동일)
+          videoUploadResponse = await postVideoUpload({
+            uploadId: videoInfo.uploadId,
+            fileUrl: videoInfo.fileName,
             parts: multiUploadArray,
+            type: "feed",
           });
+         
         }
 
-        // 3. 미디어 등록은 이미지나 비디오 중 하나라도 있을 때만
-        if ((newImages.length > 0 || newVideo) && dtoList?.length > 0) {
-          const fileUrls = dtoList.map((d) => d.fileUrl);
-          const fileNames = newImages.map((f) => f.name);
-          const fileTypes = newImages.map((f) =>
-            f.type?.split("/")[1]?.toUpperCase()
+        // 3. 미디어 등록: 새 이미지/비디오가 하나라도 있으면 postMedia 호출
+        const fileUrls = [];
+        const fileNames = [];
+        const fileTypes = [];
+
+        // 새 이미지가 있다면 이미지 정보 추가 (PostUpload 와 동일한 형태)
+        if (newImages.length > 0 && dtoList?.length > 0) {
+          fileUrls.push(...dtoList.map(({ fileUrl }) => `${fileUrl}`));
+          fileNames.push(...newImages.map((file) => file.name));
+          fileTypes.push(
+            ...newImages.map((file) => file.type.split("/")[1].toUpperCase())
           );
+        }
 
-          if (newVideo && getSignedUrlRes?.result?.fileUrl) {
-            fileUrls.push(getSignedUrlRes.result.fileUrl);
-            fileNames.push(newVideo.name);
-            fileTypes.push(newVideo.type.split("/")[1].toUpperCase());
-          }
+        // 새 비디오가 정상 업로드되었다면 비디오 정보 추가
+        if (newVideo && videoUploadResponse?.result && videoInfo?.fileName) {
+          fileUrls.push(`${BUCKET_URL}${videoInfo.fileName}`);
+          fileNames.push(newVideo.name);
+          fileTypes.push(newVideo.type.split("/")[1].toUpperCase());
+        }
 
+        if (fileUrls.length > 0) {
           await postMedia({
-            feedId,
+            postId: feedId,
             fileUrl: fileUrls,
             fileName: fileNames,
             fileType: fileTypes,
+            filePurpose: [], 
           });
         }
 
