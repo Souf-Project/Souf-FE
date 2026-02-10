@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { getInquiryList, deleteInquiry, patchInquiry, getInquiryFile } from '../../api/inquiry';
+import { getInquiryList, deleteInquiry, patchInquiry, getInquiryFile, getInquiryAnswer } from '../../api/inquiry';
 import { UserStore } from '../../store/userStore';
 import Loading from '../loading';
 import EditIcon from '../../assets/images/editIco.svg';
@@ -17,6 +17,7 @@ export default function InquiryContent() {
     const [expandedInquiry, setExpandedInquiry] = useState(null);
     const [inquiryFiles, setInquiryFiles] = useState({});
     const [loadingFiles, setLoadingFiles] = useState({});
+  const [inquiryAnswers, setInquiryAnswers] = useState({});
     const [selectedInquiryId, setSelectedInquiryId] = useState(null);
     const [editFormData, setEditFormData] = useState({
         title: "",
@@ -28,7 +29,7 @@ export default function InquiryContent() {
         queryFn: () => getInquiryList({ page: 0, size: 10 }),
         // retry 로직은 전역 QueryClient 설정에서 처리됨
     });
-    console.log("data", data);
+    // console.log("data", data);
 
     if (isLoading) {
         return <Loading />;
@@ -80,12 +81,31 @@ export default function InquiryContent() {
         }
 
     };
+    const handleGetInquiryAnswer = async (inquiryId) => {
+        try {
+            const response = await getInquiryAnswer(inquiryId);
+           
+            const result = response?.data?.result || response?.result || {};
+            const answer = result.answer || "";
+            const answerDate = result.answerDate;
 
+            setInquiryAnswers((prev) => ({
+                ...prev,
+                [inquiryId]: { answer, answerDate },
+            }));
+        } catch (err) {
+            console.error("문의 답변 조회 실패:", err);
+        }
+    };
+    
     const toggleInquiry = (inquiryId) => {
         const next = expandedInquiry === inquiryId ? null : inquiryId;
         setExpandedInquiry(next);
         if (next && !inquiryFiles[inquiryId]) {
             fetchInquiryFiles(inquiryId);
+        }
+        if (next && !inquiryAnswers[inquiryId]) {
+            handleGetInquiryAnswer(inquiryId);
         }
     };
 
@@ -217,6 +237,8 @@ export default function InquiryContent() {
         });
     };
 
+  
+
     return (
         <div>
             <h1 className='hidden md:block text-2xl font-bold'>내 문의 내역</h1>
@@ -268,15 +290,24 @@ export default function InquiryContent() {
                         </div>
                         </div>
                         
-                        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                            expandedInquiry === inquiry.inquiryId 
-                                ? ' opacity-100' 
-                                : 'max-h-0 opacity-0'
-                        }`}>
-                            <div className='px-4 pb-4'>
-                                <p className='text-gray-600 whitespace-pre-wrap'>{inquiry.content}</p>
+                        <div
+                            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                                expandedInquiry === inquiry.inquiryId
+                                    ? 'opacity-100'
+                                    : 'max-h-0 opacity-0'
+                            }`}
+                        >
+                            <div className="px-4 pb-4">
+                                {/* 문의 내용 */}
+                                <p className="text-gray-600 whitespace-pre-wrap">
+                                    {inquiry.content}
+                                </p>
+
+                                {/* 첨부 파일 */}
                                 {loadingFiles[inquiry.inquiryId] && (
-                                    <p className="mt-3 text-sm text-gray-500">첨부 파일 불러오는 중...</p>
+                                    <p className="mt-3 text-sm text-gray-500">
+                                        첨부 파일 불러오는 중...
+                                    </p>
                                 )}
                                 {!loadingFiles[inquiry.inquiryId] &&
                                     inquiryFiles[inquiry.inquiryId] &&
@@ -287,7 +318,10 @@ export default function InquiryContent() {
                                                     ? media.fileUrl
                                                     : `${S3_BUCKET_URL}${media.fileUrl || ''}`;
                                                 return (
-                                                    <div key={idx} className="border rounded-md overflow-hidden bg-gray-50">
+                                                    <div
+                                                        key={idx}
+                                                        className="border rounded-md overflow-hidden bg-gray-50"
+                                                    >
                                                         <img
                                                             src={src}
                                                             alt={media.fileName || `attachment-${idx + 1}`}
@@ -304,6 +338,36 @@ export default function InquiryContent() {
                                             })}
                                         </div>
                                     )}
+
+
+                                {inquiry.status === 'RESOLVED' && (() => {
+                                    const answerObj = inquiryAnswers[inquiry.inquiryId];
+                                    const answerText = answerObj?.answer ?? inquiry.answer;
+                                    const answerDate = answerObj?.answerDate;
+
+                                    if (!answerText) {
+                                        return (
+                                            <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                                                답변 내용이 없습니다.
+                                            </p>
+                                        );
+                                    }
+
+                                    return (
+                                        <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-md">
+                                            <p className="text-sm font-semibold text-gray-700 mb-2">
+                                                답변 내용
+                                            </p>
+                                            <p className="text-sm text-gray-600 whitespace-pre-wrap">
+                                                {answerText}
+                                            </p>
+                                            <p className="text-xs text-gray-400 mt-2">
+                                                {answerDate}
+                                            </p>
+                                           
+                                        </div>
+                                    );
+                                })()}    
                             </div>
                         </div>
                     </div>
