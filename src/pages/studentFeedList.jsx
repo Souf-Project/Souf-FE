@@ -124,11 +124,11 @@ const {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["feed", selectedFirstCategory, sortBy],
+    queryKey: ["feed", selectedFirstCategory, sortBy, currentPage],
           queryFn: async () => {
             const pageable = {
-              page: 0,
-              size: 20,
+              page: currentPage,
+              size: pageSize,
             };
         // '전체' 카테고리면 firstCategory를 파라미터로 추가하지 않음
         const firstCategoryParam = isAllCategory ? null : selectedFirstCategory;
@@ -137,7 +137,10 @@ const {
       },
     keepPreviousData: true, 
   });
-  // console.log("feedData", feedData);
+// console.log("feedData", feedData);
+  useEffect(() => {
+    setTotalPages(feedData?.result?.totalPages || 1);
+  }, [feedData?.result?.totalPages]);
 
   const {
     data: feedTop5Data,
@@ -152,8 +155,6 @@ const {
     keepPreviousData: true,
   });
 
-  // console.log("feedTop5Data", feedTop5Data);
-
   // 순위 데이터 가져오기
   const top5Data = feedTop5Data?.result || [];
   
@@ -162,6 +163,7 @@ const {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
+
   };
 
   return (
