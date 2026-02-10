@@ -49,7 +49,7 @@ export default function PostDetail() {
       });
     }
   }, [worksId]);
-  const [worksData, setWorksData] = useState([]);
+  const [worksData, setWorksData] = useState(null);
   const [mediaData, setMediaData] = useState([]);
   const [showOptions, setShowOptions] = useState(false);
   const { memberId } = UserStore();
@@ -176,10 +176,10 @@ const handleDeleteClick = () => {
     navigate("/");
   };
 
-  // SNS 공유 훅 사용
+  // SNS 공유 훅 사용 - worksData 가 아직 null 일 수 있으므로 안전하게 처리
   const { shareToTwitter, shareToFacebook, shareToKakaoTalk, shareToNavigator, isAvailNavigator } = useSNSShare({
-    title: worksData.topic,
-    url: window.location.href,
+    title: worksData?.topic || "",
+    url: typeof window !== "undefined" ? window.location.href : "",
   });
 
   const handleShareClick = () => {
@@ -292,8 +292,8 @@ const handleDeleteClick = () => {
       return;
     }
 
-    if (!fromMemberId || !worksData.memberId) {
-      console.error("ID가 없습니다. fromMemberId:", fromMemberId, "worksData.memberId:", worksData.memberId);
+    if (!fromMemberId || !worksData || !worksData.memberId) {
+      console.error("ID가 없습니다. fromMemberId:", fromMemberId, "worksData?.memberId:", worksData?.memberId);
       return;
     }
     
@@ -315,8 +315,7 @@ const handleDeleteClick = () => {
 
   useEffect(() => {
     const fetchFavoriteStatus = async () => {
-      // 로그인한 사용자이고 본인이 아닐 때만 즐겨찾기 상태 확인
-      if (!fromMemberId || !worksData.memberId || fromMemberId === worksData.memberId) {
+      if (!fromMemberId || !worksData || !worksData.memberId || fromMemberId === worksData.memberId) {
         setStar(false);
         return;
       }
@@ -334,13 +333,12 @@ const handleDeleteClick = () => {
       }
     };
 
-    if (worksData.memberId) {
+    if (worksData && worksData.memberId) {
       fetchFavoriteStatus();
     }
-  }, [worksData.memberId, fromMemberId]);
+  }, [worksData, fromMemberId]);
 
-  if (isLoading) return <Loading />;
-  if (!worksData) return null;
+  if (isLoading || !worksData) return <Loading />;
 
   return (
     <>
