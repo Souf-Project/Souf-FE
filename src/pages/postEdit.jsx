@@ -23,6 +23,7 @@ const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
 export default function PostEdit() {
   const navigate = useNavigate();
   const [isModal, setIsModal] = useState(false);
+  const [isMediaRequiredModal, setIsMediaRequiredModal] = useState(false);
   const { id, worksId } = useParams();
   const location = useLocation();
   const { worksData, mediaData } = location.state || {};
@@ -218,10 +219,11 @@ export default function PostEdit() {
       return;
     }
 
-    const hasNewMedia = newImages.length > 0 || newVideo;
+    const hasNewMedia = newImages.length > 0 || !!newVideo;
     const hasExistingMedia = existingImages.length > 0;
     if (!hasNewMedia && !hasExistingMedia) {
-      alert("이미지 또는 영상을 1개 이상 첨부해주세요.");
+      // 이미지/영상이 하나도 없으면 업로드를 막고 모달로 안내
+      setIsMediaRequiredModal(true);
       return;
     }
     const finalData = {
@@ -331,6 +333,15 @@ export default function PostEdit() {
           title="게시글 작성이 완료되었습니다."
           TrueBtnText="확인"
           onClickTrue={() => navigate("/studentFeedList")}
+        />
+      )}
+      {isMediaRequiredModal && (
+        <AlertModal
+          type="simple"
+          title="이미지/영상은 필수입니다."
+          description="이미지 또는 영상을 1개 이상 첨부해주세요."
+          TrueBtnText="확인"
+          onClickTrue={() => setIsMediaRequiredModal(false)}
         />
       )}
       {showLoginModal && (
