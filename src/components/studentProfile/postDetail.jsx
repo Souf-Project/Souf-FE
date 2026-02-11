@@ -152,7 +152,6 @@ const handleDeleteClick = () => {
       setShowDeleteModal(false);
       setShowCompleteModal(true);
     } catch (err) {
-      //console.log("실패 넘어요", err);
       setShowDeleteModal(false);
       const errorKey = err?.response?.data?.errorKey;
       if (err.response?.status === 403) {
@@ -160,7 +159,7 @@ const handleDeleteClick = () => {
       } else {
         const errorInfo = FEED_ERRORS[errorKey];
         setErrorModal(true);
-        setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+        setErrorDescription(errorInfo?.message || "서버 오류가 발생했습니다.");
         setErrorAction(errorInfo?.action || "redirect");
       }
         
@@ -215,7 +214,7 @@ const handleDeleteClick = () => {
       }else{
         const errorInfo = FEED_ERRORS[errorKey];
         setErrorModal(true);
-        setErrorDescription(errorInfo?.message || "알 수 없는 오류가 발생했습니다.");
+        setErrorDescription(errorInfo?.message || "서버 오류가 발생했습니다.");
         setErrorAction(errorInfo?.action || "redirect");
       }
     }
@@ -241,8 +240,8 @@ const handleDeleteClick = () => {
   };
 
   const handleDeclareClick = (declareData) => {
-    // console.log('프로필 신고 데이터:', declareData);
-    // 여기에 신고 API 호출
+    // 신고 API는 declareModal에서 처리하므로 여기서는 데이터만 받아서 로그만 출력
+    console.log("신고 데이터 수신:", declareData);
   };
 
   const shortenUrl = (url) => {

@@ -55,13 +55,14 @@ export default function DeclareModal({
       return;
     }
 
-    // 필수 필드 검증
-    if (!postType || postId === null || postId === undefined || !title || reporterId === null || reportedMemberId === null || reportedMemberId === undefined) {
-    
-      if (reporterId === null || reporterId === undefined) {
-        alert("로그인 후 신고해주세요.");
-        return;
-      }
+    // 로그인 체크
+    if (reporterId === null || reporterId === undefined) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    // 필수 필드 검증 (reporterId는 API 호출 시 제외되지만 로그인 체크용으로 필요)
+    if (!postType || postId === null || postId === undefined || !title || reportedMemberId === null || reportedMemberId === undefined) {
       if (!postType) {
         alert("신고할 게시물 유형이 없습니다.");
         return;
@@ -90,14 +91,14 @@ export default function DeclareModal({
       postType,
       postId: Number(postId),
       title,
-      reporterId: Number(reporterId),
       reportedMemberId: Number(reportedMemberId),
       reasons,
       description
     };
 
     try {
-      const response = await postReport(postType, postId, title, reporterId, reportedMemberId, reasons, description);
+ 
+      const response = await postReport(postType, postId, title, reportedMemberId, reasons, description);
   
       setIsSubmitted(true);
       

@@ -67,7 +67,13 @@ export default function Feed({ feedData, onFeedClick }) {
 
   useEffect(() => {
      setWorksData(feedData);
-     setMediaData(feedData?.mediaResDtos);
+     // mediaResDto가 배열인지 단일 객체인지 확인하고 배열로 변환
+     const mediaArray = Array.isArray(feedData?.mediaResDto) 
+       ? feedData.mediaResDto 
+       : feedData?.mediaResDto 
+         ? [feedData.mediaResDto] 
+         : [];
+     setMediaData(mediaArray);
      setIsLiked(feedData?.liked || false);
      setLikedCount(feedData?.likedCount || 0);
   }, [feedData]);
@@ -91,7 +97,7 @@ export default function Feed({ feedData, onFeedClick }) {
         setShowDeleteModal(false);
         setShowCompleteModal(true);
       } catch (err) {
-        console.log("실패함" , err);
+        // console.log("실패함" , err);
         const errorKey = err?.response?.data?.errorKey;
         if (err.response?.status === 403) {
           setShowLoginModal(true);
@@ -127,7 +133,7 @@ export default function Feed({ feedData, onFeedClick }) {
 
      const toggleExpand = () => setIsExpanded((prev) => !prev);
           const handleDeclareClick = (declareData) => {
-       console.log('신고 데이터:', declareData);
+      //  console.log('신고 데이터:', declareData);
      }
 
   const handleHeartClick = async () => {
@@ -147,7 +153,13 @@ export default function Feed({ feedData, onFeedClick }) {
       setWorksData(updatedData.result);
       setIsLiked(updatedData.result.liked);
       setLikedCount(updatedData.result.likedCount || 0);
-      setMediaData(updatedData.result.mediaResDtos);
+      // mediaResDto가 배열인지 단일 객체인지 확인하고 배열로 변환
+      const mediaArray = Array.isArray(updatedData.result?.mediaResDto) 
+        ? updatedData.result.mediaResDto 
+        : updatedData.result?.mediaResDto 
+          ? [updatedData.result.mediaResDto] 
+          : [];
+      setMediaData(mediaArray);
      
     } catch (error) {
       console.error("피드 관련 에러:", error);
@@ -228,70 +240,81 @@ export default function Feed({ feedData, onFeedClick }) {
         <div 
         className="flex justify-center w-full overflow-hidden rounded-md mb-2 relative"
       >
-        {feedData?.mediaResDtos && feedData.mediaResDtos.length > 0 ? (
-          <>
-            <Swiper
-              onSwiper={(swiper) => {
-                swiperRef.current = swiper;
-              }}
-              pagination={{
-                dynamicBullets: true,
-              }}
-              modules={[Pagination]}
-              className="rounded-lg w-full max-w-[800px]"
-            >
-              {feedData?.mediaResDtos?.map((data, i) => {
-                const isVideo = data.fileType?.toLowerCase().startsWith("video") || data.fileUrl?.toLowerCase().endsWith(".mp4");
-                return (
-                  <SwiperSlide key={i}>
-                    <div className="flex justify-center items-center">
-                      {isVideo ? (
-                        <video
-                          src={`${data.fileUrl}`}
-                          controls
-                          className="w-full h-auto max-h-[500px] object-cover cursor-pointer"
-                          onClick={goToDetail}
-                        />
-                      ) : (
+        {(() => {
+          // mediaResDto가 배열인지 단일 객체인지 확인하고 배열로 변환
+          const mediaArray = Array.isArray(feedData?.mediaResDto) 
+            ? feedData.mediaResDto 
+            : feedData?.mediaResDto 
+              ? [feedData.mediaResDto] 
+              : [];
+
+          if (mediaArray.length === 0) {
+            return (
+              <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
+                <p className="text-gray-400">이미지가 없습니다</p>
+              </div>
+            );
+          }
+
+          return (
+            <>
+              <Swiper
+                onSwiper={(swiper) => {
+                  swiperRef.current = swiper;
+                }}
+                pagination={{
+                  dynamicBullets: true,
+                }}
+                modules={[Pagination]}
+                className="rounded-lg w-full max-w-[800px]"
+              >
+                {mediaArray.map((data, i) => {
+                  // 피드 목록에서는 동영상도 썸네일 이미지(.png)로 표시
+                  // fileUrl이 이미 전체 URL인지 확인 (http:// 또는 https://로 시작하는지)
+                  const isFullUrl = data.fileUrl?.startsWith('http://') || data.fileUrl?.startsWith('https://');
+                  const mediaUrl = isFullUrl ? data.fileUrl : `${BUCKET_URL}${data.fileUrl}`;
+
+                  return (
+                    <SwiperSlide key={i}>
+                      <div className="flex justify-center items-center">
                         <img
-                          src={`${BUCKET_URL}${data.fileUrl}`}
-                          alt={data.fileName}
+                          src={mediaUrl}
+                          alt={data.fileName || `미디어 ${i + 1}`}
                           className="w-full h-auto max-h-[500px] object-cover aspect-[1/1] cursor-pointer"
                           onClick={goToDetail}
+                          onError={(e) => {
+                            e.target.src = basiclogoimg;
+                          }}
                         />
-                      )}
-                    </div>
-                  </SwiperSlide>
-                )
-              })}
-            </Swiper>
-            {/* 화살표 버튼 */}
-            {feedData?.mediaResDtos && feedData.mediaResDtos.length > 1 && (
-              <div className="hidden lg:block">
-                <button 
-                  onClick={(e) => { e.stopPropagation(); swiperRef.current?.slidePrev(); }}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-                >
-                  <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button 
-                  onClick={(e) => { e.stopPropagation(); swiperRef.current?.slideNext(); }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-                >
-                  <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
-            <p className="text-gray-400">이미지가 없습니다</p>
-          </div>
-        )}
+                      </div>
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
+              {/* 화살표 버튼 */}
+              {mediaArray.length > 1 && (
+                <div className="hidden lg:block">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); swiperRef.current?.slidePrev(); }}
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  >
+                    <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); swiperRef.current?.slideNext(); }}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
+                  >
+                    <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </>
+          );
+        })()}
       </div>
       </div>
      
