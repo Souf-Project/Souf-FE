@@ -1,14 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { deleteFeed, getPopularFeed, getFeedDetail } from "../api/feed";
 import { getFeed } from "../api/feed";
 import { getFormattedDate } from "../utils/getDate";
 import UpdateOption from "./updateOption";
-import { Swiper,SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import basiclogoimg from "../assets/images/basiclogoimg.png";
@@ -41,7 +36,6 @@ export default function Feed({ feedData, onFeedClick }) {
   const [isHeartAnimating, setIsHeartAnimating] = useState(false);
 
   const {memberId} = UserStore();
-  const swiperRef = useRef(null);
   const maxLength = 30;
   const goToDetail = () => navigate(`/profileDetail/${feedData?.memberId}/post/${feedData?.feedId}`);
   const [pageable, setPageable] = useState({
@@ -241,14 +235,11 @@ export default function Feed({ feedData, onFeedClick }) {
         className="flex justify-center w-full overflow-hidden rounded-md mb-2 relative"
       >
         {(() => {
-          // mediaResDto가 배열인지 단일 객체인지 확인하고 배열로 변환
-          const mediaArray = Array.isArray(feedData?.mediaResDto) 
-            ? feedData.mediaResDto 
-            : feedData?.mediaResDto 
-              ? [feedData.mediaResDto] 
-              : [];
+          const mediaData = Array.isArray(feedData?.mediaResDto) 
+            ? feedData.mediaResDto[0]
+            : feedData?.mediaResDto;
 
-          if (mediaArray.length === 0) {
+          if (!mediaData || !mediaData.fileUrl) {
             return (
               <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
                 <p className="text-gray-400">이미지가 없습니다</p>
@@ -256,63 +247,23 @@ export default function Feed({ feedData, onFeedClick }) {
             );
           }
 
-          return (
-            <>
-              <Swiper
-                onSwiper={(swiper) => {
-                  swiperRef.current = swiper;
-                }}
-                pagination={{
-                  dynamicBullets: true,
-                }}
-                modules={[Pagination]}
-                className="rounded-lg w-full max-w-[800px]"
-              >
-                {mediaArray.map((data, i) => {
-                  // 피드 목록에서는 동영상도 썸네일 이미지(.png)로 표시
-                  // fileUrl이 이미 전체 URL인지 확인 (http:// 또는 https://로 시작하는지)
-                  const isFullUrl = data.fileUrl?.startsWith('http://') || data.fileUrl?.startsWith('https://');
-                  const mediaUrl = isFullUrl ? data.fileUrl : `${BUCKET_URL}${data.fileUrl}`;
+          // 피드 목록에서는 동영상도 썸네일 이미지(.png)로 표시
+          // fileUrl이 이미 전체 URL인지 확인 (http:// 또는 https://로 시작하는지)
+          const isFullUrl = mediaData.fileUrl?.startsWith('http://') || mediaData.fileUrl?.startsWith('https://');
+          const mediaUrl = isFullUrl ? mediaData.fileUrl : `${BUCKET_URL}${mediaData.fileUrl}`;
 
-                  return (
-                    <SwiperSlide key={i}>
-                      <div className="flex justify-center items-center">
-                        <img
-                          src={mediaUrl}
-                          alt={data.fileName || `미디어 ${i + 1}`}
-                          className="w-full h-auto max-h-[500px] object-cover aspect-[1/1] cursor-pointer"
-                          onClick={goToDetail}
-                          onError={(e) => {
-                            e.target.src = basiclogoimg;
-                          }}
-                        />
-                      </div>
-                    </SwiperSlide>
-                  );
-                })}
-              </Swiper>
-              {/* 화살표 버튼 */}
-              {mediaArray.length > 1 && (
-                <div className="hidden lg:block">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); swiperRef.current?.slidePrev(); }}
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-                  >
-                    <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); swiperRef.current?.slideNext(); }}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 w-5 h-5 bg-white/80 rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-                  >
-                    <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-            </>
+          return (
+            <div className="flex justify-center items-center">
+              <img
+                src={mediaUrl}
+                alt={mediaData.fileName || "피드 이미지"}
+                className="w-full h-auto max-h-[500px] object-cover aspect-[1/1] cursor-pointer"
+                onClick={goToDetail}
+                onError={(e) => {
+                  e.target.src = basiclogoimg;
+                }}
+              />
+            </div>
           );
         })()}
       </div>
