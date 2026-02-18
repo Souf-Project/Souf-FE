@@ -233,6 +233,7 @@ function AppRouter() {
         <PopUpView 
           closePopUp={closePopUp}
           title="SOUF 피드 경진대회 개최"
+          content={`이미지를 클릭하면 자세한 정보를 볼 수 있습니다.\n피드 업로드는 크롬 브라우저 사용을 권장드립니다.`}
           imageUrl={popUpImg}
           onClickImage={() => navigate("/studentFeedList")}
         />
