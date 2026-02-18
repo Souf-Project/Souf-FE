@@ -59,7 +59,7 @@ export default function PopUpView({
            />
           )}
           {content && (
-            <article className="text-gray-600 whitespace-pre-line">
+            <article className="text-gray-600 whitespace-pre-line ml-2">
               {content}
             </article>
           )}
