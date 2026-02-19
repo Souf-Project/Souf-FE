@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import ChatEmpty from "../components/chat/chatEmpty";
 import ChatMessage from "../components/chat/chatMessage";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getChat } from "../api/chat";
 import { getFormattedDate } from "../utils/getDate";
 import { patchChatRooms } from "../api/chat";
@@ -10,11 +10,13 @@ import SouFLogo from "../assets/images/SouFLogo.svg";
 import Loading from "../components/loading";
 import SEO from "../components/seo";
 import AlertModal from "../components/alertModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 
 export default function Chat() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
   const [chatList, setChatList] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,7 +58,7 @@ export default function Chat() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    console.log("Search query:", searchQuery);
+    // console.log("Search query:", searchQuery);
   };
 
   // 검색어에 따라 채팅 목록 필터링
@@ -69,6 +71,7 @@ export default function Chat() {
     data: chatData,
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["chatList"],
     queryFn: async () => {
@@ -82,7 +85,26 @@ export default function Chat() {
       }
     },
     keepPreviousData: true,
+    refetchOnMount: true, // 컴포넌트 마운트 시 항상 최신 데이터 가져오기
   });
+
+  // location state에서 새로 생성된 채팅방 ID 확인 및 자동 선택
+  useEffect(() => {
+    if (location.state?.newRoomId && chatList.length > 0) {
+      const newRoomId = location.state.newRoomId;
+      // 새로 생성된 채팅방이 목록에 있는지 확인
+      const foundRoom = chatList.find(chat => chat.roomId === newRoomId);
+      if (foundRoom) {
+        setSelectedChat(newRoomId);
+        // 모바일에서는 채팅 내용 화면으로 전환
+        if (window.innerWidth < 1024) {
+          setShowChatList(false);
+        }
+      }
+      // state 초기화 (다음 방문 시 중복 선택 방지)
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, chatList, navigate]);
 
     const handleChat = (roomId) => {
       setSelectedChat(roomId);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { patchApplicationDecision } from "../api/application";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import AlertModal from "./alertModal";
 import sendIco from "../assets/images/sendIco.svg";
 import { postChatrooms } from "../api/chat";
@@ -10,6 +10,7 @@ import { getLastCategoryName } from "../utils/categoryUtils";
 
 export default function StudentInfoBlock({ studentInfo, type }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const user = studentInfo?.member || studentInfo;
   const [applicationId,setApplicationId] = useState();
 
@@ -39,14 +40,20 @@ export default function StudentInfoBlock({ studentInfo, type }) {
 
 
   const handleChat = async (memberId) => {
-    console.log("채팅 멤버: ", memberId);
+    // console.log("채팅 멤버: ", memberId);
     
     try {
       const response = await postChatrooms(memberId);
-
+      // console.log("채팅방 생성 응답: ", response);
       // 채팅방 생성 후 해당 채팅방으로 이동
-      if (response.roomId) {
-        navigate(`/chat`);
+      if (response.roomId || response.result?.roomId) {
+        const roomId = response.roomId || response.result?.roomId;
+        // React Query 캐시 무효화하여 채팅 목록을 다시 불러오도록 함
+        queryClient.invalidateQueries({ queryKey: ["chatList"] });
+        // 채팅 페이지로 이동 (새로 생성된 채팅방 ID를 state로 전달)
+        navigate(`/chat`, { state: { newRoomId: roomId } });
+        // 채팅 목록을 최신화하기 위해 페이지 새로고침
+       
       } else {
       }
     } catch (error) {
