@@ -99,7 +99,8 @@ export default function CompanyApplicants({ recruitId }) {
   // 작성한 공고문 리스트 조회
   useEffect(() => {
     const fetchRecruits = async () => {
-      if (roleType !== 'MEMBER') return;
+      // MEMBER 또는 ADMIN인 경우에만 공고문 조회
+      if (roleType !== 'MEMBER' && roleType !== 'ADMIN') return;
       
       setLoading(true);
       setError(null);
@@ -130,14 +131,15 @@ export default function CompanyApplicants({ recruitId }) {
   // 선택된 공고문의 지원자 리스트 조회
   useEffect(() => {
     const fetchApplicants = async () => {
-      if (roleType !== 'MEMBER' || !selectedRecruitId) return;
+      // MEMBER 또는 ADMIN인 경우에만 지원자 리스트 조회
+      if ((roleType !== 'MEMBER' && roleType !== 'ADMIN') || !selectedRecruitId) return;
       
       setLoading(true);
       setError(null);
       
       try {
         const response = await getApplicantsByRecruitId(selectedRecruitId);
-        console.log('지원자 리스트 조회 성공:', response.data);
+        // console.log('지원자 리스트 조회 성공:', response.data);
         setApplicants(response.data.result?.content || []);
       } catch (error) {
         console.error('지원자 리스트 조회 실패:', error);
@@ -153,8 +155,8 @@ export default function CompanyApplicants({ recruitId }) {
     fetchApplicants();
   }, [roleType, selectedRecruitId]);
 
-  // MEMBER가 아닌 경우 빈 div 반환
-  if (roleType !== 'MEMBER') {
+  // MEMBER 또는 ADMIN이 아닌 경우 빈 div 반환
+  if (roleType !== 'MEMBER' && roleType !== 'ADMIN') {
     return <div></div>;
   }
 
