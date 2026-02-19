@@ -428,7 +428,7 @@ const handleDeleteClick = () => {
                   dynamicBullets: true,
                 }}
                 modules={[Pagination]}
-                className="rounded-lg relative"
+                className="rounded-lg relative w-full"
               >
                 {mediaData?.map((data, i) => {
                   // 비디오 파일 확장자 체크 (mp4, mov, avi, webm 등)
@@ -445,13 +445,13 @@ const handleDeleteClick = () => {
                   const mediaUrl = isFullUrl ? data.fileUrl : `${BUCKET_URL}${data.fileUrl}`;
                   
                   return (
-                    <SwiperSlide key={i} className="flex justify-center items-center">
-                      <div className="flex justify-center items-center h-auto w-full">
+                    <SwiperSlide key={i} className="flex justify-center items-center w-full">
+                      <div className="flex justify-center items-center w-full h-full">
                         {isVideo ? (
                           <video
                             src={mediaUrl}
                             controls
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-auto max-h-full object-contain rounded-lg"
                           />
                         ) : (
                           <img
