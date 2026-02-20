@@ -7,6 +7,7 @@ import UpdateOption from "./updateOption";
 import { UserStore } from "../store/userStore";
 import AlertModal from "./alertModal";
 import basiclogoimg from "../assets/images/basiclogoimg.png";
+import notExistImg from "../assets/images/notExistImg.png";
 import { FEED_ERRORS } from "../constants/post";
 import heartOn from "../assets/images/heartOn.svg";
 import heartOff from "../assets/images/heartOff.svg";
@@ -260,7 +261,7 @@ export default function Feed({ feedData, onFeedClick }) {
                 className="w-full h-auto max-h-[500px] object-cover aspect-[1/1] cursor-pointer"
                 onClick={goToDetail}
                 onError={(e) => {
-                  e.target.src = basiclogoimg;
+                  e.target.src = notExistImg;
                 }}
               />
             </div>

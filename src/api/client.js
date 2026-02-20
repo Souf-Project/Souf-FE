@@ -399,9 +399,8 @@ client.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 토큰 만료 에러 처리 (401 또는 400 + S400-6)
     // 토큰이 있는 경우에만 refresh 시도 (로그인 없이 조회 가능한 API는 토큰이 없을 수 있음)
-    const isTokenExpired = (status === 401) || (status === 400 && errorKey === 'S400-6');
+    const isTokenExpired = (status === 401 && errorKey !== 'M401-1') || (status === 400 && errorKey === 'S400-6');
     
     // console.log("[응답 인터셉터] 토큰 만료 체크:", {
     //   isTokenExpired,
