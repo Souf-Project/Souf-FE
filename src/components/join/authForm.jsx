@@ -45,6 +45,8 @@ export default function AuthForm({
         schoolEmail: "",
         verificationCode: "",
     });
+    const [schoolEmailDomainType, setSchoolEmailDomainType] = useState("ac.kr"); // "ac.kr" | "direct"
+    const [schoolEmailCustomDomain, setSchoolEmailCustomDomain] = useState("");
     const [isStudentVerificationRequested, setIsStudentVerificationRequested] = useState(false);
     const [studentVerificationCheck, setStudentVerificationCheck] = useState(undefined);
     const [schoolEmailValidation, setSchoolEmailValidation] = useState(undefined);
@@ -164,6 +166,19 @@ export default function AuthForm({
     const isDisabled = selectedMemberType === "일반";
 
     
+    const getComposedSchoolEmail = (localPart, domainType = schoolEmailDomainType, customDomain = schoolEmailCustomDomain) => {
+        const trimmedLocal = (localPart || "").trim();
+        const trimmedDomain = domainType === "ac.kr" ? "ac.kr" : (customDomain || "").trim();
+        if (!trimmedLocal || !trimmedDomain) return "";
+        return `${trimmedLocal}@${trimmedDomain}`;
+    };
+
+    const validateSchoolEmail = (email) => {
+        if (!email) return undefined;
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailRegex.test(email);
+    };
+
     const handleStudentInputChange = (name, e) => {
         const value = e.target.value;
         setStudentFormData({ ...studentFormData, [name]: value });
@@ -173,24 +188,23 @@ export default function AuthForm({
             if (!value || value.trim() === "") {
                 setSchoolEmailValidation(undefined);
             } else {
-                const trimmedValue = value.trim();
-                // ac.kr 형식 검증
-                const isValidFormat = trimmedValue.endsWith(".ac.kr");
-                
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                const hasValidEmailStructure = emailRegex.test(trimmedValue);
-                
-                if (isValidFormat && hasValidEmailStructure) {
-                    setSchoolEmailValidation(true);
-                } else if (hasValidEmailStructure && !isValidFormat) {
-                    // 이메일 형식은 맞지만 ac.kr로 끝나지 않는 경우
-                    setSchoolEmailValidation(false);
-                } else if (!hasValidEmailStructure) {
-                    // 이메일 형식 자체가 잘못된 경우
-                    setSchoolEmailValidation(false);
-                }
+                const composedEmail = getComposedSchoolEmail(value);
+                setSchoolEmailValidation(validateSchoolEmail(composedEmail));
             }
         }
+    };
+
+    const handleSchoolEmailDomainTypeChange = (value) => {
+        setSchoolEmailDomainType(value);
+        const composedEmail = getComposedSchoolEmail(studentFormData.schoolEmail, value, schoolEmailCustomDomain);
+        setSchoolEmailValidation(validateSchoolEmail(composedEmail));
+    };
+
+    const handleSchoolEmailCustomDomainChange = (e) => {
+        const value = e.target.value;
+        setSchoolEmailCustomDomain(value);
+        const composedEmail = getComposedSchoolEmail(studentFormData.schoolEmail, "direct", value);
+        setSchoolEmailValidation(validateSchoolEmail(composedEmail));
     };
 
     // 동아리 인증 핸들러
@@ -225,13 +239,14 @@ export default function AuthForm({
 
         // 학생 계정의 경우 schoolEmail과 schoolAuthenticatedImageFileName 검증
         if (selectedType === "STUDENT") {
+            const composedSchoolEmail = getComposedSchoolEmail(studentFormData.schoolEmail);
             // schoolEmail 검증 (ac.kr 형식만 가능)
-            if (!studentFormData.schoolEmail || !studentFormData.schoolEmail.trim()) {
+            if (!composedSchoolEmail) {
                 alert("학교 이메일을 입력해주세요.");
                 return;
             }
-            if (!studentFormData.schoolEmail.endsWith(".ac.kr")) {
-                alert("ac.kr 형식의 학교 이메일만 가능합니다.");
+            if (!validateSchoolEmail(composedSchoolEmail)) {
+                alert("올바른 이메일 형식을 입력해주세요.");
                 return;
             }
 
@@ -273,9 +288,10 @@ export default function AuthForm({
 
         // 학생 계정의 경우 추가 필드 추가
         if (selectedType === "STUDENT") {
+            const composedSchoolEmail = getComposedSchoolEmail(studentFormData.schoolEmail);
             finalFormData = {
                 ...finalFormData,
-                schoolEmail: studentFormData.schoolEmail.trim(),
+                schoolEmail: composedSchoolEmail,
                 schoolAuthenticatedImageFileName: schoolAuthenticatedImageFileName.name,
             };
         } else if (selectedType === "MEMBER") {
@@ -827,18 +843,60 @@ export default function AuthForm({
                 </label>
               )}
             </div>
-            <Input  
-                title="대학교 웹메일"
-                placeholder="souf@univ.ac.kr"
-                type="text"
-                name="schoolEmail"
-                essentialText="학교 이메일을 입력해주세요."
-                disapproveText={schoolEmailValidation === false ? "ac.kr 형식의 학교 이메일을 입력해주세요." : ""}
-                approveText={schoolEmailValidation === true ? "올바른 학교 이메일 형식입니다." : ""}
-                isConfirmed={schoolEmailValidation}
-                value={studentFormData.schoolEmail}
-                onChange={(e) => handleStudentInputChange("schoolEmail", e)}
-            />
+            <div className="w-full relative mb-8">
+                <div className="text-black text-lg md:text-xl font-regular mb-2">
+                    대학교 웹메일
+                </div>
+                <div className="flex items-center gap-2">
+                    <input
+                        type="text"
+                        className="w-1/3 py-2 px-2 font-medium text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 border-[#898989] bg-[#F6F6F6] focus:border-blue-main"
+                        placeholder="souf"
+                        value={studentFormData.schoolEmail}
+                        onChange={(e) => handleStudentInputChange("schoolEmail", e)}
+                    />
+                    <span className="text-xl font-semibold text-gray-700">@</span>
+                    {schoolEmailDomainType === "direct" ? (
+                        <input
+                            type="text"
+                            className="w-1/3 py-2 px-2 font-medium text-black placeholder-[#81818a] text-md border-0 border-b-[3px] outline-none transition-colors duration-200 border-[#898989] bg-[#F6F6F6] focus:border-blue-main"
+                            placeholder="souf.com"
+                            value={schoolEmailCustomDomain}
+                            onChange={handleSchoolEmailCustomDomainChange}
+                        />
+                    ) : (
+                        <div className="w-1/3">
+                            <input
+                                type="text"
+                                className="w-full py-2 px-2 font-medium text-black text-md border-0 border-b-[3px] outline-none border-[#898989] bg-gray-100 cursor-not-allowed"
+                                value="ac.kr"
+                                readOnly
+                            />
+                        </div>
+                    )}
+                    <div className="w-1/3">
+                        <FilterDropdown
+                            options={[
+                                { value: "ac.kr", label: "ac.kr" },
+                                { value: "direct", label: "직접 입력" },
+                            ]}
+                            selectedValue={schoolEmailDomainType}
+                            onSelect={handleSchoolEmailDomainTypeChange}
+                            placeholder="도메인"
+                        />
+                    </div>
+                </div>
+                {schoolEmailValidation === false && (
+                    <p className="absolute left-0 top-full mt-1 text-xs font-medium text-red-essential">
+                        올바른 학교 이메일 형식을 입력해주세요.
+                    </p>
+                )}
+                {schoolEmailValidation === true && (
+                    <p className="absolute left-0 top-full mt-1 text-xs font-medium text-[#00AA58]">
+                        올바른 학교 이메일 형식입니다.
+                    </p>
+                )}
+            </div>
 
 <button 
               className="w-full py-3 rounded-md text-xl font-semibold transition-all bg-blue-main text-white shadow-md"

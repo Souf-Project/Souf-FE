@@ -21,6 +21,10 @@ export const COMMENT_ERRORS = {
 // 피드 업로드 관련 에러 정의
 // 얘네는 그냥 홈으로? 아님 피드리스트
 export const FEED_UPLOAD_ERRORS = {
+  "M401-1": {
+    message: "승인되지 않은 계정입니다\n학생/동아리 승인 후 업로드 가능합니다.",
+    action: null
+  },
   "M404-1": {
     message: "올바르지 않은 계정입니다\n이메일 정보를 확인해주세요.",
     action: "redirect", //메인 피드 홈?
