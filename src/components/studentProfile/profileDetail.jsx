@@ -28,6 +28,7 @@ export default function ProfileDetail({}) {
   const [errorModal, setErrorModal] = useState(false);
   const [errorDescription, setErrorDescription] = useState("잘못된 접근");
   const [errorAction, setErrorAction] = useState("redirect");
+  const [page, setPage] = useState(0);
   const fromMemberId = UserStore.getState().memberId;
 
   const S3_BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
@@ -37,13 +38,15 @@ export default function ProfileDetail({}) {
       isLoading,
       error,
     } = useQuery({
-      queryKey: ["profileDetail"],
+      queryKey: ["profileDetail", id, page],
       queryFn: async () => {
-        const data = await getProfileDetail(id);
-       
-        setUserData(data.result.memberResDto);
-        setUserWorks(data.result.feedSimpleResDtoPage.content)
-        
+        const pageable = {
+          page: page,
+          size: 12,
+          sort: []
+        };
+        const data = await getProfileDetail(id, pageable);
+      
         return data;
       },
       keepPreviousData: true,
@@ -54,6 +57,14 @@ export default function ProfileDetail({}) {
         }
       },
     });
+
+    // feedData가 변경될 때 상태 업데이트
+    useEffect(() => {
+      if (feedData?.result) {
+        setUserData(feedData.result.memberResDto);
+        setUserWorks(feedData.result.feedSimpleResDtoPage.content);
+      }
+    }, [feedData]);
 
     // 3초 후 스켈레톤 애니메이션 숨기기
     useEffect(() => {
@@ -268,6 +279,50 @@ export default function ProfileDetail({}) {
               <div className="text-gray-500 text-lg">등록된 피드가 없습니다.</div>
             </div>
           )}
+          <div className="flex justify-center items-center gap-4 mt-6">
+            {page > 0 && (
+              <button
+                onClick={() => {
+                  setPage(page - 1);
+                }}
+                className="flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5 mr-2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                </svg>
+                이전
+              </button>
+            )}
+            {feedData?.result?.feedSimpleResDtoPage && 
+             !feedData.result.feedSimpleResDtoPage.last && 
+             userWorks && userWorks.length >= 12 && (
+              <button
+                onClick={() => {
+                  setPage(page + 1);
+                }}
+                className="flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                다음
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5 ml-2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
         {showLoginModal && (
         <AlertModal

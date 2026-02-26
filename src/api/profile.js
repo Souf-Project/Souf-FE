@@ -26,9 +26,14 @@ export const getProfile = async (
 
 
 
-export const getProfileDetail = async (memberId) => {
+export const getProfileDetail = async (memberId, pageable = { page: 0, size: 12, sort: [] }) => {
   try {
-    const response = await client.get(`/api/v1/feed/${memberId}`);
+    const params = {
+      page: pageable.page,
+      size: pageable.size,
+      ...(pageable.sort && pageable.sort.length > 0 ? { sort: pageable.sort } : {}),
+    };
+    const response = await client.get(`/api/v1/feed/${memberId}`, { params });
     return response.data;
   } catch (error) {
     console.error("인기 피드 조회 에러:", error);
