@@ -48,8 +48,9 @@ import Contract from "../pages/contract";
 import AdditionalInfo from "../pages/additionalInfo";
 import PopUpView from "../components/popUpView";
 import PopUpDC from "../utils/popUpDC";
-import popUpImg from "../assets/images/SOUF_poster_A4.jpeg";
+import popUpImg from "../assets/images/SOUF_contest_result_poster.png";
 import Contest from "../pages/contest";
+import ContestResult from "../pages/contestResult";
 
 
 function AppRouter() {
@@ -206,6 +207,7 @@ function AppRouter() {
           <Route path="/policy/privacy" element={<PrivacyPage/>} />
           <Route path="/policy/complaintDispute" element={<ComplainPage/>} />
           <Route path="/contract" element={<Contract/>} /> 
+          <Route path="/contestResult" element={<ContestResult/>} />
         </Routes>
       </main>
       {!isChatPage && <Footer />}
@@ -233,9 +235,9 @@ function AppRouter() {
         <PopUpView 
           closePopUp={closePopUp}
           title="SOUF 피드 경진대회 개최"
-          content={`이미지를 클릭하면 자세한 정보를 볼 수 있습니다.\n피드 업로드는 크롬 브라우저 사용을 권장드립니다.`}
+          content={`이미지를 클릭하면 결과 페이지로 이동합니다.`}
           imageUrl={popUpImg}
-          onClickImage={() => navigate("/studentFeedList")}
+          onClickImage={() => navigate("/contestResult")}
         />
       )}
     </div>

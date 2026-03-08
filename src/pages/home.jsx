@@ -60,6 +60,7 @@ import spoonMark from "../assets/images/spoonMark.svg";
 import SOUF_contest_main from "../assets/images/SOUF_contest_main.jpeg";
 import SOUF_contest_poster from "../assets/images/SOUF_poster_A4.jpeg";
 import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
+import SOUF_contest_result_main from "../assets/images/SOUF_contest_result_main.png"
 
 export default function Home() {
   const navigate = useNavigate();
@@ -414,10 +415,10 @@ export default function Home() {
 
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 플랫폼' />
     <div className="relative overflow-x-hidden w-screen">
-      <div className="hidden md:block w-full h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contest");
+      <div className="hidden md:block w-full h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contestResult");
 
       }}>
-        <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-contain" />
+        <img src={SOUF_contest_result_main} alt="SOUF 대학생 피드 경진대회 수상작 발표" className="w-full h-full object-contain" />
       </div>
      
      <div className="block md:hidden mx-auto cursor-pointer" onClick={() => {navigate("/contest")}}>
@@ -543,9 +544,9 @@ export default function Home() {
   <div className="relative w-full lg:w-2/3">
   <div className="flex items-center mb-8 gap-4">
   <h2 className="text-lg sm:text-xl md:text-2xl font-semibold">
-        실시간 대학생 피드
+        주간 인기 대학생 피드
           </h2>
-    <span className="font-NanumGothicCoding text-sm sm:text-base lg:text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">NEW</span>
+    <span className="font-NanumGothicCoding text-sm sm:text-base lg:text-lg font-bold text-white bg-blue-500/70 py-0.5 px-3 rounded-lg">BEST</span>
   </div>
        
           <FeedGrid />
@@ -558,7 +559,7 @@ export default function Home() {
                 진행 중인 외주 의뢰
               </h2>
               <span className="font-NanumGothicCoding text-sm sm:text-base lg:text-lg font-bold text-white bg-orange-300 py-0.5 px-2 sm:px-3 rounded-lg">
-                BEST
+                NEW
               </span>
             </div>
             <BestRecruit />
