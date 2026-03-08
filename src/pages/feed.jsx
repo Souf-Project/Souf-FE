@@ -12,8 +12,10 @@ import { getFirstCategoryNameById, getNowPageByActiveTab } from "../utils/getCat
 import PageHeader from "../components/pageHeader";
 import FilterDropdown from "../components/filterDropdown";
 import Carousel from "../components/home/carousel";
+import { trackEvent } from "../analytics";
 
 export default function Feed() {
+  trackEvent("feed_list_view");
   const location = useLocation();
   const navigate = useNavigate();
 

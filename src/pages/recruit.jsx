@@ -197,7 +197,7 @@ export default function Recruit() {
         
         setTotalPages(totalPagesData);
         
-        if (currentPage === 0) {
+        if (currentPage === 1) {
           trackEvent("recruit_list_view", {
             category: selectedCategory[0] || null,
             total_count: totalElements,

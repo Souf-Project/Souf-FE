@@ -371,7 +371,7 @@ const handleDeleteClick = () => {
               {worksData.topic}
             </h2>
             <p className="text-xs lg:text-sm text-gray-500">
-              {getFormattedDate(worksData.lastModifiedTime)}
+              {getFormattedDate(worksData.createdTime)}
             </p>
           </div>
           
