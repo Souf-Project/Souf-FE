@@ -8,7 +8,7 @@ import { getFeedTop5List } from "../api/feed";
 import { trackEvent } from "../analytics";
 import Loading from "../components/loading";
 import contestResultImage from "../assets/images/SOUF_contest_result_poster.png";
-import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
+import SOUF_contest_banner from "../assets/images/souf_contest_banner.jpeg";
 import coffeeImg from "../assets/images/coffeeImg.png"
 
 const BUCKET_URL = import.meta.env.VITE_S3_BUCKET_URL;
