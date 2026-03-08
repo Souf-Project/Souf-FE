@@ -48,7 +48,7 @@ import Contract from "../pages/contract";
 import AdditionalInfo from "../pages/additionalInfo";
 import PopUpView from "../components/popUpView";
 import PopUpDC from "../utils/popUpDC";
-import popUpImg from "../assets/images/SOUF_contest_result_poster.png";
+import popUpImg from "../assets/images/souf_contest_result_poster.png";
 import Contest from "../pages/contest";
 import ContestResult from "../pages/contestResult";
 
