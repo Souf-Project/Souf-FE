@@ -258,9 +258,25 @@ const winnersData = [0, 1, 3]
                   <div className="text-2xl font-bold text-blue-700 mb-2">
                     {winner.nickname}
                   </div>
-                  <div className="text-md font-semibold text-gray-600">
-                    {winner.email}
-                  </div>
+                  {winner.email && (() => {
+                    const emailParts = winner.email.split('@');
+                    const localPart = emailParts[0];
+                    const domain = emailParts.slice(1).join('@'); 
+                    return (
+                      <>
+                        {/* 모바일: @ 기준으로 두 줄로 표시 */}
+                        <div className="block lg:hidden text-md font-semibold text-gray-600">
+                          {localPart}
+                          <br />
+                          @{domain}
+                        </div>
+                        {/* 데스크톱: 한 줄로 표시 */}
+                        <div className="hidden lg:block text-md font-semibold text-gray-600">
+                          {winner.email}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
