@@ -191,6 +191,6 @@ async function fetchAllRecruits() {
 
   smStream.end();
   const sitemap = await streamToPromise(smStream).then(sm => sm.toString());
-  fs.writeFileSync("./public/sitemap.xml", sitemap);
+  fs.writeFileSync("./dist/sitemap.xml", sitemap);
   console.log("sitemap.xml 생성 완료!");
 })();
