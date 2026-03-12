@@ -1,10 +1,12 @@
-// components/SEO.js
-
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 
 export default function SEO({ title, subTitle = "", description, content }) {
-  // title과 subTitle이 유효한 문자열인지 확인
+
+  const location = useLocation();
+  const url = `https://www.souf.co.kr${location.pathname}`;
+
   const safeTitle = title || "SouF";
   const safeSubTitle = subTitle || "대학생 외주";
 
@@ -15,10 +17,15 @@ export default function SEO({ title, subTitle = "", description, content }) {
   return (
     <Helmet>
       <title>{`${safeTitle} | ${safeSubTitle}`}</title>
-      <meta property="title" content={`${safeTitle} | SouF`} />
-      <meta property="description" content={content || description || "스프 SouF 대학생 외주"} />
+
+      <link rel="canonical" href={url} />
+
+      <meta name="description" content={content || description || "스프 SouF 대학생 외주"} />
+
       <meta property="og:title" content={`${safeTitle} | SouF`} />
       <meta property="og:description" content={content || description || "스프 SouF 대학생 외주"} />
+      <meta property="og:url" content={url} />
+
       <meta charSet="utf-8" />
     </Helmet>
   );
