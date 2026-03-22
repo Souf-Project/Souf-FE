@@ -414,7 +414,7 @@ export default function Home() {
     <>
 
     <SEO  title="SouF 스프" description="대학생 프리랜서와 창의적이고 유연한 인재를 필요로 하는 기업을 연결하는 AI 기반 프리랜서 매칭 플랫폼 SouF입니다. " subTitle='대학생 외주 플랫폼' />
-    <div className="relative overflow-x-hidden w-screen">
+    {/* <div className="relative overflow-x-hidden w-screen">
       <div className="hidden md:block w-full h-[680px] mx-auto cursor-pointer" onClick={() => {navigate("/contestResult");
 
       }}>
@@ -423,11 +423,11 @@ export default function Home() {
      
      <div className="block md:hidden mx-auto cursor-pointer" onClick={() => {navigate("/contest")}}>
       <img src={SOUF_contest_poster} alt="SOUF_contest_poster" className="w-full h-full object-contain" />
-     </div>
-        {/* {/* <div className="relative bg-[#FBFBFB] w-screen mx-auto"> */}
-        {/* <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[60rem] mx-auto"> */}
+     </div> */}
+        <div className="relative bg-[#FBFBFB] w-screen mx-auto">
+        <div className="flex justify-center items-start max-w-[30rem] lg:max-w-[60rem] mx-auto py-20">
           {/* 왼쪽: 타이틀과 검색, 카테고리 */}
-          {/* <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
+          <div className="max-w-2xl lg:max-w-4xl lg:mt-24 lg:mr-20">
           <AnimatedTitle />
             <h2 className="text-2xl lg:text-5xl font-bold text-black mb-8 text-center lg:text-left whitespace-nowrap">
               여기! 인재 매칭해드려요.
@@ -436,14 +436,14 @@ export default function Home() {
             스프에서 성공적인 외주 매칭을  경험해보세요.</h3>
             <div className="flex justify-center lg:justify-start gap-4">
               <button className="text-white bg-[#1E77D1] px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
-              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button> */}
+              onClick={handleRecruitUploadClick}>무료 외주 등록하기</button> 
               {/* <button 
                 className="text-black bg-white border-[3px] border-blue-main px-6 py-4 font-semibold rounded-3xl whitespace-nowrap shadow-md text-xl hover:shadow-lg"
                 onClick={handleGuideClick}
               >
                 이용 가이드
               </button> */}
-            {/* </div> */}
+            {/* </div>
             {/* <form onSubmit={handleSearch} className="w-full lg:mt-20">
               <div className="relative w-full max-w-2xl lg:max-w-3xl">
                 <input
@@ -462,15 +462,16 @@ export default function Home() {
               </div>
             </form> */}
             
-          {/* </div>
-          <InfoBox />
           </div>
-        </div> */}
+          
+          </div>
+          <InfoBox />
+        </div>
         {/* <StatisticsSection 
           viewCount={viewCount}
           userCount={userCount}
           recruitCount={recruitCount}
-        /> */}
+        />
 
      {/* 카테고리 섹션 */}
      <div className="flex flex-wrap gap-4 lg:gap-6 justify-center items-center mx-auto lg:w-full bg-blue-bright py-4 md:py-8 lg:h-68 shadow-md px-0 md:px-4 lg:px-0 max-w-screen md:mt-12">
