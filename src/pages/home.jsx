@@ -57,10 +57,6 @@ import part1_2 from "../assets/images/mainGuide/part1_2.png";
 import part1_3 from "../assets/images/mainGuide/part1_3.png";
 import part2 from "../assets/images/mainGuide/part2.png";
 import spoonMark from "../assets/images/spoonMark.svg";
-import SOUF_contest_main from "../assets/images/SOUF_contest_main.jpeg";
-import SOUF_contest_poster from "../assets/images/SOUF_poster_A4.jpeg";
-import SOUF_contest_banner from "../assets/images/SOUF_contest_banner.jpeg";
-import SOUF_contest_result_main from "../assets/images/SOUF_contest_result_main.png"
 
 export default function Home() {
   const navigate = useNavigate();
@@ -537,8 +533,6 @@ export default function Home() {
             </div>
      
 
-    <img src={SOUF_contest_banner} alt="SOUF_contest_banner" className="w-full h-full max-w-[60rem] mx-auto my-12 object-cover cursor-pointer" onClick={() => {navigate("/contest");
-      }} />
 
 <div className="flex flex-col lg:flex-row mt-4 max-w-[60rem] mx-auto  w-screen px-8 lg:px-0 ">
 {/* 실시간 대학생 피드 섹션 */}

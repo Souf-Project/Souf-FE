@@ -213,6 +213,8 @@ const {
       }
     `}</style>
     <SEO title="카테고리별 피드" description="스프 SouF 카테고리별 피드" subTitle="스프"/>
+    <img src={SOUF_contest_banner} alt="SOUF_contest_banner" className="w-full h-full max-w-[60rem] mx-auto mt-2 object-cover cursor-pointer" onClick={() => {navigate("/contest");
+      }} />
     <PageHeader leftText="카테고리별 피드" />
 
     <div className="w-screen max-w-[60rem] mx-auto flex flex-col mb-40">

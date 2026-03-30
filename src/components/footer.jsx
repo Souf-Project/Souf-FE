@@ -15,23 +15,23 @@ export default function Footer() {
         </div>
         <div className="hidden md:block">
         <div className='flex gap-2 text-neutral-400 text-md '>
-          <p>사업자 대표 : 한규탁</p>
+          {/* <p>사업자 대표 : 한규탁</p>
           <p>|</p>
           <p>대표자 연락처 : 010-9335-8400 </p>
           <p>|</p>
           <p>사업자 등록 번호 : 508-24-95706</p>
-          <p>|</p>
-          <p>이메일 : souf-official@souf.co.kr</p>
+          <p>|</p> */}
+          <p>souf-official@souf.co.kr</p>
 
         
         </div>
         <div className='flex gap-2 text-neutral-400 text-md '>
 
-          <p>상호명 : 스프 | 통신판매업</p>
+          {/* <p>상호명 : 스프 | 통신판매업</p>
           <p>|</p>
           <p>주소 : 서울특별시 광진구 광나루로19길 23, 103호</p>
           <p>|</p>
-          <p>개인정보 관리자 : 박정곤</p>
+          <p>개인정보 관리자 : 박정곤</p> */}
        
         </div>
         {/* <p className="text-neutral-400 text-md">해당 사이트에서 판매되는 모든 상품에 대한 환불 및 모든 민원의 책임은 스프에 있습니다.</p> */}
