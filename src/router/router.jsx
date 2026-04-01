@@ -231,7 +231,7 @@ function AppRouter() {
       )}
 
       {/* 팝업  */}
-      {showPopUp && location.pathname === "/" && (
+      {/* {showPopUp && location.pathname === "/" && (
         <PopUpView 
           closePopUp={closePopUp}
           title="SOUF 피드 경진대회 개최"
@@ -239,7 +239,7 @@ function AppRouter() {
           imageUrl={popUpImg}
           onClickImage={() => navigate("/contestResult")}
         />
-      )}
+      )} */}
     </div>
   );
 }

@@ -38,12 +38,15 @@ export default function Contest() {
             <div className="w-full max-w-[60rem] h-full mx-auto">
         <img src={SOUF_contest_main} alt="SOUF_contest_main" className="w-full h-full object-cover cursor-pointer"  onClick={() => {navigate("/studentFeedList");
       }}/>
+      <p className="text-gray-500 text-sm md:text-base text-center">본 이벤트는 종료된 이벤트입니다.</p>
                       {/* 헤더 섹션 */}
-                <div className="mb-12">
+                <div className="mb-12 text-center">
                     <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mt-4">
                         SOUF 대학생 피드 경진대회
                     </h1>
                     <p className="text-gray-500 text-sm md:text-base">2025년 2월 2일 ~ 2월 28일</p>
+                    <p className="text-blue-main mt-4 font-semibold text-lg md:text-xl text-center cursor-pointer" onClick={() => {navigate("/contestResult");
+                    }}>결과 바로가기 ></p>
                 </div>
 
                 {/* 설명 섹션 */}
