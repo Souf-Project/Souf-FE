@@ -166,12 +166,12 @@ function AppRouter() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Header />
+      {/* <Header /> */}
       <main className="flex-grow w-full mt-16">
         <Routes>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/" element={<Inspection />} /> */}
-          <Route path="/contest" element={<Contest />} />
+          {/* <Route path="/" element={<Home />} /> */}
+          <Route path="/" element={<Inspection />} />
+          {/* <Route path="/contest" element={<Contest />} />
           <Route path="/error" element={<Inspection />} />
 
          <Route path="/login" element={<Login />} />
@@ -207,7 +207,7 @@ function AppRouter() {
           <Route path="/policy/privacy" element={<PrivacyPage/>} />
           <Route path="/policy/complaintDispute" element={<ComplainPage/>} />
           <Route path="/contract" element={<Contract/>} /> 
-          <Route path="/contestResult" element={<ContestResult/>} />
+          <Route path="/contestResult" element={<ContestResult/>} /> */}
         </Routes>
       </main>
       {!isChatPage && <Footer />}
